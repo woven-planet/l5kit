@@ -1,0 +1,947 @@
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+import "google/protobuf/empty.proto";
+
+package pb.lyft.maps;
+
+option go_package = "maps";
+
+
+// Id from a globally unique space.
+// Can correspond to objects from different entity classes, e.g. nodes, segments, etc.
+message GlobalId {
+
+    bytes id = 1;
+}
+
+message GeoLocation {
+    // -90..90 Latitude in degrees multiplied by 1e7. Allows for ~1cm precision.
+    sfixed32 lat_e7 = 1;
+
+    // -180..180 Longitude in degrees multiplied by 1e7.
+    // Allows for at least ~1cm precision (finer at higher latitudes).
+    sfixed32 lng_e7 = 2;
+
+    // Optional Altitude in cm, relative to sea level.
+    oneof Altitude {
+        sint32 altitude_cm = 3;
+    }
+}
+
+// A GeoFrame defines a local Cartesian coordinate system at a point on the Earth,
+// with the Z axis pointing "up".
+//
+// Here is one example of how one could convert from local coordinates in the frame
+// to an "Earth Center Frame" with origin at the center of the Earth, Z pointing to the North pole,
+// and X pointing to the prime meridian (https://en.wikipedia.org/wiki/ECEF),
+// using the WGS84 ellipsoid
+// (a flattened sphere, with the "height" ~0.3% shorter than the equatorial radius).
+// https://en.wikipedia.org/wiki/World_Geodetic_System#A_new_World_Geodetic_System:_WGS_84
+// https://en.wikipedia.org/wiki/Geographic_coordinate_conversion
+//
+// First convert all int E7 degree values to double & multiply by e7DegreesToRadians
+//
+// Using Geodetic coordinates, the orientation of the local frame is equal to that on the sphere.
+//
+// unit_sphere_pt = [cos(lng) * cos(lat); sin(lng) * cos(lat); sin(lat)]
+// up = unit_sphere_pt
+// east = ([0; 0; 1] x up).normalize()
+// north = up x east
+//
+// ox = cos(bearing) * east - sin(bearing) * north
+// oy = sin(bearing) * east + cos(bearing) * north
+// oz = up
+//
+// The location gets shifted to the point on the ellipsoid where the surface normal matches the
+// sphere normal at that latitude ("geodetic" latitude)
+//
+// normal = a / sqrt(1 - e^2 * sin^2(lat))  // Distance along ellipsoid normal to the OZ axis, not O
+// origin = [up.x * normal; up.y * normal; up.z * (normal * (1 - e^2))] + alt * up
+//
+// ecfCoords = origin + [ox | oy | oz] * cmToMeters * localCoordsCm
+//
+// Constants:
+// a = WGS84 equatorial radius; b = WGS64 polar radius; e^2 = excentricity = 1 - b^2 / a^2
+//
+message GeoFrame {
+    // The origin of the frame, i.e the GeoLocation of the local (0,0,0) coordinate.
+    GeoLocation origin = 1;
+
+    // The angle formed by sweeping clockwise the "true North" direction onto the Y axis
+    // of the coordinate frame, e.g. 0 for North, 90 degrees for East, etc.
+    // GeoFrames at the poles will have the X axis pointing to the prime meridian by convention.
+    // See https://en.wikipedia.org/wiki/Bearing_(navigation)
+    // When this is not populated (default 0), the frame has standard East-North-Up orientation.
+    float bearing_degrees = 2;
+}
+
+message LocalizedString {
+    // Lowercase 2-letter language code (https://en.wikipedia.org/wiki/List_of_ISO_639-1_codes)
+    // or 2-2 locale-language.
+    string language_code = 1;
+
+    // The UTF-8 value of the string in the given language.
+    string value = 2;
+}
+
+// Map "intersections". There may be several nodes per junction, to represent sub-connections
+// between different streets merging first etc
+message RoadNetworkNode {
+
+    // A representative (lat, lng) coordinate for the intersection, expected to generally lie
+    // within the real-world area corresponding to the intersection.
+    GeoLocation location = 1;
+
+    // Incident road segments, ordered clockwise around the node. The first segment is arbitrary.
+    repeated GlobalId road_segments = 2;
+
+    // Z-level to help sort this node with respect to other nodes and segments that it may overlap
+    // with in lat,lng.
+    // E.g. in a complex interchange, a lane split would be modeled with a node, and we need to be
+    // able to sort it with respect to other segments in the interchange.
+    sint32 z_level = 3;
+
+    // Id of junction, when this node belongs to a complex junction covering several nodes.
+    GlobalId junction = 4;
+}
+
+message AccessRestriction {
+    enum Type {
+        UNKNOWN = 0;
+        NO_RESTRICTION = 1;
+        ONLY_HOV = 2;
+        ONLY_BUS = 3;
+        ONLY_BIKE = 4;
+        ONLY_TURN = 5;  // E.g. median (possibly bi-directional) turn lane.
+    }
+    Type type = 1;
+}
+
+//Contains of DayOfTheWeek, start/end time of day and timezone.
+message DailyTimeInterval {
+
+  enum DayOfTheWeek {
+    SUNDAY = 0;
+    MONDAY = 1;
+    TUESDAY = 2;
+    WEDNESDAY = 3;
+    THURSDAY = 4;
+    FRIDAY = 5;
+    SATURDAY = 6;
+  }
+  DayOfTheWeek day_of_the_week = 1;
+
+  // Time offset in seconds from local time 12:00 AM on the specified day of the week.
+  // Typically these restrictions do not have a UTC offset associated with the time.
+  // The UTC offset needs to be inferred at execution time from the timezoneDatabaseRegionName.
+  int32 start_local_time_seconds = 2;
+  int32 end_local_time_seconds = 3;
+
+  // Timezone database region name. See also: https://en.wikipedia.org/wiki/List_of_tz_database_time_zones
+  string timezone_database_region_name = 4;
+}
+
+//Schedule is a set of daily schedules.
+message Schedule {
+    repeated DailyTimeInterval daily_schedule = 1;
+}
+
+// Conditional values, e.g. time-based turn restrictions, "when children are present", etc.
+message Condition {
+    // Condition associated with the map element or under which the overrides apply.
+    oneof condition {
+        DailyTimeInterval daily_temporal_condition = 1;
+        // google.protobuf.Empty when_children_are_present = 2;
+    }
+}
+
+// The part of the road between 2 "intersections" (nodes), can be a curved road, using multiple
+// (lan,lng) points on a chain.
+message RoadNetworkSegment {
+    reserved 22;
+
+    // Next available tag: 25
+
+    // Lat, lng geometry of the segment, e.g. roughly corresponding to the center line of the road.
+    // The order of the vertices is expected to be consistent with the (start_node -> end_node)
+    // segment direction, and include the vertices at the "ends" of the segment, i.e. near the
+    // incident nodes.
+    repeated GeoLocation vertices = 1;
+
+    // The start node is assumed to be "near" the first vertex of the segment.
+    GlobalId start_node = 2;
+
+    // The end node is assumed to be "near" the last vertex of the segment.
+    GlobalId end_node = 3;
+
+    // Number and direction of lanes. Roads segments are split when the number of lanes changes.
+    message LaneSet {
+        // Total number of driving lanes (Explicitly excludes DESIGNATED bike lanes).
+        int32 num_driving_lanes = 1;
+
+        // Number of left-turn driving lanes at the end of the segment in the respective direction.
+        // This is useful e.g. for routing directions in the absence of detailed Lane connectivity.
+        int32 num_left_turn_driving_lanes = 2;
+
+        // Number of right-turn driving lanes at the end of the segment in the respective direction.
+        // This is useful e.g. for routing directions in the absence of detailed Lane connectivity.
+        int32 num_right_turn_driving_lanes = 3;
+
+        // This is an optional representation of turns allowed at the end of the segment from
+        // various lanes, in a format similar to OSM: lanes are enumerated from left to right
+        // separated by "|". Allowed turns corresponding to painted arrows or separate traffic sign
+        // are separated by ";" for each lane. Blank descriptions indicate a lane with
+        // no turn-markings.
+        // Example: "left||" indicates three lanes where the leftmost one can only turn left
+        // Example: "sharp left;left|left;through|||right" indicates five lanes where
+        // the leftmost one can make a sharp left or a standard left, etc.
+        // See also https://wiki.openstreetmap.org/wiki/Key:turn
+        string turn_descriptions_for_driving_lanes = 4;
+
+        // Describes the level of access a cyclist has for a lane.
+        // NO => Disallowed for cyclists (e.g. highway lanes)
+        // SHARED => Allowed for cyclists and other vehicles (This is the standard lane)
+        // DESIGNATED => Lane primarily intended for cyclists, but cars may merge into
+        //               in situations like right-turns.
+        //               (DESIGNATED bike lanes can be between driving lanes or on edge of road)
+        // DESIGNATED_BACKWARDS => Lane that is DESIGNATED and has bike traffic run
+        //               opposite of driving lanes of the same LaneSet
+        // DESIGNATED_SHARED => A lane that is designated to be shared with cyclists. This is usually
+        //               designated by markings. e.g. sharrows. 
+        // More information can be found at https://wiki.openstreetmap.org/wiki/Key:cycleway
+        enum BikeLaneAccess {
+          UNKNOWN_BIKE_ACCESS = 0;
+          NO = 1;
+          SHARED = 2;
+          DESIGNATED = 3;
+          DESIGNATED_BACKWARDS = 4;
+          DESIGNATED_SHARED = 5;
+        }
+
+        // Describes bike-lane access for every traffic lane of the laneset.
+        // Note the count should equal num_driving_lanes + number of DESIGNATED bike lanes.
+        // Ordered left-to-right (assuming facing end of the segment in the respective direction).
+        repeated BikeLaneAccess bike_lane_access = 16;
+    }
+    // Lanes in the forward travel direction, from the segment's start to its end.
+    LaneSet forward_lane_set = 4;
+
+    // Lanes in the backward travel direction, from the segment's end to its start.
+    LaneSet backward_lane_set = 13;
+
+    // Number of lanes that allow traffic from both directions.
+    // https://en.wikipedia.org/wiki/Reversible_lane
+    // Forward and backward lane sets must not include bidirectional lanes in its num_lanes count.
+    // The total number of lanes for any segment is
+    // forward_lane_set.num_lanes + backward_lane_set.num_lanes + num_bidirectional_lanes
+    int32 num_bidirectional_lanes = 15;
+
+    // Array with IDs of MapElements of type Lane, ordered from left to right from the point of
+    // view of the segment (looking from start towards end).
+    // The corresponding Lane elements contain details such fine-grained geometry of
+    // lane boundaries, etc.
+    // This will generally contain all the backward lanes, then the backward and forward instance
+    // of each bidirectional lane, then all the forward lanes.
+    // This field may be universally missing for "basemap" dataset that only contain segments
+    // and nodes, but no Lane elements, or point to "stub" lanes that just hold pointers to
+    // TrafficControlElements, but no fields such as geometry etc.
+    repeated GlobalId lanes = 12;
+
+    // Name and reference code of the segment.
+    // There could be several options for the same language, in which case the first occurrence of
+    // the language is assumed to represent the most common form. Ex: Bayshore Freeway
+    // Reference numbers or codes of the road segment is an alternative name without language code.
+    // Ex: US 101 https://www.openstreetmap.org/way/425562118
+    repeated LocalizedString name = 5;
+
+    // Road importance classification, following OSM convention:
+    // https://wiki.openstreetmap.org/wiki/United_States_Road_Classification
+    enum RoadClass {
+        UNKNOWN_ROAD_CLASS = 0;
+        MOTORWAY = 1;
+        TRUNK = 2;
+        PRIMARY = 3;
+        SECONDARY = 4;
+        TERTIARY = 5;
+        RESIDENTIAL = 6;
+        UNCLASSIFIED = 7;
+        // Service road class can be further break down into sub classes 9-13.
+        // the rest of the service roads should be assigned to this value.
+        SERVICE = 8;
+        // A subordinated way in parking lot between rows of parking spaces.
+        // https://wiki.openstreetmap.org/wiki/Tag:service%3Dparking_aisle
+        SERVICE_PARKING_AISLE = 9;
+        // service road leading to a residential or business property.
+        // https://wiki.openstreetmap.org/wiki/Tag:service%3Ddriveway
+        SERVICE_DRIVEWAY = 10;
+        // narrow service road between properties.
+        // https://wiki.openstreetmap.org/wiki/Tag:service%3Dalley
+        SERVICE_ALLEY = 11;
+        // https://wiki.openstreetmap.org/wiki/Tag:service%3Demergency_access
+        SERVICE_EMERGENCY_ACCESS = 12;
+        // drive through service at a business
+        // https://wiki.openstreetmap.org/wiki/Tag:service%3Ddrive-through
+        SERVICE_DRIVE_THROUGH = 13;
+        // Link roads
+        // Roads leading to and from the other road classes eg: highway ramps are motorway_links
+        // https://wiki.openstreetmap.org/wiki/Highway_link
+        // https://wiki.openstreetmap.org/wiki/Link_roads_between_different_highways_types
+        MOTORWAY_LINK = 14;
+        TRUNK_LINK = 15;
+        PRIMARY_LINK = 16;
+        SECONDARY_LINK = 17;
+        TERTIARY_LINK = 18;
+        // Residential streets where pedestrians have legal priority over cars
+        // https://wiki.openstreetmap.org/wiki/Tag:highway%3Dliving_street
+        SERVICE_LIVING_STREET = 19;
+        // Streets primarily for pedestrians
+        // https://wiki.openstreetmap.org/wiki/Tag:highway%3Dpedestrian
+        PEDESTRIAN = 20;
+        // Minor pathways, typically not for vehicle usage
+        // https://wiki.openstreetmap.org/wiki/Tag:highway%3Dpath
+        // https://wiki.openstreetmap.org/wiki/Tag:highway%3Dfootway
+        PATH = 21;
+        // https://wiki.openstreetmap.org/wiki/Tag:highway%3Dsteps
+        STEPS = 22;
+        // https://wiki.openstreetmap.org/wiki/Tag:highway%3Dcycleway
+        CYCLEWAY = 23;
+    }
+    RoadClass road_class = 6;
+
+    // True if the road is not to be used by the general public.
+    // majority of private roads are modeled as service road in OSM.
+    bool is_private = 14;
+
+    // True if a fee must be paid by general traffic to use the road.
+    bool is_toll_road = 17;
+
+    enum TravelDirection {
+        UNKNOWN_TRAVEL_DIRECTION = 0;
+        TWO_WAY = 1;
+        ONE_WAY_FORWARD = 2;
+        ONE_WAY_BACKWARD = 3;
+        // time dependent reversible roads, see more for examples here:
+        // https://wiki.openstreetmap.org/wiki/Tag:oneway=reversible
+        // Seattle I-5 Express: https://www.openstreetmap.org/way/4759238
+        ONE_WAY_REVERSIBLE = 4;
+    }
+    TravelDirection travel_direction = 7;
+
+    // Optional map layer level. If the 2D lat,lng geometric representations of several segments
+    // intersect, but the intersection not explicitly represented in the network, the levels at
+    // the intersection can be used to order the elements vertically.
+    // This is needed e.g. to represent overpasses when no accurate altitude is available.
+    sint32 z_level = 8;
+
+    // Posted speed limit in SI units, (needs conversion to mph in US for display).
+    float speed_limit_meters_per_second = 9;
+
+    // Only populated in rare cases when the speed limit is different in the two travel directions
+    // of the segment.
+    float backward_direction_speed_limit_meters_per_second = 10;
+
+    // List of SegmentSequences that all start with this segment, indicating turn restrictions,
+    // or more generally, forbidden or forced maneuvers from the segment.
+    repeated GlobalId restrictions = 11;
+
+    // The side of a segment, consistent with segment start-to-end node directionality.
+    // EITHER_SIDE_OF_SEGMENT implies accessibility from either side of the segment.
+    enum SideOfSegment {
+        UNKNOWN_SIDE_OF_SEGMENT = 0;
+        EITHER_SIDE_OF_SEGMENT = 1;
+        SEGMENT_LEFT = 2;
+        SEGMENT_RIGHT = 3;
+        NEITHER_SIDE_OF_SEGMENT = 4;
+    }
+
+    // Whether or not the RoadNetworkSegment allows motor vehicles.
+    bool driveable = 20;
+
+    // Which side(s) (if any) of the RoadNetworkSegment allow walking.
+    SideOfSegment walkable = 21;
+
+    // Describes the access a cyclist has on a road segment in either direction.
+    // Please note that BikeAccess uses a different nomenclature to describe bike access than BikeLaneAccess.
+    // The nomenclature below derives from the bike routing usecase where as BikeLaneAccess describes lane
+    // level allowances for cyclists.
+    // NOT_ALLOWED => Disallowed for cyclists (e.g. highway lanes)
+    // ALLOWED => Legal allowance for cyclists and other vehicles. This is the default for most road classes.
+    // SHARED => The segment has a lane that is designated to be shared with cyclists. This is usually
+    //           designated by markings. e.g. sharrows. 
+    // DEDICATED => The segment has a dedicated bike lane primarily intended for cyclists.
+    // PROTECTED => The segment has a protected bike lane that is phyiscally isolated from other vehicles.
+    enum BikeAccess {
+        UNKNOWN = 0;
+        NOT_ALLOWED = 1;
+        ALLOWED = 2;
+        SHARED = 3;
+        DEDICATED = 4;
+        PROTECTED = 5;
+    }
+
+    // Bicycle access in the forward travel direction, from the segment's start to its end.
+    BikeAccess forward_bikeable = 23;
+
+    // Bicycle access in the backward travel direction, from the segment's end to its start.
+    BikeAccess backward_bikeable = 24;
+}
+
+message Junction {
+    // Junctions include cases where segments are split due to changes in lane configurations,
+    // or nodes that join main roads with parking lot access or service roads, etc.
+    // This field is set to true for junctions that intuitively correspond to real intersections.
+    // This can include nodes incident to more than 2 segments of class more important
+    // than service class, or traffic-signalled junctions, etc.
+    // Typically such junctions have associated KeepClearZone traffic control elements.
+    // See also the California Vehicle Code
+    // https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=365
+    // https://leginfo.legislature.ca.gov/faces/codes_displaySection.xhtml?lawCode=VEH&sectionNum=22526
+    bool is_non_trivial_intersection = 4;
+
+    // A complex intersection may cover several road network nodes. In that case, it is considered
+    // to also cover all road network segments connecting these nodes.
+    repeated GlobalId road_network_nodes = 1;
+
+    // All connecting lanes that are not part of a segment. When modeling, we preferentially assign
+    // lanes to segments when available.
+    repeated GlobalId lanes = 3;
+
+    // Exhaustive list of all traffic control elements regulating traffic in the intersection.
+    repeated GlobalId traffic_control_elements = 2;
+}
+
+message Lane {
+    // Next available tag: 15
+
+    // The ID of the road segment or junction that this lane is part of.
+    GlobalId parent_segment_or_junction = 1;
+
+    AccessRestriction access_restriction = 11;
+
+    // The lane's orientation with respect to the parent segment (empty for parent junctions).
+    // E.g. on a segment with 1 lane backward, one bidirectional center lane, and one lane forward,
+    // the corresponding Lanes would have here ONE_WAY_BACKWARD, TWO_WAY, ONE_WAY_FORWARD.
+    RoadNetworkSegment.TravelDirection orientation_in_parent_segment = 12;
+
+    enum TurnType {
+      UNKNOWN = 0;
+      THROUGH = 1;
+      LEFT = 2;
+      SHARP_LEFT = 3;
+      RIGHT = 4;
+      SHARP_RIGHT = 5;
+      U_TURN = 6;
+    }
+
+    // Turn direction for lanes with junction parents only (empty for ones with parent segments)
+    TurnType turn_type_in_parent_junction = 13;
+
+    // Frame defining the Cartesian coordinate system in which local coordinates are expressed.
+    GeoFrame geo_frame = 2;
+
+    message Boundary {
+        // The geometry of the lane divider, represented as a chain of point coordinates in the
+        // geo_frame, in centimeter units.
+        // The delta for the first point is just its coordinates tuple, i.e. it is a "delta" from
+        // the origin. For subsequent points, this field stores the difference between the point's
+        // coordinates and the previous point's coordinates.
+        // (This is for representation efficiency, effectively a 0-order prediction compression.
+        // Individual coordinate deltas less than 64cm take 1 byte per coordinate, less than
+        // ~82 meters take 2 bytes.)
+        // The ordering of the lane boundary vertices is expected to be consistent with the
+        // ordering of the road segment vertices.
+        repeated sint32 vertex_deltas_x_cm = 1;
+        repeated sint32 vertex_deltas_y_cm = 2;
+        repeated sint32 vertex_deltas_z_cm = 3;
+
+        enum DividerType {
+            UNKNOWN = 0;
+            NONE = 1;
+            SINGLE_YELLOW_SOLID = 2;
+            SINGLE_WHITE_SOLID = 3;
+            SINGLE_YELLOW_DASHED = 4;
+            SINGLE_WHITE_DASHED = 5;
+            DOUBLE_YELLOW_SOLID = 6;
+            DOUBLE_WHITE_SOLID = 7;
+            DOUBLE_YELLOW_SOLID_FAR_DASHED_NEAR = 8;
+            DOUBLE_YELLOW_DASHED_FAR_SOLID_NEAR = 9;
+            CURB_RED = 10;
+            CURB_YELLOW = 11;
+            CURB = 12;
+        }
+        repeated DividerType divider_type = 4;
+
+        // In case the divider type changes along the length of the lane, this field represents the
+        // points where it changes, as length in centimeters along the geometry of the divider,
+        // given by vertex_deltas_cm.
+        // When the divider type is constant along the lane, this field is not populated. When it
+        // does change, the length of this field is expected to be the length of the type field
+        // minus 1.
+        repeated int32 type_change_point_cm = 5;
+    }
+    // Geometric boundary of the area corresponding to the lane. The space between the lane
+    // boundaries is considered to be the drivable surface, i.e. it will not include the surface
+    // area of the painted lines for the dividers.
+    Boundary left_boundary = 3;
+    Boundary right_boundary = 4;
+
+    // Lanes that the follow the current one in the natural travel direction,
+    // i.e. without changing lanes.
+    repeated GlobalId lanes_ahead = 5;
+
+    // If any, the lanes a car would get to by executing a lane change maneuver.
+    // The lane can be assumed to be physically adjacent to the current lane.
+    // A 0 ID (the default when the field is not set) indicates the maneuver in that direction
+    // is not allowed.
+    GlobalId adjacent_lane_change_left = 6;
+    GlobalId adjacent_lane_change_right = 7;
+
+    // Traffic signals, e.g. traffic lights or individual "faces" of traffic lights, stop signs,
+    // yield signs, etc. controlling the exit from the lane onto one of the lanes ahead.
+    // It is assumed that conceptual line to cross according to the signal is the exit boundary of
+    // the lane, i.e. the line formed by the last vertex of the left boundary and the last vertex
+    // of the right boundary.
+    repeated GlobalId traffic_controls = 8;
+
+    // Set of lanes to support ceding right of way: the ego car is expected to yield to any
+    // vehicles close enough in one of these lanes. If the lane is in a traffic-light-controlled
+    // intersection, the yield set here only applies when the traffic light is not functional.
+    // If it is functional, the traffic light state and yield sets associated with the light faces
+    // override this.
+    repeated GlobalId yield_to_lanes = 9;
+
+    // Whether it is expected to encounter parked cars on the surface of the lane.
+    bool can_have_parked_cars = 10;
+
+    repeated GlobalId tolls = 14;
+}
+
+// Traffic signals, e.g. traffic lights or individual "faces" of traffic lights, stop signs,
+// yield signs, etc. controlling the exit from the lane onto one of the lanes ahead.
+message TrafficControlElement {
+    // next available tag: 50
+    reserved 14;
+
+    // Pedestrian crosswalks are expected to be modeled to include the line at which cars need
+    // to stop in front of the crosswalk, when it exists. From the point of view of AV planning,
+    // the car needs to stop before entering the convex hull of the points corresponding to the
+    // element.
+    // The local X axis of the element's geo_frame is expected to be roughly aligned with the
+    // direction of the street that the crosswalk crosses.
+    message PedestrianCrosswalk {
+        // The traffic lights specifically controlling pedestrians' access into the crosswalk.
+        repeated GlobalId traffic_lights = 1;
+
+        // If indicated, the pavement lines or row of inverted triangles ("shark teeth")
+        // before which a vehicle would have to stop when yielding to pedestrians in the
+        // crosswalk. There could be several such lines, corresponding to approaching the
+        // crosswalk from different directions. Vehicles are expected to stop before
+        // the first such lines intersecting their path.
+        // The ids in this field are expected to represent TrafficControlElements
+        // of type stop_line.
+        repeated GlobalId yield_lines = 2;
+    }
+
+    // A traffic control element that is only sometimes present, intended to provide additional
+    // information for another traffic control element. Examples may include painted pavement
+    // lines where vehicles have to stop when observing some other element, such as a stop sign,
+    // yield sign, or crosswalk where the actual crossing area is separated from the stop line.
+    message AuxiliaryElement {
+        // The traffic control elements whose behavior is informed by the current element.
+        repeated GlobalId primary_traffic_control_elements = 1;
+    }
+
+    // One individual physical light (e.g. red, yellow, green) of a traffic light,
+    // or a particular state of the same physical object, when it can take multiple states
+    // besides On and OFF (e.g. off / green / green arrow). When that happens, there
+    // would be several TrafficLightFaceState, with physically overlapping geometry.
+    message TrafficLightFaceState {
+        message YieldSet {
+            // The lane where the cars need to observe the traffic light.
+            GlobalId lane = 1;
+
+            // The set of all other lanes that the lane above needs to yield to.
+            repeated GlobalId yield_to_lanes = 2;
+
+            // List of crosswalks that are not safe to ignore when this light face is on.
+            // For example, on green, the intersection lane turning right needs to yield to the
+            // pedestrian crosswalk for pedestrians going straight.
+            repeated GlobalId yield_to_crosswalks = 3;
+        }
+        // Set of "yield" rules when this light is activated ("on").
+        repeated YieldSet yield_rules_when_on = 1;
+
+        // Whether this light is specifically marked disallowing right turns on red.
+        // "... When children are present" can be modeled using the conditional field
+        // override mechanism.
+        bool no_right_turn_on_red = 2;
+    }
+
+    message TrafficLight {
+        // The individual physical lights and possible alternate states, that make up
+        // the aggregated traffic light.
+        repeated GlobalId face_states = 3;
+    }
+
+    oneof Type {
+        //next available tag: see the next available tag for TCE (TrafficControlElement)
+
+        // "Plain", "3-way" or "4-way" stop signs - distinguish by observing the signs associated
+        // with all segment and lanes in the intersection.
+
+        google.protobuf.Empty stop_sign = 7;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/778/image/1164/
+        google.protobuf.Empty yield_sign = 8;
+
+        // A painted line on the pavement (or similar symbol, such as a row of inverted triangles)
+        // indicating where vehicles have to stop when observing other associated traffic controls
+        // such as a stop sign, a yield sign, a crosswalk, etc.
+        // The geometry of this element is expected to be a polyline on the ground.
+        // This element is optional, only represented explicitly when the default lane
+        // representation assumption, of having to stop just before the end of the lane polygon,
+        // is not appropriate for some reason. In that case, this stop line will replace
+        // the end of the lane as the position where vehicles have to stop.
+        // If the same physical line crosses several lanes, it can be modeled with a single
+        // stop_line element. If each of several adjacent lanes have different painted lines
+        // indicating where to stop, there are separate stop_line traffic control elements for each
+        // and the Lane elements point to their respective stop lines.
+        AuxiliaryElement stop_line = 47;
+
+        TrafficLight traffic_light = 29;
+        TrafficLightFaceState signal_flashing_yellow = 9;
+        TrafficLightFaceState signal_flashing_red = 10;
+
+        TrafficLightFaceState signal_red_face = 11;
+        TrafficLightFaceState signal_yellow_face = 12;
+        TrafficLightFaceState signal_green_face = 13;
+
+        TrafficLightFaceState signal_left_arrow_red_face = 30;
+        TrafficLightFaceState signal_left_arrow_yellow_face = 36;
+        TrafficLightFaceState signal_left_arrow_green_face = 31;
+
+        TrafficLightFaceState signal_right_arrow_red_face = 32;
+        TrafficLightFaceState signal_right_arrow_yellow_face = 37;
+        TrafficLightFaceState signal_right_arrow_green_face = 33;
+
+        TrafficLightFaceState signal_upper_left_arrow_red_face = 38;
+        TrafficLightFaceState signal_upper_left_arrow_yellow_face = 39;
+        TrafficLightFaceState signal_upper_left_arrow_green_face = 40;
+
+        TrafficLightFaceState signal_upper_right_arrow_red_face = 41;
+        TrafficLightFaceState signal_upper_right_arrow_yellow_face = 42;
+        TrafficLightFaceState signal_upper_right_arrow_green_face = 43;
+
+        TrafficLightFaceState signal_red_u_turn = 44;
+        TrafficLightFaceState signal_yellow_u_turn = 45;
+        TrafficLightFaceState signal_green_u_turn = 46;
+
+        // A ground polygon around a raised part of the driving surface that can only
+        // be crossed at very low speeds (e.g. ~15 mph). Typically narrower and taller than
+        // a speed hump.
+        google.protobuf.Empty speed_bump = 15;
+        // A ground polygon around a raised part of the driving surface that can only
+        // be crossed at low speeds (e.g. ~25 mph). Typically wider and less tall than
+        // a speed bump.
+        google.protobuf.Empty speed_hump = 34;
+        // A ground polygon around an area where pedestrians cross the road and vehicles yield
+        // to them.
+        PedestrianCrosswalk pedestrian_crosswalk = 16;
+        // "Do not block traffic here", e.g. in front of fire stations.
+        google.protobuf.Empty keep_clear_zone = 17;
+        //https://www.epermittest.com/road-signs/pedestrian-crossing
+        google.protobuf.Empty pedestrian_crossing_sign = 18;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/7051/image/4902/
+        google.protobuf.Empty signal_ahead_sign = 19;
+        //https://www.trafficsigns.com/regulatory-signs/r3-2-no-left-turn-symbol-sign
+        google.protobuf.Empty no_left_turn_sign = 20;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/1793/image/1842/
+        google.protobuf.Empty no_right_turn_sign = 21;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/1010/image/1389/
+        google.protobuf.Empty left_turn_yield_on_green_sign = 22;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/3184/image/2623/
+        google.protobuf.Empty no_parking_sign = 23;
+        google.protobuf.Empty one_way_sign = 24;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/612/image/1060/
+        google.protobuf.Empty school_zone_sign = 25;
+        // A ground polygon around an area designated for parking on or near the road.
+        google.protobuf.Empty parking_zone = 35;
+        google.protobuf.Empty speed_bump_sign = 27;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/4951/image/3578/
+        // A ground polygon around a construction zone.
+        google.protobuf.Empty construction_zone = 49;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/11954/image/5687/
+        google.protobuf.Empty stop_here_for_pedestrians_sign = 50;
+        //https://imgur.com/KJycO9H
+        google.protobuf.Empty state_law_stop_for_pedestrian_in_crosswalk_sign = 51;
+
+        //https://www.trafficsigns.com/catalog/product/gallery/id/1034/image/1392/
+        google.protobuf.Empty yield_here_for_pedestrians_sign = 52;
+        //https://store.hallsigns.com/R10-15-Turning-Vehicle-Yield-to-Pedestrians_p_1717.html
+        google.protobuf.Empty turning_vehicles_yield_to_pedestrians_sign = 53;
+        //https://www.roadtrafficsigns.com/Pedestrian-Sign/Law-Yield-To-In-Crosswalk-Sign/SKU-K-6642.aspx
+        google.protobuf.Empty state_law_yield_for_pedestrian_sign = 54;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/4685/image/3310/
+        google.protobuf.Empty railroad_crossing_regulatory_sign = 55;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/6684/image/5501/
+        google.protobuf.Empty railroad_crossing_warning_sign = 56;
+        //Railroad sign that is neither crossbuck nor warning. E.g. https://imgur.com/o3ahMC1
+        google.protobuf.Empty railroad_crossing_other_sign = 57;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/11848/image/5671/
+        google.protobuf.Empty roundabout_circulation_sign = 58;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/11840/image/5694/
+        google.protobuf.Empty roundabout_directional_sign = 59;
+        //Roundabout sign that is neither circulation nor directional
+        google.protobuf.Empty roundabout_other_sign = 60;
+        //https://www.epermittest.com/road-signs/no-left-turn-red
+        google.protobuf.Empty no_left_turn_on_red_sign = 61;
+        //https://www.epermittest.com/road-signs/no-right-turn-red
+        google.protobuf.Empty no_right_turn_on_red_sign = 62;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/821/image/1169/
+        google.protobuf.Empty no_turn_on_red_sign = 63;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/2406/image/2147/
+        google.protobuf.Empty do_not_enter_sign = 64;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/2114/image/2038/
+        google.protobuf.Empty no_u_turn_sign = 65;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/1948/image/1930/
+        google.protobuf.Empty no_left_and_u_turn_sign = 66;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/11789/image/5647/
+        google.protobuf.Empty no_straight_through_sign = 67;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/2155/image/2046/
+        google.protobuf.Empty left_turn_only_sign = 68;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/2162/image/2047/
+        google.protobuf.Empty right_turn_only_sign = 69;
+        //https://imgur.com/7V0jJpY
+        google.protobuf.Empty u_turn_only_sign = 70;
+        //https://www.trafficsigns.com/catalog/product/gallery/id/2124/image/2039/
+        google.protobuf.Empty straight_through_only_sign = 71;
+        //Example: https://imgur.com/Hmn1pud
+        google.protobuf.Empty other_turn_restriction_sign = 72;
+        //https://imgur.com/F8rngbf
+        google.protobuf.Empty construction_zone_sign = 73;
+    }
+
+    // Frame defining the Cartesian coordinate system in which local coordinates are expressed.
+    // For traffic control element types that have a natural "forward" orientation (e.g. signs, traffic lights, etc),
+    // the bearing is used to align the frame's local X axis in that direction.
+    // When explicit geometry is missing for the element, the frame's origin is to be considered the element's center.
+    GeoFrame geo_frame = 2;
+
+    // The geometry of the traffic control element, represented as points. This could be e.g. the
+    // corners of a sign, or points on the face of a traffic light, etc.
+    // The delta for the first point is just its coordinates tuple, i.e. it is a "delta" from
+    // the origin. For subsequent points, this field stores the difference between the point's
+    // coordinates and the previous point's coordinates.
+    // (This is for representation efficiency, effectively a 0-order prediction compression.
+    // Individual coordinate deltas less than 64cm take 1 byte per coordinate, less than
+    // ~82 meters take 2 bytes.)
+    // Note that for traffic lights and stop signs this does not represent or include the line
+    // on the pavement where the car needs to stop, instead that is modeled as the end of the lane
+    // or an explicit stop_line element associated with the current element and the lane.
+    // These fields could be missing, in which case the local geo frame's origin is expected to represent
+    // the center of the element.
+    repeated sint32 points_x_deltas_cm = 3;
+    repeated sint32 points_y_deltas_cm = 4;
+    repeated sint32 points_z_deltas_cm = 5;
+
+    // Ways to connect a sequence of points to form a geometric shape.
+    enum GeometryType {
+        UKNOWN = 0;
+        // The TrafficControlElement instance is represented by a single point, corresponding
+        // to the geo_frame origin. The point_deltas_cm fields are expected to be empty.
+        POINT = 1;
+        // There is no implied structure for connecting the points given by the points fields.
+        MULTI_POINT = 2;
+        // The points are to be connected in sequence from first to last to form a polyline.
+        LINESTRING = 3;
+        // The points are connected in sequence, and the last is connected to the first to form
+        // a closed polygon.
+        POLYGON = 4;
+        // As needed (eg. for traffic lights), we could add:
+        // The point fields are expected to contain 8 values, corresponding to the vertices of
+        // a cuboid, first the "front" face in CCW order (most +x-axis facing, since the local x
+        // axis is defined to be the "forward" direction in the local geo Frame), followed
+        // by the 4 points of the back face, in corresponding order to the front face.
+        // CUBOID = 5;
+    }
+    // Indication of how to interpret the element's points as a geometric shape.
+    GeometryType geometry_type = 48;
+
+    // The lanes that the signal controls. Each sequence starts with the lane in which the car
+    // needs to observe the signal, followed by the lane sequence to which it can proceed according
+    // to the signal.
+    repeated LaneSequence controlled_paths = 6;
+}
+
+// An ordered collection of connected segments, indicating that it is either illegal, or conversely,
+// the only option, to proceed along that path when starting from the first segment.
+// Typically used to represent turn restrictions, with 2 or more segments in the sequence.
+// For complicated intersections, the sequence can have more segments, with the intermediate ones
+// just joining nodes that are all in the intersection.
+// In some instances, it is more concise to represent the only path that can be taken, as opposed to
+// all the paths that cannot be taken.
+// The reason for keeping orientation  is to present the directionality; one example is
+// where a turn restriction is on the same from and to segment, and the restriction is only on
+// one side of the segment. With only list of segments, it's not possible to represent this restriction,
+// as we have to distinguish one end from the other end.
+message SegmentSequence {
+    enum Type {
+        UNKNOWN = 0;
+        FORBIDDEN = 1;
+        MANDATORY = 2;
+    };
+    Type type = 1;
+
+    message SegmentWithOrientation {
+      GlobalId segment = 1;
+
+      enum Orientation {
+        UNKNOWN = 0;
+        FORWARD = 1;
+        BACKWARD = 2;
+      }
+      Orientation orientation = 2;
+    }
+
+    repeated SegmentWithOrientation segments = 2;
+}
+
+// A chain of lanes where each lane "follows" the previous one to describe a possible car path.
+message LaneSequence {
+    repeated GlobalId lanes = 1;
+}
+
+// LaneSequences is a collection of lane sequences.
+message LaneSequences {
+    repeated LaneSequence lane_sequences = 1;
+}
+
+// Simple representation of a 2D polygon, described by its vertices.
+message Polygon {
+
+    // The shell of the polygon, with CCW winding
+    repeated GeoLocation shell_vertices = 1;
+
+    // Holes within the polygon with CLW winding
+    repeated Polygon holes = 2;
+}
+
+// A collection of polygons, used to represent more complex map areas.
+message MultiPolygon {
+    repeated Polygon polygons = 1;
+}
+
+// Represents polygonal data that are either physical (e.g. buildings) or
+// imaginary (e.g. political boundaries) and their associated properties.
+message AnnotatedShape {
+    // First element defines the canonical name for the shape.
+    repeated LocalizedString name = 1;
+
+    MultiPolygon multipolygon = 2;
+
+    message Building {
+        enum Type {
+            UNKNOWN = 0;
+            COMMERCIAL = 1;
+            RESIDENTIAL = 2;
+            TRANSPORTATION = 3;
+            HOSPITAL = 4;
+            EVENT = 5;
+            PARKING_STRUCTURE = 6;
+            RELIGIOUS = 7;
+            EDUCATIONAL = 8;
+            GOVERNMENTAL = 9;
+        };
+        Type type = 1;
+
+        // The maximum height of the building in meters. The maximum height of a building is the
+        // distance between the lowest point where the building meets the ground and the top of
+        // the building including the roof. The maximum height excludes the height of antennas,
+        // spires and other equipment mounted on the roof.
+        int32 height_meters = 2;
+
+        // Number of above ground level floors in a building including the ground floor level.
+        // The underground levels and the roof do not count as floors.
+        int32 above_ground_floors = 3;
+    }
+
+    // An area of focus or interest for map updates and metrics. e.g. Lyft service regions.
+    message Region {
+        // Describes the use and purpose of a region. e.g. Lyft service regions.
+        string source = 1;
+    }
+
+    oneof Type {
+        Building building = 3;
+        Region region = 4;
+
+        // A geofence representing a common destination or pick-up.
+        google.protobuf.Empty venue = 5;
+
+        // Political boundaries. e.g. San Francisco.
+        google.protobuf.Empty administrative_boundary = 6;
+        google.protobuf.Empty park = 7;
+        // Drivable surface represents paved space between left and right curbs, typically excluding sidewalks
+        google.protobuf.Empty drivable_surface_prior = 8;
+    }
+}
+
+// A Latitude, Longitude bounding box. SW latitude is always expected < NE latitude.
+// SW longitude CAN be larger than NE longitude, indicating a box spanning the date line.
+// Accordingly, this can only represent bounding boxes smaller than a hemisphere (180deg longitude).
+message LatLngBox {
+    // The SW corner of the box.
+    GeoLocation south_west = 1;
+
+    // The NE corner of the box.
+    GeoLocation north_east = 2;
+}
+
+// A basic unit of the map, of any type, that can be referenced via an ID.
+message MapElement {
+    GlobalId id = 1;
+
+    message Element {
+        oneof element {
+            RoadNetworkSegment segment = 1;
+            RoadNetworkNode node = 2;
+            Lane lane = 3;
+            TrafficControlElement traffic_control_element = 4;
+            Junction junction = 5;
+            SegmentSequence segment_sequence = 6;
+            AnnotatedShape annotated_shape = 8;
+        }
+    }
+    Element element = 2;
+
+    LatLngBox bounding_box = 3;
+
+    // A set of conditional values that are treated as a single condition.
+    // When all the conditions are satisfied, the fields of the corresponding element message
+    // will be merged into the main element fields. We'll need to be careful with
+    // repeated fields - such fields that need element-wise instead of the default list
+    // concatenation behavior for proto merge will need special treatment in code.
+    // Example: Trucks over a given tonnage are excluded at certain times of day.
+    message AssociatedConditions {
+        // Conditions are treated as logical AND. All conditions must be satisfied for the overrides
+        // to be applied.
+        repeated Condition conditions = 1;
+
+        // Fields to merge into the main "element" of the MapElement if all conditions are satisfied.
+        // Expected to be of the same type.
+        Element overrides = 2;
+    }
+    repeated AssociatedConditions associated_conditions = 5;
+}
+
+// A collection of map elements, typically (but not necessarily) representing several map layers
+// for a given region.
+// A "Basemap" collection of elements would typically contain segments, nodes, and junctions,
+// but not lane elements or traffic control elements (though it would have lane counts as part of
+// the segments).
+message MapFragment {
+    // A name representing the collection of map elements. The meaning is up to the client.
+    string name = 1;
+
+    repeated MapElement elements = 2;
+}

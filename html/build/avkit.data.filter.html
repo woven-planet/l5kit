@@ -1,0 +1,283 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>avkit.data.filter module &mdash; AVKit 0.1.5 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="avkit.data.labels module" href="avkit.data.labels.html" />
+    <link rel="prev" title="avkit.data.combine module" href="avkit.data.combine.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> AVKit
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">ML planning and simulation for self-driving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#news">News</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#credits">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset formats</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AVKit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api_reference.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="avkit.data.html">avkit.data package</a> &raquo;</li>
+        
+      <li>avkit.data.filter module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/build/avkit.data.filter.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-avkit.data.filter">
+<span id="avkit-data-filter-module"></span><h1>avkit.data.filter module<a class="headerlink" href="#module-avkit.data.filter" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="avkit.data.filter.filter_agents_by_frame">
+<code class="sig-prename descclassname">avkit.data.filter.</code><code class="sig-name descname">filter_agents_by_frame</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">all_agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">frame</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#avkit.data.filter.filter_agents_by_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Given all agents, returns those in the given frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>all_agents</strong> (<em>np.ndarray</em>) – agents array</p></li>
+<li><p><strong>frame</strong> (<em>np.ndarray</em>) – frame whose agent_index_interval will be used to slice <code class="docutils literal notranslate"><span class="pre">all_agents</span></code>.</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>np.ndarray – An array of agents that is a subset of <cite>all_agents</cite></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="avkit.data.filter.filter_agents_by_labels">
+<code class="sig-prename descclassname">avkit.data.filter.</code><code class="sig-name descname">filter_agents_by_labels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.5</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#avkit.data.filter.filter_agents_by_labels" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filters an agents array, keeping those agents that meet the threshold.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>agents</strong> (<em>np.ndarray</em>) – Agents array</p>
+</dd>
+<dt class="field-even">Keyword Arguments</dt>
+<dd class="field-even"><p><strong>threshold</strong> (<em>float</em>) – probability threshold for filtering (default: {0.5})</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>np.ndarray – A subset of input <code class="docutils literal notranslate"><span class="pre">agents</span></code> array.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="avkit.data.filter.filter_agents_by_track_id">
+<code class="sig-prename descclassname">avkit.data.filter.</code><code class="sig-name descname">filter_agents_by_track_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">track_id</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#avkit.data.filter.filter_agents_by_track_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all agent object (np.ndarray) of a given track_id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agents</strong> (<em>np.ndarray</em>) – agents array</p></li>
+<li><p><strong>track_id</strong> (<em>int</em>) – agent track id to select</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>np.ndarray – Selected agent.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="avkit.data.filter.get_agent_by_track_id">
+<code class="sig-prename descclassname">avkit.data.filter.</code><code class="sig-name descname">get_agent_by_track_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">all_agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">frame</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">track_id</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#avkit.data.filter.get_agent_by_track_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the agent object (np.ndarray) of a given track_id in a frame.
+Return None if the agent is not among those in the frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>all_agents</strong> (<em>np.ndarray</em>) – agents array</p></li>
+<li><p><strong>frame</strong> (<em>np.ndarray</em>) – given frame</p></li>
+<li><p><strong>track_id</strong> (<em>int</em>) – agent track id to select</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Optional[np.ndarray] – Selected agent, or None if this agent is not present in given frame.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="avkit.data.labels.html" class="btn btn-neutral float-right" title="avkit.data.labels module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="avkit.data.combine.html" class="btn btn-neutral float-left" title="avkit.data.combine module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lyft Level 5
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,40 @@
+{
+    "chunks": [
+        10000
+    ],
+    "compressor": {
+        "blocksize": 0,
+        "clevel": 5,
+        "cname": "lz4",
+        "id": "blosc",
+        "shuffle": 1
+    },
+    "dtype": [
+        [
+            "frame_index_interval",
+            "<i8",
+            [
+                2
+            ]
+        ],
+        [
+            "host",
+            "<U16"
+        ],
+        [
+            "start_time",
+            "<i8"
+        ],
+        [
+            "end_time",
+            "<i8"
+        ]
+    ],
+    "fill_value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "filters": null,
+    "order": "C",
+    "shape": [
+        1
+    ],
+    "zarr_format": 2
+}

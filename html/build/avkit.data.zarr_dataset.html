@@ -1,0 +1,251 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>avkit.data.zarr_dataset module &mdash; AVKit 0.1.5 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="avkit.dataset package" href="avkit.dataset.html" />
+    <link rel="prev" title="avkit.data.map module" href="avkit.data.map.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> AVKit
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">ML planning and simulation for self-driving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#news">News</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#credits">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset formats</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AVKit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api_reference.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="avkit.data.html">avkit.data package</a> &raquo;</li>
+        
+      <li>avkit.data.zarr_dataset module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/build/avkit.data.zarr_dataset.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-avkit.data.zarr_dataset">
+<span id="avkit-data-zarr-dataset-module"></span><h1>avkit.data.zarr_dataset module<a class="headerlink" href="#module-avkit.data.zarr_dataset" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="avkit.data.zarr_dataset.ChunkedStateDataset">
+<em class="property">class </em><code class="sig-prename descclassname">avkit.data.zarr_dataset.</code><code class="sig-name descname">ChunkedStateDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">''</span></em><span class="sig-paren">)</span><a class="headerlink" href="#avkit.data.zarr_dataset.ChunkedStateDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>ChunkedDataSet is a dataset that lives on disk in compressed chunks, it has easy to use data loading and
+writing interfaces that involves making numpy-like slices.</p>
+<p>Currently only .zarr directory stores are supported (i.e. the data will live in a folder on your
+local filesystem called &lt;something&gt;.zarr).</p>
+<dl class="py method">
+<dt id="avkit.data.zarr_dataset.ChunkedStateDataset.initialize">
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'w'</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#avkit.data.zarr_dataset.ChunkedStateDataset.initialize" title="Permalink to this definition">¶</a></dt>
+<dd><p>Initializes a new zarr dataset, creating the underlying arrays.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Keyword Arguments</dt>
+<dd class="field-odd"><p><strong>mode</strong> (<em>str</em>) – Mode to open dataset in, should be something that supports writing. (default: {“w”})</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="avkit.data.zarr_dataset.ChunkedStateDataset.open">
+<code class="sig-name descname">open</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'r'</span></em>, <em class="sig-param"><span class="n">cached</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em>, <em class="sig-param"><span class="n">cache_size_bytes</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1000000000</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#avkit.data.zarr_dataset.ChunkedStateDataset.open" title="Permalink to this definition">¶</a></dt>
+<dd><p>Opens a zarr dataset from disk from the path supplied in the constructor.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Keyword Arguments:</dt><dd><p>mode (str): Mode to open dataset in, default to read-only (default: {“r”})
+cached (bool): Whether to cache files read from disk using a LRU cache. (default: {True})
+cache_size (int): Size of cache in bytes (default: {1e9} (1GB))</p>
+</dd>
+<dt>Raises:</dt><dd><p>Exception: When any of the expected arrays (frames, agents, scenes) is missing or the store couldn’t be</p>
+</dd>
+</dl>
+</div></blockquote>
+<p>opened.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="avkit.dataset.html" class="btn btn-neutral float-right" title="avkit.dataset package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="avkit.data.map.html" class="btn btn-neutral float-left" title="avkit.data.map module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lyft Level 5
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

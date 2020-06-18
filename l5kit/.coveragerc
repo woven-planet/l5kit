@@ -1,0 +1,14 @@
+[run]
+omit = */tests/*
+source =
+  l5kit
+
+[report]
+exclude_lines =
+  raise NotImplementedError
+  raise AssertionError
+  def __repr__
+  if __name__ == .__main__.:
+
+[html]
+directory = coverage_report_html

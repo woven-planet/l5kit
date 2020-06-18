@@ -1,0 +1,4 @@
+[flake8]
+max-line-length = 119
+ignore = E203, E302, W503 # White space before colon, line break before binary op
+exclude = l5kit/data/proto/*

@@ -1,0 +1,259 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>avkit.data.local_data_manager module &mdash; AVKit 0.1.5 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="avkit.data.map module" href="avkit.data.map.html" />
+    <link rel="prev" title="avkit.data.labels module" href="avkit.data.labels.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> AVKit
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">ML planning and simulation for self-driving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#things-you-can-build-using-this-framework">Things you can build using this framework:</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#news">News</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#credits">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset formats</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AVKit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api_reference.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="avkit.data.html">avkit.data package</a> &raquo;</li>
+        
+      <li>avkit.data.local_data_manager module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/build/avkit.data.local_data_manager.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-avkit.data.local_data_manager">
+<span id="avkit-data-local-data-manager-module"></span><h1>avkit.data.local_data_manager module<a class="headerlink" href="#module-avkit.data.local_data_manager" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="avkit.data.local_data_manager.DataManager">
+<em class="property">class </em><code class="sig-prename descclassname">avkit.data.local_data_manager.</code><code class="sig-name descname">DataManager</code><a class="headerlink" href="#avkit.data.local_data_manager.DataManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<dl class="py method">
+<dt id="avkit.data.local_data_manager.DataManager.require">
+<em class="property">abstract </em><code class="sig-name descname">require</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#avkit.data.local_data_manager.DataManager.require" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="avkit.data.local_data_manager.LocalDataManager">
+<em class="property">class </em><code class="sig-prename descclassname">avkit.data.local_data_manager.</code><code class="sig-name descname">LocalDataManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">local_data_folder</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span>str<span class="p">, </span>pathlib.Path<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#avkit.data.local_data_manager.LocalDataManager" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#avkit.data.local_data_manager.DataManager" title="avkit.data.local_data_manager.DataManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">avkit.data.local_data_manager.DataManager</span></code></a></p>
+<p>LocalDataManager allows you to require data to be present in the subpath of a specific folder.</p>
+<p>Example:
+Your data folder is set to <code class="docutils literal notranslate"><span class="pre">&quot;/tmp/my-data-folder&quot;</span></code>, and you
+call <code class="docutils literal notranslate"><span class="pre">local_data_manager.require(&quot;path/to/image.jpg&quot;)</span></code>, it would check if
+<code class="docutils literal notranslate"><span class="pre">&quot;/tmp/my-data-folder/path/to/image.jpg&quot;</span></code> exists, and if so return that complete path
+(<code class="docutils literal notranslate"><span class="pre">&quot;/tmp/my-data-folder/path/to/image.jpg&quot;</span></code>), otherwise it raises an error.</p>
+<dl class="simple">
+<dt>In order of precedence, the local data folder is set by</dt><dd><ol class="arabic simple">
+<li><p>Passing in the path to the constructor of <code class="docutils literal notranslate"><span class="pre">LocalDataManager</span></code></p></li>
+<li><p>Setting the <code class="docutils literal notranslate"><span class="pre">AVKIT_DATA_FOLDER</span></code> environment variable.</p></li>
+</ol>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="avkit.data.local_data_manager.LocalDataManager.require">
+<code class="sig-name descname">require</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#avkit.data.local_data_manager.LocalDataManager.require" title="Permalink to this definition">¶</a></dt>
+<dd><p>Require checks whether the file with the given key is present in the local data folder, if it is not it
+raises an error. Returns the path to the file otherwise.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>key</strong> (<em>str</em>) – Path from the data folder where the file or folder should be present.</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>str – Filepath including the data folder where required key is present.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="avkit.data.map.html" class="btn btn-neutral float-right" title="avkit.data.map module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="avkit.data.labels.html" class="btn btn-neutral float-left" title="avkit.data.labels module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lyft Level 5
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

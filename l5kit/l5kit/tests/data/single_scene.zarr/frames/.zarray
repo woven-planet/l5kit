@@ -1,0 +1,47 @@
+{
+    "chunks": [
+        10000
+    ],
+    "compressor": {
+        "blocksize": 0,
+        "clevel": 5,
+        "cname": "lz4",
+        "id": "blosc",
+        "shuffle": 1
+    },
+    "dtype": [
+        [
+            "timestamp",
+            "<i8"
+        ],
+        [
+            "agent_index_interval",
+            "<i8",
+            [
+                2
+            ]
+        ],
+        [
+            "ego_translation",
+            "<f4",
+            [
+                3
+            ]
+        ],
+        [
+            "ego_rotation",
+            "<f4",
+            [
+                3,
+                3
+            ]
+        ]
+    ],
+    "fill_value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "filters": null,
+    "order": "C",
+    "shape": [
+        775
+    ],
+    "zarr_format": 2
+}

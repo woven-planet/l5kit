@@ -1,0 +1,286 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>avkit.kinematic.ackerman_steering_model module &mdash; AVKit 0.1.5 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="../_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="avkit.kinematic.perturbation module" href="avkit.kinematic.perturbation.html" />
+    <link rel="prev" title="avkit.kinematic.ackerman_perturbation module" href="avkit.kinematic.ackerman_perturbation.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> AVKit
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">ML planning and simulation for self-driving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#news">News</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#credits">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset formats</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">AVKit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html">Docs</a> &raquo;</li>
+        
+          <li><a href="../api_reference.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="avkit.kinematic.html">avkit.kinematic package</a> &raquo;</li>
+        
+      <li>avkit.kinematic.ackerman_steering_model module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/build/avkit.kinematic.ackerman_steering_model.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-avkit.kinematic.ackerman_steering_model">
+<span id="avkit-kinematic-ackerman-steering-model-module"></span><h1>avkit.kinematic.ackerman_steering_model module<a class="headerlink" href="#module-avkit.kinematic.ackerman_steering_model" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="avkit.kinematic.ackerman_steering_model.fit_ackerman_model_approximate">
+<code class="sig-prename descclassname">avkit.kinematic.ackerman_steering_model.</code><code class="sig-name descname">fit_ackerman_model_approximate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gx</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">gy</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">gr</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">gv</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">wx</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">wy</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">wr</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">wv</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">wgx</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">wgy</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">wgr</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">wgv</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#avkit.kinematic.ackerman_steering_model.fit_ackerman_model_approximate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits feasible ackerman-steering trajectory to groundtruth control points.
+Groundtruth is represented as 4 input numpy arrays <code class="docutils literal notranslate"><span class="pre">(gx,</span> <span class="pre">gy,</span> <span class="pre">gr,</span> <span class="pre">gv)</span></code>
+each of size <code class="docutils literal notranslate"><span class="pre">(N,)</span></code> representing position, rotation and velocity at time <code class="docutils literal notranslate"><span class="pre">i</span></code>.
+Returns 4 arrays <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">r,</span> <span class="pre">v)</span></code> each of shape <code class="docutils literal notranslate"><span class="pre">(N,)</span></code> - the optimal trajectory.</p>
+<p>The solution is found as minimization of the following non-linear least squares problem:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">minimize</span> <span class="n">F</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="n">F_ground_cost</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="n">F_kinematics_cost</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
+<span class="n">where</span>
+<span class="n">F_ground_cost</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span>
+<span class="p">(</span><span class="n">wgx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gx</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+<span class="p">(</span><span class="n">wgy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gy</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+<span class="p">(</span><span class="n">wgr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gr</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+<span class="p">(</span><span class="n">wgv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gv</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">...</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="ow">and</span>
+<span class="n">F_kinematics_cost</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span>
+<span class="p">(</span><span class="n">wx</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">cos</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+<span class="p">(</span><span class="n">wy</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">sin</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+<span class="p">(</span><span class="n">wr</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+<span class="p">(</span><span class="n">wv</span> <span class="o">*</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">...</span> <span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>Weights wg* control adherance to the control points while
+weights w* control obeying of underlying kinematic motion constrains.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] – Returns 4 arrays (x, y, r, v) each of shape (N,),
+the optimal trajectory.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="avkit.kinematic.ackerman_steering_model.fit_ackerman_model_exact">
+<code class="sig-prename descclassname">avkit.kinematic.ackerman_steering_model.</code><code class="sig-name descname">fit_ackerman_model_exact</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">x0</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">y0</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">r0</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">v0</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">gx</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">gy</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">gr</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">gv</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">wgx</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">wgy</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">wgr</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">wgv</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ws</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">5.0</span></em>, <em class="sig-param"><span class="n">wa</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">5.0</span></em>, <em class="sig-param"><span class="n">min_acc</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">- 0.1</span></em>, <em class="sig-param"><span class="n">max_acc</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.1</span></em>, <em class="sig-param"><span class="n">min_steer</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">- 0.2</span></em>, <em class="sig-param"><span class="n">max_steer</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.2</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#avkit.kinematic.ackerman_steering_model.fit_ackerman_model_exact" title="Permalink to this definition">¶</a></dt>
+<dd><p>Fits feasible ackerman-steering trajectory to groundtruth control points.
+Groundtruth is represented as 4 numpy arrays <code class="docutils literal notranslate"><span class="pre">(gx,</span> <span class="pre">gy,</span> <span class="pre">gr,</span> <span class="pre">gv)</span></code>
+each of shape <code class="docutils literal notranslate"><span class="pre">(N,)</span></code> representing position, rotation and velocity at time i.
+Returns 4 arrays <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">r,</span> <span class="pre">v)</span></code> each of shape <code class="docutils literal notranslate"><span class="pre">(N,)</span></code> - the optimal trajectory.</p>
+<p>The solution is found as minimisation of the following non-linear least squares problem:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">minimize</span> <span class="n">F</span><span class="p">(</span><span class="n">steer</span><span class="p">,</span> <span class="n">acc</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span>
+<span class="p">(</span><span class="n">wgx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gx</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+<span class="p">(</span><span class="n">wgy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gy</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+<span class="p">(</span><span class="n">wgr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gr</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+<span class="p">(</span><span class="n">wgv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gv</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+<span class="p">(</span><span class="n">ws</span> <span class="o">*</span> <span class="n">steer</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
+<span class="p">(</span><span class="n">wa</span> <span class="o">*</span> <span class="n">acc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">i</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">...</span> <span class="n">N</span><span class="p">)</span>
+<span class="n">subject</span> <span class="n">to</span> <span class="n">following</span> <span class="n">unicycle</span> <span class="n">motion</span> <span class="n">model</span> <span class="n">equations</span><span class="p">:</span>
+<span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">cos</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">sin</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">steer</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">acc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
+<span class="n">min_steer</span> <span class="o">&lt;</span> <span class="n">steer</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">max_steer</span>
+<span class="n">min_acc</span> <span class="o">&lt;</span> <span class="n">acc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">max_acc</span>
+<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">..</span> <span class="n">N</span>
+</pre></div>
+</div>
+<p>Weights <code class="docutils literal notranslate"><span class="pre">wg*</span></code> control adherence to the control points
+In a typical usecase <code class="docutils literal notranslate"><span class="pre">wgx</span> <span class="pre">=</span> <span class="pre">wgy</span> <span class="pre">=</span> <span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">wgr</span> <span class="pre">=</span> <span class="pre">wgv</span> <span class="pre">=</span> <span class="pre">0</span></code></p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>[Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]] – 4 arrays <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">r,</span> <span class="pre">v)</span></code> each of shape <code class="docutils literal notranslate"><span class="pre">(N,)</span></code></p>
+</dd>
+</dl>
+<ul class="simple">
+<li><p>the optimal trajectory.</p></li>
+</ul>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="avkit.kinematic.perturbation.html" class="btn btn-neutral float-right" title="avkit.kinematic.perturbation module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="avkit.kinematic.ackerman_perturbation.html" class="btn btn-neutral float-left" title="avkit.kinematic.ackerman_perturbation module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lyft Level 5
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

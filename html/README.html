@@ -1,0 +1,355 @@
+
+
+<!DOCTYPE html>
+<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
+<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>ML planning and simulation for self-driving &mdash; AVKit 0.1.5 documentation</title>
+  
+
+  
+  
+  
+  
+
+  
+  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="API Reference" href="api_reference.html" />
+    <link rel="prev" title="Welcome to AVKit’s documentation!" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home"> AVKit
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ML planning and simulation for self-driving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#news">News</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#overview">Overview</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#datasets">1. Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#avkit">2. AVKit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#id1">3. Examples</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#dataset-visualisation">Dataset visualisation</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#agent-motion-prediction">Agent motion prediction</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#installation">Installation</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#clone-the-repo">1. Clone the repo</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#download-the-datasets">2. Download the datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-avkit">3. Install AVKit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generate-avkit-code-html-documentation-optional">4. Generate AVKit code html documentation (optional)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#run-example">5. Run example</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#credits">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="data_format.html">Dataset formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
+</ul>
+
+            
+          
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">AVKit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html">Docs</a> &raquo;</li>
+        
+      <li>ML planning and simulation for self-driving</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/README.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="ml-planning-and-simulation-for-self-driving">
+<h1>ML planning and simulation for self-driving<a class="headerlink" href="#ml-planning-and-simulation-for-self-driving" title="Permalink to this headline">¶</a></h1>
+<p><img alt="ML planning and simulation for self-driving" src="_images/av.jpg" /></p>
+<p>This repostitory and the associated datasets contains a framework for developing learning-based ML planning and simulation systems for self-driving. State-of-the-art solutions to these problems still require significant amount of hand-engineering and unlike, i.e. perception, didn’t benefit much from deep learning and the vast amount of available data.</p>
+<p>The purpose of this framework is to make it easier for engineers and researchers to experiment with new approaches to data-driven self-driving planning and simulation in realistic scenarios and this way improve on existing state-of-the-art.</p>
+<p><img alt="Modern AV pipeline" src="_images/pipeline.png" /></p>
+<p>This software is developed by Lyft Level 5 self-driving division but is <a class="reference internal" href="how_to_contribute.html"><span class="doc">open to contributors from outside</span></a>.</p>
+</div>
+<div class="section" id="examples">
+<h1>Examples<a class="headerlink" href="#examples" title="Permalink to this headline">¶</a></h1>
+<p>Things you can build using this framework:</p>
+<ul class="simple">
+<li><p>Turn planning and simulation problems into data problems and train them on real data.</p></li>
+<li><p>Use neural networks to model key components of autonomous vehicles (AV) stack.</p></li>
+<li><p>Predict future movement of cars around AV derived from historical observations.</p></li>
+<li><p>Plan decisions of AV to immitate human driving.</p></li>
+<li><p>Test performance of AV offline using reactive simulation learned from data.</p></li>
+<li><p>Study the improvement in performance as the amount of data increases.</p></li>
+</ul>
+</div>
+<div class="section" id="news">
+<h1>News<a class="headerlink" href="#news" title="Permalink to this headline">¶</a></h1>
+</div>
+<div class="section" id="overview">
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this headline">¶</a></h1>
+<p>The content of the framework consists of three parts:</p>
+<ol class="simple">
+<li><p><strong>Datasets</strong> - data available for training ML models.</p></li>
+<li><p><strong>AVKit</strong> - the core library supporting functionality for reading the data and framing planning and simulation problems as ML problems.</p></li>
+<li><p><strong>Examples</strong> - ever-expanding jupyter notebooks demonstrating use of AVKit for different tasks in AV.</p></li>
+</ol>
+<div class="section" id="datasets">
+<h2>1. Datasets<a class="headerlink" href="#datasets" title="Permalink to this headline">¶</a></h2>
+<p>To use the framework you will need to download the Lyft Level 5 Prediction dataset from https://level5.lyft.com/.
+It consists of the following components:</p>
+<ul class="simple">
+<li><p>1000h of logged perception output around Lyft AVs operating in Palo Alto in 30sec chunks using <a class="reference internal" href="data_format.html"><span class="doc">zarr format</span></a>.</p></li>
+<li><p>Hand-annotated HD semantic map capturing positions of lanes, crosswalks etc stored as protobuf.</p></li>
+<li><p>High-definition aerial picture of the Palo Alto area stored with resolution 8cm per pixel (provided by <a class="reference external" href="https://www.nearmap.com/">NearMap</a>).</p></li>
+</ul>
+<p>To read more about the dataset and how it was generated read the <a class="reference external" href="https://level5.lyft.com/">dataset whitepaper</a>.</p>
+</div>
+<div class="section" id="avkit">
+<h2>2. AVKit<a class="headerlink" href="#avkit" title="Permalink to this headline">¶</a></h2>
+<p>A library with the following functionality:</p>
+<ul class="simple">
+<li><p>Loading drivig scenes from zarr files</p></li>
+<li><p>Reading semantic maps</p></li>
+<li><p>Reading aerial pictures</p></li>
+<li><p>Creating birds-eye-view (BEV) representations around AV and other vehicles</p></li>
+<li><p>Sampling data</p></li>
+<li><p>Training neural networks</p></li>
+<li><p>Visualising results</p></li>
+</ul>
+</div>
+<div class="section" id="id1">
+<h2>3. Examples<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h2>
+<p>The <code class="docutils literal notranslate"><span class="pre">examples</span></code> folder contains examples in jupyter notebook format you can use as a foundation for building your ML planning and simulation solutions. Currently we are providing two examples, with more following soon:</p>
+<div class="section" id="dataset-visualisation">
+<h3>Dataset visualisation<a class="headerlink" href="#dataset-visualisation" title="Permalink to this headline">¶</a></h3>
+<p>Show how to use AVKit toolkit to load and visualise samples from a dataset.</p>
+</div>
+<div class="section" id="agent-motion-prediction">
+<h3>Agent motion prediction<a class="headerlink" href="#agent-motion-prediction" title="Permalink to this headline">¶</a></h3>
+<p>An example of training a neural network to predict future positions of nearby cars around self-driving car. This example is a baseline solution for the Lyft 2020 Kaggle motion prediction challenge.</p>
+</div>
+</div>
+</div>
+<div class="section" id="installation">
+<h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="clone-the-repo">
+<h2>1. Clone the repo<a class="headerlink" href="#clone-the-repo" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:lyft/ml-planning.git ./
+</pre></div>
+</div>
+</div>
+<div class="section" id="download-the-datasets">
+<h2>2. Download the datasets<a class="headerlink" href="#download-the-datasets" title="Permalink to this headline">¶</a></h2>
+<p>Register at https://level5.lyft.com/dataset/ and download the 2020 Lyft prediction dataset and store all files in one folder.
+The resulting directory structure should be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prediction</span><span class="o">-</span><span class="n">dataset</span><span class="o">/</span>
+  <span class="o">+-</span> <span class="n">sample_scenes</span><span class="o">/</span>
+  <span class="o">+-</span> <span class="n">scenes</span><span class="o">/</span>
+  <span class="o">+-</span> <span class="n">aerial_map</span><span class="o">/</span>
+  <span class="o">+-</span> <span class="n">semantic_map</span><span class="o">/</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="install-avkit">
+<h2>3. Install AVKit<a class="headerlink" href="#install-avkit" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> avkit
+pip install -r requirements.txt
+</pre></div>
+</div>
+</div>
+<div class="section" id="generate-avkit-code-html-documentation-optional">
+<h2>4. Generate AVKit code html documentation (optional)<a class="headerlink" href="#generate-avkit-code-html-documentation-optional" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sphinx-apidoc --module-first --separate -o build/ avkit/avkit avkit/avkit/tests*
+sphinx-build . html
+</pre></div>
+</div>
+</div>
+<div class="section" id="run-example">
+<h2>5. Run example<a class="headerlink" href="#run-example" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jupyter notebook examples/visualisation/visualise_data.ipynb
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="license">
+<h1>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h1>
+<p>We use Apache 2 license for the code in this repo.</p>
+<p><a class="reference external" href="LICENSE">License</a></p>
+</div>
+<div class="section" id="credits">
+<h1>Credits<a class="headerlink" href="#credits" title="Permalink to this headline">¶</a></h1>
+<p>The framework was developed at Lyft Level 5 and is maintained by the following authors and contributors:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://www.linkedin.com/in/guido-zuidhof-377b6947/">Guido Zuidhof</a></p></li>
+<li><p><a class="reference external" href="https://www.linkedin.com/in/luca-bergamini-61a510182/">Luca Bergamini</a></p></li>
+<li><p><a class="reference external" href="https://www.linkedin.com/in/joust/">John Houston</a></p></li>
+<li><p><a class="reference external" href="https://www.linkedin.com/in/yawei-ye-b76249b1/">Yawei Ye</a></p></li>
+<li><p><a class="reference external" href="https://www.linkedin.com/in/suraj-m-s-7896b9126/">Suraj MS</a></p></li>
+<li><p><a class="reference external" href="https://www.linkedin.com/in/oliver-scheel-98a048176/">Oliver Scheel</a></p></li>
+<li><p><a class="reference external" href="https://www.linkedin.com/in/emil-praun-7597152/">Emil Praun</a></p></li>
+<li><p><a class="reference external" href="https://www.linkedin.com/in/liam-kelly-83089435/">Liam Kelly</a></p></li>
+<li><p><a class="reference external" href="https://www.linkedin.com/in/iglovikov/">Vladimir Iglovikov</a></p></li>
+<li><p><a class="reference external" href="https://www.linkedin.com/in/pondruska/">Peter Ondruska</a></p></li>
+</ul>
+<p><img alt="Lyft Level 5" src="_images/lyft.jpg" /></p>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="api_reference.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to AVKit’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &copy; Copyright 2020, Lyft Level 5
+
+    </p>
+  </div>
+  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

@@ -1,0 +1,57 @@
+{
+    "chunks": [
+        20000
+    ],
+    "compressor": {
+        "blocksize": 0,
+        "clevel": 5,
+        "cname": "lz4",
+        "id": "blosc",
+        "shuffle": 1
+    },
+    "dtype": [
+        [
+            "centroid",
+            "<f4",
+            [
+                2
+            ]
+        ],
+        [
+            "extent",
+            "<f4",
+            [
+                3
+            ]
+        ],
+        [
+            "yaw",
+            "<f4"
+        ],
+        [
+            "velocity",
+            "<f4",
+            [
+                2
+            ]
+        ],
+        [
+            "track_id",
+            "<i4"
+        ],
+        [
+            "label_probabilities",
+            "<f4",
+            [
+                17
+            ]
+        ]
+    ],
+    "fill_value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+    "filters": null,
+    "order": "C",
+    "shape": [
+        67954
+    ],
+    "zarr_format": 2
+}

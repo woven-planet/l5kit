@@ -1,0 +1,21 @@
+# lberg: cd is required because hooks CD to project root
+fail_fast: true
+
+repos:
+-   repo: local
+    hooks:
+    -   id: lint
+        language: system
+        name: running lint
+        entry: bash -c 'cd l5kit && ./run_tests.sh lint'
+        pass_filenames: false
+    -   id: types
+        language: system
+        name: running types
+        entry: bash -c 'cd l5kit && ./run_tests.sh types'
+        pass_filenames: false
+    -   id: tests
+        language: system
+        name: running tests
+        entry: bash -c 'cd l5kit && ./run_tests.sh tests'
+        pass_filenames: false
