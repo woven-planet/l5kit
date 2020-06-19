@@ -1,0 +1,358 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Dataset formats &mdash; L5Kit 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="next" title="How to contribute" href="how_to_contribute.html" />
+    <link rel="prev" title="l5kit.visualization.video module" href="API/l5kit.visualization.video.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> L5Kit
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="README.html">ML planning and simulation for self-driving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#examples">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#news">News</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#credits">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dataset formats</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#interleaved-data-in-structured-arrays">Interleaved data in structured arrays</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#short-introduction-to-zarr">Short introduction to zarr</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#lyft-competition-dataset-format">2020 Lyft Competition Dataset format</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#scenes">Scenes</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#frames">Frames</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#agents">Agents</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">L5Kit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>Dataset formats</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="_sources/data_format.md.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="dataset-formats">
+<h1>Dataset formats<a class="headerlink" href="#dataset-formats" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="introduction">
+<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+<p>In the L5Kit codebase we make use of a data format that consists of a set of <a class="reference external" href="https://docs.scipy.org/doc/numpy/user/basics.rec.html">numpy structured arrays</a>. Conceptually, it is similar to a set of CSV files with records and different columns, only they are stored as a binary files instead of text. Structured arrays can be directly memory mapped from disk.</p>
+<div class="section" id="interleaved-data-in-structured-arrays">
+<h3>Interleaved data in structured arrays<a class="headerlink" href="#interleaved-data-in-structured-arrays" title="Permalink to this headline">¶</a></h3>
+<p>Structured arrays are stored in memory in an interleaved format, this means that one “row” or “sample” is grouped together in memory. For example, if we are storing colors and whether we like them (as a boolean <code class="docutils literal notranslate"><span class="pre">l</span></code>), it would be <code class="docutils literal notranslate"><span class="pre">[r,g,b,l,r,g,b,l,r,g,b,l]</span></code> and not <code class="docutils literal notranslate"><span class="pre">[r,r,r,g,g,g,b,b,b,l,l,l]</span></code>). Most ML applications require row based access, column-based operations are much less common, making this a good fit.</p>
+<p>Here is what that looks like in code:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="n">my_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">my_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
+<span class="c1"># ([0, 0, 0], False)</span>
+</pre></div>
+</div>
+<p>Let’s add some data and see what the array looks like.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">218</span><span class="p">,</span> <span class="mi">130</span><span class="p">]</span>
+<span class="n">my_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+<span class="n">my_arr</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">245</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">255</span><span class="p">]</span>
+<span class="n">my_arr</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">my_arr</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">])</span>
+<span class="c1"># array([([  0, 218, 130],  True), ([245,  59, 255],  True),</span>
+<span class="c1">#        ([  0,   0,   0], False)],</span>
+<span class="c1">#       dtype=[(&#39;color&#39;, &#39;u1&#39;, (3,)), (&#39;label&#39;, &#39;?&#39;)])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">my_arr</span><span class="o">.</span><span class="n">tobytes</span><span class="p">())</span>
+<span class="c1"># b&#39;\x00\xda\x82\x01\xf5;\xff\x01\x00\x00\x00\x00&#39;)</span>
+</pre></div>
+</div>
+<p>As you can see with structured arrays we can mix different datatypes into a single array, and in the byte representation one sample is grouped together. Now imagine that we have such an array on disk with millions of values, reading the first 100 values is a matter of reading the first 100*(3+1) bytes. If we had a separate array for each of the different fields we would have to read from 4 smaller files.</p>
+<p>This becomes increasingly relevant with a larger number of fields and complexity of each field. In our dataset an observation of another agent is described with its centroid (<code class="docutils literal notranslate"><span class="pre">dtype=(float64,</span> <span class="pre">3)</span></code>), its rotation matrix (<code class="docutils literal notranslate"><span class="pre">dtype=(np.float64,</span> <span class="pre">(3,3))</span></code>), its extent or size (<code class="docutils literal notranslate"><span class="pre">dtype=(np.float64,</span> <span class="pre">3)</span></code>), and more. Structured arrays are a great fit to group this data together in memory and on disk.</p>
+</div>
+<div class="section" id="short-introduction-to-zarr">
+<h3>Short introduction to zarr<a class="headerlink" href="#short-introduction-to-zarr" title="Permalink to this headline">¶</a></h3>
+<p>We use the zarr data format to store and read these numpy structured arrays from disk. Zarr allows us to write very large (structured) arrays to disk in n-dimensional compressed chunks. See the <a class="reference external" href="https://zarr.readthedocs.io/en/stable/">zarr docs</a> also. Here is a short tutorial:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zarr</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+<span class="n">z</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;./path/to/dataset.zarr&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">500</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,))</span>
+
+<span class="c1"># We can write to it by assigning to it. This gets persisted on disk.</span>
+<span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">150</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">150</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>As we specified chunks to be size 100 here, we just wrote to two separate chunks. On your filesystem in the <code class="docutils literal notranslate"><span class="pre">dataset.zarr</span></code> folder you will now find these two chunks. As we didn’t completely fill the second chunk, those missing values will be set to the fill value (defaults to 0). The chunks are actually compressed on disk too! We can print some info:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
+<span class="c1"># Type               : zarr.core.Array</span>
+<span class="c1"># Data type          : float32</span>
+<span class="c1"># Shape              : (500,)</span>
+<span class="c1"># Chunk shape        : (100,)</span>
+<span class="c1"># Order              : C</span>
+<span class="c1"># Read-only          : False</span>
+<span class="c1"># Compressor         : Blosc(cname=&#39;lz4&#39;, clevel=5, shuffle=SHUFFLE, blocksize=0)</span>
+<span class="c1"># Store type         : zarr.storage.DirectoryStore</span>
+<span class="c1"># No. bytes          : 2000 (2.0K)</span>
+<span class="c1"># No. bytes stored   : 577</span>
+<span class="c1"># Storage ratio      : 3.5</span>
+<span class="c1"># Chunks initialized : 2/5</span>
+</pre></div>
+</div>
+<p>By not doing much work at all we saved almost 75% of disk space!</p>
+<p>Reading from a zarr array is as easy as slicing from it like you would any numpy array. The return value is an ordinary numpy array. Zarr takes care of determining which chunks to read from.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">z</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
+<span class="c1"># [0. 1. 2. 3. 4. 5. 6. 7. 8. 9.]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">z</span><span class="p">[::</span><span class="mi">20</span><span class="p">])</span> <span class="c1"># Read every 20th value</span>
+<span class="c1"># [  0.  20.  40.  60.  80. 100. 120. 140.   0.   0.   0.   0.   0.   0.</span>
+<span class="c1">#    0.   0.   0.   0.   0.   0.   0.   0.   0.   0.   0.]</span>
+</pre></div>
+</div>
+<p>Zarr supports StructuredArrays, the data format we use for our datasets are a set of structured arrays stored in zarr format.</p>
+<p>Some other zarr benefits:</p>
+<ul class="simple">
+<li><p>Safe to use in a multithreaded or multiprocessed setup. Reading is entirely safe, for writing there are lock mechanisms built-in.</p></li>
+<li><p>If you have a dataset that is too large to fit in memory, loading a single sample really just becomes <code class="docutils literal notranslate"><span class="pre">my_sample</span> <span class="pre">=</span> <span class="pre">z[sample_index]</span></code> and you get compression out of the box.</p></li>
+<li><p>The blosc compressor is so fast that it is faster to read the compressed data and uncompress it than reading the uncompressed data from disk.</p></li>
+<li><p>Zarr supports multiple backend stores, your data could also live in a zip file, or even a remote server or S3 bucket.</p></li>
+<li><p>Other libraries such as xarray, Dask and TensorStore have good interoperability with Zarr.</p></li>
+<li><p>The metadata (e.g. dtype, chunk size, compression type) is stored inside the zarr dataset too. If one day you decide to change your chunk size, you can still read the older datasets without changing any code.</p></li>
+</ul>
+</div>
+</div>
+<div class="section" id="lyft-competition-dataset-format">
+<h2>2020 Lyft Competition Dataset format<a class="headerlink" href="#lyft-competition-dataset-format" title="Permalink to this headline">¶</a></h2>
+<p>The 2020 Lyft competition dataset is stored in three structured arrays: <code class="docutils literal notranslate"><span class="pre">scenes</span></code>, <code class="docutils literal notranslate"><span class="pre">frames</span></code> and <code class="docutils literal notranslate"><span class="pre">agents</span></code>.</p>
+<div class="section" id="scenes">
+<h3>Scenes<a class="headerlink" href="#scenes" title="Permalink to this headline">¶</a></h3>
+<p>A scene is identified by the host (i.e. which car was used to collect it) and a start and end time. It consists of multiple frames (=discretized measurements), in the scene datatype we store the start and end index in the <code class="docutils literal notranslate"><span class="pre">frames</span></code> array described below that correspond to this scene.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SCENE_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;frame_index_interval&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
+    <span class="p">(</span><span class="s2">&quot;host&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;U16&quot;</span><span class="p">),</span>  <span class="c1"># Unicode string up to 16 chars</span>
+    <span class="p">(</span><span class="s2">&quot;start_time&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;end_time&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="frames">
+<h3>Frames<a class="headerlink" href="#frames" title="Permalink to this headline">¶</a></h3>
+<p>A frame consists of information about the ego vehicle (e.g. where it was at that time), a timestamp, and a reference to the agents in that frame. Because there may be multiple agents observed we store the start and the end index.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FRAME_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;timestamp&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;agent_index_interval&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
+    <span class="p">(</span><span class="s2">&quot;ego_translation&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)),</span>
+    <span class="p">(</span><span class="s2">&quot;ego_rotation&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="agents">
+<h3>Agents<a class="headerlink" href="#agents" title="Permalink to this headline">¶</a></h3>
+<p>An agent is an observation by the AV of some other detected object. They each have a probability for each defined class associated with them, the possible labels are defined <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/zarr_dataset.py">here</a>.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AGENT_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;centroid&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
+    <span class="p">(</span><span class="s2">&quot;extent&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)),</span>
+    <span class="p">(</span><span class="s2">&quot;yaw&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;velocity&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
+    <span class="p">(</span><span class="s2">&quot;track_id&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">uint64</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;label_probabilities&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">LABELS</span><span class="p">),)),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="how_to_contribute.html" class="btn btn-neutral float-right" title="How to contribute" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="API/l5kit.visualization.video.html" class="btn btn-neutral float-left" title="l5kit.visualization.video module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Lyft Level 5
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
