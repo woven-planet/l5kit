@@ -22,3 +22,6 @@ __pycache__/
 dist/
 build/
 coverage_report*
+
+.env/
+.venv/
