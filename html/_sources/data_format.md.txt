@@ -2,7 +2,7 @@ Dataset formats
 ===
 
 ## Introduction
-In the avkit codebase we make use of a data format that consists of a set of [numpy structured arrays](https://docs.scipy.org/doc/numpy/user/basics.rec.html). Conceptually, it is similar to a set of CSV files with records and different columns, only they are stored as a binary files instead of text. Structured arrays can be directly memory mapped from disk.
+In the L5Kit codebase we make use of a data format that consists of a set of [numpy structured arrays](https://docs.scipy.org/doc/numpy/user/basics.rec.html). Conceptually, it is similar to a set of CSV files with records and different columns, only they are stored as a binary files instead of text. Structured arrays can be directly memory mapped from disk.
 
 ### Interleaved data in structured arrays
 Structured arrays are stored in memory in an interleaved format, this means that one "row" or "sample" is grouped together in memory. For example, if we are storing colors and whether we like them (as a boolean `l`), it would be `[r,g,b,l,r,g,b,l,r,g,b,l]` and not `[r,r,r,g,g,g,b,b,b,l,l,l]`). Most ML applications require row based access, column-based operations are much less common, making this a good fit.
@@ -121,7 +121,7 @@ FRAME_DTYPE = [
 ```
 
 ### Agents
-An agent is an observation by the AV of some other detected object. They each have a probability for each defined class associated with them, the possible labels are defined [here](https://github.com/lyft/avkit/blob/master/avkit/avkit/data/zarr_dataset.py).
+An agent is an observation by the AV of some other detected object. They each have a probability for each defined class associated with them, the possible labels are defined [here](https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/zarr_dataset.py).
 
 ```python
 AGENT_DTYPE = [

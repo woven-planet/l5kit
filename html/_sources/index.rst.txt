@@ -1,7 +1,7 @@
-Welcome to AVKit's documentation!
+Welcome to L5Kit's documentation!
 =================================
 
-AVKit is a Python library with functionality for the development and training of *learned prediction, planning and simulation* models for autonomous driving applications.
+L5Kit is a Python library with functionality for the development and training of *learned prediction, planning and simulation* models for autonomous driving applications.
 
 .. toctree::
    :maxdepth: 1

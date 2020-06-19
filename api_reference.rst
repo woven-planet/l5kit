@@ -4,11 +4,11 @@ API Reference
 .. toctree::
    :maxdepth: 1
 
-   build/l5kit.data
-   build/l5kit.dataset
-   build/l5kit.evaluation
-   build/l5kit.geometry
-   build/l5kit.kinematic
-   build/l5kit.random
-   build/l5kit.sampling
-   build/l5kit.visualization
+   API/l5kit.data
+   API/l5kit.dataset
+   API/l5kit.evaluation
+   API/l5kit.geometry
+   API/l5kit.kinematic
+   API/l5kit.random
+   API/l5kit.sampling
+   API/l5kit.visualization

@@ -81,7 +81,7 @@ pip install -r requirements.txt
 
 ### 4. Generate L5Kit code html documentation (optional)
 ```shell
-sphinx-apidoc --module-first --separate -o build/ l5kit/l5kit l5kit/l5kit/tests*
+sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
 sphinx-build . html
 ```
 

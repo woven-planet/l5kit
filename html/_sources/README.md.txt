@@ -25,8 +25,8 @@ Things you can build using this framework:
 # Overview
 The content of the framework consists of three parts:
 1. **Datasets** - data available for training ML models.
-2. **AVKit** - the core library supporting functionality for reading the data and framing planning and simulation problems as ML problems.
-3. **Examples** - ever-expanding jupyter notebooks demonstrating use of AVKit for different tasks in AV.
+2. **L5Kit** - the core library supporting functionality for reading the data and framing planning and simulation problems as ML problems.
+3. **Examples** - ever-expanding jupyter notebooks demonstrating use of L5Kit for different tasks in AV.
 
 ## 1. Datasets
 To use the framework you will need to download the Lyft Level 5 Prediction dataset from https://level5.lyft.com/.
@@ -37,7 +37,7 @@ It consists of the following components:
 
 To read more about the dataset and how it was generated read the [dataset whitepaper](https://level5.lyft.com/).
 
-## 2. AVKit
+## 2. L5Kit
 A library with the following functionality:
 - Loading drivig scenes from zarr files
 - Reading semantic maps
@@ -51,7 +51,7 @@ A library with the following functionality:
 The `examples` folder contains examples in jupyter notebook format you can use as a foundation for building your ML planning and simulation solutions. Currently we are providing two examples, with more following soon:
 
 #### Dataset visualisation
-Show how to use AVKit toolkit to load and visualise samples from a dataset.
+Show how to use L5Kit toolkit to load and visualise samples from a dataset.
 
 #### Agent motion prediction
 An example of training a neural network to predict future positions of nearby cars around self-driving car. This example is a baseline solution for the Lyft 2020 Kaggle motion prediction challenge.
@@ -59,7 +59,7 @@ An example of training a neural network to predict future positions of nearby ca
 # Installation
 ### 1. Clone the repo
 ```shell
-git clone git@github.com:lyft/ml-planning.git ./
+git clone https://github.com/lyft/l5kit.git ./
 ```
 
 ### 2. Download the datasets
@@ -73,15 +73,15 @@ prediction-dataset/
   +- semantic_map/
 ```
 
-### 3. Install AVKit
+### 3. Install L5Kit
 ```shell
-cd avkit
+cd l5kit
 pip install -r requirements.txt
 ```
 
-### 4. Generate AVKit code html documentation (optional)
+### 4. Generate L5Kit code html documentation (optional)
 ```shell
-sphinx-apidoc --module-first --separate -o build/ avkit/avkit avkit/avkit/tests*
+sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
 sphinx-build . html
 ```
 

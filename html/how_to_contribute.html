@@ -1,15 +1,18 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>How to contribute &mdash; AVKit 0.1.5 documentation</title>
+  <title>How to contribute &mdash; L5Kit 1.0.0 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
 
   
   
@@ -17,7 +20,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -29,10 +34,6 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="prev" title="Dataset formats" href="data_format.html" /> 
@@ -49,7 +50,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> AVKit
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> L5Kit
           
 
           
@@ -72,6 +73,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -91,6 +93,8 @@
 <li class="toctree-l1"><a class="reference internal" href="data_format.html">Dataset formats</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">How to contribute</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-l5kit-as-a-developer">Installing l5kit as a developer</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#code-sanity-checks">Code Sanity checks</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#testing">Testing</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#coverage-report">Coverage report</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#type-checking">Type checking</a></li>
@@ -103,6 +107,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -112,7 +117,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">AVKit</a>
+          <a href="index.html">L5Kit</a>
         
       </nav>
 
@@ -141,7 +146,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>How to contribute</li>
     
@@ -164,26 +169,45 @@
             
   <div class="section" id="how-to-contribute">
 <h1>How to contribute<a class="headerlink" href="#how-to-contribute" title="Permalink to this headline">¶</a></h1>
-<p>You are invited to contribute to the AVKit with your examples and improvements.
+<p>You are invited to contribute to the L5Kit with your examples and improvements.
 These are peer-reviewed by the development team to maintain quality and reproducibility.</p>
+<p><strong>All commands below must be run from the <code class="docutils literal notranslate"><span class="pre">l5kit</span></code> folder (the one with the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>)</strong></p>
 <div class="section" id="license">
 <h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
 <p>You will be required to sign contributor agreement license upon a pull request.</p>
 </div>
+<div class="section" id="installing-l5kit-as-a-developer">
+<h2>Installing l5kit as a developer<a class="headerlink" href="#installing-l5kit-as-a-developer" title="Permalink to this headline">¶</a></h2>
+<p>Run:</p>
+<div class="highlight-shell script notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt 
+</pre></div>
+</div>
+<p>to install all developer dependencies along with l5kit in editable (-e) mode.</p>
+</div>
+<div class="section" id="code-sanity-checks">
+<h2>Code Sanity checks<a class="headerlink" href="#code-sanity-checks" title="Permalink to this headline">¶</a></h2>
+<p>Before starting a PR, it is highly suggested to also install the git pre-commit hooks, run:</p>
+<div class="highlight-shell script notranslate"><div class="highlight"><pre><span></span>pre-commit install 
+</pre></div>
+</div>
+<p>This will run all the required code check before each commit, and it ensures your builds
+won’t fail in CI.</p>
+<p>If, on the other hand, you want to run individual checks, please refer to the instructions below.</p>
+</div>
 <div class="section" id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <p>To run the tests, run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pytest
+<div class="highlight-shell script notranslate"><div class="highlight"><pre><span></span>./run_tests.sh tests
 </pre></div>
 </div>
 </div>
 <div class="section" id="coverage-report">
 <h2>Coverage report<a class="headerlink" href="#coverage-report" title="Permalink to this headline">¶</a></h2>
 <p>To generate a test coverage report, run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Outputs to std out</span>
+<div class="highlight-shell script notranslate"><div class="highlight"><pre><span></span># Outputs to std out
 pytest --cov
 
-<span class="c1"># Output to HTML files in the coverage_report_html folder</span>
+# Output to HTML files in the coverage_report_html folder
 pytest --cov --cov-report html
 </pre></div>
 </div>
@@ -191,21 +215,26 @@ pytest --cov --cov-report html
 <div class="section" id="type-checking">
 <h2>Type checking<a class="headerlink" href="#type-checking" title="Permalink to this headline">¶</a></h2>
 <p>To run type checking with mypy, run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>mypy avkit
+<div class="highlight-shell script notranslate"><div class="highlight"><pre><span></span>./run_tests.sh types
 </pre></div>
 </div>
 </div>
 <div class="section" id="code-style-linting-and-formatting">
 <h2>Code style, linting and formatting<a class="headerlink" href="#code-style-linting-and-formatting" title="Permalink to this headline">¶</a></h2>
 <p>We use <a class="reference external" href="https://black.readthedocs.io/en/stable/">Black</a> for automatic formatting, <a class="reference external" href="https://github.com/timothycrosley/isort">isort</a> for import sorting, and <a class="reference external" href="https://flake8.pycqa.org/en/latest/">flake8</a> to check for linting errors. These are the relevant commands:</p>
+<p>You can check against those by running:</p>
+<div class="highlight-shell script notranslate"><div class="highlight"><pre><span></span>./run_tests.sh lint
+</pre></div>
+</div>
+<p>Or, if you want to apply those formatters:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sort imports automatically.</span>
-isort avkit --apply --recursive
+isort l5kit --apply --recursive
 
 <span class="c1"># Apply formatting.</span>
-black avkit
+black l5kit
 
 <span class="c1"># Check for linting errors that black wasn&#39;t able to fix.</span>
-flake8 avkit
+flake8 l5kit
 </pre></div>
 </div>
 <p>Our docstrings are in <a class="reference external" href="https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html">Google docstring</a> format.</p>
@@ -219,7 +248,7 @@ rm -rf build
 python3 setup.py sdist bdist_wheel
 </pre></div>
 </div>
-<p>You can now find the distribution files in the <code class="docutils literal notranslate"><span class="pre">dist</span></code> folder.</p>
+<p>You can now find the distribution files (both tar.gz and wheel) in the <code class="docutils literal notranslate"><span class="pre">dist</span></code> folder.</p>
 </div>
 </div>
 
@@ -241,11 +270,19 @@ python3 setup.py sdist bdist_wheel
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Lyft Level 5
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -256,7 +293,6 @@ python3 setup.py sdist bdist_wheel
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

@@ -1,15 +1,18 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Dataset formats &mdash; AVKit 0.1.5 documentation</title>
+  <title>Dataset formats &mdash; L5Kit 1.0.0 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
 
   
   
@@ -17,7 +20,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -29,13 +34,10 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="prev" title="avkit.visualization.video module" href="build/avkit.visualization.video.html" /> 
+    <link rel="next" title="How to contribute" href="how_to_contribute.html" />
+    <link rel="prev" title="l5kit.visualization.video module" href="API/l5kit.visualization.video.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -49,7 +51,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> AVKit
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> L5Kit
           
 
           
@@ -72,6 +74,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -81,6 +84,7 @@
             
               <ul class="current">
 <li class="toctree-l1"><a class="reference internal" href="README.html">ML planning and simulation for self-driving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#examples">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#news">News</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#overview">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#installation">Installation</a></li>
@@ -101,11 +105,13 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
 </ul>
 
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -115,7 +121,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">AVKit</a>
+          <a href="index.html">L5Kit</a>
         
       </nav>
 
@@ -144,7 +150,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>Dataset formats</li>
     
@@ -169,7 +175,7 @@
 <h1>Dataset formats<a class="headerlink" href="#dataset-formats" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>In the avkit codebase we make use of a data format that consists of a set of <a class="reference external" href="https://docs.scipy.org/doc/numpy/user/basics.rec.html">numpy structured arrays</a>. Conceptually, it is similar to a set of CSV files with records and different columns, only they are stored as a binary files instead of text. Structured arrays can be directly memory mapped from disk.</p>
+<p>In the L5Kit codebase we make use of a data format that consists of a set of <a class="reference external" href="https://docs.scipy.org/doc/numpy/user/basics.rec.html">numpy structured arrays</a>. Conceptually, it is similar to a set of CSV files with records and different columns, only they are stored as a binary files instead of text. Structured arrays can be directly memory mapped from disk.</p>
 <div class="section" id="interleaved-data-in-structured-arrays">
 <h3>Interleaved data in structured arrays<a class="headerlink" href="#interleaved-data-in-structured-arrays" title="Permalink to this headline">¶</a></h3>
 <p>Structured arrays are stored in memory in an interleaved format, this means that one “row” or “sample” is grouped together in memory. For example, if we are storing colors and whether we like them (as a boolean <code class="docutils literal notranslate"><span class="pre">l</span></code>), it would be <code class="docutils literal notranslate"><span class="pre">[r,g,b,l,r,g,b,l,r,g,b,l]</span></code> and not <code class="docutils literal notranslate"><span class="pre">[r,r,r,g,g,g,b,b,b,l,l,l]</span></code>). Most ML applications require row based access, column-based operations are much less common, making this a good fit.</p>
@@ -278,7 +284,7 @@
 </div>
 <div class="section" id="agents">
 <h3>Agents<a class="headerlink" href="#agents" title="Permalink to this headline">¶</a></h3>
-<p>An agent is an observation by the AV of some other detected object. They each have a probability for each defined class associated with them, the possible labels are defined <a class="reference external" href="https://github.com/lyft/avkit/blob/master/avkit/avkit/data/zarr_dataset.py">here</a>.</p>
+<p>An agent is an observation by the AV of some other detected object. They each have a probability for each defined class associated with them, the possible labels are defined <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/zarr_dataset.py">here</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AGENT_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="s2">&quot;centroid&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
     <span class="p">(</span><span class="s2">&quot;extent&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)),</span>
@@ -301,8 +307,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
+        <a href="how_to_contribute.html" class="btn btn-neutral float-right" title="How to contribute" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
-        <a href="build/avkit.visualization.video.html" class="btn btn-neutral float-left" title="avkit.visualization.video module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+        <a href="API/l5kit.visualization.video.html" class="btn btn-neutral float-left" title="l5kit.visualization.video module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -311,11 +319,19 @@
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Lyft Level 5
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -326,7 +342,6 @@
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {

@@ -1,15 +1,18 @@
 
 
 <!DOCTYPE html>
-<!--[if IE 8]><html class="no-js lt-ie9" lang="en" > <![endif]-->
-<!--[if gt IE 8]><!--> <html class="no-js" lang="en" > <!--<![endif]-->
+<html class="writer-html5" lang="en" >
 <head>
   <meta charset="utf-8">
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ML planning and simulation for self-driving &mdash; AVKit 0.1.5 documentation</title>
+  <title>ML planning and simulation for self-driving &mdash; L5Kit 1.0.0 documentation</title>
   
+
+  
+  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
 
   
   
@@ -17,7 +20,9 @@
   
 
   
-  <script type="text/javascript" src="_static/js/modernizr.min.js"></script>
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
   
     
       <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
@@ -29,14 +34,10 @@
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
     
-
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="API Reference" href="api_reference.html" />
-    <link rel="prev" title="Welcome to AVKit’s documentation!" href="index.html" /> 
+    <link rel="prev" title="Welcome to L5Kit’s documentation!" href="index.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -50,7 +51,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home"> AVKit
+            <a href="index.html" class="icon icon-home" alt="Documentation Home"> L5Kit
           
 
           
@@ -73,6 +74,7 @@
           
         </div>
 
+        
         <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
           
             
@@ -86,7 +88,7 @@
 <li class="toctree-l1"><a class="reference internal" href="#news">News</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#overview">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#datasets">1. Datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#avkit">2. AVKit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#l5kit">2. L5Kit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#id1">3. Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#dataset-visualisation">Dataset visualisation</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#agent-motion-prediction">Agent motion prediction</a></li>
@@ -97,8 +99,8 @@
 <li class="toctree-l1"><a class="reference internal" href="#installation">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#clone-the-repo">1. Clone the repo</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#download-the-datasets">2. Download the datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#install-avkit">3. Install AVKit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#generate-avkit-code-html-documentation-optional">4. Generate AVKit code html documentation (optional)</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#install-l5kit">3. Install L5Kit</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#generate-l5kit-code-html-documentation-optional">4. Generate L5Kit code html documentation (optional)</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#run-example">5. Run example</a></li>
 </ul>
 </li>
@@ -112,6 +114,7 @@
             
           
         </div>
+        
       </div>
     </nav>
 
@@ -121,7 +124,7 @@
       <nav class="wy-nav-top" aria-label="top navigation">
         
           <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">AVKit</a>
+          <a href="index.html">L5Kit</a>
         
       </nav>
 
@@ -150,7 +153,7 @@
 
   <ul class="wy-breadcrumbs">
     
-      <li><a href="index.html">Docs</a> &raquo;</li>
+      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
       <li>ML planning and simulation for self-driving</li>
     
@@ -199,8 +202,8 @@
 <p>The content of the framework consists of three parts:</p>
 <ol class="simple">
 <li><p><strong>Datasets</strong> - data available for training ML models.</p></li>
-<li><p><strong>AVKit</strong> - the core library supporting functionality for reading the data and framing planning and simulation problems as ML problems.</p></li>
-<li><p><strong>Examples</strong> - ever-expanding jupyter notebooks demonstrating use of AVKit for different tasks in AV.</p></li>
+<li><p><strong>L5Kit</strong> - the core library supporting functionality for reading the data and framing planning and simulation problems as ML problems.</p></li>
+<li><p><strong>Examples</strong> - ever-expanding jupyter notebooks demonstrating use of L5Kit for different tasks in AV.</p></li>
 </ol>
 <div class="section" id="datasets">
 <h2>1. Datasets<a class="headerlink" href="#datasets" title="Permalink to this headline">¶</a></h2>
@@ -213,8 +216,8 @@ It consists of the following components:</p>
 </ul>
 <p>To read more about the dataset and how it was generated read the <a class="reference external" href="https://level5.lyft.com/">dataset whitepaper</a>.</p>
 </div>
-<div class="section" id="avkit">
-<h2>2. AVKit<a class="headerlink" href="#avkit" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="l5kit">
+<h2>2. L5Kit<a class="headerlink" href="#l5kit" title="Permalink to this headline">¶</a></h2>
 <p>A library with the following functionality:</p>
 <ul class="simple">
 <li><p>Loading drivig scenes from zarr files</p></li>
@@ -231,7 +234,7 @@ It consists of the following components:</p>
 <p>The <code class="docutils literal notranslate"><span class="pre">examples</span></code> folder contains examples in jupyter notebook format you can use as a foundation for building your ML planning and simulation solutions. Currently we are providing two examples, with more following soon:</p>
 <div class="section" id="dataset-visualisation">
 <h3>Dataset visualisation<a class="headerlink" href="#dataset-visualisation" title="Permalink to this headline">¶</a></h3>
-<p>Show how to use AVKit toolkit to load and visualise samples from a dataset.</p>
+<p>Show how to use L5Kit toolkit to load and visualise samples from a dataset.</p>
 </div>
 <div class="section" id="agent-motion-prediction">
 <h3>Agent motion prediction<a class="headerlink" href="#agent-motion-prediction" title="Permalink to this headline">¶</a></h3>
@@ -243,7 +246,7 @@ It consists of the following components:</p>
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="clone-the-repo">
 <h2>1. Clone the repo<a class="headerlink" href="#clone-the-repo" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone git@github.com:lyft/ml-planning.git ./
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/lyft/l5kit.git ./
 </pre></div>
 </div>
 </div>
@@ -259,16 +262,16 @@ The resulting directory structure should be:</p>
 </pre></div>
 </div>
 </div>
-<div class="section" id="install-avkit">
-<h2>3. Install AVKit<a class="headerlink" href="#install-avkit" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> avkit
+<div class="section" id="install-l5kit">
+<h2>3. Install L5Kit<a class="headerlink" href="#install-l5kit" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> l5kit
 pip install -r requirements.txt
 </pre></div>
 </div>
 </div>
-<div class="section" id="generate-avkit-code-html-documentation-optional">
-<h2>4. Generate AVKit code html documentation (optional)<a class="headerlink" href="#generate-avkit-code-html-documentation-optional" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sphinx-apidoc --module-first --separate -o build/ avkit/avkit avkit/avkit/tests*
+<div class="section" id="generate-l5kit-code-html-documentation-optional">
+<h2>4. Generate L5Kit code html documentation (optional)<a class="headerlink" href="#generate-l5kit-code-html-documentation-optional" title="Permalink to this headline">¶</a></h2>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
 sphinx-build . html
 </pre></div>
 </div>
@@ -314,7 +317,7 @@ sphinx-build . html
         <a href="api_reference.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to AVKit’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="index.html" class="btn btn-neutral float-left" title="Welcome to L5Kit’s documentation!" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
@@ -323,11 +326,19 @@ sphinx-build . html
 
   <div role="contentinfo">
     <p>
+        
         &copy; Copyright 2020, Lyft Level 5
 
     </p>
   </div>
-  Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
 
@@ -338,7 +349,6 @@ sphinx-build . html
 
   </div>
   
-
 
   <script type="text/javascript">
       jQuery(function () {
