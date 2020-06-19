@@ -20,7 +20,8 @@ __pycache__/
 .coverage
 .pytest_cache/
 dist/
-build/
+/API/
+build
 coverage_report*
 
 .env/
