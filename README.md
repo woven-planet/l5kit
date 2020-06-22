@@ -3,7 +3,7 @@ ML planning and simulation for self-driving
 
 ![ML planning and simulation for self-driving](/images/av.jpg)
 
-This repository and the associated datasets contains a framework for developing learning-based ML planning and simulation systems for self-driving vehicles. State-of-the-art solutions to these problems still require a significant amount of hand-engineering and unlike, i.e. perception, don't benefit much from deep learning and the vast amount of available data.
+This repository and the associated datasets contain a framework for developing learning-based ML planning and simulation systems for self-driving vehicles. State-of-the-art solutions to these problems still require a significant amount of hand-engineering and unlike, i.e. perception, don't benefit much from deep learning and the vast amount of available data.
 
 The purpose of this framework is to make it easier for engineers and researchers to experiment with new approaches to data-driven self-driving planning and simulation in realistic scenarios and thereby improve on existing state-of-the-art.
 
@@ -26,7 +26,7 @@ Things you can build using this framework:
 The content of the framework consists of three modules:
 1. **Datasets** - data available for training ML models.
 2. **L5Kit** - the core library supporting functionality for reading the data and framing planning and simulation problems as ML problems.
-3. **Examples** - ever-expanding jupyter notebooks demonstrating use of L5Kit for different tasks in AV.
+3. **Examples** - ever-expanding jupyter notebooks demonstrating the use of L5Kit for different tasks in AV.
 
 ## 1. Datasets
 To use the framework you will need to download the Lyft Level 5 Prediction Dataset from https://level5.lyft.com/.
@@ -48,13 +48,13 @@ A library with the following functionality:
 - Visualising results
 
 ## 3. Examples
-The `examples` folder contains examples in jupyter notebook format you can use as a foundation for building your ML planning and simulation solutions. Currently we are providing two examples, with more following soon:
+The `examples` folder contains examples in jupyter notebook format you can use as a foundation for building your ML planning and simulation solutions. Currently, we are providing two examples, with more following soon:
 
 #### Dataset visualisation
 Show how to use L5Kit toolkit to load and visualise samples from a dataset.
 
 #### Agent motion prediction
-An example of training a neural network to predict future positions of nearby cars around self-driving car. This example is a baseline solution for the Lyft 2020 Kaggle motion prediction challenge.
+An example of training a neural network to predict future positions of nearby cars around the self-driving car. This example is a baseline solution for the Lyft 2020 Kaggle motion prediction challenge.
 
 # Installation
 ### 1. Clone the repo
