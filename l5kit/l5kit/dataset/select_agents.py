@@ -18,6 +18,11 @@ from l5kit.data import LocalDataManager
 
 os.environ["BLOSC_NOLOCK"] = "1"  # this is required for multiprocessing
 
+TH_YAW_DEGREE = 30
+TH_EXTENT_RATIO = 1.1
+TH_MOVEMENT = 3
+TH_DISTANCE_AV = 50
+
 
 def in_consecutive_frame(frame_idx: int, past_frame_idx: int) -> bool:
     return bool(frame_idx == past_frame_idx + 1)
@@ -257,10 +262,10 @@ if __name__ == "__main__":
     parser.add_argument("--th_agent_prob", type=float, default=0.5, help="perception threshold on agents of interest")
     parser.add_argument("--th_history_num_frames", type=int, default=0, help="frames in the past to be valid")
     parser.add_argument("--th_future_num_frames", type=int, default=12, help="frames in the future to be valid")
-    parser.add_argument("--th_yaw_degree", type=float, default=30, help="max absolute distance in degree")
-    parser.add_argument("--th_extent_ratio", type=float, default=1.1, help="max change in area allowed")
-    parser.add_argument("--th_movement", type=float, default=3, help="threshold on the movement in meters")
-    parser.add_argument("--th_distance_av", type=float, default=50, help="threshold on distance from AV in meters")
+    parser.add_argument("--th_yaw_degree", type=float, default=TH_YAW_DEGREE, help="max absolute distance in degree")
+    parser.add_argument("--th_extent_ratio", type=float, default=TH_EXTENT_RATIO, help="max change in area allowed")
+    parser.add_argument("--th_movement", type=float, default=TH_MOVEMENT, help="max movement in meters")
+    parser.add_argument("--th_distance_av", type=float, default=TH_DISTANCE_AV, help="max distance from AV in meters")
     parser.add_argument("-j", type=int, default=8, help="number of workers")
     args = parser.parse_args()
 
