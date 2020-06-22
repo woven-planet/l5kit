@@ -4,10 +4,10 @@ How to contribute
 You are invited to contribute to the L5Kit with your examples and improvements.
 These are peer-reviewed by the development team to maintain quality and reproducibility.
 
-**All commands below must be run from the `l5kit` folder (the one with the `setup.py`)**
+**All commands below must be run from the `l5kit` folder (the one with the `setup.py`).**
 
 ## License
-You will be required to sign contributor agreement license upon a pull request.
+You will be required to sign a contributor agreement license upon a pull request (PR).
 
 
 ## Installing l5kit as a developer
@@ -18,11 +18,11 @@ pip install -r requirements.txt
 to install all developer dependencies along with l5kit in editable (-e) mode.
 
 ## Code Sanity checks
-Before starting a PR, it is highly suggested to also install the git pre-commit hooks, run:
+Before starting a PR, it is highly recommended to also install the git pre-commit hooks, run:
 ```shell script
 pre-commit install 
 ```
-This will run all the required code check before each commit, and it ensures your builds 
+This will run all required code checks before each commit and it ensures your builds 
 won't fail in CI.
 
 If, on the other hand, you want to run individual checks, please refer to the instructions below.
@@ -92,3 +92,5 @@ python3 setup.py sdist bdist_wheel
 ```
 
 You can now find the distribution files (both tar.gz and wheel) in the `dist` folder.
+
+**We look forward to your contributions!**
