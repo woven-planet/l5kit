@@ -91,7 +91,7 @@ jupyter notebook examples/visualisation/visualise_data.ipynb
 ```
 
 # License
-We use Apache 2 license for the code in this repo.
+We use the Apache 2 license for the code in this repo.
 
 [License](LICENSE)
 
