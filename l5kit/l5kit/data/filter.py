@@ -22,7 +22,6 @@ LABELS_TO_KEEP = [
 ]
 LABEL_INDICES_TO_KEEP = [LABEL_TO_INDEX[label] for label in LABELS_TO_KEEP]
 
-
 def _get_label_filter(label_probabilities: np.ndarray, threshold: float) -> np.array:
     """
 
