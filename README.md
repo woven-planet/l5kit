@@ -3,43 +3,43 @@ ML planning and simulation for self-driving
 
 ![ML planning and simulation for self-driving](/images/av.jpg)
 
-This repostitory and the associated datasets contains a framework for developing learning-based ML planning and simulation systems for self-driving. State-of-the-art solutions to these problems still require significant amount of hand-engineering and unlike, i.e. perception, didn't benefit much from deep learning and the vast amount of available data.
+This repository and the associated datasets contains a framework for developing learning-based ML planning and simulation systems for self-driving vehicles. State-of-the-art solutions to these problems still require a significant amount of hand-engineering and unlike, i.e. perception, don't benefit much from deep learning and the vast amount of available data.
 
-The purpose of this framework is to make it easier for engineers and researchers to experiment with new approaches to data-driven self-driving planning and simulation in realistic scenarios and this way improve on existing state-of-the-art.
+The purpose of this framework is to make it easier for engineers and researchers to experiment with new approaches to data-driven self-driving planning and simulation in realistic scenarios and thereby improve on existing state-of-the-art.
 
 ![Modern AV pipeline](/images/pipeline.png)
 
-This software is developed by Lyft Level 5 self-driving division but is [open to contributors from outside](how_to_contribute.md).
+This software is developed by Lyft's Level 5 self-driving division but is [open to contributors from outside](how_to_contribute.md).
 
 # Examples
 Things you can build using this framework:
 * Turn planning and simulation problems into data problems and train them on real data.
-* Use neural networks to model key components of autonomous vehicles (AV) stack.
-* Predict future movement of cars around AV derived from historical observations.
-* Plan decisions of AV to immitate human driving.
+* Use neural networks to model key components of the autonomous vehicles (AV) stack.
+* Predict future movements of cars around AV derived from historical observations.
+* Plan decisions of AV to imitate human driving.
 * Test performance of AV offline using reactive simulation learned from data.
 * Study the improvement in performance as the amount of data increases.
 
 # News
 
 # Overview
-The content of the framework consists of three parts:
+The content of the framework consists of three modules:
 1. **Datasets** - data available for training ML models.
 2. **L5Kit** - the core library supporting functionality for reading the data and framing planning and simulation problems as ML problems.
 3. **Examples** - ever-expanding jupyter notebooks demonstrating use of L5Kit for different tasks in AV.
 
 ## 1. Datasets
-To use the framework you will need to download the Lyft Level 5 Prediction dataset from https://level5.lyft.com/.
+To use the framework you will need to download the Lyft Level 5 Prediction Dataset from https://level5.lyft.com/.
 It consists of the following components:
 * 1000h of logged perception output around Lyft AVs operating in Palo Alto in 30sec chunks using [zarr format](data_format.md).
-* Hand-annotated HD semantic map capturing positions of lanes, crosswalks etc stored as protobuf.
-* High-definition aerial picture of the Palo Alto area stored with resolution 8cm per pixel (provided by [NearMap](https://www.nearmap.com/)).
+* Hand-annotated HD semantic maps capturing positions of lanes, crosswalks etc stored as protobuf.
+* High-definition aerial pictures of the Palo Alto area stored with resolution 8cm per pixel (provided by [NearMap](https://www.nearmap.com/)).
 
 To read more about the dataset and how it was generated read the [dataset whitepaper](https://level5.lyft.com/).
 
 ## 2. L5Kit
 A library with the following functionality:
-- Loading drivig scenes from zarr files
+- Loading driving scenes from zarr files
 - Reading semantic maps
 - Reading aerial pictures
 - Creating birds-eye-view (BEV) representations around AV and other vehicles
