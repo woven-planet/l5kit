@@ -1,4 +1,4 @@
-from typing import Union, Optional, Tuple
+from typing import Optional, Tuple, Union
 
 import cv2
 import numpy as np
@@ -8,7 +8,7 @@ from l5kit.data.zarr_dataset import AGENT_DTYPE
 from ..data.filter import filter_agents_by_frame, filter_agents_by_labels, filter_agents_by_track_id
 from ..geometry import rotation33_as_yaw, transform_points, world_to_image_pixels_matrix
 from ..geometry.transform import yaw_as_rotation33
-from .rasterizer import Rasterizer, EGO_EXTENT_WIDTH, EGO_EXTENT_LENGTH, EGO_EXTENT_HEIGHT
+from .rasterizer import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
 
 
 def get_ego_as_agent(frame: np.ndarray) -> np.ndarray:  # TODO this can be useful to have around

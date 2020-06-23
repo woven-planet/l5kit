@@ -1,9 +1,10 @@
-import pytest
 import numpy as np
-from l5kit.dataset import EgoDataset
-from l5kit.data import ChunkedStateDataset
-from l5kit.rasterization import StubRasterizer
+import pytest
+
 from l5kit.configs import load_config_data
+from l5kit.data import ChunkedStateDataset
+from l5kit.dataset import EgoDataset
+from l5kit.rasterization import StubRasterizer
 
 
 @pytest.fixture(scope="module")

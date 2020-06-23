@@ -5,7 +5,7 @@ import numpy as np
 from ..data import filter_agents_by_frame, filter_agents_by_labels, get_agent_by_track_id
 from ..geometry import rotation33_as_yaw, world_to_image_pixels_matrix
 from ..kinematic import Perturbation
-from ..rasterization import Rasterizer, EGO_EXTENT_WIDTH, EGO_EXTENT_LENGTH, EGO_EXTENT_HEIGHT
+from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
 from .slicing import get_future_slice, get_history_slice
 
 

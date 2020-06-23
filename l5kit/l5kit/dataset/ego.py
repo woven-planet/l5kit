@@ -3,8 +3,8 @@ from functools import partial
 from typing import Optional, Tuple, cast
 
 import numpy as np
-from torch.utils.data import Dataset
 from prettytable import PrettyTable
+from torch.utils.data import Dataset
 
 from ..data import ChunkedStateDataset
 from ..kinematic import Perturbation

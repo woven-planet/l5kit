@@ -1,3 +1,4 @@
+import argparse
 import os
 import pprint
 from collections import Counter, defaultdict
@@ -7,14 +8,12 @@ from pathlib import Path
 from typing import List, Tuple
 from uuid import uuid4
 
-import argparse
 import numpy as np
 import zarr
-from l5kit.data import ChunkedStateDataset, get_combined_scenes
-from l5kit.data.filter import _get_label_filter  # TODO expose this without digging
 from tqdm import tqdm
 
-from l5kit.data import LocalDataManager
+from l5kit.data import ChunkedStateDataset, LocalDataManager, get_combined_scenes
+from l5kit.data.filter import _get_label_filter  # TODO expose this without digging
 
 os.environ["BLOSC_NOLOCK"] = "1"  # this is required for multiprocessing
 

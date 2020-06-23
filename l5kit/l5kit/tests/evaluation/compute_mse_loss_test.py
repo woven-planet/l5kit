@@ -1,10 +1,10 @@
 from pathlib import Path
+
 import numpy as np
+import pytest
 
 from l5kit.data import ChunkedStateDataset
 from l5kit.evaluation import compute_mse_error_csv, export_zarr_to_ground_truth_csv
-
-import pytest
 
 
 def test_compute_mse_error(tmp_path: Path) -> None:

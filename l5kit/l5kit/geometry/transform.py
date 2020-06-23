@@ -1,4 +1,4 @@
-from typing import Tuple, Optional, Sequence, Union, cast
+from typing import Optional, Sequence, Tuple, Union, cast
 
 import numpy as np
 import pymap3d as pm
