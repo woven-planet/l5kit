@@ -31,7 +31,7 @@ raster_params:
     - 0.5
   map_type: "py_semantic"
 
-  # the keys are relative to the avresearch bucket
+  # the keys are relative to the dataset environment variable
   satellite_map_key: "aerial_map/aerial_map.png"
   semantic_map_key: "semantic_map/semantic_map.pb"
 
@@ -43,9 +43,9 @@ raster_params:
 ## Data loader options
 train_data_loader:
   datasets:
-    - key: "sample_scenes/20200504_competition_sample.zarr"
+    - key: "sample_scenes/sample.zarr"
       scene_indices:
-        - 1
+        - -1
   perturb_probability: 0
   batch_size: 12
   shuffle: True
@@ -53,9 +53,9 @@ train_data_loader:
 
 val_data_loader:
   datasets:
-    - key: "sample_scenes/20200504_competition_sample.zarr"
+    - key: "sample_scenes/sample.zarr"
       scene_indices:
-        - 1
+        - 0
   perturb_probability: 0
   batch_size: 12
   shuffle: False
