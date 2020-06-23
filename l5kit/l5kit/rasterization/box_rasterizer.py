@@ -119,8 +119,8 @@ class BoxRasterizer(Rasterizer):
         )
 
         # this ensures we always end up with fixed size arrays, +1 is because current time is also in the history
-        agents_im = np.zeros((*self.raster_size, self.history_num_frames + 1), dtype=np.uint8)
-        ego_im = np.zeros((*self.raster_size, self.history_num_frames + 1), dtype=np.uint8)
+        agents_images = np.zeros((*self.raster_size, self.history_num_frames + 1), dtype=np.uint8)
+        ego_images = np.zeros((*self.raster_size, self.history_num_frames + 1), dtype=np.uint8)
 
         for i, frame in enumerate(history_frames):
             agents = filter_agents_by_frame(all_agents, frame)
@@ -129,23 +129,23 @@ class BoxRasterizer(Rasterizer):
             av_agent = get_ego_as_agent(frame).astype(agents.dtype)
 
             if agent is None:
-                im = draw_boxes(self.raster_size, world_to_image_space, agents, 255)
-                im_ego = draw_boxes(self.raster_size, world_to_image_space, av_agent, 255)
+                agents_image = draw_boxes(self.raster_size, world_to_image_space, agents, 255)
+                ego_image = draw_boxes(self.raster_size, world_to_image_space, av_agent, 255)
             else:
                 agent_ego = filter_agents_by_track_id(agents, agent["track_id"])
                 if len(agent_ego) == 0:  # agent not in this history frame
-                    im = draw_boxes(self.raster_size, world_to_image_space, np.append(agents, av_agent), 255)
-                    im_ego = np.zeros_like(im)
+                    agents_image = draw_boxes(self.raster_size, world_to_image_space, np.append(agents, av_agent), 255)
+                    ego_image = np.zeros_like(agents_image)
                 else:  # add av to agents and remove the agent from agents
                     agents = agents[agents != agent_ego[0]]
-                    im = draw_boxes(self.raster_size, world_to_image_space, np.append(agents, av_agent), 255)
-                    im_ego = draw_boxes(self.raster_size, world_to_image_space, agent_ego, 255)
+                    agents_image = draw_boxes(self.raster_size, world_to_image_space, np.append(agents, av_agent), 255)
+                    ego_image = draw_boxes(self.raster_size, world_to_image_space, agent_ego, 255)
 
-            agents_im[..., i] = im
-            ego_im[..., i] = im_ego
+            agents_images[..., i] = agents_image
+            ego_images[..., i] = ego_image
 
         # combine such that the image consists of [agent_t, agent_t-1, agent_t-2, ego_t, ego_t-1, ego_t-2]
-        out_im = np.concatenate((agents_im, ego_im), -1)
+        out_im = np.concatenate((agents_images, ego_images), -1)
 
         return out_im.astype(np.float32) / 255
 
