@@ -59,13 +59,13 @@ Got {len(inference.keys())}"""
         raise ValueError("Error validating csv, see above for details.")
 
     def compute_mse(A: np.ndarray, B: np.ndarray) -> np.ndarray:
-        return ((A - B) ** 2).mean(axis=None)
+        return ((A - B) ** 2).mean(axis=-1)  # reduce coords, keep steps
 
     errors = []
     for key, ground_truth_value in ground_truth.items():
         errors.append(compute_mse(ground_truth_value, inference[key]))
 
-    return np.array(errors).mean(axis=None)
+    return np.array(errors).mean(axis=0)  # reduce samples, keep steps
 
 
 if __name__ == "__main__":

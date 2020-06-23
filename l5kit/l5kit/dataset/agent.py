@@ -7,6 +7,7 @@ from ..data import ChunkedStateDataset
 from ..kinematic import Perturbation
 from ..rasterization import Rasterizer
 from .ego import EgoDataset
+from .select_agents import select_agents, TH_YAW_DEGREE, TH_MOVEMENT, TH_DISTANCE_AV, TH_EXTENT_RATIO
 
 
 class AgentDataset(EgoDataset):
@@ -48,9 +49,21 @@ class AgentDataset(EgoDataset):
                 f"your cfg has loaded history_num_frames={history_num_frames}, future_num_frames={future_num_frames} "
                 f"and filter_agents_threshold={agent_prob};\n"
                 "but those values don't have a match among the agents_mask in the zarr\n"
-                "You can generate a mask with these value by calling the select_agents.py script."
+                "Mask will now be generated for these parameters."
             )
-            exit(1)
+            select_agents(
+                self.dataset.path,
+                agent_prob,
+                history_num_frames,
+                future_num_frames,
+                th_yaw_degree=TH_YAW_DEGREE,
+                th_extent_ratio=TH_EXTENT_RATIO,
+                th_movement=TH_MOVEMENT,
+                th_distance_av=TH_DISTANCE_AV,
+                num_workers=8,
+            )  # TODO maybe set in env var?
+            self.dataset.open()  # ensure root is updated
+            agents_mask = self.dataset.root[f"agents_mask/{group_name}"]
 
         return agents_mask
 
