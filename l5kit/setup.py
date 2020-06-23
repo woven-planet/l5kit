@@ -25,6 +25,7 @@ setup(
         "strictyaml",
         "notebook",
         "ptable",
+        "ipywidgets"
     ],
     extras_require={
         "dev": ["pytest", "mypy", "setuptools", "twine", "wheel", "pytest-cov", "flake8", "black", "isort",
