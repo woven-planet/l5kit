@@ -118,7 +118,7 @@ class BoxRasterizer(Rasterizer):
             ego_center_in_image_ratio=self.ego_center,
         )
 
-        # this ensure we always end up with fixed size arrays, +1 is because cur time in also in history
+        # this ensures we always end up with fixed size arrays, +1 is because current time is also in the history
         agents_im = np.zeros((*self.raster_size, self.history_num_frames + 1), dtype=np.uint8)
         ego_im = np.zeros((*self.raster_size, self.history_num_frames + 1), dtype=np.uint8)
 
