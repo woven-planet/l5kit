@@ -9,6 +9,11 @@ repos:
         name: running lint
         entry: bash -c 'cd l5kit && ./run_tests.sh lint'
         pass_filenames: false
+    -   id: isort
+        language: system
+        name: running isort
+        entry: bash -c 'cd l5kit && ./run_tests.sh isort'
+        pass_filenames: false
     -   id: types
         language: system
         name: running types
