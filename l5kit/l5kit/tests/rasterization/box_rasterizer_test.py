@@ -38,24 +38,26 @@ class BoxRasterizerTest(unittest.TestCase):
         values = [(0.5, 0.5), (0.25, 0.5), (0.75, 0.5), (0.5, 0.25), (0.5, 0.75)]
         for v in values:
             rast = BoxRasterizer(
-                (224, 224), np.asarray((0.25, 0.25)), ego_center=np.asarray(v), filter_agents_threshold=0.0
+                (224, 224),
+                np.asarray((0.25, 0.25)),
+                ego_center=np.asarray(v),
+                filter_agents_threshold=0.0,
+                history_num_frames=0,
             )
             out = rast.rasterize(self.hist_frames, self.dataset.agents)
             assert out[..., -1].sum() > 0
 
     def test_agents_map(self) -> None:
-        rast = BoxRasterizer((224, 224), np.asarray((0.25, 0.25)), np.asarray((0.25, 0.5)), filter_agents_threshold=1)
+        rast = BoxRasterizer((224, 224), np.asarray((0.25, 0.25)), np.asarray((0.25, 0.5)), 1.0, 0)
         out = rast.rasterize(self.hist_frames, self.dataset.agents)
         assert out[..., 0].sum() == 0
 
-        rast = BoxRasterizer(
-            (224, 224), np.asarray((0.25, 0.25)), np.asarray((0.25, 0.5)), filter_agents_threshold=0.0
-        )
+        rast = BoxRasterizer((224, 224), np.asarray((0.25, 0.25)), np.asarray((0.25, 0.5)), 0.0, 0)
         out = rast.rasterize(self.hist_frames, self.dataset.agents)
         assert out[..., 0].sum() > 0
 
     def test_agent_ego(self) -> None:
-        rast = BoxRasterizer((224, 224), np.asarray((0.25, 0.25)), np.asarray((0.25, 0.5)), filter_agents_threshold=-1)
+        rast = BoxRasterizer((224, 224), np.asarray((0.25, 0.25)), np.asarray((0.25, 0.5)), -1, 0)
 
         agents = self.dataset.agents[slice(*self.hist_frames[0]["agent_index_interval"])]
         for ag in agents:
@@ -63,7 +65,9 @@ class BoxRasterizerTest(unittest.TestCase):
             assert out[..., -1].sum() > 0
 
     def test_shape(self) -> None:
-        rast = BoxRasterizer((224, 224), np.asarray((0.25, 0.25)), np.asarray((0.25, 0.5)), filter_agents_threshold=-1)
         hist_length = 10
-        out = rast.rasterize(self.dataset.frames[:hist_length], self.dataset.agents)
-        assert out.shape == (224, 224, 10 * 2)
+        rast = BoxRasterizer(
+            (224, 224), np.asarray((0.25, 0.25)), np.asarray((0.25, 0.5)), -1, history_num_frames=hist_length
+        )
+        out = rast.rasterize(self.dataset.frames[: hist_length + 1], self.dataset.agents)
+        assert out.shape == (224, 224, (hist_length + 1) * 2)
