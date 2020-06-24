@@ -26,4 +26,4 @@ jobs:
       working-directory: .
       run: |
         sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
-        sphinx-build . html
+        sphinx-build . docs
