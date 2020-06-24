@@ -56,5 +56,5 @@ val_data_loader:
 ## Train params
 train_params:
   checkpoint_every_n_steps: 10000
-  max_num_steps: 2
+  max_num_steps: 38850
   eval_every_n_steps: 10000

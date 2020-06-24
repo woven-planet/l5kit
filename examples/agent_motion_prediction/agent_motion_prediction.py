@@ -1,4 +1,6 @@
 from typing import Dict
+from datetime import datetime
+from pathlib import Path
 
 from tempfile import gettempdir
 import matplotlib.pyplot as plt
@@ -8,7 +10,7 @@ from torch import nn, optim
 from torchvision.models.resnet import resnet50
 from tqdm import tqdm
 
-from l5kit.configs import load_config_data
+from l5kit.configs import load_config_data, save_config_data
 from l5kit.data import LocalDataManager
 from l5kit.dataset import AgentDataset, EgoDataset
 from l5kit.dataset.dataloader_builder import build_dataloader
@@ -61,6 +63,13 @@ def main():
     cfg = load_config_data("./agent_motion_config.yaml")
     print(cfg)
 
+    output_dir = "/data/l5kit_data"
+    output_path = Path(output_dir)
+    output_path = output_path / datetime.now().strftime("%m-%d-%Y--%H:%M:%S")
+    output_path.mkdir(parents=True, exist_ok=True)
+
+    save_config_data(cfg, str(output_path / "cfg.yaml"))
+
     dm = LocalDataManager(None)
     # ===== INIT DATASETS
     rasterizer = build_rasterizer(cfg, dm)
@@ -69,7 +78,9 @@ def main():
 
     # ==== INIT MODEL
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-    model = build_model(cfg).to(device)
+    model = build_model(cfg)
+    model = nn.DataParallel(model)
+    model.to(device)
     optimizer = optim.Adam(model.parameters(), lr=1e-3)
     criterion = nn.MSELoss(reduction="none")
 
@@ -119,9 +130,9 @@ def main():
         timestamps.append(data["timestamp"].numpy())
         agent_ids.append(data["track_id"].numpy())
 
-        # ==== COMPUTE CSV
-    pred_path = f"{gettempdir()}/pred.csv"
-    gt_path = f"{gettempdir()}/gt.csv"
+    # ==== COMPUTE CSV
+    pred_path = f"{output_path}/pred.csv"
+    gt_path = f"{output_path}/gt.csv"
 
     write_coords_as_csv(pred_path, future_num_frames=cfg["model_params"]["future_num_frames"],
                         future_coords_offsets=np.concatenate(future_coords_offsets_pd),
