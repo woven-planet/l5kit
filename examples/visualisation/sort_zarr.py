@@ -19,13 +19,15 @@ def main(zarrs: List[Path], rindices: List[Path], dst_path: Path):
         zarrs_dict[zarr_path.stem] = zarr_read
 
     for rindex in rindices:
-        data = np.genfromtxt(rindex, delimiter=",")
+        data = np.genfromtxt(rindex, delimiter=",", dtype="str")
+        zarr_read_names = data[:, 0]
+        idxs_scene = data[:, 1].astype(np.int)
 
         # ---- Get len to write so we can index instead of appending (faster!)
         len_scenes = len(data)
         len_frames, len_agents = 0, 0
 
-        for zarr_read_name, idx_scene in tqdm(data, "getting sizes"):
+        for zarr_read_name, idx_scene in tqdm(zip(zarr_read_names, idxs_scene), "getting sizes"):
             zarr_read = zarrs_dict[zarr_read_name]
 
             scene = zarr_read.scenes[idx_scene]
@@ -34,7 +36,8 @@ def main(zarrs: List[Path], rindices: List[Path], dst_path: Path):
             frame_start = zarr_read.frames[scene["frame_index_interval"][0]]
             frame_end = zarr_read.frames[scene["frame_index_interval"][1] - 1]
             len_agents += (frame_end["agent_index_interval"][1] - frame_start["agent_index_interval"][0])
-
+        print(f"{rindex.stem}, {len_scenes}, {len_frames}, {len_agents}")
+        continue
         # now create the target
         zarr_write_name = f"{rindex.stem}.zarr"
         zarr_write = ChunkedStateDataset(str(dst_path / zarr_write_name))
