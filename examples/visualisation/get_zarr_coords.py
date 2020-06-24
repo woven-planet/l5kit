@@ -28,7 +28,7 @@ def main(zarrs: List[Path], dst_path):
         with open(dst_path / f"coords_{zarr_path.stem}.txt", "wt") as fp:
             for idx_scene, scene in enumerate(tqdm(zarr_dataset.scenes)):
                 translations = np.asarray(zarr_dataset.frames[scene["frame_index_interval"][0]:
-                                                              scene["frame_index_interval"][1]]["ego_translation"][:2])
+                                                              scene["frame_index_interval"][1]]["ego_translation"][:, :2])
 
                 timestamps = np.asarray(zarr_dataset.frames[scene["frame_index_interval"][0]:
                                                               scene["frame_index_interval"][1]]["timestamp"])
