@@ -109,3 +109,6 @@ The framework was developed at Lyft Level 5 and is maintained by the following a
 * [Peter Ondruska](https://www.linkedin.com/in/pondruska/)
 
 ![Lyft Level 5](/images/lyft.jpg)
+
+# Contact
+If you find problem or have questions about L5Kit please feel free to create [github issue](https://github.com/lyft/l5kit/issues) or reach out to l5kit@lyft.com!

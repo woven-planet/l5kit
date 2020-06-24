@@ -16,16 +16,17 @@ class SatBoxRasterizerTest(unittest.TestCase):
         map_to_sat = np.block(
             [[np.eye(3) / 100, np.asarray([[1000], [1000], [1]])], [np.asarray([[0, 0, 0, 1]])]]
         )  # just a translation and scale
+        hist_length = 10
 
         rast = SatBoxRasterizer(
             (224, 224),
             np.asarray((0.25, 0.25)),
             np.asarray((0.25, 0.5)),
             filter_agents_threshold=-1,
+            history_num_frames=hist_length,
             map_im=np.zeros((10000, 10000, 3), dtype=np.uint8),
             map_to_sat=map_to_sat,
         )
 
-        hist_length = 10
-        out = rast.rasterize(self.dataset.frames[:hist_length], self.dataset.agents)
-        assert out.shape == (224, 224, 10 * 2 + 3)
+        out = rast.rasterize(self.dataset.frames[: hist_length + 1], self.dataset.agents)
+        assert out.shape == (224, 224, (hist_length + 1) * 2 + 3)

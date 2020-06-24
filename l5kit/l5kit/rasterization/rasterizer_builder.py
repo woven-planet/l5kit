@@ -62,6 +62,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
     pixel_size = np.array(raster_cfg["pixel_size"])
     ego_center = np.array(raster_cfg["ego_center"])
     filter_agents_threshold = raster_cfg["filter_agents_threshold"]
+    history_num_frames = cfg["model_params"]["history_num_frames"]
 
     if map_type in ["py_satellite", "satellite_rgb"]:
         sat_image, meta = _load_image_and_metadata(raster_cfg["satellite_map_key"], data_manager)
@@ -69,14 +70,22 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         pose_to_ecef = load_pose_to_ecef()
 
         map_to_sat = np.matmul(ecef_to_sat, pose_to_ecef)
-        return SatBoxRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold, sat_image, map_to_sat)
+        return SatBoxRasterizer(
+            raster_size, pixel_size, ego_center, filter_agents_threshold, history_num_frames, sat_image, map_to_sat
+        )
     elif map_type == "py_semantic":
         semantic_map_filepath = data_manager.require(raster_cfg["semantic_map_key"])
         semantic_map = load_semantic_map(semantic_map_filepath)
         pose_to_ecef = load_pose_to_ecef()
 
         return SemBoxRasterizer(
-            raster_size, pixel_size, ego_center, filter_agents_threshold, semantic_map, pose_to_ecef
+            raster_size,
+            pixel_size,
+            ego_center,
+            filter_agents_threshold,
+            history_num_frames,
+            semantic_map,
+            pose_to_ecef,
         )
     else:
         raise NotImplementedError(f"Rasterizer for map type {map_type} is not supported.")

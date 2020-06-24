@@ -59,12 +59,18 @@ def get_rasterizer(rast_name: str, cfg: dict) -> Rasterizer:
     ego_center = np.asarray(cfg["raster_params"]["ego_center"])
 
     if rast_name == "box":
-        return BoxRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold=-1,)
+        return BoxRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold=-1, history_num_frames=0)
     elif rast_name == "sat":
         return SatelliteRasterizer(raster_size, pixel_size, ego_center, map_im=map_im, map_to_sat=map_to_sat,)
     elif rast_name == "satbox":
         return SatBoxRasterizer(
-            raster_size, pixel_size, ego_center, filter_agents_threshold=-1, map_im=map_im, map_to_sat=map_to_sat,
+            raster_size,
+            pixel_size,
+            ego_center,
+            filter_agents_threshold=-1,
+            history_num_frames=0,
+            map_im=map_im,
+            map_to_sat=map_to_sat,
         )
     elif rast_name == "sem":
         return SemanticRasterizer(
@@ -78,6 +84,7 @@ def get_rasterizer(rast_name: str, cfg: dict) -> Rasterizer:
             semantic_map=semantic_map,
             pose_to_ecef=pose_to_ecef,
             filter_agents_threshold=-1,
+            history_num_frames=0,
         )
     else:
         raise NotImplementedError
@@ -139,3 +146,25 @@ def test_scene_index_interval(dataset_cls: Callable, scene_idx: int, zarr_datase
     subdata = Subset(dataset, indices)
     for _ in subdata:  # type: ignore
         pass
+
+
+@pytest.mark.parametrize("history_num_frames", [1, 2, 3, 4])
+@pytest.mark.parametrize("dataset_cls", [EgoDataset])  # TODO add Agent when runtime mask is available
+def test_non_zero_history(history_num_frames: int, dataset_cls: Callable, zarr_dataset: ChunkedStateDataset) -> None:
+    cfg = load_config_data("./l5kit/configs/default.yaml")
+    cfg["model_params"]["history_num_frames"] = history_num_frames
+    rast_params = cfg["raster_params"]
+    rast_params["filter_agents_threshold"] = 0.5
+
+    rasterizer = BoxRasterizer(
+        rast_params["raster_size"],
+        np.asarray(rast_params["pixel_size"]),
+        np.asarray(rast_params["ego_center"]),
+        rast_params["filter_agents_threshold"],
+        history_num_frames=history_num_frames,
+    )
+    dataset = dataset_cls(cfg, zarr_dataset, rasterizer, None)
+    indexes = [0, 1, 10, -1]  # because we pad, even the first index should have an (entire black) history
+    for idx in indexes:
+        data = dataset[idx]
+        assert data["image"].shape == (2 * (history_num_frames + 1), *rast_params["raster_size"])
