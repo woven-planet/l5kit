@@ -1,6 +1,7 @@
-import numpy as np
 import csv
 from itertools import chain
+
+import numpy as np
 
 
 def write_coords_as_csv(

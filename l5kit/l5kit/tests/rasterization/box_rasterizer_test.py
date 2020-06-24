@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from l5kit.data import ChunkedStateDataset, AGENT_DTYPE
+from l5kit.data import AGENT_DTYPE, ChunkedStateDataset
 from l5kit.rasterization.box_rasterizer import BoxRasterizer, draw_boxes
 
 

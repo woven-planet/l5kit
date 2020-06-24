@@ -8,10 +8,9 @@ import pytest
 
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedStateDataset, LocalDataManager
+from l5kit.data.proto.road_network_pb2 import Lane, MapElement, MapFragment
 from l5kit.rasterization import Rasterizer, build_rasterizer
 from l5kit.sampling import get_history_slice
-
-from l5kit.data.proto.road_network_pb2 import MapFragment, Lane, MapElement
 
 
 @pytest.fixture(scope="module")

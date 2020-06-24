@@ -1,8 +1,10 @@
-from typing import Tuple, Sequence
+from typing import Sequence, Tuple
 
 import numpy as np
 import pymap3d as pm
-from .proto.road_network_pb2 import MapFragment, Lane, GeoFrame, TrafficControlElement
+
+from .proto.road_network_pb2 import GeoFrame, Lane, MapFragment, TrafficControlElement
+
 
 # TODO read from elsewhere, it should be read from dataset metadata or elsewhere. Not hard-coded
 def load_pose_to_ecef() -> np.ndarray:

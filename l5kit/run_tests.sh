@@ -20,6 +20,11 @@ lint() {
     ${PYTHON_EXECUTABLE} -m black --diff --check l5kit
 }
 
+isort() {
+  echo "import sorting.."
+  ${PYTHON_EXECUTABLE} -m isort l5kit --check-only --recursive
+}
+
 types() {
     echo "Type checking.."
     ${PYTHON_EXECUTABLE} -m mypy --ignore-missing-imports l5kit
@@ -32,12 +37,15 @@ tests() {
 
 if [ "${TEST_TYPE}" = "lint" ] ; then
   lint
+elif [ "${TEST_TYPE}" = "isort" ] ; then
+  isort
 elif [ "${TEST_TYPE}" = "types" ] ; then
   types
 elif [ "${TEST_TYPE}" = "tests" ] ; then
   tests
 elif [ "${TEST_TYPE}" = "all" ] ; then
   lint
+  isort
   types
   tests
 else

@@ -3,7 +3,7 @@ import unittest
 import numpy as np
 import transforms3d
 
-from l5kit.geometry import transform_points, world_to_image_pixels_matrix, transform_point, transform_points_transposed
+from l5kit.geometry import transform_point, transform_points, transform_points_transposed, world_to_image_pixels_matrix
 
 
 class TestTransformations(unittest.TestCase):

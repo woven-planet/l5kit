@@ -4,7 +4,7 @@ import pytest
 
 from l5kit.configs import load_config_data
 from l5kit.data import LocalDataManager
-from l5kit.dataset import EgoDataset, AgentDataset, build_dataloader
+from l5kit.dataset import AgentDataset, EgoDataset, build_dataloader
 
 from .dataset_test import get_rasterizer  # TODO remove once we can instantiate rasterizers
 

@@ -2,12 +2,11 @@ from typing import Callable
 
 import numpy as np
 import pytest
-from torch.utils.data import DataLoader, Subset, Dataset
+from torch.utils.data import DataLoader, Dataset, Subset
 
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedStateDataset, load_pose_to_ecef
-
-from l5kit.dataset import EgoDataset, AgentDataset
+from l5kit.dataset import AgentDataset, EgoDataset
 from l5kit.rasterization import (
     BoxRasterizer,
     Rasterizer,
