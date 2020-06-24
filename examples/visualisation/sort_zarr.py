@@ -46,12 +46,11 @@ def main(zarrs: List[Path], rindices: List[Path], dst_path: Path):
         idx_write_frame = 0
         idx_write_agent = 0
 
-        for zarr_read_name, idx_scene in enumerate(tqdm(data, f"writing zarr {zarr_write_name}")):
-            idx_scene = int(idx_scene)
+        for zarr_read_name, idx_scene in tqdm(data, f"writing zarr {zarr_write_name}"):
             zarr_read = zarrs_dict[zarr_read_name]
 
             # update indexes and append to dataset
-            scene = np.asarray(zarr_read.scenes[idx_scene])
+            scene = np.asarray(zarr_read.scenes[int(idx_scene)])
             frames = np.asarray(zarr_read.frames[scene["frame_index_interval"][0]: scene["frame_index_interval"][1]])
             agents = zarr_read.agents[frames[0]["agent_index_interval"][0]: frames[-1]["agent_index_interval"][1]]
 
