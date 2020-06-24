@@ -25,7 +25,7 @@ def main(zarrs: List[Path], rindices: List[Path], dst_path: Path):
         len_scenes = len(data)
         len_frames, len_agents = 0, 0
 
-        for zarr_read_name, idx_scene in tqdm(zip(data), "getting sizes"):
+        for zarr_read_name, idx_scene in tqdm(data, "getting sizes"):
             idx_scene = int(idx_scene)
 
             zarr_read = zarrs_dict[zarr_read_name]
