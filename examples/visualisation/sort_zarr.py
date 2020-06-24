@@ -55,10 +55,11 @@ def main(zarrs: List[Path], rindices: List[Path], dst_path: Path):
             frames = np.asarray(zarr_read.frames[scene["frame_index_interval"][0]: scene["frame_index_interval"][1]])
             agents = zarr_read.agents[frames[0]["agent_index_interval"][0]: frames[-1]["agent_index_interval"][1]]
 
-            scene["frame_index_interval"][0] = idx_write_frame
-            scene["frame_index_interval"][1] = idx_write_frame + len(frames)
-            frames["agent_index_interval"][0] = idx_write_agent
-            frames["agent_index_interval"][1] = idx_write_agent + len(agents)
+            idx_displace_frame = scene["frame_index_interval"][0] - idx_write_scene
+            scene["frame_index_interval"] -= idx_displace_frame
+
+            idx_displace_agent = frames["agent_index_interval"][0, 0] - idx_write_agent
+            frames["agent_index_interval"] -= idx_displace_agent
 
             zarr_write.scenes[idx_write_scene] = scene
             zarr_write.frames[idx_write_frame: idx_write_frame+len(frames)] = frames
