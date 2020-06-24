@@ -17,7 +17,7 @@ def build_dataloader(
     perturbation: Optional[Perturbation] = None,
 ) -> DataLoader:
     """
-    Util function to build a dataloader from a dataset of dataset_class. Note we have to pass rasterizer and
+    Function to build a dataloader from a dataset of dataset_class. Note we have to pass rasterizer and
     perturbation as the factory functions for those are likely to change between repos.
 
     Args:
