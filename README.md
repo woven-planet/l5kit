@@ -63,7 +63,7 @@ git clone https://github.com/lyft/l5kit.git ./
 ```
 
 ### 2. Download the datasets
-Register at https://level5.lyft.com/dataset/ and download the 2020 Lyft prediction dataset and store all files in one folder.
+Register at https://level5.lyft.com/dataset/ and download the [2020 Lyft prediction dataset](https://tinyurl.com/lyft-prediction-dataset) and store all files in one folder.
 The resulting directory structure should be:
 ```
 prediction-dataset/
@@ -107,6 +107,16 @@ The framework was developed at Lyft Level 5 and is maintained by the following a
 * [Liam Kelly](https://www.linkedin.com/in/liam-kelly-83089435/)
 * [Vladimir Iglovikov](https://www.linkedin.com/in/iglovikov/)
 * [Peter Ondruska](https://www.linkedin.com/in/pondruska/)
+
+## Citation
+If you are using L5Kit or dataset in your work please cite the following [whitepaper](https://tinyurl.com/lyft-prediction-dataset):
+```
+@misc{lyft2020,
+title = {One Thousand and One Hours: Self-driving Motion Prediction Dataset},
+author = {Houston, J. and Zuidhof, G. and Bergamini, L. and Ye, Y. and Jain, A. and Omari, S. and Iglovikov, V. and Ondruska, P.},
+year = {2020},
+howpublished = {\url{https://level5.lyft.com/dataset/}}
+```
 
 ![Lyft Level 5](/images/lyft.jpg)
 
