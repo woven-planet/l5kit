@@ -1,19 +1,15 @@
 # Config format schema number
 format_version: 4
-
 ###################
 ## Model options
 model_params:
   model_architecture: "resnet50"
-
-  history_num_frames: 0
+  history_num_frames: 10
   history_step_size: 1
   history_delta_time: 0.1
-
   future_num_frames: 50
   future_step_size: 1
   future_delta_time: 0.1
-
 ###################
 ## Input raster parameters
 raster_params:
@@ -30,40 +26,35 @@ raster_params:
     - 0.25
     - 0.5
   map_type: "py_semantic"
-
-  # the keys are relative to the dataset environment variable
+  # the keys are relative to the avresearch bucket
   satellite_map_key: "aerial_map/aerial_map.png"
   semantic_map_key: "semantic_map/semantic_map.pb"
-
   # e.g. 0.0 include every obstacle, 0.5 show those obstacles with >0.5 probability of being
   # one of the classes we care about (cars, bikes, peds, etc.), >=1.0 filter all other agents.
   filter_agents_threshold: 0.5
-
 ###################
 ## Data loader options
 train_data_loader:
+  datasets:
+    - key: "scenes/train_0.zarr"
+      scene_indices:
+        - -1
+  perturb_probability: 0
+  batch_size: 256
+  shuffle: True
+  num_workers: 32
+val_data_loader:
   datasets:
     - key: "sample_scenes/sample.zarr"
       scene_indices:
         - -1
   perturb_probability: 0
-  batch_size: 12
-  shuffle: True
-  num_workers: 16
-
-val_data_loader:
-  datasets:
-    - key: "sample_scenes/sample.zarr"
-      scene_indices:
-        - 0
-  perturb_probability: 0
-  batch_size: 12
+  batch_size: 256
   shuffle: False
-  num_workers: 16
-
+  num_workers: 32
 ###################
 ## Train params
 train_params:
   checkpoint_every_n_steps: 10000
-  max_num_steps: 5
+  max_num_steps: 9713
   eval_every_n_steps: 10000
