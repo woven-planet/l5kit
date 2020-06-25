@@ -1,9 +1,9 @@
-ML Planning and Simulation for Self-Driving
+ML Prediction, Planning and Simulation for Self-Driving
 ===
 
-![ML planning and simulation for self-driving](/images/av.jpg)
+![ML prediction, planning and simulation for self-driving](/images/av.jpg)
 
-This repository and the associated datasets constitute a framework for developing learning-based solutions to planning and simulation problems in self-driving. State-of-the-art solutions to these problems still require significant amounts of hand-engineering and unlike, for example, perception systems, have not benefited much from deep learning and the vast amount of driving data available.
+This repository and the associated datasets constitute a framework for developing learning-based solutions to prediction, planning and simulation problems in self-driving. State-of-the-art solutions to these problems still require significant amounts of hand-engineering and unlike, for example, perception systems, have not benefited much from deep learning and the vast amount of driving data available.
 
 The purpose of this framework is to enable engineers and researchers to experiment with data-driven approaches to planning and simulation problems using real world driving data and contribute to state-of-the-art solutions.
 
@@ -13,7 +13,7 @@ This software is developed by Lyft Level 5 self-driving division and is [open to
 
 # Examples
 You can use this framework to build systems which:
-* Turn planning and simulation problems into data problems and train them on real data.
+* Turn prediction, planning and simulation problems into data problems and train them on real data.
 * Use neural networks to model key components of the Autonomous Vehicle (AV) stack.
 * Use historical observations to predict future movement of cars around an AV.
 * Plan behavior of an AV in order to imitate human driving.
@@ -105,8 +105,8 @@ The framework was developed at Lyft Level 5 and is maintained by the following a
 * [Emil Praun](https://www.linkedin.com/in/emil-praun-7597152/)
 * [Liam Kelly](https://www.linkedin.com/in/liam-kelly-83089435/)
 * [Vladimir Iglovikov](https://www.linkedin.com/in/iglovikov/)
-* [Peter Ondruska](https://www.linkedin.com/in/pondruska/)
 * [Chih Hu](https://www.linkedin.com/in/chihchu/)
+* [Peter Ondruska](https://www.linkedin.com/in/pondruska/)
 
 ![Lyft Level 5](/images/lyft.jpg)
 
