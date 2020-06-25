@@ -10,6 +10,8 @@ from l5kit.rasterization import build_rasterizer
 from l5kit.configs import load_config_data
 from typing import List
 
+from l5kit.geometry import rotation33_as_yaw
+
 
 def main(zarrs: List[Path], dst_path):
     cfg = load_config_data("./visualisation_config.yaml")
@@ -33,8 +35,12 @@ def main(zarrs: List[Path], dst_path):
                 timestamps = np.asarray(zarr_dataset.frames[scene["frame_index_interval"][0]:
                                                               scene["frame_index_interval"][1]]["timestamp"])
 
-                for coords, timestamp in zip(translations, timestamps):
-                    fp.write(f"{coords[0]},{coords[1]},{scene['host']},{timestamp},{idx_scene}\n")
+                rotations = np.asarray(zarr_dataset.frames[scene["frame_index_interval"][0]:
+                                                              scene["frame_index_interval"][1]]["ego_rotation"])
+
+                for coords, timestamp, rotation in zip(translations, timestamps, rotations):
+                    yaw = rotation33_as_yaw(rotation)
+                    fp.write(f"{coords[0]},{coords[1]},{yaw},{scene['host']},{timestamp},{idx_scene}\n")
 
 
 if __name__ == "__main__":
