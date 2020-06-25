@@ -34,9 +34,9 @@ def generate_agent_sample(
     and partials that use this function.
 
     Arguments:
-        state_index {int} -- The anchor frame index, i.e. the "current" timestep
-        frames {np.ndarray} -- The whole frames array, can be numpy array or a zarr array.
-        all_agents {np.ndarray} -- The whole agents array, can be numpy array or a zarr array.
+        state_index {int} -- The anchor frame index, i.e. the "current" timestep in the scene
+        frames {np.ndarray} -- The scene frames array, can be numpy array or a zarr array.
+        agents {List[np.ndarray]} -- The scene agents array, as a list of numpy array.
         selected_track_id: {Optional[int]} -- Either None for AV, or the ID of an agent that you want to
         predict the future of. This agent is centered in the raster and the returned targets are derived from
         their future states.
