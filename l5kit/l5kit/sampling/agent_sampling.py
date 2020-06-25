@@ -1,8 +1,9 @@
-from typing import Optional, Tuple
+from typing import Optional, Tuple, List
 
 import numpy as np
 
 from ..data import filter_agents_by_frame, filter_agents_by_labels, get_agent_by_track_id
+from ..data.filter import filter_agents_by_track_id
 from ..geometry import rotation33_as_yaw, world_to_image_pixels_matrix
 from ..kinematic import Perturbation
 from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
@@ -12,7 +13,7 @@ from .slicing import get_future_slice, get_history_slice
 def generate_agent_sample(
     state_index: int,
     frames: np.ndarray,
-    all_agents: np.ndarray,
+    agents: np.ndarray,
     selected_track_id: Optional[int],
     raster_size: Tuple[int, int],
     pixel_size: np.ndarray,
@@ -79,12 +80,16 @@ expressed in pixels (to be changed).
         target for that state. If you sample near the end of a scene, this may contain zeroes.
 
     """
+    agent_index_start = frames[0]["agent_index_interval"][0]
+
     #  the history slice is ordered starting from the latest frame and goes backward in time., ex. slice(100, 91, -2)
     history_slice = get_history_slice(state_index, history_num_frames, history_step_size, include_current_state=True)
     history_frames = frames[history_slice]
+    history_agents = [agents[slice(*(hf["agent_index_interval"] - agent_index_start))] for hf in history_frames]
 
     future_slice = get_future_slice(state_index, future_num_frames, future_step_size)
     future_frames = frames[future_slice]
+    future_agents = [agents[slice(*(ff["agent_index_interval"] - agent_index_start))] for ff in future_frames]
 
     if perturbation is not None:
         history_frames, future_frames = perturbation.perturb(
@@ -93,6 +98,7 @@ expressed in pixels (to be changed).
 
     # State you want to predict the future of.
     cur_frame = history_frames[0]
+    cur_agents = history_agents[0]
 
     if selected_track_id is None:
         agent_centroid = cur_frame["ego_translation"][:2]
@@ -102,19 +108,19 @@ expressed in pixels (to be changed).
     else:
         # we must ensure the requested track is in the cur frame
         # otherwise we can not center it in the frame
-        agent = get_agent_by_track_id(all_agents, cur_frame, selected_track_id)
-        if agent is None:
+        try:
+            agent = filter_agents_by_track_id(cur_agents, selected_track_id)[0]
+        except IndexError:  # no agent for track_id in this frame
             raise ValueError(f" track_id {selected_track_id} not in frame")
-        if agent not in filter_agents_by_labels(
-            filter_agents_by_frame(all_agents, cur_frame), filter_agents_threshold
-        ):
+
+        if agent not in filter_agents_by_labels(cur_agents, filter_agents_threshold):
             raise ValueError(f" track_id {selected_track_id} is in frame but under th {filter_agents_threshold}")
         agent_centroid = agent["centroid"]
         agent_yaw = float(agent["yaw"])
         agent_extent = agent["extent"]
         selected_agent = agent
 
-    input_im = None if not rasterizer else rasterizer.rasterize(history_frames, all_agents, selected_agent)
+    input_im = None if not rasterizer else rasterizer.rasterize(history_frames, history_agents, selected_agent)
 
     world_to_image_space = world_to_image_pixels_matrix(
         raster_size,
@@ -125,7 +131,7 @@ expressed in pixels (to be changed).
     )
 
     future_coords_offset, future_yaws_offset, future_availability = _create_targets_for_deep_prediction(
-        future_num_frames, future_frames, selected_track_id, all_agents, agent_centroid[:2], agent_yaw,
+        future_num_frames, future_frames, selected_track_id, future_agents, agent_centroid[:2], agent_yaw,
     )
 
     return {
@@ -144,7 +150,7 @@ def _create_targets_for_deep_prediction(
     future_num_frames: int,
     future_frames: np.ndarray,
     selected_track_id: Optional[int],
-    all_agents: np.ndarray,
+    future_agents: List[np.ndarray],
     agent_centroid: np.ndarray,
     agent_yaw: float,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
@@ -159,14 +165,15 @@ def _create_targets_for_deep_prediction(
     # 1 if a target is present, 0 if not. This can be used to multiply the loss.
     future_availability = np.zeros((future_num_frames, 3), dtype=np.float32)
 
-    for i, frame in enumerate(future_frames):
+    for i, (frame, agents) in enumerate(zip(future_frames, future_agents)):
         if selected_track_id is None:
             future_agent_centroid = frame["ego_translation"][:2]
             future_agent_yaw = rotation33_as_yaw(frame["ego_rotation"])
         else:
             # it's not guaranteed the target will be in every future frame
-            future_agent = get_agent_by_track_id(all_agents, frame, selected_track_id)
-            if future_agent is None:
+            try:
+                future_agent = filter_agents_by_track_id(agents, selected_track_id)[0]
+            except IndexError:  # no agent for track_id in this frame
                 future_availability[i] = 0.0  # keep track of invalid futures
                 continue
             future_agent_centroid = future_agent["centroid"]

@@ -1,4 +1,4 @@
-from typing import Optional, Tuple, Union
+from typing import Optional, Tuple, Union, List
 
 import cv2
 import numpy as np
@@ -96,7 +96,7 @@ class BoxRasterizer(Rasterizer):
         self.history_num_frames = history_num_frames
 
     def rasterize(
-        self, history_frames: np.ndarray, all_agents: np.ndarray, agent: Optional[np.ndarray] = None
+        self, history_frames: np.ndarray, history_agents: List[np.ndarray], agent: Optional[np.ndarray] = None
     ) -> np.ndarray:
         # all frames are drawn relative to this one"
         frame = history_frames[0]
@@ -122,8 +122,7 @@ class BoxRasterizer(Rasterizer):
         agents_images = np.zeros((*self.raster_size, self.history_num_frames + 1), dtype=np.uint8)
         ego_images = np.zeros((*self.raster_size, self.history_num_frames + 1), dtype=np.uint8)
 
-        for i, frame in enumerate(history_frames):
-            agents = filter_agents_by_frame(all_agents, frame)
+        for i, (frame, agents) in enumerate(zip(history_frames, history_agents)):
             agents = filter_agents_by_labels(agents, self.filter_agents_threshold)
             # note the cast is for legacy support of dataset before April 2020
             av_agent = get_ego_as_agent(frame).astype(agents.dtype)
