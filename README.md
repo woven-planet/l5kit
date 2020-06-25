@@ -62,7 +62,7 @@ git clone https://github.com/lyft/l5kit.git ./
 ```
 
 ### 2. Download the datasets
-Register at https://level5.lyft.com/dataset/ and download the [2020 Lyft prediction dataset](https://tinyurl.com/lyft-prediction-dataset). Store all files in a single folder.
+Register at https://self-driving.lyft.com/level5/data/ and download the [2020 Lyft prediction dataset](https://tinyurl.com/lyft-prediction-dataset). Store all files in a single folder.
 The resulting directory structure should be:
 ```
 prediction-dataset/
