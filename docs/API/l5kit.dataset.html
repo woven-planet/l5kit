@@ -83,21 +83,22 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../README.html">ML planning and simulation for self-driving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">ML Prediction, Planning and Simulation for Self-Driving</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../README.html#examples">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../README.html#news">News</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../README.html#overview">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../README.html#installation">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../README.html#license">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../README.html#credits">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#contact">Contact</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="l5kit.data.html">l5kit.data package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">l5kit.dataset package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.agent.html">l5kit.dataset.agent module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.dataloader_builder.html">l5kit.dataset.dataloader_builder module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.ego.html">l5kit.dataset.ego module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.select_agents.html">l5kit.dataset.select_agents module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.utilities.html">l5kit.dataset.utilities module</a></li>
 </ul>
 </li>
 </ul>
@@ -110,7 +111,7 @@
 <li class="toctree-l2"><a class="reference internal" href="l5kit.visualization.html">l5kit.visualization package</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset Formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
 </ul>
 
@@ -317,7 +318,7 @@ of finding the scene boundaries.
 <dl class="py function">
 <dt id="l5kit.dataset.build_dataloader">
 <code class="sig-prename descclassname">l5kit.dataset.</code><code class="sig-name descname">build_dataloader</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cfg</span><span class="p">:</span> <span class="n">Dict</span></em>, <em class="sig-param"><span class="n">split</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">data_manager</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.data.local_data_manager.html#l5kit.data.local_data_manager.DataManager" title="l5kit.data.local_data_manager.DataManager">l5kit.data.local_data_manager.DataManager</a></span></em>, <em class="sig-param"><span class="n">dataset_class</span><span class="p">:</span> <span class="n">Callable</span></em>, <em class="sig-param"><span class="n">rasterizer</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer">l5kit.rasterization.rasterizer.Rasterizer</a></span></em>, <em class="sig-param"><span class="n">perturbation</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="l5kit.kinematic.perturbation.html#l5kit.kinematic.perturbation.Perturbation" title="l5kit.kinematic.perturbation.Perturbation">l5kit.kinematic.perturbation.Perturbation</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; torch.utils.data.dataloader.DataLoader<a class="headerlink" href="#l5kit.dataset.build_dataloader" title="Permalink to this definition">¶</a></dt>
-<dd><p>Util function to build a dataloader from a dataset of dataset_class. Note we have to pass rasterizer and
+<dd><p>Function to build a dataloader from a dataset of dataset_class. Note we have to pass rasterizer and
 perturbation as the factory functions for those are likely to change between repos.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -344,9 +345,9 @@ perturbation as the factory functions for those are likely to change between rep
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.dataset.agent.html">l5kit.dataset.agent module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="l5kit.dataset.dataloader_builder.html">l5kit.dataset.dataloader_builder module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.dataset.ego.html">l5kit.dataset.ego module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.dataset.select_agents.html">l5kit.dataset.select_agents module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="l5kit.dataset.utilities.html">l5kit.dataset.utilities module</a></li>
 </ul>
 </div>
 </div>

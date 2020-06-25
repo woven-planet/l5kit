@@ -1,7 +1,0 @@
-l5kit.dataset.utilities module
-==============================
-
-.. automodule:: l5kit.dataset.utilities
-   :members:
-   :undoc-members:
-   :show-inheritance:

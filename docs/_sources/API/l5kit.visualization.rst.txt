@@ -13,5 +13,5 @@ Submodules
    :maxdepth: 4
 
    l5kit.visualization.gif
-   l5kit.visualization.utilities
+   l5kit.visualization.utils
    l5kit.visualization.video

@@ -14,8 +14,8 @@ Submodules
 
    l5kit.rasterization.box_rasterizer
    l5kit.rasterization.combine_rasterizer
-   l5kit.rasterization.factory
    l5kit.rasterization.rasterizer
+   l5kit.rasterization.rasterizer_builder
    l5kit.rasterization.sat_box_rasterizer
    l5kit.rasterization.satellite_image
    l5kit.rasterization.satellite_rasterizer

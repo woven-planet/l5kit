@@ -1,60 +1,59 @@
-ML planning and simulation for self-driving
+ML Prediction, Planning and Simulation for Self-Driving
 ===
 
-![ML planning and simulation for self-driving](/images/av.jpg)
+![ML prediction, planning and simulation for self-driving](/images/av.jpg)
 
-This repostitory and the associated datasets contains a framework for developing learning-based ML planning and simulation systems for self-driving. State-of-the-art solutions to these problems still require significant amount of hand-engineering and unlike, i.e. perception, didn't benefit much from deep learning and the vast amount of available data.
+This repository and the associated datasets constitute a framework for developing learning-based solutions to prediction, planning and simulation problems in self-driving. State-of-the-art solutions to these problems still require significant amounts of hand-engineering and unlike, for example, perception systems, have not benefited much from deep learning and the vast amount of driving data available.
 
-The purpose of this framework is to make it easier for engineers and researchers to experiment with new approaches to data-driven self-driving planning and simulation in realistic scenarios and this way improve on existing state-of-the-art.
+The purpose of this framework is to enable engineers and researchers to experiment with data-driven approaches to planning and simulation problems using real world driving data and contribute to state-of-the-art solutions.
 
 ![Modern AV pipeline](/images/pipeline.png)
 
-This software is developed by Lyft Level 5 self-driving division but is [open to contributors from outside](how_to_contribute.md).
+This software is developed by Lyft Level 5 self-driving division and is [open to external contributors](how_to_contribute.md).
 
 # Examples
-Things you can build using this framework:
-* Turn planning and simulation problems into data problems and train them on real data.
-* Use neural networks to model key components of autonomous vehicles (AV) stack.
-* Predict future movement of cars around AV derived from historical observations.
-* Plan decisions of AV to immitate human driving.
-* Test performance of AV offline using reactive simulation learned from data.
-* Study the improvement in performance as the amount of data increases.
+You can use this framework to build systems which:
+* Turn prediction, planning and simulation problems into data problems and train them on real data.
+* Use neural networks to model key components of the Autonomous Vehicle (AV) stack.
+* Use historical observations to predict future movement of cars around an AV.
+* Plan behavior of an AV in order to imitate human driving.
+* Study the improvement in performance of these systems as the amount of data increases.
 
 # News
 
 # Overview
-The content of the framework consists of three parts:
+The framework consists of three modules:
 1. **Datasets** - data available for training ML models.
 2. **L5Kit** - the core library supporting functionality for reading the data and framing planning and simulation problems as ML problems.
-3. **Examples** - ever-expanding jupyter notebooks demonstrating use of L5Kit for different tasks in AV.
+3. **Examples** - an ever-expanding collection of jupyter notebooks which demonstrate the use of L5Kit to solve various AV problems.
 
 ## 1. Datasets
 To use the framework you will need to download the Lyft Level 5 Prediction dataset from https://level5.lyft.com/.
 It consists of the following components:
-* 1000h of logged perception output around Lyft AVs operating in Palo Alto in 30sec chunks using [zarr format](data_format.md).
-* Hand-annotated HD semantic map capturing positions of lanes, crosswalks etc stored as protobuf.
-* High-definition aerial picture of the Palo Alto area stored with resolution 8cm per pixel (provided by [NearMap](https://www.nearmap.com/)).
+* 1000 hours of perception output logged by Lyft AVs operating in Palo Alto. This data is stored in 30 second chunks using the [zarr format](data_format.md).
+* [A hand-annotated, HD semantic map](https://medium.com/lyftlevel5/semantic-maps-for-autonomous-vehicles-470830ee28b6). This data is stored using protobuf format.
+* A high-definition aerial map of the Palo Alto area. This image has 8cm per pixel resolution and is provided by [NearMap](https://www.nearmap.com/).
 
-To read more about the dataset and how it was generated read the [dataset whitepaper](https://level5.lyft.com/).
+To read more about the dataset and how it was generated, read the [dataset whitepaper](https://level5.lyft.com/).
 
 ## 2. L5Kit
-A library with the following functionality:
-- Loading drivig scenes from zarr files
-- Reading semantic maps
-- Reading aerial pictures
-- Creating birds-eye-view (BEV) representations around AV and other vehicles
-- Sampling data
-- Training neural networks
-- Visualising results
+L5Kit is a library which lets you:
+- Load driving scenes from zarr files
+- Read semantic maps
+- Read aerial maps
+- Create birds-eye-view (BEV) images which represent a scene around an AV or another vehicle
+- Sample data
+- Train neural networks
+- Visualize results
 
 ## 3. Examples
-The `examples` folder contains examples in jupyter notebook format you can use as a foundation for building your ML planning and simulation solutions. Currently we are providing two examples, with more following soon:
+The `examples` folder contains examples in jupyter notebook format which you can use as a foundation for building your ML planning and simulation solutions. Currently we provide two examples, with more to come soon:
 
-#### Dataset visualisation
-Show how to use L5Kit toolkit to load and visualise samples from a dataset.
+#### Dataset visualization
+A tutorial on how to load and visualize samples from a dataset using L5Kit.
 
 #### Agent motion prediction
-An example of training a neural network to predict future positions of nearby cars around self-driving car. This example is a baseline solution for the Lyft 2020 Kaggle motion prediction challenge.
+An example of training a neural network to predict the future positions of cars nearby an AV. This example is a baseline solution for the Lyft 2020 Kaggle Motion Prediction Challenge.
 
 # Installation
 ### 1. Clone the repo
@@ -63,7 +62,7 @@ git clone https://github.com/lyft/l5kit.git ./
 ```
 
 ### 2. Download the datasets
-Register at https://level5.lyft.com/dataset/ and download the 2020 Lyft prediction dataset and store all files in one folder.
+Register at https://level5.lyft.com/dataset/ and download the [2020 Lyft prediction dataset](https://tinyurl.com/lyft-prediction-dataset). Store all files in a single folder.
 The resulting directory structure should be:
 ```
 prediction-dataset/
@@ -82,7 +81,7 @@ pip install -r requirements.txt
 ### 4. Generate L5Kit code html documentation (optional)
 ```shell
 sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
-sphinx-build . html
+sphinx-build . docs
 ```
 
 ### 5. Run example
@@ -106,6 +105,21 @@ The framework was developed at Lyft Level 5 and is maintained by the following a
 * [Emil Praun](https://www.linkedin.com/in/emil-praun-7597152/)
 * [Liam Kelly](https://www.linkedin.com/in/liam-kelly-83089435/)
 * [Vladimir Iglovikov](https://www.linkedin.com/in/iglovikov/)
+* [Chih Hu](https://www.linkedin.com/in/chihchu/)
 * [Peter Ondruska](https://www.linkedin.com/in/pondruska/)
 
+## Citation
+If you are using L5Kit or dataset in your work please cite the following [whitepaper](https://tinyurl.com/lyft-prediction-dataset):
+```
+@misc{lyft2020,
+title = {One Thousand and One Hours: Self-driving Motion Prediction Dataset},
+author = {Houston, J. and Zuidhof, G. and Bergamini, L. and Ye, Y. and Jain, A. and Omari, S. and Iglovikov, V. and Ondruska, P.},
+year = {2020},
+howpublished = {\url{https://level5.lyft.com/dataset/}}
+```
+
 ![Lyft Level 5](/images/lyft.jpg)
+
+
+# Contact
+If you find problem or have questions about L5Kit please feel free to create [github issue](https://github.com/lyft/l5kit/issues) or reach out to l5kit@lyft.com!

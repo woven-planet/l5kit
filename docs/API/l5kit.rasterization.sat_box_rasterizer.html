@@ -81,15 +81,16 @@
             
             
               <ul>
-<li class="toctree-l1"><a class="reference internal" href="../README.html">ML planning and simulation for self-driving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">ML Prediction, Planning and Simulation for Self-Driving</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../README.html#examples">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../README.html#news">News</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../README.html#overview">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../README.html#installation">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../README.html#license">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../README.html#credits">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#contact">Contact</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../api_reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset Formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
 </ul>
 
@@ -160,7 +161,7 @@
 <span id="l5kit-rasterization-sat-box-rasterizer-module"></span><h1>l5kit.rasterization.sat_box_rasterizer module<a class="headerlink" href="#module-l5kit.rasterization.sat_box_rasterizer" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="l5kit.rasterization.sat_box_rasterizer.SatBoxRasterizer">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.rasterization.sat_box_rasterizer.</code><code class="sig-name descname">SatBoxRasterizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raster_size</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">pixel_size</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ego_center</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">filter_agents_threshold</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">map_im</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">map_to_sat</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">interpolation</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.rasterization.sat_box_rasterizer.SatBoxRasterizer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.rasterization.sat_box_rasterizer.</code><code class="sig-name descname">SatBoxRasterizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raster_size</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">pixel_size</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ego_center</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">filter_agents_threshold</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">history_num_frames</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">map_im</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">map_to_sat</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">interpolation</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.rasterization.sat_box_rasterizer.SatBoxRasterizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.rasterization.rasterizer.Rasterizer</span></code></a></p>
 <p>Combine a Satellite and a Box Rasterizers into a single class</p>
 <dl class="py method">
