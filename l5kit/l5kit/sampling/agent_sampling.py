@@ -1,8 +1,8 @@
-from typing import Optional, Tuple, List
+from typing import List, Optional, Tuple
 
 import numpy as np
 
-from ..data import filter_agents_by_frame, filter_agents_by_labels, get_agent_by_track_id
+from ..data import filter_agents_by_labels
 from ..data.filter import filter_agents_by_track_id
 from ..geometry import rotation33_as_yaw, world_to_image_pixels_matrix
 from ..kinematic import Perturbation
