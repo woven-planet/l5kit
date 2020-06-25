@@ -67,8 +67,9 @@ def check_rasterizer(cfg: dict, rasterizer: Rasterizer, dataset: ChunkedStateDat
         history_step_size = cfg["model_params"]["history_step_size"]
         s = get_history_slice(current_frame, history_num_frames, history_step_size, include_current_state=True)
         frames_to_rasterize = frames[s]
+        agents = [dataset.agents[slice(*(hf["agent_index_interval"]))] for hf in frames_to_rasterize]
 
-        im = rasterizer.rasterize(frames_to_rasterize, dataset.agents)
+        im = rasterizer.rasterize(frames_to_rasterize, agents)
         assert len(im.shape) == 3
         assert im.shape[:2] == tuple(cfg["raster_params"]["raster_size"])
         assert im.shape[2] >= 3

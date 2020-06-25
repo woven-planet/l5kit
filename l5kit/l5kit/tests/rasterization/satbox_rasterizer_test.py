@@ -27,6 +27,7 @@ class SatBoxRasterizerTest(unittest.TestCase):
             map_im=np.zeros((10000, 10000, 3), dtype=np.uint8),
             map_to_sat=map_to_sat,
         )
-
-        out = rast.rasterize(self.dataset.frames[: hist_length + 1], self.dataset.agents)
+        frames = self.dataset.frames[: hist_length + 1]
+        agents = [self.dataset.agents[slice(*(hf["agent_index_interval"]))] for hf in frames]
+        out = rast.rasterize(frames, agents)
         assert out.shape == (224, 224, (hist_length + 1) * 2 + 3)
