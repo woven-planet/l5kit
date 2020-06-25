@@ -28,13 +28,13 @@ The framework consists of three modules:
 3. **Examples** - an ever-expanding collection of jupyter notebooks which demonstrate the use of L5Kit to solve various AV problems.
 
 ## 1. Datasets
-To use the framework you will need to download the Lyft Level 5 Prediction dataset from https://level5.lyft.com/.
+To use the framework you will need to download the Lyft Level 5 Prediction dataset from https://self-driving.lyft.com/level5/data/.
 It consists of the following components:
 * 1000 hours of perception output logged by Lyft AVs operating in Palo Alto. This data is stored in 30 second chunks using the [zarr format](data_format.md).
 * [A hand-annotated, HD semantic map](https://medium.com/lyftlevel5/semantic-maps-for-autonomous-vehicles-470830ee28b6). This data is stored using protobuf format.
 * A high-definition aerial map of the Palo Alto area. This image has 8cm per pixel resolution and is provided by [NearMap](https://www.nearmap.com/).
 
-To read more about the dataset and how it was generated, read the [dataset whitepaper](https://level5.lyft.com/).
+To read more about the dataset and how it was generated, read the [dataset whitepaper](https://tinyurl.com/lyft-prediction-dataset).
 
 ## 2. L5Kit
 L5Kit is a library which lets you:
@@ -115,7 +115,7 @@ If you are using L5Kit or dataset in your work please cite the following [whitep
 title = {One Thousand and One Hours: Self-driving Motion Prediction Dataset},
 author = {Houston, J. and Zuidhof, G. and Bergamini, L. and Ye, Y. and Jain, A. and Omari, S. and Iglovikov, V. and Ondruska, P.},
 year = {2020},
-howpublished = {\url{https://level5.lyft.com/dataset/}}
+howpublished = {\url{https://self-driving.lyft.com/}}
 ```
 
 ![Lyft Level 5](/images/lyft.jpg)
