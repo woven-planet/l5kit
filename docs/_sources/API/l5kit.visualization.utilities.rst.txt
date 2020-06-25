@@ -1,7 +1,0 @@
-l5kit.visualization.utilities module
-====================================
-
-.. automodule:: l5kit.visualization.utilities
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -1,13 +1,13 @@
-Dataset formats
+Dataset Formats
 ===
 
 ## Introduction
-In the L5Kit codebase we make use of a data format that consists of a set of [numpy structured arrays](https://docs.scipy.org/doc/numpy/user/basics.rec.html). Conceptually, it is similar to a set of CSV files with records and different columns, only they are stored as a binary files instead of text. Structured arrays can be directly memory mapped from disk.
+In the L5Kit codebase, we make use of a data format that consists of a set of [numpy structured arrays](https://docs.scipy.org/doc/numpy/user/basics.rec.html). Conceptually, it is similar to a set of CSV files with records and different columns, only that they are stored as binary files instead of text. Structured arrays can be directly memory mapped from disk.
 
 ### Interleaved data in structured arrays
-Structured arrays are stored in memory in an interleaved format, this means that one "row" or "sample" is grouped together in memory. For example, if we are storing colors and whether we like them (as a boolean `l`), it would be `[r,g,b,l,r,g,b,l,r,g,b,l]` and not `[r,r,r,g,g,g,b,b,b,l,l,l]`). Most ML applications require row based access, column-based operations are much less common, making this a good fit.
+Structured arrays are stored in memory in an interleaved format, this means that one "row" or "sample" is grouped together in memory. For example, if we are storing colors and whether we like them (as a boolean `l`), it would be `[r,g,b,l,r,g,b,l,r,g,b,l]` and not `[r,r,r,g,g,g,b,b,b,l,l,l]`). Most ML applications require row-based access - column-based operations are much less common - making this a good fit.
 
-Here is what that looks like in code:
+Here is how this example translates into code:
 
 ```python 
 import numpy as np
@@ -17,7 +17,7 @@ print(my_arr[0])
 # ([0, 0, 0], False)
 ```
 
-Let's add some data and see what the array looks like.
+Let's add some data and see what the array looks like:
 
 ```python
 my_arr[0]["color"] = [0, 218, 130]
@@ -34,12 +34,12 @@ print(my_arr.tobytes())
 # b'\x00\xda\x82\x01\xf5;\xff\x01\x00\x00\x00\x00')
 ```
 
-As you can see with structured arrays we can mix different datatypes into a single array, and in the byte representation one sample is grouped together. Now imagine that we have such an array on disk with millions of values, reading the first 100 values is a matter of reading the first 100*(3+1) bytes. If we had a separate array for each of the different fields we would have to read from 4 smaller files.
+As you can see, structured arrays allow us to mix different data types into a single array, and the byte representation lets us group samples together. Now imagine that we have such an array on disk with millions of values. Reading the first 100 values turns into a matter of reading the first 100*(3+1) bytes. If we had a separate array for each of the different fields we would have to read from 4 smaller files.
 
-This becomes increasingly relevant with a larger number of fields and complexity of each field. In our dataset an observation of another agent is described with its centroid (`dtype=(float64, 3)`), its rotation matrix (`dtype=(np.float64, (3,3))`), its extent or size (`dtype=(np.float64, 3)`), and more. Structured arrays are a great fit to group this data together in memory and on disk.
+This becomes increasingly relevant with a larger number of fields and complexities of each field. In our dataset, an observation of another agent is described with its centroid (`dtype=(float64, 3)`), its rotation matrix (`dtype=(np.float64, (3,3))`), its extent or size (`dtype=(np.float64, 3)`) to name a few properties. Structured arrays are a great fit to group this data together in memory and on disk.
 
 ### Short introduction to zarr
-We use the zarr data format to store and read these numpy structured arrays from disk. Zarr allows us to write very large (structured) arrays to disk in n-dimensional compressed chunks. See the [zarr docs](https://zarr.readthedocs.io/en/stable/) also. Here is a short tutorial:
+We use the zarr data format to store and read these numpy structured arrays from disk. Zarr allows us to write very large (structured) arrays to disk in n-dimensional compressed chunks. See the [zarr docs](https://zarr.readthedocs.io/en/stable/). Here is a short tutorial:
 
 ```python
 import zarr
@@ -51,7 +51,7 @@ z = zarr.open("./path/to/dataset.zarr", mode="w", shape=(500,), dtype=np.float32
 z[0:150] = np.arange(150)
 ```
 
-As we specified chunks to be size 100 here, we just wrote to two separate chunks. On your filesystem in the `dataset.zarr` folder you will now find these two chunks. As we didn't completely fill the second chunk, those missing values will be set to the fill value (defaults to 0). The chunks are actually compressed on disk too! We can print some info:
+As we specified chunks to be of size 100, we just wrote to two separate chunks. On your filesystem in the `dataset.zarr` folder you will now find these two chunks. As we didn't completely fill the second chunk, those missing values will be set to the fill value (defaults to 0). The chunks are actually compressed on disk too! We can print some info:
 
 ```python
 print(z.info)
@@ -69,7 +69,7 @@ print(z.info)
 # Chunks initialized : 2/5
 ```
 
-By not doing much work at all we saved almost 75% of disk space!
+By not doing much work at all we saved almost 75% in disk space!
 
 Reading from a zarr array is as easy as slicing from it like you would any numpy array. The return value is an ordinary numpy array. Zarr takes care of determining which chunks to read from.
 
@@ -84,10 +84,10 @@ print(z[::20]) # Read every 20th value
 
 Zarr supports StructuredArrays, the data format we use for our datasets are a set of structured arrays stored in zarr format.
 
-Some other zarr benefits:
+Some other zarr benefits are:
 
-* Safe to use in a multithreaded or multiprocessed setup. Reading is entirely safe, for writing there are lock mechanisms built-in.
-* If you have a dataset that is too large to fit in memory, loading a single sample really just becomes `my_sample = z[sample_index]` and you get compression out of the box.
+* Safe to use in a multithreading or multiprocessing setup. Reading is entirely safe, for writing there are lock mechanisms built-in.
+* If you have a dataset that is too large to fit in memory, loading a single sample becomes `my_sample = z[sample_index]` and you get compression out of the box.
 * The blosc compressor is so fast that it is faster to read the compressed data and uncompress it than reading the uncompressed data from disk.
 * Zarr supports multiple backend stores, your data could also live in a zip file, or even a remote server or S3 bucket.
 * Other libraries such as xarray, Dask and TensorStore have good interoperability with Zarr.
@@ -97,7 +97,7 @@ Some other zarr benefits:
 The 2020 Lyft competition dataset is stored in three structured arrays: `scenes`, `frames` and `agents`.
 
 ### Scenes
-A scene is identified by the host (i.e. which car was used to collect it) and a start and end time. It consists of multiple frames (=discretized measurements), in the scene datatype we store the start and end index in the `frames` array described below that correspond to this scene.
+A scene is identified by the host (i.e. which car was used to collect it) and a start and end time. It consists of multiple frames (= discretized measurements), in the scene datatype we store the start and end index in the `frames` array described below that correspond to this scene.
 
 ```python
 SCENE_DTYPE = [

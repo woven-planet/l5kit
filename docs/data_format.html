@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>Dataset formats &mdash; L5Kit 1.0.0 documentation</title>
+  <title>Dataset Formats &mdash; L5Kit 1.0.0 documentation</title>
   
 
   
@@ -83,15 +83,16 @@
             
             
               <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="README.html">ML planning and simulation for self-driving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html">ML Prediction, Planning and Simulation for Self-Driving</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#examples">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#news">News</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#overview">Overview</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#installation">Installation</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#license">License</a></li>
 <li class="toctree-l1"><a class="reference internal" href="README.html#credits">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="README.html#contact">Contact</a></li>
 <li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Dataset formats</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Dataset Formats</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#interleaved-data-in-structured-arrays">Interleaved data in structured arrays</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#short-introduction-to-zarr">Short introduction to zarr</a></li>
@@ -152,7 +153,7 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Dataset formats</li>
+      <li>Dataset Formats</li>
     
     
       <li class="wy-breadcrumbs-aside">
@@ -172,14 +173,14 @@
            <div itemprop="articleBody">
             
   <div class="section" id="dataset-formats">
-<h1>Dataset formats<a class="headerlink" href="#dataset-formats" title="Permalink to this headline">¶</a></h1>
+<h1>Dataset Formats<a class="headerlink" href="#dataset-formats" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="introduction">
 <h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
-<p>In the L5Kit codebase we make use of a data format that consists of a set of <a class="reference external" href="https://docs.scipy.org/doc/numpy/user/basics.rec.html">numpy structured arrays</a>. Conceptually, it is similar to a set of CSV files with records and different columns, only they are stored as a binary files instead of text. Structured arrays can be directly memory mapped from disk.</p>
+<p>In the L5Kit codebase, we make use of a data format that consists of a set of <a class="reference external" href="https://docs.scipy.org/doc/numpy/user/basics.rec.html">numpy structured arrays</a>. Conceptually, it is similar to a set of CSV files with records and different columns, only that they are stored as binary files instead of text. Structured arrays can be directly memory mapped from disk.</p>
 <div class="section" id="interleaved-data-in-structured-arrays">
 <h3>Interleaved data in structured arrays<a class="headerlink" href="#interleaved-data-in-structured-arrays" title="Permalink to this headline">¶</a></h3>
-<p>Structured arrays are stored in memory in an interleaved format, this means that one “row” or “sample” is grouped together in memory. For example, if we are storing colors and whether we like them (as a boolean <code class="docutils literal notranslate"><span class="pre">l</span></code>), it would be <code class="docutils literal notranslate"><span class="pre">[r,g,b,l,r,g,b,l,r,g,b,l]</span></code> and not <code class="docutils literal notranslate"><span class="pre">[r,r,r,g,g,g,b,b,b,l,l,l]</span></code>). Most ML applications require row based access, column-based operations are much less common, making this a good fit.</p>
-<p>Here is what that looks like in code:</p>
+<p>Structured arrays are stored in memory in an interleaved format, this means that one “row” or “sample” is grouped together in memory. For example, if we are storing colors and whether we like them (as a boolean <code class="docutils literal notranslate"><span class="pre">l</span></code>), it would be <code class="docutils literal notranslate"><span class="pre">[r,g,b,l,r,g,b,l,r,g,b,l]</span></code> and not <code class="docutils literal notranslate"><span class="pre">[r,r,r,g,g,g,b,b,b,l,l,l]</span></code>). Most ML applications require row-based access - column-based operations are much less common - making this a good fit.</p>
+<p>Here is how this example translates into code:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="n">my_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)])</span>
 
@@ -187,7 +188,7 @@
 <span class="c1"># ([0, 0, 0], False)</span>
 </pre></div>
 </div>
-<p>Let’s add some data and see what the array looks like.</p>
+<p>Let’s add some data and see what the array looks like:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">218</span><span class="p">,</span> <span class="mi">130</span><span class="p">]</span>
 <span class="n">my_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">my_arr</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">245</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">255</span><span class="p">]</span>
@@ -202,12 +203,12 @@
 <span class="c1"># b&#39;\x00\xda\x82\x01\xf5;\xff\x01\x00\x00\x00\x00&#39;)</span>
 </pre></div>
 </div>
-<p>As you can see with structured arrays we can mix different datatypes into a single array, and in the byte representation one sample is grouped together. Now imagine that we have such an array on disk with millions of values, reading the first 100 values is a matter of reading the first 100*(3+1) bytes. If we had a separate array for each of the different fields we would have to read from 4 smaller files.</p>
-<p>This becomes increasingly relevant with a larger number of fields and complexity of each field. In our dataset an observation of another agent is described with its centroid (<code class="docutils literal notranslate"><span class="pre">dtype=(float64,</span> <span class="pre">3)</span></code>), its rotation matrix (<code class="docutils literal notranslate"><span class="pre">dtype=(np.float64,</span> <span class="pre">(3,3))</span></code>), its extent or size (<code class="docutils literal notranslate"><span class="pre">dtype=(np.float64,</span> <span class="pre">3)</span></code>), and more. Structured arrays are a great fit to group this data together in memory and on disk.</p>
+<p>As you can see, structured arrays allow us to mix different data types into a single array, and the byte representation lets us group samples together. Now imagine that we have such an array on disk with millions of values. Reading the first 100 values turns into a matter of reading the first 100*(3+1) bytes. If we had a separate array for each of the different fields we would have to read from 4 smaller files.</p>
+<p>This becomes increasingly relevant with a larger number of fields and complexities of each field. In our dataset, an observation of another agent is described with its centroid (<code class="docutils literal notranslate"><span class="pre">dtype=(float64,</span> <span class="pre">3)</span></code>), its rotation matrix (<code class="docutils literal notranslate"><span class="pre">dtype=(np.float64,</span> <span class="pre">(3,3))</span></code>), its extent or size (<code class="docutils literal notranslate"><span class="pre">dtype=(np.float64,</span> <span class="pre">3)</span></code>) to name a few properties. Structured arrays are a great fit to group this data together in memory and on disk.</p>
 </div>
 <div class="section" id="short-introduction-to-zarr">
 <h3>Short introduction to zarr<a class="headerlink" href="#short-introduction-to-zarr" title="Permalink to this headline">¶</a></h3>
-<p>We use the zarr data format to store and read these numpy structured arrays from disk. Zarr allows us to write very large (structured) arrays to disk in n-dimensional compressed chunks. See the <a class="reference external" href="https://zarr.readthedocs.io/en/stable/">zarr docs</a> also. Here is a short tutorial:</p>
+<p>We use the zarr data format to store and read these numpy structured arrays from disk. Zarr allows us to write very large (structured) arrays to disk in n-dimensional compressed chunks. See the <a class="reference external" href="https://zarr.readthedocs.io/en/stable/">zarr docs</a>. Here is a short tutorial:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zarr</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
@@ -217,7 +218,7 @@
 <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">150</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">150</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>As we specified chunks to be size 100 here, we just wrote to two separate chunks. On your filesystem in the <code class="docutils literal notranslate"><span class="pre">dataset.zarr</span></code> folder you will now find these two chunks. As we didn’t completely fill the second chunk, those missing values will be set to the fill value (defaults to 0). The chunks are actually compressed on disk too! We can print some info:</p>
+<p>As we specified chunks to be of size 100, we just wrote to two separate chunks. On your filesystem in the <code class="docutils literal notranslate"><span class="pre">dataset.zarr</span></code> folder you will now find these two chunks. As we didn’t completely fill the second chunk, those missing values will be set to the fill value (defaults to 0). The chunks are actually compressed on disk too! We can print some info:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
 <span class="c1"># Type               : zarr.core.Array</span>
 <span class="c1"># Data type          : float32</span>
@@ -233,7 +234,7 @@
 <span class="c1"># Chunks initialized : 2/5</span>
 </pre></div>
 </div>
-<p>By not doing much work at all we saved almost 75% of disk space!</p>
+<p>By not doing much work at all we saved almost 75% in disk space!</p>
 <p>Reading from a zarr array is as easy as slicing from it like you would any numpy array. The return value is an ordinary numpy array. Zarr takes care of determining which chunks to read from.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">z</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
 <span class="c1"># [0. 1. 2. 3. 4. 5. 6. 7. 8. 9.]</span>
@@ -244,10 +245,10 @@
 </pre></div>
 </div>
 <p>Zarr supports StructuredArrays, the data format we use for our datasets are a set of structured arrays stored in zarr format.</p>
-<p>Some other zarr benefits:</p>
+<p>Some other zarr benefits are:</p>
 <ul class="simple">
-<li><p>Safe to use in a multithreaded or multiprocessed setup. Reading is entirely safe, for writing there are lock mechanisms built-in.</p></li>
-<li><p>If you have a dataset that is too large to fit in memory, loading a single sample really just becomes <code class="docutils literal notranslate"><span class="pre">my_sample</span> <span class="pre">=</span> <span class="pre">z[sample_index]</span></code> and you get compression out of the box.</p></li>
+<li><p>Safe to use in a multithreading or multiprocessing setup. Reading is entirely safe, for writing there are lock mechanisms built-in.</p></li>
+<li><p>If you have a dataset that is too large to fit in memory, loading a single sample becomes <code class="docutils literal notranslate"><span class="pre">my_sample</span> <span class="pre">=</span> <span class="pre">z[sample_index]</span></code> and you get compression out of the box.</p></li>
 <li><p>The blosc compressor is so fast that it is faster to read the compressed data and uncompress it than reading the uncompressed data from disk.</p></li>
 <li><p>Zarr supports multiple backend stores, your data could also live in a zip file, or even a remote server or S3 bucket.</p></li>
 <li><p>Other libraries such as xarray, Dask and TensorStore have good interoperability with Zarr.</p></li>
@@ -260,7 +261,7 @@
 <p>The 2020 Lyft competition dataset is stored in three structured arrays: <code class="docutils literal notranslate"><span class="pre">scenes</span></code>, <code class="docutils literal notranslate"><span class="pre">frames</span></code> and <code class="docutils literal notranslate"><span class="pre">agents</span></code>.</p>
 <div class="section" id="scenes">
 <h3>Scenes<a class="headerlink" href="#scenes" title="Permalink to this headline">¶</a></h3>
-<p>A scene is identified by the host (i.e. which car was used to collect it) and a start and end time. It consists of multiple frames (=discretized measurements), in the scene datatype we store the start and end index in the <code class="docutils literal notranslate"><span class="pre">frames</span></code> array described below that correspond to this scene.</p>
+<p>A scene is identified by the host (i.e. which car was used to collect it) and a start and end time. It consists of multiple frames (= discretized measurements), in the scene datatype we store the start and end index in the <code class="docutils literal notranslate"><span class="pre">frames</span></code> array described below that correspond to this scene.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SCENE_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="s2">&quot;frame_index_interval&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
     <span class="p">(</span><span class="s2">&quot;host&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;U16&quot;</span><span class="p">),</span>  <span class="c1"># Unicode string up to 16 chars</span>

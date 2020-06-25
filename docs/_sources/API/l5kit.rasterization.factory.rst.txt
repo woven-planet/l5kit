@@ -1,7 +1,0 @@
-l5kit.rasterization.factory module
-==================================
-
-.. automodule:: l5kit.rasterization.factory
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -13,6 +13,6 @@ Submodules
    :maxdepth: 4
 
    l5kit.dataset.agent
+   l5kit.dataset.dataloader_builder
    l5kit.dataset.ego
    l5kit.dataset.select_agents
-   l5kit.dataset.utilities
