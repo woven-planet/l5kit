@@ -76,7 +76,10 @@ None if not desired
         """
         frame_interval = self.dataset.scenes[scene_index]["frame_index_interval"]
         frames = self.dataset.frames[frame_interval[0] : frame_interval[1]]
-        agents = self.dataset.agents[frames[0]["agent_index_interval"][0] : frames[-1]["agent_index_interval"][1]]
+
+        start_agent_index = frames[0]["agent_index_interval"][0]
+        end_agent_index = frames[-1]["agent_index_interval"][1]
+        agents = self.dataset.agents[start_agent_index:end_agent_index]
 
         data = self.sample_function(state_index, frames, agents, track_id)
         # 0,1,C -> C,0,1
