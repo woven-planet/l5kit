@@ -20,6 +20,7 @@ You can use this framework to build systems which:
 * Study the improvement in performance of these systems as the amount of data increases.
 
 # News
+- 06-25-2020: Docs and API available at https://lyft.github.io/l5kit/ (thanks Kevin Zhao!)
 
 # Overview
 The framework consists of three modules:
