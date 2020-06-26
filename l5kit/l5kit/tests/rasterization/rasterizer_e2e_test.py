@@ -7,7 +7,7 @@ import numpy as np
 import pytest
 
 from l5kit.configs import load_config_data
-from l5kit.data import ChunkedStateDataset, LocalDataManager, get_frames_agents
+from l5kit.data import ChunkedStateDataset, LocalDataManager, filter_agents_by_frames
 from l5kit.data.proto.road_network_pb2 import Lane, MapElement, MapFragment
 from l5kit.rasterization import Rasterizer, build_rasterizer
 from l5kit.sampling import get_history_slice
@@ -67,7 +67,7 @@ def check_rasterizer(cfg: dict, rasterizer: Rasterizer, dataset: ChunkedStateDat
         history_step_size = cfg["model_params"]["history_step_size"]
         s = get_history_slice(current_frame, history_num_frames, history_step_size, include_current_state=True)
         frames_to_rasterize = frames[s]
-        agents = get_frames_agents(frames_to_rasterize, dataset.agents)
+        agents = filter_agents_by_frames(frames_to_rasterize, dataset.agents)
 
         im = rasterizer.rasterize(frames_to_rasterize, agents)
         assert len(im.shape) == 3

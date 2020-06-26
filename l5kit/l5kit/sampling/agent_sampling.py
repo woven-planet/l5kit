@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple
 import numpy as np
 
 from ..data import filter_agents_by_labels
-from ..data.filter import get_agent_by_track_id, get_frames_agents
+from ..data.filter import filter_agents_by_frames, get_agent_by_track_id
 from ..geometry import rotation33_as_yaw, world_to_image_pixels_matrix
 from ..kinematic import Perturbation
 from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
@@ -86,11 +86,11 @@ expressed in pixels (to be changed).
     #  the history slice is ordered starting from the latest frame and goes backward in time., ex. slice(100, 91, -2)
     history_slice = get_history_slice(state_index, history_num_frames, history_step_size, include_current_state=True)
     history_frames = frames[history_slice]
-    history_agents = get_frames_agents(history_frames, agents)
+    history_agents = filter_agents_by_frames(history_frames, agents)
 
     future_slice = get_future_slice(state_index, future_num_frames, future_step_size)
     future_frames = frames[future_slice]
-    future_agents = get_frames_agents(future_frames, agents)
+    future_agents = filter_agents_by_frames(future_frames, agents)
 
     if perturbation is not None:
         history_frames, future_frames = perturbation.perturb(

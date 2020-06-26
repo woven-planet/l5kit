@@ -102,10 +102,10 @@ def get_agent_by_track_id(agents_frame: np.ndarray, track_id: int) -> Optional[n
         return None
 
 
-def get_frames_agents(frames: np.ndarray, agents: np.ndarray) -> List[np.ndarray]:
+def filter_agents_by_frames(frames: np.ndarray, agents: np.ndarray) -> List[np.ndarray]:
     """
-    Get a list of agents array, one per frame. Note that "agent_index_interval" is used to get agents,
-    so you should take care of re-setting it if you have sliced agents.
+    Get a list of agents array, one array per frame. Note that "agent_index_interval" is used to filter agents,
+    so you should take care of re-setting it if you have previously sliced agents.
 
     Args:
         frames (np.ndarray): an array of frames
