@@ -34,7 +34,7 @@ It consists of the following components:
 * [A hand-annotated, HD semantic map](https://medium.com/lyftlevel5/semantic-maps-for-autonomous-vehicles-470830ee28b6). This data is stored using protobuf format.
 * A high-definition aerial map of the Palo Alto area. This image has 8cm per pixel resolution and is provided by [NearMap](https://www.nearmap.com/).
 
-To read more about the dataset and how it was generated, read the [dataset whitepaper](https://tinyurl.com/lyft-prediction-dataset).
+To read more about the dataset and how it was generated, read the [dataset whitepaper](https://arxiv.org/abs/2006.14480).
 
 ## 2. L5Kit
 L5Kit is a library which lets you:
@@ -109,7 +109,7 @@ The framework was developed at Lyft Level 5 and is maintained by the following a
 * [Peter Ondruska](https://www.linkedin.com/in/pondruska/)
 
 ## Citation
-If you are using L5Kit or dataset in your work please cite the following [whitepaper](https://tinyurl.com/lyft-prediction-dataset):
+If you are using L5Kit or dataset in your work please cite the following [whitepaper](https://arxiv.org/abs/2006.14480):
 ```
 @misc{lyft2020,
 title = {One Thousand and One Hours: Self-driving Motion Prediction Dataset},
