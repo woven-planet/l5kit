@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -41,7 +41,7 @@ class SatelliteRasterizer(Rasterizer):
         self.map_pixel_scale = (1 / np.linalg.norm(map_to_sat[0, 0:3]) + 1 / np.linalg.norm(map_to_sat[1, 0:3])) / 2
 
     def rasterize(
-        self, history_frames: np.ndarray, all_agents: np.ndarray, agent: Optional[np.ndarray] = None
+        self, history_frames: np.ndarray, history_agents: List[np.ndarray], agent: Optional[np.ndarray] = None
     ) -> np.ndarray:
 
         if agent is None:

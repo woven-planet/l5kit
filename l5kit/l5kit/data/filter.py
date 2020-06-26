@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import List, Optional
 
 import numpy as np
 
@@ -83,22 +83,35 @@ def filter_agents_by_track_id(agents: np.ndarray, track_id: int) -> np.ndarray:
     return agents[np.nonzero(agents["track_id"] == track_id)[0]]
 
 
-def get_agent_by_track_id(all_agents: np.ndarray, frame: np.ndarray, track_id: int) -> Optional[np.ndarray]:
+def get_agent_by_track_id(agents_frame: np.ndarray, track_id: int) -> Optional[np.ndarray]:
     """Return the agent object (np.ndarray) of a given track_id in a frame.
     Return None if the agent is not among those in the frame.
 
     Arguments:
-        all_agents (np.ndarray): agents array
-        frame (np.ndarray): given frame
+        agents_frame (np.ndarray): frame agents array
         track_id (int): agent track id to select
 
     Returns:
         Optional[np.ndarray] -- Selected agent, or None if this agent is not present in given frame.
     """
 
-    agents = filter_agents_by_frame(all_agents, frame)
     try:
-        agent = filter_agents_by_track_id(agents, track_id)[0]
+        agent = filter_agents_by_track_id(agents_frame, track_id)[0]
         return agent
     except IndexError:  # no agent for track_id in this frame
         return None
+
+
+def filter_agents_by_frames(frames: np.ndarray, agents: np.ndarray) -> List[np.ndarray]:
+    """
+    Get a list of agents array, one array per frame. Note that "agent_index_interval" is used to filter agents,
+    so you should take care of re-setting it if you have previously sliced agents.
+
+    Args:
+        frames (np.ndarray): an array of frames
+        agents (np.ndarray): an array of agents
+
+    Returns:
+        List[np.ndarray] with the agents divided by frame
+    """
+    return [agents[slice(*frame["agent_index_interval"])] for frame in frames]
