@@ -113,10 +113,13 @@ The framework was developed at Lyft Level 5 and is maintained by the following a
 If you are using L5Kit or dataset in your work please cite the following [whitepaper](https://arxiv.org/abs/2006.14480):
 ```
 @misc{lyft2020,
-title = {One Thousand and One Hours: Self-driving Motion Prediction Dataset},
-author = {Houston, J. and Zuidhof, G. and Bergamini, L. and Ye, Y. and Jain, A. and Omari, S. and Iglovikov, V. and Ondruska, P.},
-year = {2020},
-howpublished = {\url{https://self-driving.lyft.com/}}
+    title={One Thousand and One Hours: Self-driving Motion Prediction Dataset},
+    author={John Houston and Guido Zuidhof and Luca Bergamini and Yawei Ye and Ashesh Jain and Sammy Omari and Vladimir Iglovikov and Peter Ondruska},
+    year={2020},
+    eprint={2006.14480},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
 ```
 
 ![Lyft Level 5](/images/lyft.jpg)
