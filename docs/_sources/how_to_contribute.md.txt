@@ -12,14 +12,14 @@ You will be required to sign a contributor agreement license upon a pull request
 
 ## Installing l5kit as a developer
 Run:
-```shell script
+```shell
 pip install -r requirements.txt 
 ```
 to install all developer dependencies along with l5kit in editable (-e) mode.
 
 ## Code Sanity checks
 Before starting a PR, it is highly recommended to also install the git pre-commit hooks, run:
-```shell script
+```shell
 pre-commit install 
 ```
 This will run all required code checks before each commit and it ensures your builds 
@@ -30,7 +30,7 @@ If, on the other hand, you want to run individual checks, please refer to the in
 ## Testing
 To run the tests, run:
 
-```shell script
+```shell
 ./run_tests.sh tests
 ```
 
@@ -38,7 +38,7 @@ To run the tests, run:
 
 To generate a test coverage report, run:
 
-```shell script
+```shell
 # Outputs to std out
 pytest --cov
 
@@ -50,7 +50,7 @@ pytest --cov --cov-report html
 
 To run type checking with mypy, run:
 
-```shell script
+```shell
 ./run_tests.sh types
 ```
 
@@ -60,7 +60,7 @@ We use [Black](https://black.readthedocs.io/en/stable/) for automatic formatting
 
 You can check against those by running:
 
-```shell script
+```shell
 ./run_tests.sh lint
 
 ```
