@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple
 import numpy as np
 
 from ..data import filter_agents_by_labels
-from ..data.filter import filter_agents_by_track_id
+from ..data.filter import get_agent_by_track_id, get_frames_agents
 from ..geometry import rotation33_as_yaw, world_to_image_pixels_matrix
 from ..kinematic import Perturbation
 from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
@@ -81,15 +81,16 @@ expressed in pixels (to be changed).
 
     """
     agent_index_start = frames[0]["agent_index_interval"][0]
+    frames["agent_index_interval"] -= agent_index_start  # sync interval with the agents array
 
     #  the history slice is ordered starting from the latest frame and goes backward in time., ex. slice(100, 91, -2)
     history_slice = get_history_slice(state_index, history_num_frames, history_step_size, include_current_state=True)
     history_frames = frames[history_slice]
-    history_agents = [agents[slice(*(hf["agent_index_interval"] - agent_index_start))] for hf in history_frames]
+    history_agents = get_frames_agents(history_frames, agents)
 
     future_slice = get_future_slice(state_index, future_num_frames, future_step_size)
     future_frames = frames[future_slice]
-    future_agents = [agents[slice(*(ff["agent_index_interval"] - agent_index_start))] for ff in future_frames]
+    future_agents = get_frames_agents(future_frames, agents)
 
     if perturbation is not None:
         history_frames, future_frames = perturbation.perturb(
@@ -108,9 +109,8 @@ expressed in pixels (to be changed).
     else:
         # we must ensure the requested track is in the cur frame
         # otherwise we can not center it in the frame
-        try:
-            agent = filter_agents_by_track_id(cur_agents, selected_track_id)[0]
-        except IndexError:  # no agent for track_id in this frame
+        agent = get_agent_by_track_id(cur_agents, selected_track_id)
+        if agent is None:
             raise ValueError(f" track_id {selected_track_id} not in frame")
 
         if agent not in filter_agents_by_labels(cur_agents, filter_agents_threshold):
@@ -171,11 +171,11 @@ def _create_targets_for_deep_prediction(
             future_agent_yaw = rotation33_as_yaw(frame["ego_rotation"])
         else:
             # it's not guaranteed the target will be in every future frame
-            try:
-                future_agent = filter_agents_by_track_id(agents, selected_track_id)[0]
-            except IndexError:  # no agent for track_id in this frame
+            future_agent = get_agent_by_track_id(agents, selected_track_id)
+            if future_agent is None:
                 future_availability[i] = 0.0  # keep track of invalid futures
                 continue
+
             future_agent_centroid = future_agent["centroid"]
             future_agent_yaw = future_agent["yaw"]
 

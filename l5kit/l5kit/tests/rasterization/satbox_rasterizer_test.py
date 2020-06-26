@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from l5kit.data import ChunkedStateDataset
+from l5kit.data import ChunkedStateDataset, get_frames_agents
 from l5kit.rasterization import SatBoxRasterizer
 
 
@@ -28,6 +28,6 @@ class SatBoxRasterizerTest(unittest.TestCase):
             map_to_sat=map_to_sat,
         )
         frames = self.dataset.frames[: hist_length + 1]
-        agents = [self.dataset.agents[slice(*(hf["agent_index_interval"]))] for hf in frames]
+        agents = get_frames_agents(frames, self.dataset.agents)
         out = rast.rasterize(frames, agents)
         assert out.shape == (224, 224, (hist_length + 1) * 2 + 3)

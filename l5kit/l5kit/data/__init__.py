@@ -1,5 +1,5 @@
 from .combine import get_combined_scenes
-from .filter import filter_agents_by_frame, filter_agents_by_labels, get_agent_by_track_id
+from .filter import filter_agents_by_frame, filter_agents_by_labels, get_agent_by_track_id, get_frames_agents
 from .labels import LABEL_TO_INDEX, LABELS
 from .local_data_manager import DataManager, LocalDataManager
 from .map import load_pose_to_ecef, load_semantic_map
@@ -18,6 +18,7 @@ __all__ = [
     "filter_agents_by_frame",
     "filter_agents_by_labels",
     "get_agent_by_track_id",
+    "get_frames_agents",
     "load_semantic_map",
     "load_pose_to_ecef",
 ]

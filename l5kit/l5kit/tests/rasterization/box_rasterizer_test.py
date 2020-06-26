@@ -2,7 +2,7 @@ import unittest
 
 import numpy as np
 
-from l5kit.data import AGENT_DTYPE, ChunkedStateDataset
+from l5kit.data import AGENT_DTYPE, ChunkedStateDataset, get_frames_agents
 from l5kit.rasterization.box_rasterizer import BoxRasterizer, draw_boxes
 
 
@@ -33,7 +33,7 @@ class BoxRasterizerTest(unittest.TestCase):
         self.dataset = ChunkedStateDataset(path="./l5kit/tests/data/single_scene.zarr")
         self.dataset.open()
         self.hist_frames = self.dataset.frames[100:101]  # we know this has agents
-        self.hist_agents = [self.dataset.agents[slice(*(hf["agent_index_interval"]))] for hf in self.hist_frames]
+        self.hist_agents = get_frames_agents(self.hist_frames, self.dataset.agents)
 
     def test_ego_center(self) -> None:
         values = [(0.5, 0.5), (0.25, 0.5), (0.75, 0.5), (0.5, 0.25), (0.5, 0.75)]
