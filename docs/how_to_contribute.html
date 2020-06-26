@@ -180,7 +180,7 @@ These are peer-reviewed by the development team to maintain quality and reproduc
 <div class="section" id="installing-l5kit-as-a-developer">
 <h2>Installing l5kit as a developer<a class="headerlink" href="#installing-l5kit-as-a-developer" title="Permalink to this headline">¶</a></h2>
 <p>Run:</p>
-<div class="highlight-shell script notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt 
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt 
 </pre></div>
 </div>
 <p>to install all developer dependencies along with l5kit in editable (-e) mode.</p>
@@ -188,7 +188,7 @@ These are peer-reviewed by the development team to maintain quality and reproduc
 <div class="section" id="code-sanity-checks">
 <h2>Code Sanity checks<a class="headerlink" href="#code-sanity-checks" title="Permalink to this headline">¶</a></h2>
 <p>Before starting a PR, it is highly recommended to also install the git pre-commit hooks, run:</p>
-<div class="highlight-shell script notranslate"><div class="highlight"><pre><span></span>pre-commit install 
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pre-commit install 
 </pre></div>
 </div>
 <p>This will run all required code checks before each commit and it ensures your builds
@@ -198,17 +198,17 @@ won’t fail in CI.</p>
 <div class="section" id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <p>To run the tests, run:</p>
-<div class="highlight-shell script notranslate"><div class="highlight"><pre><span></span>./run_tests.sh tests
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./run_tests.sh tests
 </pre></div>
 </div>
 </div>
 <div class="section" id="coverage-report">
 <h2>Coverage report<a class="headerlink" href="#coverage-report" title="Permalink to this headline">¶</a></h2>
 <p>To generate a test coverage report, run:</p>
-<div class="highlight-shell script notranslate"><div class="highlight"><pre><span></span># Outputs to std out
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Outputs to std out</span>
 pytest --cov
 
-# Output to HTML files in the coverage_report_html folder
+<span class="c1"># Output to HTML files in the coverage_report_html folder</span>
 pytest --cov --cov-report html
 </pre></div>
 </div>
@@ -216,7 +216,7 @@ pytest --cov --cov-report html
 <div class="section" id="type-checking">
 <h2>Type checking<a class="headerlink" href="#type-checking" title="Permalink to this headline">¶</a></h2>
 <p>To run type checking with mypy, run:</p>
-<div class="highlight-shell script notranslate"><div class="highlight"><pre><span></span>./run_tests.sh types
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./run_tests.sh types
 </pre></div>
 </div>
 </div>
@@ -224,7 +224,7 @@ pytest --cov --cov-report html
 <h2>Code style, linting and formatting<a class="headerlink" href="#code-style-linting-and-formatting" title="Permalink to this headline">¶</a></h2>
 <p>We use <a class="reference external" href="https://black.readthedocs.io/en/stable/">Black</a> for automatic formatting, <a class="reference external" href="https://github.com/timothycrosley/isort">isort</a> for import sorting, and <a class="reference external" href="https://flake8.pycqa.org/en/latest/">flake8</a> to check for linting errors. These are the relevant commands:</p>
 <p>You can check against those by running:</p>
-<div class="highlight-shell script notranslate"><div class="highlight"><pre><span></span>./run_tests.sh lint
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./run_tests.sh lint
 </pre></div>
 </div>
 <p>Or, if you want to apply those formatters:</p>

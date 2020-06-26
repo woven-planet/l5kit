@@ -210,14 +210,14 @@
 </ol>
 <div class="section" id="datasets">
 <h2>1. Datasets<a class="headerlink" href="#datasets" title="Permalink to this headline">¶</a></h2>
-<p>To use the framework you will need to download the Lyft Level 5 Prediction dataset from https://level5.lyft.com/.
+<p>To use the framework you will need to download the Lyft Level 5 Prediction dataset from https://self-driving.lyft.com/level5/data/.
 It consists of the following components:</p>
 <ul class="simple">
 <li><p>1000 hours of perception output logged by Lyft AVs operating in Palo Alto. This data is stored in 30 second chunks using the <a class="reference internal" href="data_format.html"><span class="doc">zarr format</span></a>.</p></li>
 <li><p><a class="reference external" href="https://medium.com/lyftlevel5/semantic-maps-for-autonomous-vehicles-470830ee28b6">A hand-annotated, HD semantic map</a>. This data is stored using protobuf format.</p></li>
 <li><p>A high-definition aerial map of the Palo Alto area. This image has 8cm per pixel resolution and is provided by <a class="reference external" href="https://www.nearmap.com/">NearMap</a>.</p></li>
 </ul>
-<p>To read more about the dataset and how it was generated, read the <a class="reference external" href="https://level5.lyft.com/">dataset whitepaper</a>.</p>
+<p>To read more about the dataset and how it was generated, read the <a class="reference external" href="https://arxiv.org/abs/2006.14480">dataset whitepaper</a>.</p>
 </div>
 <div class="section" id="l5kit">
 <h2>2. L5Kit<a class="headerlink" href="#l5kit" title="Permalink to this headline">¶</a></h2>
@@ -255,7 +255,7 @@ It consists of the following components:</p>
 </div>
 <div class="section" id="download-the-datasets">
 <h2>2. Download the datasets<a class="headerlink" href="#download-the-datasets" title="Permalink to this headline">¶</a></h2>
-<p>Register at https://level5.lyft.com/dataset/ and download the <a class="reference external" href="https://tinyurl.com/lyft-prediction-dataset">2020 Lyft prediction dataset</a>. Store all files in a single folder.
+<p>Register at https://self-driving.lyft.com/level5/data/ and download the <a class="reference external" href="https://tinyurl.com/lyft-prediction-dataset">2020 Lyft prediction dataset</a>. Store all files in a single folder.
 The resulting directory structure should be:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prediction</span><span class="o">-</span><span class="n">dataset</span><span class="o">/</span>
   <span class="o">+-</span> <span class="n">sample_scenes</span><span class="o">/</span>
@@ -309,12 +309,12 @@ sphinx-build . docs
 </ul>
 <div class="section" id="citation">
 <h2>Citation<a class="headerlink" href="#citation" title="Permalink to this headline">¶</a></h2>
-<p>If you are using L5Kit or dataset in your work please cite the following <a class="reference external" href="https://tinyurl.com/lyft-prediction-dataset">whitepaper</a>:</p>
+<p>If you are using L5Kit or dataset in your work please cite the following <a class="reference external" href="https://arxiv.org/abs/2006.14480">whitepaper</a>:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nd">@misc</span><span class="p">{</span><span class="n">lyft2020</span><span class="p">,</span>
 <span class="n">title</span> <span class="o">=</span> <span class="p">{</span><span class="n">One</span> <span class="n">Thousand</span> <span class="ow">and</span> <span class="n">One</span> <span class="n">Hours</span><span class="p">:</span> <span class="n">Self</span><span class="o">-</span><span class="n">driving</span> <span class="n">Motion</span> <span class="n">Prediction</span> <span class="n">Dataset</span><span class="p">},</span>
 <span class="n">author</span> <span class="o">=</span> <span class="p">{</span><span class="n">Houston</span><span class="p">,</span> <span class="n">J</span><span class="o">.</span> <span class="ow">and</span> <span class="n">Zuidhof</span><span class="p">,</span> <span class="n">G</span><span class="o">.</span> <span class="ow">and</span> <span class="n">Bergamini</span><span class="p">,</span> <span class="n">L</span><span class="o">.</span> <span class="ow">and</span> <span class="n">Ye</span><span class="p">,</span> <span class="n">Y</span><span class="o">.</span> <span class="ow">and</span> <span class="n">Jain</span><span class="p">,</span> <span class="n">A</span><span class="o">.</span> <span class="ow">and</span> <span class="n">Omari</span><span class="p">,</span> <span class="n">S</span><span class="o">.</span> <span class="ow">and</span> <span class="n">Iglovikov</span><span class="p">,</span> <span class="n">V</span><span class="o">.</span> <span class="ow">and</span> <span class="n">Ondruska</span><span class="p">,</span> <span class="n">P</span><span class="o">.</span><span class="p">},</span>
 <span class="n">year</span> <span class="o">=</span> <span class="p">{</span><span class="mi">2020</span><span class="p">},</span>
-<span class="n">howpublished</span> <span class="o">=</span> <span class="p">{</span>\<span class="n">url</span><span class="p">{</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="n">level5</span><span class="o">.</span><span class="n">lyft</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="n">dataset</span><span class="o">/</span><span class="p">}}</span>
+<span class="n">howpublished</span> <span class="o">=</span> <span class="p">{</span>\<span class="n">url</span><span class="p">{</span><span class="n">https</span><span class="p">:</span><span class="o">//</span><span class="bp">self</span><span class="o">-</span><span class="n">driving</span><span class="o">.</span><span class="n">lyft</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="p">}}</span>
 </pre></div>
 </div>
 <p><img alt="Lyft Level 5" src="_images/lyft.jpg" /></p>
