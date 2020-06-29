@@ -36,26 +36,20 @@ class AgentDataset(EgoDataset):
         Returns: a boolean mask of the same length of the dataset agents
 
         """
-        history_num_frames = self.cfg["model_params"]["history_num_frames"]
-        future_num_frames = self.cfg["model_params"]["future_num_frames"]
         agent_prob = self.cfg["raster_params"]["filter_agents_threshold"]
 
-        group_name = f"{history_num_frames}_{future_num_frames}_{agent_prob}"
         try:
-            agents_mask = self.dataset.root[f"agents_mask/{group_name}"]
+            agents_mask = self.dataset.root[f"agents_mask/{agent_prob}"]
         except KeyError:
             print(
-                f"cannot find {group_name} in {self.dataset.path},\n"
-                f"your cfg has loaded history_num_frames={history_num_frames}, future_num_frames={future_num_frames} "
-                f"and filter_agents_threshold={agent_prob};\n"
-                "but those values don't have a match among the agents_mask in the zarr\n"
-                "Mask will now be generated for these parameters."
+                f"cannot find the right config in {self.dataset.path},\n"
+                f"your cfg has loaded filter_agents_threshold={agent_prob};\n"
+                "but that value doesn't have a match among the agents_mask in the zarr\n"
+                "Mask will now be generated for that parameter."
             )
             select_agents(
                 self.dataset.path,
                 agent_prob,
-                history_num_frames,
-                future_num_frames,
                 th_yaw_degree=TH_YAW_DEGREE,
                 th_extent_ratio=TH_EXTENT_RATIO,
                 th_movement=TH_MOVEMENT,
@@ -63,7 +57,7 @@ class AgentDataset(EgoDataset):
                 num_workers=8,
             )  # TODO maybe set in env var?
             self.dataset.open()  # ensure root is updated
-            agents_mask = self.dataset.root[f"agents_mask/{group_name}"]
+            agents_mask = self.dataset.root[f"agents_mask/{agent_prob}"]
 
         return agents_mask
 

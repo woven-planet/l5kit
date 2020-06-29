@@ -10,6 +10,7 @@ from uuid import uuid4
 
 import numpy as np
 import zarr
+from prettytable import PrettyTable
 from tqdm import tqdm
 
 from l5kit.data import ChunkedStateDataset, LocalDataManager
@@ -69,11 +70,15 @@ def get_missing_frame_num(els_drop: List, agents_selected_mask: np.ndarray) -> i
     return num
 
 
+def update_mask(mask: np.ndarray, agent_list: list) -> None:
+    for idx_el, (frame_idx, mask_idx, agent) in enumerate(agent_list):
+        mask[mask_idx][0] = idx_el  # past information
+        mask[mask_idx][1] = len(agent_list) - idx_el - 1  # future information
+
+
 def get_valid_agents(
     frames_range: np.ndarray,
     dataset: ChunkedStateDataset,
-    th_frames_past: int,
-    th_frames_future: int,
     th_agent_filter_probability_threshold: float,
     th_yaw_degree: float,
     th_extent_ratio: float,
@@ -95,7 +100,7 @@ def get_valid_agents(
     agents = dataset.agents[agents_range_start:agents_range_end]
 
     agents_dict = defaultdict(list)
-    agents_selected_mask = np.zeros(len(agents), dtype=np.bool)
+    agents_mask = np.zeros((len(agents), 2), dtype=np.int)
     report: Counter = Counter()
 
     # filter here for point-wise to speed up
@@ -112,66 +117,61 @@ def get_valid_agents(
 
             # ==== POINT-WISE FILTERS
             if not of_interest[global_agent_idx]:
-                frame_lost = get_missing_frame_num(agents_dict[agent["track_id"]], agents_selected_mask)
-                report["reject_th_agent_filter_probability_threshold"] += frame_lost
+                update_mask(agents_mask, agents_dict[agent["track_id"]][:-1])
+                report["reject_th_agent_filter_probability_threshold"] += 1
                 agents_dict[agent["track_id"]] = []
                 continue
+
             if not in_av_distance(frame["ego_translation"], agent["centroid"], th_distance_av):
-                frame_lost = get_missing_frame_num(agents_dict[agent["track_id"]], agents_selected_mask)
-                report["reject_th_agent_distance_av_threshold"] += frame_lost
+                update_mask(agents_mask, agents_dict[agent["track_id"]][:-1])
+                report["reject_th_AV_distance"] += 1
                 agents_dict[agent["track_id"]] = []
                 continue
 
             # ==== COUPLE-WISE FILTERS
             if len(agents_dict[agent["track_id"]]) > 1:
                 p_frame_idx, p_global_agent_idx, p_agent = agents_dict[agent["track_id"]][-2]  # get prev element
-                frame_lost = get_missing_frame_num(agents_dict[agent["track_id"]][:-1], agents_selected_mask)
 
                 if not in_consecutive_frame(frame_idx, p_frame_idx):
-                    report["reject_th_hole"] += frame_lost
+                    update_mask(agents_mask, agents_dict[agent["track_id"]][:-1])
+                    report["reject_th_hole"] += 1
                     agents_dict[agent["track_id"]] = agents_dict[agent["track_id"]][-1:]
                     continue
                 if not in_angular_distance(p_agent["yaw"], agent["yaw"], th_yaw_degree):
-                    report["reject_th_yaw_degree"] += frame_lost
+                    update_mask(agents_mask, agents_dict[agent["track_id"]][:-1])
+                    report["reject_th_yaw"] += 1
                     agents_dict[agent["track_id"]] = agents_dict[agent["track_id"]][-1:]
                     continue
                 if not in_extent_ratio(p_agent["extent"], agent["extent"], th_extent_ratio):
-                    report["reject_th_extent_ratio"] += frame_lost
+                    update_mask(agents_mask, agents_dict[agent["track_id"]][:-1])
+                    report["reject_th_extent"] += 1
                     agents_dict[agent["track_id"]] = agents_dict[agent["track_id"]][-1:]
                     continue
 
-            if len(agents_dict[agent["track_id"]]) == th_frames_future + th_frames_past + 1:
-                ref_frame_idx, ref_global_agent_idx, ref_agent = agents_dict[agent["track_id"]][th_frames_past]
+    # update what is left inside the dict
+    for track_id, agent_list in agents_dict.items():
+        if len(agent_list) < 2:
+            report["reject_th_noframes"] += 1
+            agents_dict[track_id] = []
+            continue
 
-                # ==== SEQUENCE-WISE FILTERS
-                if not has_moved(agent, agents_dict[agent["track_id"]][0][-1], th_movement):
-                    frame_lost = get_missing_frame_num(agents_dict[agent["track_id"]][:1], agents_selected_mask)
-                    report["reject_th_movement"] += frame_lost
-                    agents_dict[agent["track_id"]] = agents_dict[agent["track_id"]][1:]
-                    continue
+        # ==== SEQUENCE-WISE FILTERS
+        if not has_moved(agent_list[0][-1], agent_list[-1][-1], th_movement):
+            report["reject_th_movement"] += 1
+            agents_dict[track_id] = []
+            continue
 
-                # all test passed, agent is add to the final output and sequence advanced
-                agents_selected_mask[ref_global_agent_idx] = True
-
-                frame_lost = get_missing_frame_num(agents_dict[agent["track_id"]][:1], agents_selected_mask)
-                report["reject_th_num_frames"] += frame_lost
-                agents_dict[agent["track_id"]] = agents_dict[agent["track_id"]][1:]
-
-    # compute rejected because of insufficient frames
-    for el in agents_dict.values():
-        report["reject_th_num_frames"] += get_missing_frame_num(el, agents_selected_mask)
+        update_mask(agents_mask, agent_list)
+        agents_dict[track_id] = []
 
     report["total_reject"] = sum([v for v in report.values()])
-    report["total_agent_frames"] = len(agents_selected_mask)
-    report["selected_agent_frames"] = int(agents_selected_mask.sum())
-    return agents_selected_mask, report, (agents_range_start, agents_range_end)
+    report["total_agent_frames"] = len(agents_mask)
+    return agents_mask, report, (agents_range_start, agents_range_end)
 
 
 def select_agents(
     input_folder: str,
     th_agent_prob: float,
-    th_history_num_frames: int,
-    th_future_num_frames: int,
     th_yaw_degree: float,
     th_extent_ratio: float,
     th_movement: float,
@@ -181,7 +181,6 @@ def select_agents(
     """
     Filter agents from zarr INPUT_FOLDER according to multiple thresholds and store a boolean array of the same shape.
     """
-    assert th_future_num_frames > 0
 
     # ===== LOAD
     dm = LocalDataManager()
@@ -190,7 +189,7 @@ def select_agents(
     zarr_dataset = ChunkedStateDataset(path=input_folder)
     zarr_dataset.open()
 
-    output_group = f"{th_history_num_frames}_{th_future_num_frames}_{th_agent_prob}"
+    output_group = f"{th_agent_prob}"
     if "agents_mask" in zarr_dataset.root and f"agents_mask/{output_group}" in zarr_dataset.root:
         raise FileExistsError(f"{output_group} exists already! only one is supported for now!")
 
@@ -200,8 +199,6 @@ def select_agents(
     get_valid_agents_partial = partial(
         get_valid_agents,
         dataset=zarr_dataset,
-        th_frames_past=th_history_num_frames,
-        th_frames_future=th_future_num_frames,
         th_agent_filter_probability_threshold=th_agent_prob,
         th_yaw_degree=th_yaw_degree,
         th_extent_ratio=th_extent_ratio,
@@ -218,9 +215,9 @@ def select_agents(
     agents_mask = zarr.open_array(
         str(Path(zarr_dataset.path) / "agents_mask" / output_group),
         mode="w",
-        shape=(len(zarr_dataset.agents),),
+        shape=(len(zarr_dataset.agents), 2),
         chunks=(10000,),
-        dtype=np.bool,
+        dtype=np.int32,
         synchronizer=zarr.ProcessSynchronizer(f"/tmp/ag_mask_{str(uuid4())}.sync"),
     )
 
@@ -234,13 +231,7 @@ def select_agents(
             tasks.set_description(f"{idx + 1}/{len(frame_index_intervals)}")
         print("collecting results..")
 
-    assert (
-        report["total_agent_frames"] == report["selected_agent_frames"] + report["total_reject"]
-    ), "something went REALLY wrong"
-
     agents_cfg = {
-        "th_history_num_frames": th_history_num_frames,
-        "th_future_num_frames": th_future_num_frames,
         "th_agent_filter_probability_threshold": th_agent_prob,
         "th_yaw_degree": th_yaw_degree,
         "th_extent_ratio": th_extent_ratio,
@@ -251,6 +242,20 @@ def select_agents(
     pp = pprint.PrettyPrinter(indent=4)
     print(f"start report for {input_folder}")
     pp.pprint({**agents_cfg, **report})
+
+    future_steps = [0, 10, 30, 50]
+    past_steps = [0, 10, 30, 50]
+    agents_mask_np = np.asarray(agents_mask)
+
+    table = PrettyTable(field_names=["past/future"] + [str(step) for step in future_steps])
+    for step_p in past_steps:
+        row = [step_p]
+        for step_f in future_steps:
+            past_mask = agents_mask_np[:, 0] >= step_p
+            future_mask = agents_mask_np[:, 1] >= step_f
+            row.append(np.sum(past_mask * future_mask))
+        table.add_row(row)
+    print(table)
     print(f"end report for {input_folder}")
     print("==============================")
 
@@ -259,8 +264,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_folder", nargs="+", type=str, required=True, help="zarr path")
     parser.add_argument("--th_agent_prob", type=float, default=0.5, help="perception threshold on agents of interest")
-    parser.add_argument("--th_history_num_frames", type=int, default=0, help="frames in the past to be valid")
-    parser.add_argument("--th_future_num_frames", type=int, default=12, help="frames in the future to be valid")
     parser.add_argument("--th_yaw_degree", type=float, default=TH_YAW_DEGREE, help="max absolute distance in degree")
     parser.add_argument("--th_extent_ratio", type=float, default=TH_EXTENT_RATIO, help="max change in area allowed")
     parser.add_argument("--th_movement", type=float, default=TH_MOVEMENT, help="max movement in meters")
@@ -272,8 +275,6 @@ if __name__ == "__main__":
         select_agents(
             input_folder,
             args.th_agent_prob,
-            args.th_history_num_frames,
-            args.th_future_num_frames,
             args.th_yaw_degree,
             args.th_extent_ratio,
             args.th_movement,
