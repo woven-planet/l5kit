@@ -248,7 +248,7 @@ def select_agents(
     agents_mask_np = np.asarray(agents_mask)
 
     table = PrettyTable(field_names=["past/future"] + [str(step) for step in future_steps])
-    for step_p in past_steps:
+    for step_p in tqdm(past_steps, desc="computing past/future table"):
         row = [step_p]
         for step_f in future_steps:
             past_mask = agents_mask_np[:, 0] >= step_p
