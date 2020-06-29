@@ -31,14 +31,11 @@ jobs:
         sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
         sphinx-build . docs_temp
 
-    - name: auto-doc-gen
-      working-directory: .
-      run: |
-        git rm -r docs
-        mv docs_temp docs
-        git add docs
-        git config user.name l5kit-doc-bot
-        git config user.email l5kit-doc-bot062920@github.no-reply.com
-        git commit -m "auto-doc-gen"
-        git push
-      if: github.event_name == 'pull_request'
+    - name: Deploy docs
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BASE_BRANCH: master # The branch the action should deploy from.
+        BRANCH: gh-pages # The branch the action should deploy to.
+        FOLDER: docs_temp # The folder the action should deploy (only stuff inside will be copied).
+      if: github.event_name == 'push'
