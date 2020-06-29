@@ -55,7 +55,7 @@ val_data_loader:
   datasets:
     - key: "sample_scenes/sample.zarr"
       scene_indices:
-        - 0
+        - -1
   perturb_probability: 0
   batch_size: 12
   shuffle: False
