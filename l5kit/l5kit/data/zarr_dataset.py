@@ -1,5 +1,6 @@
 import numpy as np
 import zarr
+from prettytable import PrettyTable
 
 from .labels import LABELS
 
@@ -61,6 +62,9 @@ class ChunkedStateDataset:
         """
         self.key = key
         self.path = path
+        self.frames = np.empty(0, dtype=FRAME_DTYPE)
+        self.scenes = np.empty(0, dtype=SCENE_DTYPE)
+        self.agents = np.empty(0, AGENT_DTYPE)
 
         # Note: we still support only zarr. However, some functions build a new dataset so we cannot raise error.
         if ".zarr" not in self.path:
@@ -109,3 +113,27 @@ opened.
         self.frames = self.root[FRAME_ARRAY_KEY]
         self.agents = self.root[AGENT_ARRAY_KEY]
         self.scenes = self.root[SCENE_ARRAY_KEY]
+
+    def __repr__(self) -> str:
+        fields = [
+            "Num Scenes",
+            "Num Frames",
+            "Num Agents",
+            "Total Time (hr)",
+            "Avg Frames per Scene",
+            "Avg Agents per Frame",
+            "Avg Scene Time (sec)",
+        ]
+        values = [
+            len(self.scenes),
+            len(self.frames),
+            len(self.agents),
+            len(self.frames) / (10 * 3600),
+            len(self.frames) / len(self.scenes),
+            len(self.agents) / len(self.frames),
+            len(self.frames) / len(self.scenes) / 10,
+        ]
+        table = PrettyTable(field_names=fields)
+        table.float_format = ".2"
+        table.add_row(values)
+        return str(table)
