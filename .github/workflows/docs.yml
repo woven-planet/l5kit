@@ -13,6 +13,9 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+      with:
+        ref: ${{ github.head_ref }}
+        fetch-depth: 0
     - name: Set up Python 3.8
       uses: actions/setup-python@v1
       with:
@@ -26,4 +29,16 @@ jobs:
       working-directory: .
       run: |
         sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
-        sphinx-build . docs
+        sphinx-build . docs_temp
+
+    - name: auto-doc-gen
+      working-directory: .
+      run: |
+        git rm -r docs
+        mv docs_temp docs
+        git add docs
+        git config user.name l5kit-doc-bot
+        git config user.email l5kit-doc-bot062920@github.no-reply.com
+        git commit -m "auto-doc-gen"
+        git push
+      if: github.event_name == 'pull_request'
