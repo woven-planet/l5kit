@@ -24,6 +24,10 @@ class AgentDataset(EgoDataset):
         super(AgentDataset, self).__init__(cfg, zarr_dataset, rasterizer, perturbation)
         if agents_mask is None:  # if not provided try to load it from the zarr
             agents_mask = self.load_agents_mask()
+            past_mask = agents_mask[:, 0] >= cfg["model_params"]["history_num_frames"]
+            future_mask = agents_mask[:, 1] >= cfg["model_params"]["future_num_frames"]
+            agents_mask = past_mask * future_mask
+
         # store the valid agents indexes
         self.agents_indices = np.nonzero(agents_mask)[0]
         # this will be used to get the frame idx from the agent idx
