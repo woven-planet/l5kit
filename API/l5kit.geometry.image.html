@@ -1,0 +1,266 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8">
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>l5kit.geometry.image module &mdash; L5Kit 1.0.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+  
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+        <script src="../_static/language_data.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" />
+    <link rel="next" title="l5kit.geometry.transform module" href="l5kit.geometry.transform.html" />
+    <link rel="prev" title="l5kit.geometry.angle module" href="l5kit.geometry.angle.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home" alt="Documentation Home"> L5Kit
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../README.html">ML Prediction, Planning and Simulation for Self-Driving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#examples">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#news">News</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#credits">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#contact">Contact</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="l5kit.data.html">l5kit.data package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="l5kit.dataset.html">l5kit.dataset package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="l5kit.evaluation.html">l5kit.evaluation package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="l5kit.geometry.html">l5kit.geometry package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="l5kit.geometry.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="l5kit.geometry.angle.html">l5kit.geometry.angle module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.geometry.image module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.geometry.transform.html">l5kit.geometry.transform module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.geometry.voxel.html">l5kit.geometry.voxel module</a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="l5kit.kinematic.html">l5kit.kinematic package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="l5kit.random.html">l5kit.random package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="l5kit.sampling.html">l5kit.sampling package</a></li>
+<li class="toctree-l2"><a class="reference internal" href="l5kit.visualization.html">l5kit.visualization package</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">L5Kit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../api_reference.html">API Reference</a> &raquo;</li>
+        
+          <li><a href="l5kit.geometry.html">l5kit.geometry package</a> &raquo;</li>
+        
+      <li>l5kit.geometry.image module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+            
+            <a href="../_sources/API/l5kit.geometry.image.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-l5kit.geometry.image">
+<span id="l5kit-geometry-image-module"></span><h1>l5kit.geometry.image module<a class="headerlink" href="#module-l5kit.geometry.image" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="l5kit.geometry.image.crop_rectangle_from_image">
+<code class="sig-prename descclassname">l5kit.geometry.image.</code><code class="sig-name descname">crop_rectangle_from_image</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">image</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">corners</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.geometry.image.crop_rectangle_from_image" title="Permalink to this definition">¶</a></dt>
+<dd><p><code class="docutils literal notranslate"><span class="pre">crop_rectangle_from_image</span></code> takes an image and 4 corners in pixel coordinates, it returns
+the sub-image inside that cropped area, rotated upright.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>image</strong> (<em>np.ndarray</em>) – image to crop from</p></li>
+<li><p><strong>corners</strong> (<em>np.ndarray</em>) – corners, array of shape (4,2)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>crop from input containing the corners</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+  
+    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
+      
+        <a href="l5kit.geometry.transform.html" class="btn btn-neutral float-right" title="l5kit.geometry.transform module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+      
+      
+        <a href="l5kit.geometry.angle.html" class="btn btn-neutral float-left" title="l5kit.geometry.angle module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+      
+    </div>
+  
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        
+        &copy; Copyright 2020, Lyft Level 5
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
