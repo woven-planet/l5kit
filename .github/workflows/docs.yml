@@ -26,7 +26,7 @@ jobs:
       working-directory: .
       run: |
         sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
-        sphinx-build . docs_temp
+        sphinx-build . docs_built
 
     - name: Deploy docs
       uses: JamesIves/github-pages-deploy-action@releases/v3
@@ -34,5 +34,5 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         BASE_BRANCH: master # The branch the action should deploy from.
         BRANCH: gh-pages # The branch the action should deploy to.
-        FOLDER: docs_temp # The folder the action should deploy (only stuff inside will be copied).
+        FOLDER: docs_built # The folder the action should deploy (only stuff inside will be copied).
       if: github.event_name == 'push'
