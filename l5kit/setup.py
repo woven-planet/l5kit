@@ -8,6 +8,7 @@ setup(
     version=__version__,
     description="Lyft Autonomous Vehicle Research library",
     author="Lyft Level 5",
+    license="apache2",
     install_requires=[
         "imageio",
         "matplotlib",
