@@ -123,7 +123,7 @@ opened.
             "Avg Frames per Scene",
             "Avg Agents per Frame",
             "Avg Scene Time (sec)",
-            "Avg Frame frequency"
+            "Avg Frame frequency",
         ]
         if len(self.agents) > 1:
             times = self.frames[1:10]["timestamp"] - self.frames[0:9]["timestamp"]
@@ -139,7 +139,7 @@ opened.
             len(self.frames) / max(len(self.scenes), 1e-9),
             len(self.agents) / max(len(self.frames), 1e-9),
             len(self.frames) / max(len(self.scenes), 1e-9) / 10,
-            frequency
+            frequency,
         ]
         table = PrettyTable(field_names=fields)
         table.float_format = ".2"
