@@ -20,7 +20,6 @@ os.environ["BLOSC_NOLOCK"] = "1"  # this is required for multiprocessing
 
 TH_YAW_DEGREE = 30
 TH_EXTENT_RATIO = 1.1
-TH_MOVEMENT = 3
 TH_DISTANCE_AV = 50
 
 
@@ -55,21 +54,6 @@ def in_extent_ratio(extent1: np.ndarray, extent2: np.ndarray, th: float) -> bool
     return bool(ratio < th)
 
 
-def has_moved(agent1: np.ndarray, agent2: np.ndarray, th: float) -> bool:
-    return bool(np.linalg.norm(agent1["centroid"] - agent2["centroid"]) > th)
-
-
-def get_missing_frame_num(els_drop: List, agents_selected_mask: np.ndarray) -> int:
-    """
-    check if what has been dropped has been already taken or not
-    """
-    num = 0
-    for _, global_agent_idx, _ in els_drop:
-        if not agents_selected_mask[global_agent_idx]:
-            num += 1
-    return num
-
-
 def update_mask(mask: np.ndarray, agent_list: list) -> None:
     for idx_el, (frame_idx, mask_idx, agent) in enumerate(agent_list):
         mask[mask_idx][0] = idx_el  # past information
@@ -82,14 +66,12 @@ def get_valid_agents(
     th_agent_filter_probability_threshold: float,
     th_yaw_degree: float,
     th_extent_ratio: float,
-    th_movement: float,
     th_distance_av: float,
 ) -> Tuple[np.ndarray, Counter, tuple]:
     """
-    Three types of filters are implemented:
+    Two types of filters are implemented:
     POINT-WISE: only the current state is considered
     COUPLE-WISE: 2 states considered (new and last added)
-    SEQUENCE-WISE: potentially all states are considered
 
     Return a boolean np.array with the same shape of agents and a counter of report
     """
@@ -150,17 +132,6 @@ def get_valid_agents(
 
     # update what is left inside the dict
     for track_id, agent_list in agents_dict.items():
-        if len(agent_list) < 2:
-            report["reject_th_noframes"] += 1
-            agents_dict[track_id] = []
-            continue
-
-        # ==== SEQUENCE-WISE FILTERS
-        if not has_moved(agent_list[0][-1], agent_list[-1][-1], th_movement):
-            report["reject_th_movement"] += 1
-            agents_dict[track_id] = []
-            continue
-
         update_mask(agents_mask, agent_list)
         agents_dict[track_id] = []
 
@@ -174,7 +145,6 @@ def select_agents(
     th_agent_prob: float,
     th_yaw_degree: float,
     th_extent_ratio: float,
-    th_movement: float,
     th_distance_av: float,
     num_workers: int,
 ) -> None:
@@ -202,7 +172,6 @@ def select_agents(
         th_agent_filter_probability_threshold=th_agent_prob,
         th_yaw_degree=th_yaw_degree,
         th_extent_ratio=th_extent_ratio,
-        th_movement=th_movement,
         th_distance_av=th_distance_av,
     )
 
@@ -235,7 +204,6 @@ def select_agents(
         "th_agent_filter_probability_threshold": th_agent_prob,
         "th_yaw_degree": th_yaw_degree,
         "th_extent_ratio": th_extent_ratio,
-        "th_movement": th_movement,
         "th_distance_av": th_distance_av,
     }
     # print report
@@ -266,7 +234,6 @@ if __name__ == "__main__":
     parser.add_argument("--th_agent_prob", type=float, default=0.5, help="perception threshold on agents of interest")
     parser.add_argument("--th_yaw_degree", type=float, default=TH_YAW_DEGREE, help="max absolute distance in degree")
     parser.add_argument("--th_extent_ratio", type=float, default=TH_EXTENT_RATIO, help="max change in area allowed")
-    parser.add_argument("--th_movement", type=float, default=TH_MOVEMENT, help="max movement in meters")
     parser.add_argument("--th_distance_av", type=float, default=TH_DISTANCE_AV, help="max distance from AV in meters")
     parser.add_argument("-j", type=int, default=8, help="number of workers")
     args = parser.parse_args()
@@ -277,7 +244,6 @@ if __name__ == "__main__":
             args.th_agent_prob,
             args.th_yaw_degree,
             args.th_extent_ratio,
-            args.th_movement,
             args.th_distance_av,
             args.j,
         )
