@@ -125,20 +125,22 @@ opened.
             "Avg Scene Time (sec)",
             "Avg Frame frequency",
         ]
-        if len(self.agents) > 1:
-            times = self.frames[1:10]["timestamp"] - self.frames[0:9]["timestamp"]
+        if len(self.frames) > 1:
+            # read a small chunk of frames to speed things up
+            times = self.frames[1:50]["timestamp"] - self.frames[0:49]["timestamp"]
             frequency = np.mean(1 / (times / 1e9))  # from nano to sec
         else:
-            frequency = 0  # can't read the frequency
+            print(f"warning, not enough frames({len(self.frames)}) to read the frequency, 10 will be set")
+            frequency = 10
 
         values = [
             len(self.scenes),
             len(self.frames),
             len(self.agents),
-            len(self.frames) / max(frequency, 1e-9) / 3600,
-            len(self.frames) / max(len(self.scenes), 1e-9),
-            len(self.agents) / max(len(self.frames), 1e-9),
-            len(self.frames) / max(len(self.scenes), 1e-9) / 10,
+            len(self.frames) / max(frequency, 1) / 3600,
+            len(self.frames) / max(len(self.scenes), 1),
+            len(self.agents) / max(len(self.frames), 1),
+            len(self.frames) / max(len(self.scenes), 1) / frequency,
             frequency,
         ]
         table = PrettyTable(field_names=fields)
