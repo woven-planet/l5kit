@@ -64,7 +64,7 @@ class ChunkedStateDataset:
         self.path = path
         self.frames = np.empty(0, dtype=FRAME_DTYPE)
         self.scenes = np.empty(0, dtype=SCENE_DTYPE)
-        self.agents = np.empty(0, AGENT_DTYPE)
+        self.agents = np.empty(0, dtype=AGENT_DTYPE)
 
         # Note: we still support only zarr. However, some functions build a new dataset so we cannot raise error.
         if ".zarr" not in self.path:
