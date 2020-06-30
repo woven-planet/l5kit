@@ -135,7 +135,7 @@ opened.
             len(self.scenes),
             len(self.frames),
             len(self.agents),
-            len(self.frames) / max(frequency * 3600, 1e-9),
+            len(self.frames) / max(frequency, 1e-9) / 3600,
             len(self.frames) / max(len(self.scenes), 1e-9),
             len(self.agents) / max(len(self.frames), 1e-9),
             len(self.frames) / max(len(self.scenes), 1e-9) / 10,
