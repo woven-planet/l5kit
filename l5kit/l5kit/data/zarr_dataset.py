@@ -1,5 +1,6 @@
 import numpy as np
 import zarr
+from prettytable import PrettyTable
 
 from .labels import LABELS
 
@@ -61,6 +62,9 @@ class ChunkedStateDataset:
         """
         self.key = key
         self.path = path
+        self.frames = np.empty(0, dtype=FRAME_DTYPE)
+        self.scenes = np.empty(0, dtype=SCENE_DTYPE)
+        self.agents = np.empty(0, dtype=AGENT_DTYPE)
 
         # Note: we still support only zarr. However, some functions build a new dataset so we cannot raise error.
         if ".zarr" not in self.path:
@@ -109,3 +113,37 @@ opened.
         self.frames = self.root[FRAME_ARRAY_KEY]
         self.agents = self.root[AGENT_ARRAY_KEY]
         self.scenes = self.root[SCENE_ARRAY_KEY]
+
+    def __repr__(self) -> str:
+        fields = [
+            "Num Scenes",
+            "Num Frames",
+            "Num Agents",
+            "Total Time (hr)",
+            "Avg Frames per Scene",
+            "Avg Agents per Frame",
+            "Avg Scene Time (sec)",
+            "Avg Frame frequency",
+        ]
+        if len(self.frames) > 1:
+            # read a small chunk of frames to speed things up
+            times = self.frames[1:50]["timestamp"] - self.frames[0:49]["timestamp"]
+            frequency = np.mean(1 / (times / 1e9))  # from nano to sec
+        else:
+            print(f"warning, not enough frames({len(self.frames)}) to read the frequency, 10 will be set")
+            frequency = 10
+
+        values = [
+            len(self.scenes),
+            len(self.frames),
+            len(self.agents),
+            len(self.frames) / max(frequency, 1) / 3600,
+            len(self.frames) / max(len(self.scenes), 1),
+            len(self.agents) / max(len(self.frames), 1),
+            len(self.frames) / max(len(self.scenes), 1) / frequency,
+            frequency,
+        ]
+        table = PrettyTable(field_names=fields)
+        table.float_format = ".2"
+        table.add_row(values)
+        return str(table)
