@@ -78,6 +78,9 @@ prediction-dataset/
 cd l5kit
 pip install -r requirements.txt
 ```
+If you run into trouble installing L5Kit on Windows, you may need to
+- install Pytorch and torchvision manually first (select the correct version required by your system, i.e. GPU or CPU-only) then run L5Kit install (remove the packages 'torch' and 'torchvision' from ```setup.py```)
+- install [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
 
 ### 4. Generate L5Kit code html documentation (optional)
 ```shell
