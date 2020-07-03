@@ -84,8 +84,8 @@ expressed in pixels (to be changed).
     history_slice = get_history_slice(state_index, history_num_frames, history_step_size, include_current_state=True)
     future_slice = get_future_slice(state_index, future_num_frames, future_step_size)
 
-    history_frames = frames[history_slice]
-    future_frames = frames[future_slice]
+    history_frames = frames[history_slice].copy()  # copy() required if the object is a np.ndarray
+    future_frames = frames[future_slice].copy()
 
     min_agents_index = history_frames[-1]["agent_index_interval"][0]
     if len(future_frames) > 0:
@@ -93,7 +93,7 @@ expressed in pixels (to be changed).
     else:  # future_frames can be empty at scene edges
         max_agents_index = history_frames[0]["agent_index_interval"][1]
 
-    agents = agents[min_agents_index:max_agents_index]  # this is the minimum slice of agents we need
+    agents = agents[min_agents_index:max_agents_index].copy()  # this is the minimum slice of agents we need
 
     history_frames["agent_index_interval"] -= min_agents_index  # sync interval with the agents array
     future_frames["agent_index_interval"] -= min_agents_index  # sync interval with the agents array
