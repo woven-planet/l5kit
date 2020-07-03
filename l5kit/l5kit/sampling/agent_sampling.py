@@ -93,7 +93,7 @@ expressed in pixels (to be changed).
     else:  # future_frames can be empty at scene edges
         max_agents_index = history_frames[0]["agent_index_interval"][1]
 
-    agents = agents[min_agents_index: max_agents_index]  # this is the minimum slice of agents we need
+    agents = agents[min_agents_index:max_agents_index]  # this is the minimum slice of agents we need
 
     history_frames["agent_index_interval"] -= min_agents_index  # sync interval with the agents array
     future_frames["agent_index_interval"] -= min_agents_index  # sync interval with the agents array
