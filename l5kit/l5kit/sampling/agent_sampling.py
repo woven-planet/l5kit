@@ -36,7 +36,7 @@ def generate_agent_sample(
     Arguments:
         state_index {int} -- The anchor frame index, i.e. the "current" timestep in the scene
         frames {np.ndarray} -- The scene frames array, can be numpy array or a zarr array.
-        agents {List[np.ndarray]} -- The scene agents array, as a list of numpy array.
+        agents {np.ndarray} -- The scene agents array, can be numpy array or a zarr array.
         selected_track_id: {Optional[int]} -- Either None for AV, or the ID of an agent that you want to
         predict the future of. This agent is centered in the raster and the returned targets are derived from
         their future states.
@@ -80,16 +80,25 @@ expressed in pixels (to be changed).
         target for that state. If you sample near the end of a scene, this may contain zeroes.
 
     """
-    agent_index_start = frames[0]["agent_index_interval"][0]
-    frames["agent_index_interval"] -= agent_index_start  # sync interval with the agents array
-
     #  the history slice is ordered starting from the latest frame and goes backward in time., ex. slice(100, 91, -2)
     history_slice = get_history_slice(state_index, history_num_frames, history_step_size, include_current_state=True)
-    history_frames = frames[history_slice]
-    history_agents = filter_agents_by_frames(history_frames, agents)
-
     future_slice = get_future_slice(state_index, future_num_frames, future_step_size)
-    future_frames = frames[future_slice]
+
+    history_frames = frames[history_slice].copy()  # copy() required if the object is a np.ndarray
+    future_frames = frames[future_slice].copy()
+
+    min_agents_index = history_frames[-1]["agent_index_interval"][0]
+    if len(future_frames) > 0:
+        max_agents_index = future_frames[-1]["agent_index_interval"][1]
+    else:  # future_frames can be empty at scene edges
+        max_agents_index = history_frames[0]["agent_index_interval"][1]
+
+    agents = agents[min_agents_index:max_agents_index].copy()  # this is the minimum slice of agents we need
+
+    history_frames["agent_index_interval"] -= min_agents_index  # sync interval with the agents array
+    future_frames["agent_index_interval"] -= min_agents_index  # sync interval with the agents array
+
+    history_agents = filter_agents_by_frames(history_frames, agents)
     future_agents = filter_agents_by_frames(future_frames, agents)
 
     if perturbation is not None:
