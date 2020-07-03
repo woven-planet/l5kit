@@ -12,7 +12,7 @@ import numpy as np
 import zarr
 from tqdm import tqdm
 
-from l5kit.data import ChunkedStateDataset, LocalDataManager
+from l5kit.data import ChunkedStateDataset
 from l5kit.data.filter import _get_label_filter  # TODO expose this without digging
 
 os.environ["BLOSC_NOLOCK"] = "1"  # this is required for multiprocessing
@@ -184,9 +184,6 @@ def select_agents(
     assert th_future_num_frames > 0
 
     # ===== LOAD
-    dm = LocalDataManager()
-    input_folder = dm.require(input_folder)
-
     zarr_dataset = ChunkedStateDataset(path=input_folder)
     zarr_dataset.open()
 
