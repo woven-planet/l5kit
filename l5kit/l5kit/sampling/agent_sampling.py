@@ -80,9 +80,6 @@ expressed in pixels (to be changed).
         target for that state. If you sample near the end of a scene, this may contain zeroes.
 
     """
-    agent_index_start = frames[0]["agent_index_interval"][0]
-    frames["agent_index_interval"] -= agent_index_start  # sync interval with the agents array
-
     #  the history slice is ordered starting from the latest frame and goes backward in time., ex. slice(100, 91, -2)
     history_slice = get_history_slice(state_index, history_num_frames, history_step_size, include_current_state=True)
     future_slice = get_future_slice(state_index, future_num_frames, future_step_size)
