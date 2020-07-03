@@ -274,6 +274,11 @@ The resulting directory structure should be:</p>
 pip install -r requirements.txt
 </pre></div>
 </div>
+<p>If you run into trouble installing L5Kit on Windows, you may need to</p>
+<ul class="simple">
+<li><p>install Pytorch and torchvision manually first (select the correct version required by your system, i.e. GPU or CPU-only), then run L5Kit install (remove the packages <a class="reference external" href="https://github.com/lyft/l5kit/blob/59f36f348682aac5fc488c6d39dd58f8c27b1ec6/l5kit/setup.py#L23">torch</a> and <a class="reference external" href="https://github.com/lyft/l5kit/blob/59f36f348682aac5fc488c6d39dd58f8c27b1ec6/l5kit/setup.py#L24">torchvision</a> from <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>)</p></li>
+<li><p>install <a class="reference external" href="https://visualstudio.microsoft.com/visual-cpp-build-tools/">Microsoft C++ Build Tools</a>.</p></li>
+</ul>
 </div>
 <div class="section" id="generate-l5kit-code-html-documentation-optional">
 <h2>4. Generate L5Kit code html documentation (optional)<a class="headerlink" href="#generate-l5kit-code-html-documentation-optional" title="Permalink to this headline">¶</a></h2>
