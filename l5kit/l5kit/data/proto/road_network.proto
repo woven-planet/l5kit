@@ -3,7 +3,7 @@ syntax = "proto3";
 import "google/protobuf/descriptor.proto";
 import "google/protobuf/empty.proto";
 
-package pb.lyft.maps;
+package l5kit.maps;
 
 option go_package = "maps";
 
