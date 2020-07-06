@@ -1,43 +1,12 @@
-import json
-import os
 from typing import Tuple, cast
 
-import cv2
 import numpy as np
 
 from ..data import DataManager, load_pose_to_ecef, load_semantic_map
 from .rasterizer import Rasterizer
 from .sat_box_rasterizer import SatBoxRasterizer
+from .satellite_rasterizer import _load_image_and_metadata
 from .sem_box_rasterizer import SemBoxRasterizer
-
-
-def _load_image_and_metadata(image_key: str, data_manager: DataManager) -> Tuple[np.ndarray, dict]:
-    """Loads image from given key and its meatadata. The metadata file should be a file with the same key except for
-    having a .json extension instead.
-
-    Args:
-        image_key (str): key to the image (e.g. ``maps/my_satellite_image.png``)
-        data_manager (DataManager): DataManager used for requiring files
-
-    Raises:
-        FileNotFoundError: Image or metadata is missing or invalid
-
-    Returns:
-        Tuple[np.ndarray, dict]: Image and metadata
-    """
-
-    image_metadata_key = os.path.splitext(image_key)[0] + ".json"
-    image_path = data_manager.require(image_key)
-    image_metadata_path = data_manager.require(image_metadata_key)
-
-    image = cv2.imread(image_path)[..., ::-1]  # BGR->RGB
-    if image is None:
-        raise FileNotFoundError(f"Failed to load image from {image_path}")
-
-    with open(image_metadata_path, "r") as f:
-        metadata = json.load(f)
-
-    return image, metadata
 
 
 def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
