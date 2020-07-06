@@ -22,7 +22,7 @@ lint() {
 
 isort() {
   echo "import sorting.."
-  ${PYTHON_EXECUTABLE} -m isort l5kit --check-only --recursive
+  ${PYTHON_EXECUTABLE} -m isort l5kit --check-only
 }
 
 types() {
