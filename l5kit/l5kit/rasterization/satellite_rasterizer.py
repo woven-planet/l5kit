@@ -34,8 +34,10 @@ def _load_image_and_metadata(image_key: str, data_manager: DataManager) -> Tuple
     if image is None:
         raise FileNotFoundError(f"Failed to load image from {image_path}")
 
-    with open(image_metadata_path, "r") as f:
-        metadata = json.load(f)
+    try:
+        metadata = json.load(open(image_metadata_path))
+    except FileNotFoundError:
+        raise FileNotFoundError(f"failed to load associated meta {image_metadata_path} for image {image_path}")
 
     return image, metadata
 
@@ -100,7 +102,7 @@ class SatelliteRasterizer(Rasterizer):
         sat_translation = transform_point(np.append(world_translation, ego_translation[2]), self.map_to_sat)
 
         # Note 1: there is a negation here, unknown why this is necessary.
-        # My best guess is because Y is flipped, maybe we can do this more elegantly.
+        # Note 2 (lberg): my best guess is that cv2 rotation are clockwise in fact.
         sat_im = get_sat_image_crop_scaled(
             self.map_im,
             self.raster_size,
