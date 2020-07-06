@@ -20,7 +20,7 @@ def _load_image_and_metadata(image_key: str, data_manager: DataManager) -> Tuple
         data_manager (DataManager): DataManager used for requiring files
 
     Raises:
-        Exception: Image or metadata is missing or invalid
+        FileNotFoundError: Image or metadata is missing or invalid
 
     Returns:
         Tuple[np.ndarray, dict]: Image and metadata
@@ -32,7 +32,7 @@ def _load_image_and_metadata(image_key: str, data_manager: DataManager) -> Tuple
 
     image = cv2.imread(image_path)[..., ::-1]  # BGR->RGB
     if image is None:
-        raise Exception(f"Failed to load image from {image_path}")
+        raise FileNotFoundError(f"Failed to load image from {image_path}")
 
     with open(image_metadata_path, "r") as f:
         metadata = json.load(f)
