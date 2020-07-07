@@ -1,5 +1,4 @@
 from .box_rasterizer import BoxRasterizer
-from .combine_rasterizer import CombineRasterizer
 from .rasterizer import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
 from .rasterizer_builder import build_rasterizer
 from .sat_box_rasterizer import SatBoxRasterizer
@@ -18,7 +17,6 @@ __all__ = [
     "SemanticRasterizer",
     "StubRasterizer",
     "BoxRasterizer",
-    "CombineRasterizer",
     "SatBoxRasterizer",
     "SemBoxRasterizer",
     "build_rasterizer",
