@@ -25,7 +25,7 @@ setup(
         "tqdm",
         "transforms3d",
         "zarr",
-        "strictyaml",
+        "pyyaml",
         "notebook",
         "ptable",
         "ipywidgets"
