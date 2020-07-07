@@ -3,7 +3,7 @@ import yaml
 
 def load_config_data(path: str) -> dict:
     with open(path) as f:
-        cfg = yaml.load(f, Loader=yaml.FullLoader)
+        cfg: dict = yaml.load(f, Loader=yaml.FullLoader)
     return cfg
 
 
