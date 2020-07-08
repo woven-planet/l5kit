@@ -13,7 +13,6 @@ Submodules
    :maxdepth: 4
 
    l5kit.rasterization.box_rasterizer
-   l5kit.rasterization.combine_rasterizer
    l5kit.rasterization.rasterizer
    l5kit.rasterization.rasterizer_builder
    l5kit.rasterization.sat_box_rasterizer
