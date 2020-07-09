@@ -70,23 +70,26 @@ class ChunkedStateDataset:
         if ".zarr" not in self.path:
             print("zarr dataset path should end with .zarr (for now). Open will fail for this dataset!")
 
-    def initialize(self, mode: str = "w") -> None:
+    def initialize(self, mode: str = "w", scenes_len: int = 0, frames_len: int = 0, agents_len: int = 0) -> None:
         """Initializes a new zarr dataset, creating the underlying arrays.
 
         Keyword Arguments:
             mode (str): Mode to open dataset in, should be something that supports writing. (default: {"w"})
+            scenes_len (int): pre-allocate this number of scenes
+            frames_len (int): pre-allocate this number of frames
+            agents_len (int): pre-allocate this number of agents
         """
 
         self.root = zarr.open_group(self.path, mode=mode)
 
         self.frames = self.root.require_dataset(
-            FRAME_ARRAY_KEY, dtype=FRAME_DTYPE, chunks=FRAME_CHUNK_SIZE, shape=(0,)
+            FRAME_ARRAY_KEY, dtype=FRAME_DTYPE, chunks=FRAME_CHUNK_SIZE, shape=(frames_len,)
         )
         self.agents = self.root.require_dataset(
-            AGENT_ARRAY_KEY, dtype=AGENT_DTYPE, chunks=AGENT_CHUNK_SIZE, shape=(0,)
+            AGENT_ARRAY_KEY, dtype=AGENT_DTYPE, chunks=AGENT_CHUNK_SIZE, shape=(agents_len,)
         )
         self.scenes = self.root.require_dataset(
-            SCENE_ARRAY_KEY, dtype=SCENE_DTYPE, chunks=SCENE_CHUNK_SIZE, shape=(0,)
+            SCENE_ARRAY_KEY, dtype=SCENE_DTYPE, chunks=SCENE_CHUNK_SIZE, shape=(scenes_len,)
         )
 
         self.root.attrs["format_version"] = FORMAT_VERSION
