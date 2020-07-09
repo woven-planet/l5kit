@@ -5,7 +5,7 @@ from collections import Counter, defaultdict
 from functools import partial
 from multiprocessing import Pool
 from pathlib import Path
-from typing import List, Tuple
+from typing import Tuple
 from uuid import uuid4
 
 import numpy as np
@@ -237,10 +237,5 @@ if __name__ == "__main__":
 
     for input_folder in args.input_folder:
         select_agents(
-            input_folder,
-            args.th_agent_prob,
-            args.th_yaw_degree,
-            args.th_extent_ratio,
-            args.th_distance_av,
-            args.j,
+            input_folder, args.th_agent_prob, args.th_yaw_degree, args.th_extent_ratio, args.th_distance_av, args.j,
         )

@@ -7,7 +7,7 @@ from ..data import ChunkedStateDataset
 from ..kinematic import Perturbation
 from ..rasterization import Rasterizer
 from .ego import EgoDataset
-from .select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_MOVEMENT, TH_YAW_DEGREE, select_agents
+from .select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE, select_agents
 
 
 class AgentDataset(EgoDataset):
@@ -56,7 +56,6 @@ class AgentDataset(EgoDataset):
                 agent_prob,
                 th_yaw_degree=TH_YAW_DEGREE,
                 th_extent_ratio=TH_EXTENT_RATIO,
-                th_movement=TH_MOVEMENT,
                 th_distance_av=TH_DISTANCE_AV,
                 num_workers=8,
             )  # TODO maybe set in env var?

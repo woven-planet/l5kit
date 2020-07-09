@@ -1,14 +1,20 @@
-from l5kit.data import ChunkedStateDataset
-from l5kit.dataset.select_agents import get_valid_agents, TH_DISTANCE_AV, TH_MOVEMENT, TH_EXTENT_RATIO, TH_YAW_DEGREE
+from functools import partial
+
 import numpy as np
 import pytest
-from functools import partial
+
+from l5kit.data import ChunkedStateDataset
+from l5kit.dataset.select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE, get_valid_agents
 
 SCENE_LENGTH = 50
 
-get_valid_agents_p = partial(get_valid_agents, th_agent_filter_probability_threshold=0,
-                     th_yaw_degree=TH_YAW_DEGREE, th_extent_ratio=TH_EXTENT_RATIO,
-                     th_movement=TH_MOVEMENT, th_distance_av=TH_DISTANCE_AV)
+get_valid_agents_p = partial(
+    get_valid_agents,
+    th_agent_filter_probability_threshold=0,
+    th_yaw_degree=TH_YAW_DEGREE,
+    th_extent_ratio=TH_EXTENT_RATIO,
+    th_distance_av=TH_DISTANCE_AV,
+)
 
 
 @pytest.fixture()  # not shared in scope
@@ -32,7 +38,7 @@ def dataset() -> ChunkedStateDataset:
     return dataset
 
 
-def test_get_valid_agents_annot_hole(dataset: ChunkedStateDataset):
+def test_get_valid_agents_annot_hole(dataset: ChunkedStateDataset) -> None:
     frames_range = np.asarray([0, len(dataset.frames)])
     # put an annotation hole at 10
     dataset.agents[10]["track_id"] = 2
@@ -45,7 +51,7 @@ def test_get_valid_agents_annot_hole(dataset: ChunkedStateDataset):
     assert agents_mask[10, 0] == agents_mask[10, 1] == 0
 
 
-def test_get_valid_agents_multi_annot_hole(dataset: ChunkedStateDataset):
+def test_get_valid_agents_multi_annot_hole(dataset: ChunkedStateDataset) -> None:
     frames_range = np.asarray([0, len(dataset.frames)])
     # put an annotation hole at 10 and 25
     dataset.agents[10]["track_id"] = 2
@@ -62,10 +68,10 @@ def test_get_valid_agents_multi_annot_hole(dataset: ChunkedStateDataset):
     assert agents_mask[25, 0] == agents_mask[25, 1] == 0
 
 
-def test_get_valid_agents_centroid_change(dataset: ChunkedStateDataset):
+def test_get_valid_agents_extent_change(dataset: ChunkedStateDataset) -> None:
     frames_range = np.asarray([0, len(dataset.frames)])
     # change centroid
-    dataset.agents[10]["centroid"] *= 2
+    dataset.agents[10]["extent"] *= 2
 
     agents_mask, *_ = get_valid_agents_p(frames_range, dataset)
 
@@ -74,7 +80,7 @@ def test_get_valid_agents_centroid_change(dataset: ChunkedStateDataset):
     assert agents_mask[10, 0] == agents_mask[10, 1] == 0
 
 
-def test_get_valid_agents(dataset: ChunkedStateDataset):
+def test_get_valid_agents(dataset: ChunkedStateDataset) -> None:
     frames_range = np.asarray([0, len(dataset.frames)])
     agents_mask, *_ = get_valid_agents_p(frames_range, dataset)
 
