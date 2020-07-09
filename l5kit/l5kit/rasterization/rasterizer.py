@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Optional
+from typing import List, Optional
 
 import numpy as np
 
@@ -18,7 +18,7 @@ class Rasterizer(ABC):
 
     @abstractmethod
     def rasterize(
-        self, history_frames: np.ndarray, all_agents: np.ndarray, agent: Optional[np.ndarray] = None
+        self, history_frames: np.ndarray, history_agents: List[np.ndarray], agent: Optional[np.ndarray] = None
     ) -> np.ndarray:
         pass
 

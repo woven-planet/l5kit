@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import List, Optional, Tuple
 
 import numpy as np
 
@@ -32,7 +32,7 @@ class StubRasterizer(Rasterizer):
         self.filter_agents_threshold = filter_agents_threshold
 
     def rasterize(
-        self, history_frames: np.ndarray, all_agents: np.ndarray, agent: Optional[np.ndarray] = None
+        self, history_frames: np.ndarray, history_agents: List[np.ndarray], agent: Optional[np.ndarray] = None
     ) -> np.ndarray:
         """
         Rasterize the history wrt to the first element in history_frames (most recent)

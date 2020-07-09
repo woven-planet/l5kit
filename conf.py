@@ -37,6 +37,7 @@ extensions = [
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
     "sphinx_rtd_theme",
+    "sphinx.ext.githubpages",
     "recommonmark",
 ]
 numpydoc_show_class_members = False

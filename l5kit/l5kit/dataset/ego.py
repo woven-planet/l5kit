@@ -3,7 +3,6 @@ from functools import partial
 from typing import Optional, Tuple, cast
 
 import numpy as np
-from prettytable import PrettyTable
 from torch.utils.data import Dataset
 
 from ..data import ChunkedStateDataset
@@ -181,25 +180,4 @@ None if not desired
         return np.asarray((frame_idx,), dtype=np.int64)
 
     def __repr__(self) -> str:
-        fields = [
-            "Num Scenes",
-            "Num Frames",
-            "Num Agents",
-            "Total Time (hr)",
-            "Avg Frames per Scene",
-            "Avg Agents per Frame",
-            "Avg Scene Time (sec)",
-        ]
-        values = [
-            len(self.dataset.scenes),
-            len(self.dataset.frames),
-            len(self.dataset.agents),
-            len(self.dataset.frames) / (10 * 3600),
-            len(self.dataset.frames) / len(self.dataset.scenes),
-            len(self.dataset.agents) / len(self.dataset.frames),
-            len(self.dataset.frames) / len(self.dataset.scenes) / 10,
-        ]
-        table = PrettyTable(field_names=fields)
-        table.float_format = ".2"
-        table.add_row(values)
-        return str(table)
+        return self.dataset.__repr__()

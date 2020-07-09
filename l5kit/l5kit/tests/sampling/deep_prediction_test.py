@@ -43,7 +43,7 @@ class TestDeepPredictionSampling(unittest.TestCase):
             gen_partial(
                 state_index=0,
                 frames=np.zeros(0, FRAME_DTYPE),
-                all_agents=np.zeros(0, AGENT_DTYPE),
+                agents=np.zeros(0, AGENT_DTYPE),
                 selected_track_id=None,
             )
 
@@ -52,7 +52,7 @@ class TestDeepPredictionSampling(unittest.TestCase):
         data = gen_partial(
             state_index=0,
             frames=np.asarray(self.dataset.frames[90:96]),
-            all_agents=self.dataset.agents,
+            agents=self.dataset.agents,
             selected_track_id=None,
         )
         assert bool(np.all(data["target_availabilities"][:5])) is True
@@ -65,7 +65,7 @@ class TestDeepPredictionSampling(unittest.TestCase):
             data = gen_partial(
                 state_index=10,
                 frames=np.asarray(self.dataset.frames[90:150]),
-                all_agents=self.dataset.agents,
+                agents=self.dataset.agents,
                 selected_track_id=None,
             )
             assert data["target_positions"].shape == (step, 2)

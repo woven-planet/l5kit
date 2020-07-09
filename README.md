@@ -20,6 +20,7 @@ You can use this framework to build systems which:
 * Study the improvement in performance of these systems as the amount of data increases.
 
 # News
+- 06-25-2020: Docs and API available at https://lyft.github.io/l5kit/ (thanks Kevin Zhao!)
 
 # Overview
 The framework consists of three modules:
@@ -34,7 +35,7 @@ It consists of the following components:
 * [A hand-annotated, HD semantic map](https://medium.com/lyftlevel5/semantic-maps-for-autonomous-vehicles-470830ee28b6). This data is stored using protobuf format.
 * A high-definition aerial map of the Palo Alto area. This image has 8cm per pixel resolution and is provided by [NearMap](https://www.nearmap.com/).
 
-To read more about the dataset and how it was generated, read the [dataset whitepaper](https://tinyurl.com/lyft-prediction-dataset).
+To read more about the dataset and how it was generated, read the [dataset whitepaper](https://arxiv.org/abs/2006.14480).
 
 ## 2. L5Kit
 L5Kit is a library which lets you:
@@ -62,7 +63,7 @@ git clone https://github.com/lyft/l5kit.git ./
 ```
 
 ### 2. Download the datasets
-Register at https://self-driving.lyft.com/level5/data/ and download the [2020 Lyft prediction dataset](https://tinyurl.com/lyft-prediction-dataset). Store all files in a single folder.
+Register at https://self-driving.lyft.com/level5/data/ and download the [2020 Lyft prediction dataset](https://arxiv.org/abs/2006.14480). Store all files in a single folder.
 The resulting directory structure should be:
 ```
 prediction-dataset/
@@ -77,6 +78,9 @@ prediction-dataset/
 cd l5kit
 pip install -r requirements.txt
 ```
+If you run into trouble installing L5Kit on Windows, you may need to
+- install Pytorch and torchvision manually first (select the correct version required by your system, i.e. GPU or CPU-only), then run L5Kit install (remove the packages [torch](https://github.com/lyft/l5kit/blob/59f36f348682aac5fc488c6d39dd58f8c27b1ec6/l5kit/setup.py#L23) and [torchvision](https://github.com/lyft/l5kit/blob/59f36f348682aac5fc488c6d39dd58f8c27b1ec6/l5kit/setup.py#L24) from ```setup.py```)
+- install [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
 
 ### 4. Generate L5Kit code html documentation (optional)
 ```shell
@@ -109,13 +113,16 @@ The framework was developed at Lyft Level 5 and is maintained by the following a
 * [Peter Ondruska](https://www.linkedin.com/in/pondruska/)
 
 ## Citation
-If you are using L5Kit or dataset in your work please cite the following [whitepaper](https://tinyurl.com/lyft-prediction-dataset):
+If you are using L5Kit or dataset in your work please cite the following [whitepaper](https://arxiv.org/abs/2006.14480):
 ```
 @misc{lyft2020,
-title = {One Thousand and One Hours: Self-driving Motion Prediction Dataset},
-author = {Houston, J. and Zuidhof, G. and Bergamini, L. and Ye, Y. and Jain, A. and Omari, S. and Iglovikov, V. and Ondruska, P.},
-year = {2020},
-howpublished = {\url{https://self-driving.lyft.com/}}
+    title={One Thousand and One Hours: Self-driving Motion Prediction Dataset},
+    author={John Houston and Guido Zuidhof and Luca Bergamini and Yawei Ye and Ashesh Jain and Sammy Omari and Vladimir Iglovikov and Peter Ondruska},
+    year={2020},
+    eprint={2006.14480},
+    archivePrefix={arXiv},
+    primaryClass={cs.CV}
+}
 ```
 
 ![Lyft Level 5](/images/lyft.jpg)
