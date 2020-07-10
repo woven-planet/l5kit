@@ -1,3 +1,3 @@
-from .config import config_data_to_config, load_config_data, save_config_data, schema_v4
+from .config import load_config_data, save_config_data
 
-__all__ = ["schema_v4", "save_config_data", "load_config_data", "config_data_to_config"]
+__all__ = ["save_config_data", "load_config_data"]
