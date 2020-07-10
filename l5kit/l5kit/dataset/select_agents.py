@@ -183,7 +183,7 @@ def select_agents(
         mode="w",
         shape=(len(zarr_dataset.agents), 2),
         chunks=(10000,),
-        dtype=np.int32,
+        dtype=np.uint32,
         synchronizer=zarr.ProcessSynchronizer(f"/tmp/ag_mask_{str(uuid4())}.sync"),
     )
 
