@@ -197,11 +197,16 @@ writing interfaces that involves making numpy-like slices.</p>
 local filesystem called &lt;something&gt;.zarr).</p>
 <dl class="py method">
 <dt id="l5kit.data.zarr_dataset.ChunkedStateDataset.initialize">
-<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'w'</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.data.zarr_dataset.ChunkedStateDataset.initialize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'w'</span></em>, <em class="sig-param"><span class="n">scenes_num</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">frames_num</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">agents_num</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.data.zarr_dataset.ChunkedStateDataset.initialize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a new zarr dataset, creating the underlying arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
-<dd class="field-odd"><p><strong>mode</strong> (<em>str</em>) – Mode to open dataset in, should be something that supports writing. (default: {“w”})</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>mode</strong> (<em>str</em>) – Mode to open dataset in, should be something that supports writing. (default: {“w”})</p></li>
+<li><p><strong>scenes_num</strong> (<em>int</em>) – pre-allocate this number of scenes</p></li>
+<li><p><strong>frames_num</strong> (<em>int</em>) – pre-allocate this number of frames</p></li>
+<li><p><strong>agents_num</strong> (<em>int</em>) – pre-allocate this number of agents</p></li>
+</ul>
 </dd>
 </dl>
 </dd></dl>
