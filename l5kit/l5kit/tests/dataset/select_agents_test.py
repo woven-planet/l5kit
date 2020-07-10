@@ -27,9 +27,10 @@ def dataset() -> ChunkedStateDataset:
     dataset.scenes[0]["frame_index_interval"] = (0, SCENE_LENGTH)
     for idx in range(len(dataset.frames)):
         dataset.frames[idx]["agent_index_interval"] = (idx, idx + 1)
+        dataset.frames[idx]["timestamp"] = idx
 
     for idx in range(len(dataset.agents)):
-        dataset.agents[idx]["centroid"] = (idx, idx * 0.1)  # ensure we don't go too far from the AV
+        # we don't check moving anymore, so the agent can stay still
         dataset.agents[idx]["extent"] = (5, 5, 5)
         dataset.agents[idx]["yaw"] = 0
         dataset.agents[idx]["track_id"] = 1
@@ -47,8 +48,14 @@ def test_get_valid_agents_annot_hole(dataset: ChunkedStateDataset) -> None:
     # 9 should have no future and 11 no past
     assert agents_mask[9, 1] == 0
     assert agents_mask[11, 0] == 0
-    # 10 shouldn't have no past nor future
+    # 10 should have no past nor future
     assert agents_mask[10, 0] == agents_mask[10, 1] == 0
+
+    # past should increase and future decrease until 10, then from 11 to the end
+    assert np.all(np.diff(agents_mask[:10, 0]) == 1)
+    assert np.all(np.diff(agents_mask[:10, 1]) == -1)
+    assert np.all(np.diff(agents_mask[11:, 0]) == 1)
+    assert np.all(np.diff(agents_mask[11:, 1]) == -1)
 
 
 def test_get_valid_agents_multi_annot_hole(dataset: ChunkedStateDataset) -> None:
@@ -59,12 +66,12 @@ def test_get_valid_agents_multi_annot_hole(dataset: ChunkedStateDataset) -> None
 
     agents_mask, *_ = get_valid_agents_p(frames_range, dataset)
 
-    assert np.all((agents_mask[1:10, 0] - agents_mask[:9, 0]) == 1)
-    assert np.all((agents_mask[1:10, 1] - agents_mask[:9, 1]) == -1)
+    assert np.all(np.diff(agents_mask[:10, 0]) == 1)
+    assert np.all(np.diff(agents_mask[:10, 1]) == -1)
     assert agents_mask[10, 0] == agents_mask[10, 1] == 0
 
-    assert np.all((agents_mask[12:25, 0] - agents_mask[11:24, 0]) == 1)
-    assert np.all((agents_mask[12:25, 1] - agents_mask[11:24, 1]) == -1)
+    assert np.all(np.diff(agents_mask[11:25, 0]) == 1)
+    assert np.all(np.diff(agents_mask[11:25, 1]) == -1)
     assert agents_mask[25, 0] == agents_mask[25, 1] == 0
 
 
@@ -75,8 +82,20 @@ def test_get_valid_agents_extent_change(dataset: ChunkedStateDataset) -> None:
 
     agents_mask, *_ = get_valid_agents_p(frames_range, dataset)
 
-    assert np.all((agents_mask[1:10, 0] - agents_mask[:9, 0]) == 1)
-    assert np.all((agents_mask[1:10, 1] - agents_mask[:9, 1]) == -1)
+    assert np.all(np.diff(agents_mask[:10, 0]) == 1)
+    assert np.all(np.diff(agents_mask[:10, 1]) == -1)
+    assert agents_mask[10, 0] == agents_mask[10, 1] == 0
+
+
+def test_get_valid_agents_yaw_change(dataset: ChunkedStateDataset) -> None:
+    frames_range = np.asarray([0, len(dataset.frames)])
+    # change centroid
+    dataset.agents[10]["yaw"] = np.radians(50)
+
+    agents_mask, *_ = get_valid_agents_p(frames_range, dataset)
+
+    assert np.all(np.diff(agents_mask[:10, 0]) == 1)
+    assert np.all(np.diff(agents_mask[:10, 1]) == -1)
     assert agents_mask[10, 0] == agents_mask[10, 1] == 0
 
 
@@ -85,5 +104,5 @@ def test_get_valid_agents(dataset: ChunkedStateDataset) -> None:
     agents_mask, *_ = get_valid_agents_p(frames_range, dataset)
 
     # we have a single valid agents, so the mask should decrease gently in the future and increase in the past
-    assert np.all((agents_mask[1:, 0] - agents_mask[:-1, 0]) == 1)
-    assert np.all((agents_mask[1:, 1] - agents_mask[:-1, 1]) == -1)
+    assert np.all(np.diff(agents_mask[:, 0]) == 1)
+    assert np.all(np.diff(agents_mask[:, 1]) == -1)
