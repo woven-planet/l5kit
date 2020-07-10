@@ -163,9 +163,23 @@ def _create_targets_for_deep_prediction(
     agent_centroid: np.ndarray,
     agent_yaw: float,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
-    """Internal function that creates the targets and availability masks for deep prediction-type models.
     """
-    # TODO add docstring
+    Internal function that creates the targets and availability masks for deep prediction-type models.
+    The futures offset (in meters) are computed. When no info is available (e.g. agent not in frame)
+    a 0 is set in the availability array (1 otherwise).
+
+    Args:
+        future_num_frames (int): number of offset we want in the future
+        future_frames (np.ndarry): available future frames. This may be less than future_num_frames
+        selected_track_id (Optional[int]): agent track_id or AV (None)
+        future_agents (List[np.ndarray]): list of agents arrays (same len of future_frames)
+        agent_centroid (np.ndarry): centroid of the agent at timestep 0
+        agent_yaw (float): angle of the agent at timestep 0
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray, np.ndarray]: position offsets, angle offsets, availabilities
+
+    """
     # How much the future coordinates differ from the current state in meters.
     # This is generally used as the target in training a deep prediction model.
     future_coords_offset = np.zeros((future_num_frames, 2), dtype=np.float32)
