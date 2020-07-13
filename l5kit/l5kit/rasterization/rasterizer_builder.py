@@ -97,7 +97,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         semantic_map = load_semantic_map(semantic_map_filepath)
         try:
             pose_to_ecef = np.array(_load_metadata(data_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
-        except FileNotFoundError:
+        except FileNotFoundError:  # TODO remove in v1.0.5
             print(
                 "!!dataset metafile not found!! this check has been introduced in l5kit v1.0.4"
                 "The file is already available in the public dataset folder, please download it."
