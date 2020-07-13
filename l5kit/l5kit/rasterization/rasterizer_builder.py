@@ -80,11 +80,19 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         ecef_to_sat = np.array(_load_metadata(sat_meta_key, data_manager)["ecef_to_image"], dtype=np.float64)
         try:
             pose_to_ecef = np.array(_load_metadata(data_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
-        except FileNotFoundError:  # TODO remove in v1.0.5
-            raise FileNotFoundError(
-                "!!dataset metafile not found!! this check has been introduced in l5kit v1.0.4\n"
-                "The file is already available in the public dataset folder, please download it.\n"
-                "This message will be removed in l5kit v1.0.5"
+        except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
+            print(
+                "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
+                "This will be deprecated in future releases"
+            )
+            pose_to_ecef = np.asarray(
+                [
+                    [8.46617444e-01, 3.23463078e-01, -4.22623402e-01, -2.69876744e06],
+                    [-5.32201938e-01, 5.14559352e-01, -6.72301845e-01, -4.29315158e06],
+                    [-3.05311332e-16, 7.94103464e-01, 6.07782600e-01, 3.85516476e06],
+                    [0.00000000e00, 0.00000000e00, 0.00000000e00, 1.00000000e00],
+                ],
+                dtype=np.float64,
             )
 
         map_to_sat = np.matmul(ecef_to_sat, pose_to_ecef)
@@ -96,11 +104,19 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         semantic_map = load_semantic_map(semantic_map_filepath)
         try:
             pose_to_ecef = np.array(_load_metadata(data_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
-        except FileNotFoundError:  # TODO remove in v1.0.5
-            raise FileNotFoundError(
-                "!!dataset metafile not found!! this check has been introduced in l5kit v1.0.4\n"
-                "The file is already available in the public dataset folder, please download it.\n"
-                "This message will be removed in l5kit v1.0.5"
+        except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
+            print(
+                "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
+                "This will be deprecated in future releases"
+            )
+            pose_to_ecef = np.asarray(
+                [
+                    [8.46617444e-01, 3.23463078e-01, -4.22623402e-01, -2.69876744e06],
+                    [-5.32201938e-01, 5.14559352e-01, -6.72301845e-01, -4.29315158e06],
+                    [-3.05311332e-16, 7.94103464e-01, 6.07782600e-01, 3.85516476e06],
+                    [0.00000000e00, 0.00000000e00, 0.00000000e00, 1.00000000e00],
+                ],
+                dtype=np.float64,
             )
 
         return SemBoxRasterizer(
