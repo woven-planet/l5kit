@@ -1,6 +1,5 @@
 import json
 import os
-from sys import exit
 from typing import Tuple, cast
 
 import cv2
@@ -82,12 +81,11 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         try:
             pose_to_ecef = np.array(_load_metadata(data_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
         except FileNotFoundError:  # TODO remove in v1.0.5
-            print(
-                "!!dataset metafile not found!! this check has been introduced in l5kit v1.0.4"
-                "The file is already available in the public dataset folder, please download it."
+            raise FileNotFoundError(
+                "!!dataset metafile not found!! this check has been introduced in l5kit v1.0.4\n"
+                "The file is already available in the public dataset folder, please download it.\n"
                 "This message will be removed in l5kit v1.0.5"
             )
-            exit()
 
         map_to_sat = np.matmul(ecef_to_sat, pose_to_ecef)
         return SatBoxRasterizer(
@@ -99,12 +97,11 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         try:
             pose_to_ecef = np.array(_load_metadata(data_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
         except FileNotFoundError:  # TODO remove in v1.0.5
-            print(
-                "!!dataset metafile not found!! this check has been introduced in l5kit v1.0.4"
-                "The file is already available in the public dataset folder, please download it."
+            raise FileNotFoundError(
+                "!!dataset metafile not found!! this check has been introduced in l5kit v1.0.4\n"
+                "The file is already available in the public dataset folder, please download it.\n"
                 "This message will be removed in l5kit v1.0.5"
             )
-            exit()
 
         return SemBoxRasterizer(
             raster_size,
