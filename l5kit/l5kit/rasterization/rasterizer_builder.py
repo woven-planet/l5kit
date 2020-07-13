@@ -1,5 +1,6 @@
 import json
 import os
+from sys import exit
 from typing import Tuple, cast
 
 import cv2
