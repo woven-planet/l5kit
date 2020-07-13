@@ -6,25 +6,6 @@ import pymap3d as pm
 from .proto.road_network_pb2 import GeoFrame, Lane, MapFragment, TrafficControlElement
 
 
-# TODO read from elsewhere, it should be read from dataset metadata or elsewhere. Not hard-coded
-def load_pose_to_ecef() -> np.ndarray:
-    """Loads the pose to ECEF transformation matrix.
-
-    Returns:
-        np.ndarray: 4x4 transformation matrix of dtype ``np.float64``.
-    """
-
-    return np.array(
-        [
-            [8.46617444e-01, 3.23463078e-01, -4.22623402e-01, -2.69876744e06],
-            [-5.32201938e-01, 5.14559352e-01, -6.72301845e-01, -4.29315158e06],
-            [-3.05311332e-16, 7.94103464e-01, 6.07782600e-01, 3.85516476e06],
-            [0.00000000e00, 0.00000000e00, 0.00000000e00, 1.00000000e00],
-        ],
-        dtype=np.float64,
-    )
-
-
 def load_semantic_map(semantic_map_path: str) -> dict:
     """Loads and does preprocessing of given semantic map in binary proto format.
 
