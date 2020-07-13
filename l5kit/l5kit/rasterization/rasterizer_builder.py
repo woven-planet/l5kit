@@ -78,7 +78,15 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
 
         sat_meta_key = os.path.splitext(sat_image_key)[0] + ".json"
         ecef_to_sat = np.array(_load_metadata(sat_meta_key, data_manager)["ecef_to_image"], dtype=np.float64)
-        pose_to_ecef = np.array(_load_metadata(data_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
+        try:
+            pose_to_ecef = np.array(_load_metadata(data_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
+        except FileNotFoundError:  # TODO remove in v1.0.5
+            print(
+                "!!dataset metafile not found!! this check has been introduced in l5kit v1.0.4"
+                "The file is already available in the public dataset folder, please download it."
+                "This message will be removed in l5kit v1.0.5"
+            )
+            exit()
 
         map_to_sat = np.matmul(ecef_to_sat, pose_to_ecef)
         return SatBoxRasterizer(
@@ -87,7 +95,15 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
     elif map_type == "py_semantic":
         semantic_map_filepath = data_manager.require(raster_cfg["semantic_map_key"])
         semantic_map = load_semantic_map(semantic_map_filepath)
-        pose_to_ecef = np.array(_load_metadata(data_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
+        try:
+            pose_to_ecef = np.array(_load_metadata(data_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
+        except FileNotFoundError:
+            print(
+                "!!dataset metafile not found!! this check has been introduced in l5kit v1.0.4"
+                "The file is already available in the public dataset folder, please download it."
+                "This message will be removed in l5kit v1.0.5"
+            )
+            exit()
 
         return SemBoxRasterizer(
             raster_size,
