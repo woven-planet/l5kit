@@ -5,7 +5,7 @@ import pytest
 from torch.utils.data import DataLoader, Dataset, Subset
 
 from l5kit.configs import load_config_data
-from l5kit.data import ChunkedStateDataset, load_pose_to_ecef
+from l5kit.data import ChunkedStateDataset
 from l5kit.dataset import AgentDataset, EgoDataset
 from l5kit.rasterization import (
     BoxRasterizer,
@@ -32,9 +32,10 @@ def get_rasterizer(rast_name: str, cfg: dict) -> Rasterizer:
     map_to_sat = np.block(
         [[np.eye(3) / 100, np.asarray([[1000], [1000], [1]])], [np.asarray([[0, 0, 0, 1]])]]
     )  # just a translation and scale
+    pose_to_ecef = np.eye(4)
     map_im = np.zeros((10000, 10000, 3), dtype=np.uint8)
+
     # sem params
-    pose_to_ecef = load_pose_to_ecef()
     semantic_map = {
         "lanes": [],
         "lat": 37.44,
