@@ -8,7 +8,7 @@ from l5kit.data import zarr_dataset
 
 class ZarrDatasetTest(unittest.TestCase):
     def test_load_dataset(self) -> None:
-        data = zarr_dataset.ChunkedStateDataset(path="./l5kit/tests/data/single_scene.zarr")
+        data = zarr_dataset.ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
         data.open()
 
         self.assertEqual(len(data.frames), 775)
