@@ -6,6 +6,7 @@ import cv2
 import numpy as np
 
 from ..data import DataManager, load_semantic_map
+from .box_rasterizer import BoxRasterizer
 from .rasterizer import Rasterizer
 from .sat_box_rasterizer import SatBoxRasterizer
 from .sem_box_rasterizer import SemBoxRasterizer
@@ -132,5 +133,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
             semantic_map,
             pose_to_ecef,
         )
+    elif map_type == "box_debug":
+        return BoxRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold, history_num_frames)
     else:
         raise NotImplementedError(f"Rasterizer for map type {map_type} is not supported.")
