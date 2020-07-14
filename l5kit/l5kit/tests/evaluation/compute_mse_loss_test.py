@@ -8,7 +8,7 @@ from l5kit.evaluation import compute_mse_error_csv, export_zarr_to_ground_truth_
 
 
 def test_compute_mse_error(tmp_path: Path) -> None:
-    data = ChunkedStateDataset(path="./l5kit/tests/data/single_scene.zarr")
+    data = ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
     data.open()
     export_zarr_to_ground_truth_csv(data, str(tmp_path / "gt1.csv"), 0, 12, 0.5)
     export_zarr_to_ground_truth_csv(data, str(tmp_path / "gt2.csv"), 0, 12, 0.5)
