@@ -25,3 +25,27 @@ is expressed as a single yaw angle (counterclockwise in radians)
 
 The origin of this space is located at Palo Alto (California, USA).
 
+## Image Coordinate System
+Once rasterisation is performed, the final multi-channel image will be in the image space. This is a 2D space where (0,0)
+is located in the top-left corner. 
+
+If you're using one of our high-level dataset object (either `EgoDataset` or `AgentDataset`) to generate samples, you can 
+access the world-to-image matrix using the `world_to_image` key on the returned dict. This matrix is built as follows:
+- Translate world to ego by applying the negative `ego_translation`;
+- Rotate counter-clockwise by negative `ego_yaw` to align world such that ego faces right in the image;
+- Scale from meters to pixels based on the configuration `pixel_size` value;
+- Translate again so that the ego is aligned to the configuration `ego_center` value
+
+With this matrix, you can convert a point from world to image space and back (using its inverse).
+
+One application of this is drawing trajectories on the image:
+
+```python
+data = dataset[0]  # this comes from either EgoDataset or AgentDataset
+
+im = dataset.rasterizer.to_rgb(data["image"].transpose(1, 2, 0))  # convert raster into rgb
+
+# transform from world meters into image pixels
+positions_pixels = transform_points(data["target_positions"] + data["centroid"][:2], data["world_to_image"])
+draw_trajectory(im, positions_pixels, data["target_yaws"], TARGET_POINTS_COLOR)
+```
