@@ -1,13 +1,10 @@
-import unittest
-
 import numpy as np
 import pytest
 
-from l5kit.data import AGENT_DTYPE, ChunkedStateDataset, filter_agents_by_frames
-from l5kit.rasterization.box_rasterizer import draw_boxes
-from l5kit.rasterization import build_rasterizer
 from l5kit.configs import load_config_data
-from l5kit.data import LocalDataManager
+from l5kit.data import AGENT_DTYPE, ChunkedStateDataset, LocalDataManager, filter_agents_by_frames
+from l5kit.rasterization import build_rasterizer
+from l5kit.rasterization.box_rasterizer import draw_boxes
 
 
 def test_empty_boxes() -> None:
@@ -93,6 +90,5 @@ def test_shape(hist_data: tuple) -> None:
     dm = LocalDataManager("./l5kit/tests/artefacts/")
     rasterizer = build_rasterizer(cfg, dm)
 
-    out = rasterizer.rasterize(hist_data[0][:hist_length + 1], hist_data[1][:hist_length + 1])
+    out = rasterizer.rasterize(hist_data[0][: hist_length + 1], hist_data[1][: hist_length + 1])
     assert out.shape == (224, 224, (hist_length + 1) * 2)
-

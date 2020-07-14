@@ -1,8 +1,8 @@
 import pytest
 
-from l5kit.data import ChunkedStateDataset, filter_agents_by_frames, LocalDataManager
-from l5kit.rasterization import build_rasterizer
 from l5kit.configs import load_config_data
+from l5kit.data import ChunkedStateDataset, LocalDataManager, filter_agents_by_frames
+from l5kit.rasterization import build_rasterizer
 
 
 @pytest.fixture(scope="module")

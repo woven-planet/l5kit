@@ -7,7 +7,7 @@ from torch.utils.data import DataLoader, Dataset, Subset
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedStateDataset, LocalDataManager
 from l5kit.dataset import AgentDataset, EgoDataset
-from l5kit.rasterization import build_rasterizer, StubRasterizer
+from l5kit.rasterization import StubRasterizer, build_rasterizer
 
 
 @pytest.fixture(scope="module")

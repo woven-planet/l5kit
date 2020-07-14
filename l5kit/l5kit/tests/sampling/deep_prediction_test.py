@@ -1,13 +1,13 @@
 import functools
-import pytest
 from typing import Callable
 
 import numpy as np
+import pytest
 
+from l5kit.configs import load_config_data
 from l5kit.data import AGENT_DTYPE, FRAME_DTYPE, ChunkedStateDataset
 from l5kit.rasterization import StubRasterizer
 from l5kit.sampling import generate_agent_sample
-from l5kit.configs import load_config_data
 
 
 @pytest.fixture(scope="module")
@@ -23,12 +23,17 @@ def cfg() -> dict:
     return cfg
 
 
-def get_partial(cfg: dict, history_num_frames: int, history_step_size: int, future_num_frames: int, future_step_size: int) -> Callable:
+def get_partial(
+    cfg: dict, history_num_frames: int, history_step_size: int, future_num_frames: int, future_step_size: int
+) -> Callable:
     rast_params = cfg["raster_params"]
 
-    rasterizer = StubRasterizer(rast_params["raster_size"], np.asarray(rast_params["pixel_size"]),
-                                np.asarray(rast_params["ego_center"]),
-                                rast_params["filter_agents_threshold"])
+    rasterizer = StubRasterizer(
+        rast_params["raster_size"],
+        np.asarray(rast_params["pixel_size"]),
+        np.asarray(rast_params["ego_center"]),
+        rast_params["filter_agents_threshold"],
+    )
     return functools.partial(
         generate_agent_sample,
         raster_size=rast_params["raster_size"],
@@ -47,10 +52,7 @@ def test_no_frames(zarr_dataset: ChunkedStateDataset, cfg: dict) -> None:
     gen_partial = get_partial(cfg, 2, 1, 4, 1)
     with pytest.raises(IndexError):
         gen_partial(
-            state_index=0,
-            frames=np.zeros(0, FRAME_DTYPE),
-            agents=np.zeros(0, AGENT_DTYPE),
-            selected_track_id=None,
+            state_index=0, frames=np.zeros(0, FRAME_DTYPE), agents=np.zeros(0, AGENT_DTYPE), selected_track_id=None,
         )
 
 
