@@ -26,7 +26,6 @@ def check_rasterizer(cfg: dict, rasterizer: Rasterizer, dataset: ChunkedStateDat
         im = rasterizer.rasterize(frames_to_rasterize, agents)
         assert len(im.shape) == 3
         assert im.shape[:2] == tuple(cfg["raster_params"]["raster_size"])
-        assert im.shape[2] >= 3
         assert im.max() <= 1
         assert im.min() >= 0
         assert im.dtype == np.float32
@@ -37,7 +36,7 @@ def check_rasterizer(cfg: dict, rasterizer: Rasterizer, dataset: ChunkedStateDat
         assert rgb_im.dtype == np.uint8
 
 
-@pytest.mark.parametrize("map_type", ["py_semantic", "py_satellite"])
+@pytest.mark.parametrize("map_type", ["py_semantic", "py_satellite", "box_debug"])
 def test_rasterizer_created_from_config(map_type: str, dataset: ChunkedStateDataset) -> None:
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
     cfg["raster_params"]["map_type"] = map_type
