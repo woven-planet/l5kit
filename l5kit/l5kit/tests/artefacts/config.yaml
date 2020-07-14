@@ -20,8 +20,8 @@ raster_params:
     - 224
   # raster's spatial resolution [meters per pixel]: the size in the real world one pixel corresponds to.
   pixel_size:
-    - 0.5
-    - 0.5
+    - 0.25
+    - 0.25
   # From 0 to 1 per axis, [0.5,0.5] would show the ego centered in the image.
   ego_center:
     - 0.25
