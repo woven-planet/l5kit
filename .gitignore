@@ -26,3 +26,4 @@ coverage_report*
 
 .env*/
 .venv*/
+agents_mask/
