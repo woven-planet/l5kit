@@ -82,7 +82,11 @@ def get_valid_agents(
     agents = dataset.agents[agents_range_start:agents_range_end]
 
     agents_dict = defaultdict(list)
-    agents_mask = np.zeros((len(agents), 2), dtype=np.int)
+
+    # for every agent in the .zarr -> (available_past_frame, available_future_frames) using this agent_threshold
+    # this means a single mask can be used to generate all configurations of future and past frames
+    agents_mask = np.zeros((len(agents), 2), dtype=np.uint32)
+
     report: Counter = Counter()
 
     # filter here for point-wise to speed up

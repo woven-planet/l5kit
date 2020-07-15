@@ -42,9 +42,7 @@ class AgentDataset(EgoDataset):
         """
         agent_prob = self.cfg["raster_params"]["filter_agents_threshold"]
 
-        try:
-            agents_mask = self.dataset.root[f"agents_mask/{agent_prob}"]
-        except KeyError:
+        if f"agents_mask/{agent_prob}" not in self.dataset.root:
             print(
                 f"cannot find the right config in {self.dataset.path},\n"
                 f"your cfg has loaded filter_agents_threshold={agent_prob};\n"
@@ -60,8 +58,8 @@ class AgentDataset(EgoDataset):
                 num_workers=8,
             )  # TODO maybe set in env var?
             self.dataset.open()  # ensure root is updated
-            agents_mask = self.dataset.root[f"agents_mask/{agent_prob}"]
 
+        agents_mask = self.dataset.root[f"agents_mask/{agent_prob}"]
         return agents_mask
 
     def __len__(self) -> int:
