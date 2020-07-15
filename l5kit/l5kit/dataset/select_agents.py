@@ -81,6 +81,7 @@ def get_valid_agents(
     agents_range_end = frames[-1]["agent_index_interval"][1]
 
     agents = dataset.agents[agents_range_start:agents_range_end]
+    frames["agent_index_interval"] -= agents_range_start  # sync frame and agents again
 
     agents_dict = defaultdict(list)
 
@@ -95,7 +96,7 @@ def get_valid_agents(
     global_agent_idx = -1
     for frame_idx in range(len(frames)):
         frame = frames[frame_idx]
-        agents_frame = agents[slice(*(frame["agent_index_interval"] - agents_range_start))]
+        agents_frame = agents[slice(*(frame["agent_index_interval"]))]
 
         for agent in agents_frame:
             global_agent_idx += 1
