@@ -1,9 +1,9 @@
 import argparse
+import multiprocessing
 import os
 import pprint
 from collections import Counter, defaultdict
 from functools import partial
-from multiprocessing import Pool
 from pathlib import Path
 from typing import Tuple
 from uuid import uuid4
@@ -16,6 +16,7 @@ from tqdm import tqdm
 from l5kit.data import ChunkedStateDataset
 from l5kit.data.filter import _get_label_filter  # TODO expose this without digging
 
+multiprocessing.set_start_method("fork", force=True)  # this fix loop in python 3.8 on MacOS
 os.environ["BLOSC_NOLOCK"] = "1"  # this is required for multiprocessing
 
 TH_YAW_DEGREE = 30
@@ -193,7 +194,7 @@ def select_agents(
 
     report: Counter = Counter()
     print("starting pool...")
-    with Pool(num_workers) as pool:
+    with multiprocessing.Pool(num_workers) as pool:
         tasks = tqdm(enumerate(pool.imap_unordered(get_valid_agents_partial, frame_index_intervals)))
         for idx, (mask, count, agents_range) in tasks:
             report += count
