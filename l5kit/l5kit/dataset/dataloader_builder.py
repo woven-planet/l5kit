@@ -15,6 +15,7 @@ def build_dataloader(
     dataset_class: Callable,
     rasterizer: Rasterizer,
     perturbation: Optional[Perturbation] = None,
+    combine_scene: bool = False,
 ) -> DataLoader:
     """
     Function to build a dataloader from a dataset of dataset_class. Note we have to pass rasterizer and
@@ -27,6 +28,7 @@ def build_dataloader(
         dataset_class (Callable): a class object (EgoDataset or AgentDataset currently) to build the dataset
         rasterizer (Rasterizer): the rasterizer for the dataset
         perturbation (Optional[Perturbation]): an optional perturbation object
+        combine_scene (float): if to combine scenes that follow up each other perfectly
 
     Returns:
         DataLoader: pytorch Dataloader object built with Concat and Sub datasets
@@ -38,7 +40,8 @@ def build_dataloader(
         zarr_dataset_path = data_manager.require(key=dataset_param["key"])
         zarr_dataset = ChunkedStateDataset(path=zarr_dataset_path)
         zarr_dataset.open()
-        zarr_dataset.scenes = get_combined_scenes(zarr_dataset.scenes)
+        if combine_scene:  # possible future deprecation
+            zarr_dataset.scenes = get_combined_scenes(zarr_dataset.scenes)
 
         #  Let's load the zarr dataset with our dataset.
         dataset = dataset_class(cfg, zarr_dataset, rasterizer, perturbation=perturbation)
