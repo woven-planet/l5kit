@@ -102,7 +102,7 @@ class SatelliteRasterizer(Rasterizer):
         sat_translation = transform_point(np.append(world_translation, ego_translation[2]), self.map_to_sat)
 
         # Note 1: there is a negation here, unknown why this is necessary.
-        # Note 2 (lberg): my best guess is that cv2 rotation are clockwise in fact.
+        # My best guess is because Y is flipped, maybe we can do this more elegantly.
         sat_im = get_sat_image_crop_scaled(
             self.map_im,
             self.raster_size,
