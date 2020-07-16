@@ -168,7 +168,7 @@ def get_valid_agents(
 
 
 def select_agents(
-    input_folder: str,
+    zarr_dataset: ChunkedStateDataset,
     th_agent_prob: float,
     th_history_num_frames: int,
     th_future_num_frames: int,
@@ -182,10 +182,6 @@ def select_agents(
     Filter agents from zarr INPUT_FOLDER according to multiple thresholds and store a boolean array of the same shape.
     """
     assert th_future_num_frames > 0
-
-    # ===== LOAD
-    zarr_dataset = ChunkedStateDataset(path=input_folder)
-    zarr_dataset.open()
 
     output_group = f"{th_history_num_frames}_{th_future_num_frames}_{th_agent_prob}"
     if "agents_mask" in zarr_dataset.root and f"agents_mask/{output_group}" in zarr_dataset.root:
@@ -246,9 +242,9 @@ def select_agents(
     }
     # print report
     pp = pprint.PrettyPrinter(indent=4)
-    print(f"start report for {input_folder}")
+    print(f"start report for {zarr_dataset.path}")
     pp.pprint({**agents_cfg, **report})
-    print(f"end report for {input_folder}")
+    print(f"end report for {zarr_dataset.path}")
     print("==============================")
 
 
@@ -266,8 +262,11 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     for input_folder in args.input_folder:
+        zarr_dataset = ChunkedStateDataset(path=input_folder)
+        zarr_dataset.open()
+
         select_agents(
-            input_folder,
+            zarr_dataset,
             args.th_agent_prob,
             args.th_history_num_frames,
             args.th_future_num_frames,
