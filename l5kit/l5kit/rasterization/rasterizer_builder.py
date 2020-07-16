@@ -74,12 +74,15 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
 
     if map_type == "py_satellite":
         sat_image_key = raster_cfg["satellite_map_key"]
-        sat_image = _load_satellite_map(sat_image_key, data_manager)
-
         sat_meta_key = os.path.splitext(sat_image_key)[0] + ".json"
-        ecef_to_sat = np.array(_load_metadata(sat_meta_key, data_manager)["ecef_to_image"], dtype=np.float64)
+
+        sat_image = _load_satellite_map(sat_image_key, data_manager)
+        sat_meta = _load_metadata(sat_meta_key, data_manager)
+        ecef_to_sat = np.array(sat_meta["ecef_to_image"], dtype=np.float64)
+
         try:
-            pose_to_ecef = np.array(_load_metadata(dataset_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
+            dataset_meta = _load_metadata(dataset_meta_key, data_manager)
+            pose_to_ecef = np.array(dataset_meta["pose_to_ecef"], dtype=np.float64)
         except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
             print(
                 "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
@@ -103,7 +106,8 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         semantic_map_filepath = data_manager.require(raster_cfg["semantic_map_key"])
         semantic_map = load_semantic_map(semantic_map_filepath)
         try:
-            pose_to_ecef = np.array(_load_metadata(dataset_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
+            dataset_meta = _load_metadata(dataset_meta_key, data_manager)
+            pose_to_ecef = np.array(dataset_meta["pose_to_ecef"], dtype=np.float64)
         except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
             print(
                 "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
