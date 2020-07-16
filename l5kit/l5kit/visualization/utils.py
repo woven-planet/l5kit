@@ -9,8 +9,9 @@ PREDICTED_POINTS_COLOR = (0, 255, 255)
 TARGET_POINTS_COLOR = (255, 0, 255)
 REFERENCE_TRAJECTORY_POINT_COLOR = (255, 255, 0)
 #  Arrows represent position + orientation.
-ARROW_LENGTH_IN_PIXELS = 4
+ARROW_LENGTH_IN_PIXELS = 2
 ARROW_THICKNESS_IN_PIXELS = 1
+ARROW_TIP_LENGTH = 1.8
 
 
 def draw_arrowed_line(on_image: np.ndarray, position: np.ndarray, yaw: float, rgb_color: Tuple[int, int, int]) -> None:
@@ -36,7 +37,7 @@ def draw_arrowed_line(on_image: np.ndarray, position: np.ndarray, yaw: float, rg
         tuple(end_pixel.astype(np.int32)),
         rgb_color,
         thickness=ARROW_THICKNESS_IN_PIXELS,
-        tipLength=1.8,
+        tipLength=ARROW_TIP_LENGTH,
     )
 
 
