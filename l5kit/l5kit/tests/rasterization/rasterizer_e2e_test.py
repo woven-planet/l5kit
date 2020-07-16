@@ -59,7 +59,7 @@ def setup_rasterizer_artifacts_and_config(temp_folder: str, cfg: dict) -> None:
     with open(os.path.join(temp_folder, sat_im_metadata_filename), "w") as ft:
         json.dump(sat_im_transform_json_content, ft)
 
-    dataset_meta_key = "dataset_meta.json"
+    dataset_meta_key = "meta.json"
     cfg["raster_params"]["dataset_meta_key"] = dataset_meta_key
 
     pose_ecef_transform_json_content = {
