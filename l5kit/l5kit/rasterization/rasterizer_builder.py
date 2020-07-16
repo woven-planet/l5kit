@@ -72,7 +72,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
     filter_agents_threshold = raster_cfg["filter_agents_threshold"]
     history_num_frames = cfg["model_params"]["history_num_frames"]
 
-    if map_type in ["py_satellite", "satellite_rgb"]:
+    if map_type == "py_satellite":
         sat_image_key = raster_cfg["satellite_map_key"]
         sat_image = _load_satellite_map(sat_image_key, data_manager)
 
