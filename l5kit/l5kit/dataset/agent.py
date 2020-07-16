@@ -60,7 +60,6 @@ class AgentDataset(EgoDataset):
                 th_extent_ratio=TH_EXTENT_RATIO,
                 th_movement=TH_MOVEMENT,
                 th_distance_av=TH_DISTANCE_AV,
-                num_workers=8,  # TODO maybe set in env var?
             )
             self.dataset.open()  # ensure root is updated, reload all arrays TODO lberg: avoid reload
             agents_mask = self.dataset.root[f"agents_mask/{group_name}"]
