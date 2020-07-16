@@ -1,7 +1,9 @@
 import bisect
+from pathlib import Path
 from typing import Optional
 
 import numpy as np
+from zarr import convenience
 
 from ..data import ChunkedStateDataset
 from ..kinematic import Perturbation
@@ -61,8 +63,8 @@ class AgentDataset(EgoDataset):
                 th_movement=TH_MOVEMENT,
                 th_distance_av=TH_DISTANCE_AV,
             )
-            self.dataset.open()  # ensure root is updated, reload all arrays TODO lberg: avoid reload
-            agents_mask = self.dataset.root[f"agents_mask/{group_name}"]
+            array_path = Path(self.dataset.path) / f"agents_mask/{group_name}"
+            agents_mask = convenience.load(str(array_path))  # note (lberg): this doesn't update root
 
         return agents_mask
 
