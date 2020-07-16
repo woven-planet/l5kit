@@ -3,7 +3,7 @@ import os
 import pprint
 from collections import Counter, defaultdict
 from functools import partial
-from multiprocessing import Pool
+from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from typing import List, Tuple
 from uuid import uuid4
@@ -168,7 +168,7 @@ def get_valid_agents(
 
 
 def select_agents(
-    input_folder: str,
+    zarr_dataset: ChunkedStateDataset,
     th_agent_prob: float,
     th_history_num_frames: int,
     th_future_num_frames: int,
@@ -176,16 +176,11 @@ def select_agents(
     th_extent_ratio: float,
     th_movement: float,
     th_distance_av: float,
-    num_workers: int,
 ) -> None:
     """
     Filter agents from zarr INPUT_FOLDER according to multiple thresholds and store a boolean array of the same shape.
     """
     assert th_future_num_frames > 0
-
-    # ===== LOAD
-    zarr_dataset = ChunkedStateDataset(path=input_folder)
-    zarr_dataset.open()
 
     output_group = f"{th_history_num_frames}_{th_future_num_frames}_{th_agent_prob}"
     if "agents_mask" in zarr_dataset.root and f"agents_mask/{output_group}" in zarr_dataset.root:
@@ -223,7 +218,7 @@ def select_agents(
 
     report: Counter = Counter()
     print("starting pool...")
-    with Pool(num_workers) as pool:
+    with Pool(cpu_count()) as pool:
         tasks = tqdm(enumerate(pool.imap_unordered(get_valid_agents_partial, frame_index_intervals)))
         for idx, (mask, count, agents_range) in tasks:
             report += count
@@ -246,15 +241,15 @@ def select_agents(
     }
     # print report
     pp = pprint.PrettyPrinter(indent=4)
-    print(f"start report for {input_folder}")
+    print(f"start report for {zarr_dataset.path}")
     pp.pprint({**agents_cfg, **report})
-    print(f"end report for {input_folder}")
+    print(f"end report for {zarr_dataset.path}")
     print("==============================")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_folder", nargs="+", type=str, required=True, help="zarr path")
+    parser.add_argument("--input_folders", nargs="+", type=str, required=True, help="zarr path")
     parser.add_argument("--th_agent_prob", type=float, default=0.5, help="perception threshold on agents of interest")
     parser.add_argument("--th_history_num_frames", type=int, default=0, help="frames in the past to be valid")
     parser.add_argument("--th_future_num_frames", type=int, default=12, help="frames in the future to be valid")
@@ -262,12 +257,14 @@ if __name__ == "__main__":
     parser.add_argument("--th_extent_ratio", type=float, default=TH_EXTENT_RATIO, help="max change in area allowed")
     parser.add_argument("--th_movement", type=float, default=TH_MOVEMENT, help="max movement in meters")
     parser.add_argument("--th_distance_av", type=float, default=TH_DISTANCE_AV, help="max distance from AV in meters")
-    parser.add_argument("-j", type=int, default=8, help="number of workers")
     args = parser.parse_args()
 
-    for input_folder in args.input_folder:
+    for input_folder in args.input_folders:
+        zarr_dataset = ChunkedStateDataset(path=input_folder)
+        zarr_dataset.open()
+
         select_agents(
-            input_folder,
+            zarr_dataset,
             args.th_agent_prob,
             args.th_history_num_frames,
             args.th_future_num_frames,
@@ -275,5 +272,4 @@ if __name__ == "__main__":
             args.th_extent_ratio,
             args.th_movement,
             args.th_distance_av,
-            args.j,
         )

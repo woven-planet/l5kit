@@ -1,7 +1,9 @@
 import bisect
+from pathlib import Path
 from typing import Optional
 
 import numpy as np
+from zarr import convenience
 
 from ..data import ChunkedStateDataset
 from ..kinematic import Perturbation
@@ -52,7 +54,7 @@ class AgentDataset(EgoDataset):
                 "Mask will now be generated for these parameters."
             )
             select_agents(
-                self.dataset.path,
+                self.dataset,
                 agent_prob,
                 history_num_frames,
                 future_num_frames,
@@ -60,10 +62,9 @@ class AgentDataset(EgoDataset):
                 th_extent_ratio=TH_EXTENT_RATIO,
                 th_movement=TH_MOVEMENT,
                 th_distance_av=TH_DISTANCE_AV,
-                num_workers=8,
-            )  # TODO maybe set in env var?
-            self.dataset.open()  # ensure root is updated
-            agents_mask = self.dataset.root[f"agents_mask/{group_name}"]
+            )
+            array_path = Path(self.dataset.path) / f"agents_mask/{group_name}"
+            agents_mask = convenience.load(str(array_path))  # note (lberg): this doesn't update root
 
         return agents_mask
 
