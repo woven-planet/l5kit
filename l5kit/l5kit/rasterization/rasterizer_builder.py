@@ -22,8 +22,8 @@ def _load_metadata(meta_key: str, data_manager: DataManager) -> dict:
     Returns:
         dict: metadata as a dict
     """
-    image_metadata_path = data_manager.require(meta_key)
-    with open(image_metadata_path, "r") as f:
+    metadata_path = data_manager.require(meta_key)
+    with open(metadata_path, "r") as f:
         metadata: dict = json.load(f)
     return metadata
 
@@ -64,7 +64,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
     """
     raster_cfg = cfg["raster_params"]
     map_type = raster_cfg["map_type"]
-    data_meta_key = raster_cfg["dataset_meta_key"]
+    dataset_meta_key = raster_cfg["dataset_meta_key"]
 
     raster_size: Tuple[int, int] = cast(Tuple[int, int], tuple(raster_cfg["raster_size"]))
     pixel_size = np.array(raster_cfg["pixel_size"])
@@ -79,7 +79,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         sat_meta_key = os.path.splitext(sat_image_key)[0] + ".json"
         ecef_to_sat = np.array(_load_metadata(sat_meta_key, data_manager)["ecef_to_image"], dtype=np.float64)
         try:
-            pose_to_ecef = np.array(_load_metadata(data_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
+            pose_to_ecef = np.array(_load_metadata(dataset_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
         except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
             print(
                 "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
@@ -103,7 +103,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         semantic_map_filepath = data_manager.require(raster_cfg["semantic_map_key"])
         semantic_map = load_semantic_map(semantic_map_filepath)
         try:
-            pose_to_ecef = np.array(_load_metadata(data_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
+            pose_to_ecef = np.array(_load_metadata(dataset_meta_key, data_manager)["pose_to_ecef"], dtype=np.float64)
         except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
             print(
                 "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
