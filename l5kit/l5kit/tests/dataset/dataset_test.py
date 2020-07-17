@@ -70,7 +70,7 @@ def test_scene_index_interval(dataset_cls: Callable, scene_idx: int, zarr_datase
 
 
 @pytest.mark.parametrize("history_num_frames", [1, 2, 3, 4])
-@pytest.mark.parametrize("dataset_cls", [EgoDataset])  # TODO add Agent when runtime mask is available
+@pytest.mark.parametrize("dataset_cls", [EgoDataset, AgentDataset])
 def test_non_zero_history(history_num_frames: int, dataset_cls: Callable, zarr_dataset: ChunkedStateDataset) -> None:
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
     cfg["model_params"]["history_num_frames"] = history_num_frames
