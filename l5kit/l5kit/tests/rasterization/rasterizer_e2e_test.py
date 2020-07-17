@@ -59,6 +59,20 @@ def setup_rasterizer_artifacts_and_config(temp_folder: str, cfg: dict) -> None:
     with open(os.path.join(temp_folder, sat_im_metadata_filename), "w") as ft:
         json.dump(sat_im_transform_json_content, ft)
 
+    dataset_meta_key = "meta.json"
+    cfg["raster_params"]["dataset_meta_key"] = dataset_meta_key
+
+    pose_ecef_transform_json_content = {
+        "pose_to_ecef": [
+            [8.46617444e-01, 3.23463078e-01, -4.22623402e-01, -2.69876744e06],
+            [-5.32201938e-01, 5.14559352e-01, -6.72301845e-01, -4.29315158e06],
+            [-3.05311332e-16, 7.94103464e-01, 6.07782600e-01, 3.85516476e06],
+            [0.00000000e00, 0.00000000e00, 0.00000000e00, 1.00000000e00],
+        ]
+    }
+    with open(os.path.join(temp_folder, dataset_meta_key), "w") as ft:
+        json.dump(pose_ecef_transform_json_content, ft)
+
 
 def check_rasterizer(cfg: dict, rasterizer: Rasterizer, dataset: ChunkedStateDataset) -> None:
     frames = dataset.frames[:]  # Load all frames into memory
