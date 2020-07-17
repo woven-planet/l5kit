@@ -1,7 +1,9 @@
 import bisect
+from pathlib import Path
 from typing import Optional
 
 import numpy as np
+from zarr import convenience
 
 from ..data import ChunkedStateDataset
 from ..kinematic import Perturbation
@@ -42,7 +44,9 @@ class AgentDataset(EgoDataset):
         """
         agent_prob = self.cfg["raster_params"]["filter_agents_threshold"]
 
-        if f"agents_mask/{agent_prob}" not in self.dataset.root:
+        try:
+            agents_mask = self.dataset.root[f"agents_mask/{agent_prob}"]
+        except KeyError:
             print(
                 f"cannot find the right config in {self.dataset.path},\n"
                 f"your cfg has loaded filter_agents_threshold={agent_prob};\n"
@@ -50,16 +54,16 @@ class AgentDataset(EgoDataset):
                 "Mask will now be generated for that parameter."
             )
             select_agents(
-                self.dataset.path,
+                self.dataset,
                 agent_prob,
                 th_yaw_degree=TH_YAW_DEGREE,
                 th_extent_ratio=TH_EXTENT_RATIO,
                 th_distance_av=TH_DISTANCE_AV,
-                num_workers=8,
-            )  # TODO maybe set in env var?
-            self.dataset.open()  # ensure root is updated
+            )
 
-        agents_mask = self.dataset.root[f"agents_mask/{agent_prob}"]
+            array_path = Path(self.dataset.path) / f"agents_mask/{agent_prob}"
+            agents_mask = convenience.load(str(array_path))  # note (lberg): this doesn't update root
+
         return agents_mask
 
     def __len__(self) -> int:

@@ -4,6 +4,7 @@ import os
 import pprint
 from collections import Counter, defaultdict
 from functools import partial
+from multiprocessing import Pool, cpu_count
 from pathlib import Path
 from typing import Tuple
 from uuid import uuid4
@@ -147,20 +148,15 @@ def get_valid_agents(
 
 
 def select_agents(
-    input_folder: str,
+    zarr_dataset: ChunkedStateDataset,
     th_agent_prob: float,
     th_yaw_degree: float,
     th_extent_ratio: float,
     th_distance_av: float,
-    num_workers: int,
 ) -> None:
     """
     Filter agents from zarr INPUT_FOLDER according to multiple thresholds and store a boolean array of the same shape.
     """
-
-    # ===== LOAD
-    zarr_dataset = ChunkedStateDataset(path=input_folder)
-    zarr_dataset.open()
 
     output_group = f"{th_agent_prob}"
     if "agents_mask" in zarr_dataset.root and f"agents_mask/{output_group}" in zarr_dataset.root:
@@ -195,7 +191,7 @@ def select_agents(
 
     report: Counter = Counter()
     print("starting pool...")
-    with multiprocessing.Pool(num_workers) as pool:
+    with Pool(cpu_count()) as pool:
         tasks = tqdm(enumerate(pool.imap_unordered(get_valid_agents_partial, frame_index_intervals)))
         for idx, (mask, count, agents_range) in tasks:
             report += count
@@ -211,7 +207,7 @@ def select_agents(
     }
     # print report
     pp = pprint.PrettyPrinter(indent=4)
-    print(f"start report for {input_folder}")
+    print(f"start report for {zarr_dataset.path}")
     pp.pprint({**agents_cfg, **report})
 
     future_steps = [0, 10, 30, 50]
@@ -227,21 +223,23 @@ def select_agents(
             row.append(np.sum(past_mask * future_mask))
         table.add_row(row)
     print(table)
-    print(f"end report for {input_folder}")
+    print(f"end report for {zarr_dataset.path}")
     print("==============================")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--input_folder", nargs="+", type=str, required=True, help="zarr path")
+    parser.add_argument("--input_folders", nargs="+", type=str, required=True, help="zarr path")
     parser.add_argument("--th_agent_prob", type=float, default=0.5, help="perception threshold on agents of interest")
     parser.add_argument("--th_yaw_degree", type=float, default=TH_YAW_DEGREE, help="max absolute distance in degree")
     parser.add_argument("--th_extent_ratio", type=float, default=TH_EXTENT_RATIO, help="max change in area allowed")
     parser.add_argument("--th_distance_av", type=float, default=TH_DISTANCE_AV, help="max distance from AV in meters")
-    parser.add_argument("-j", type=int, default=8, help="number of workers")
     args = parser.parse_args()
 
-    for input_folder in args.input_folder:
+    for input_folder in args.input_folders:
+        zarr_dataset = ChunkedStateDataset(path=input_folder)
+        zarr_dataset.open()
+
         select_agents(
-            input_folder, args.th_agent_prob, args.th_yaw_degree, args.th_extent_ratio, args.th_distance_av, args.j,
+            zarr_dataset, args.th_agent_prob, args.th_yaw_degree, args.th_extent_ratio, args.th_distance_av,
         )
