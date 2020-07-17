@@ -75,11 +75,12 @@ def test_non_zero_history(history_num_frames: int, dataset_cls: Callable, zarr_d
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
     cfg["model_params"]["history_num_frames"] = history_num_frames
     rast_params = cfg["raster_params"]
+    rast_params["map_type"] = "box_debug"
     dm = LocalDataManager("./l5kit/tests/artefacts/")
-    rasterizer = build_rasterizer(cfg, dm)  # TODO replace with boxrasterier for this experiment and remove +3
+    rasterizer = build_rasterizer(cfg, dm)
 
     dataset = dataset_cls(cfg, zarr_dataset, rasterizer, None)
     indexes = [0, 1, 10, -1]  # because we pad, even the first index should have an (entire black) history
     for idx in indexes:
         data = dataset[idx]
-        assert data["image"].shape == (2 * (history_num_frames + 1) + 3, *rast_params["raster_size"])
+        assert data["image"].shape == (2 * (history_num_frames + 1), *rast_params["raster_size"])
