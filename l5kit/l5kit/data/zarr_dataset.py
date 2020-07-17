@@ -5,15 +5,17 @@ from prettytable import PrettyTable
 from .labels import LABELS
 
 # When changing the schema bump this number
-FORMAT_VERSION = 1
+FORMAT_VERSION = 2
 
 FRAME_ARRAY_KEY = "frames"
 AGENT_ARRAY_KEY = "agents"
 SCENE_ARRAY_KEY = "scenes"
+TR_FACES_ARRAY_KEY = "traffic_faces"
 
 FRAME_CHUNK_SIZE = (10_000,)
 AGENT_CHUNK_SIZE = (20_000,)
 SCENE_CHUNK_SIZE = (10_000,)
+TR_FACES_CHUNK_SIZE = (10_000,)
 
 SCENE_DTYPE = [
     ("frame_index_interval", np.int64, (2,)),
@@ -25,6 +27,7 @@ SCENE_DTYPE = [
 FRAME_DTYPE = [
     ("timestamp", np.int64),
     ("agent_index_interval", np.int64, (2,)),
+    ("tr_faces_index_interval", np.int64, (2,)),
     ("ego_translation", np.float64, (3,)),
     ("ego_rotation", np.float64, (3, 3)),
 ]
@@ -37,6 +40,8 @@ AGENT_DTYPE = [
     ("track_id", np.uint64),
     ("label_probabilities", np.float32, (len(LABELS),)),
 ]
+
+TR_FACES_DTYPE = [("gid", "<U16")]
 
 
 class ChunkedStateDataset:
@@ -65,12 +70,15 @@ class ChunkedStateDataset:
         self.frames = np.empty(0, dtype=FRAME_DTYPE)
         self.scenes = np.empty(0, dtype=SCENE_DTYPE)
         self.agents = np.empty(0, dtype=AGENT_DTYPE)
+        self.tr_faces = np.empty(0, dtype=TR_FACES_DTYPE)
 
         # Note: we still support only zarr. However, some functions build a new dataset so we cannot raise error.
         if ".zarr" not in self.path:
             print("zarr dataset path should end with .zarr (for now). Open will fail for this dataset!")
 
-    def initialize(self, mode: str = "w", scenes_num: int = 0, frames_num: int = 0, agents_num: int = 0) -> None:
+    def initialize(
+        self, mode: str = "w", scenes_num: int = 0, frames_num: int = 0, agents_num: int = 0, tr_faces_num: int = 0
+    ) -> None:
         """Initializes a new zarr dataset, creating the underlying arrays.
 
         Keyword Arguments:
@@ -78,6 +86,7 @@ class ChunkedStateDataset:
             scenes_num (int): pre-allocate this number of scenes
             frames_num (int): pre-allocate this number of frames
             agents_num (int): pre-allocate this number of agents
+            tr_faces_num (int): pre-allocate this number of traffic lights
         """
 
         self.root = zarr.open_group(self.path, mode=mode)
@@ -90,6 +99,9 @@ class ChunkedStateDataset:
         )
         self.scenes = self.root.require_dataset(
             SCENE_ARRAY_KEY, dtype=SCENE_DTYPE, chunks=SCENE_CHUNK_SIZE, shape=(scenes_num,)
+        )
+        self.tr_faces = self.root.require_dataset(
+            TR_FACES_ARRAY_KEY, dtype=TR_FACES_DTYPE, chunks=TR_FACES_CHUNK_SIZE, shape=(tr_faces_num,)
         )
 
         self.root.attrs["format_version"] = FORMAT_VERSION
@@ -116,6 +128,10 @@ opened.
         self.frames = self.root[FRAME_ARRAY_KEY]
         self.agents = self.root[AGENT_ARRAY_KEY]
         self.scenes = self.root[SCENE_ARRAY_KEY]
+        try:
+            self.tr_faces = self.root[TR_FACES_ARRAY_KEY]
+        except KeyError:
+            print(f"{TR_FACES_ARRAY_KEY} not found in {self.path}! Traffic lights will be disabled")
 
     def __repr__(self) -> str:
         fields = [
