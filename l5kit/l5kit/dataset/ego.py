@@ -83,6 +83,31 @@ None if not desired
         target_positions = np.array(data["target_positions"], dtype=np.float32)
         target_yaws = np.array(data["target_yaws"], dtype=np.float32)
 
+        if self.cfg.get("use_frenet", True):  # DO NOT SUBMIT, plumb a config setting for this first
+            # Convert from ego-relative coordinates to geomap coordinates
+            image_to_world = np.inverse(np.array(data["world_to_image"]))
+            assert image_to_world.shape == (3,3)
+            def world_from_image(image_coords):
+                return np.matmul(image_to_world[0:2, 0:2], image_coords) + image_to_world[0:2, 2:3]
+
+            target_positions_geomap = world_from_image(target_positions)
+
+            # may have to also add Ego's initial yaw to target_yaws
+            initial_ego_yaw = np.arctan2(image_to_world[0, 1], image_to_world[0,0])  # not 100% sure about taking first row
+            target_yaws += initial_ego_yaw
+
+            target_frenet_coordinates = [self.rasterizer.route_frenet_coordinates_from_xy_heading(xyh) for xyh in zip(target_positions_geomap, target_yaws)]
+            target_frenet_positions = np.array([f[0] for f in target_frenet_coordinates]) # list of (s,d)'s
+            target_relative_headings = np.array([f[1] for f in target_frenet_coordinates]) # list of headings (yaws)
+            # Make the Frenet "along" coordinate relative to the initial ego position, rather than the origin of the whole route
+            ego_in_frenet, _ = self.rasterizer.route_frenet_coordinates_from_xy_heading(world_from_image(np.array(data["ego_center"])), 0)  # (s0,d0)
+            # Drop the "d0"/"across" coordinate here, to encourage the network to learn "0", i.e try to come back to the middle of the lane (path prior)
+            # even when the ego is currently off, rather than try to maintain the ego's current offset, which we would get by using d0.
+            target_frenet_positions -= np.array([[ego_in_frenet[0]], [0]])
+
+            target_positions = target_frenet_positions
+            target_yaws = target_relative_headings
+
         timestamp = self.dataset.frames[frame_interval[0] + state_index]["timestamp"]
         track_id = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
 

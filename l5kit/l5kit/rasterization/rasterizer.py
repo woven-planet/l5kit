@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 import numpy as np
 
@@ -25,3 +25,7 @@ class Rasterizer(ABC):
     @abstractmethod
     def to_rgb(self, in_im: np.ndarray, **kwargs: dict) -> np.ndarray:
         pass
+
+    @abstractmethod
+    def route_frenet_coordinates_from_xy_heading(self, xy: np.ndarray, heading: float) -> Tuple[np.ndarray, float]:
+        assert False "Generic rasterizer does not have access to the planned path to convert to Frenet frame"
