@@ -40,19 +40,9 @@ def get_rasterizer(rast_name: str, cfg: dict) -> Rasterizer:
         "lanes": [],
         "lat": 37.44,
         "lon": 122.14,
-        "lanes_bounds": {
-            "min_x": np.asarray([]),
-            "max_x": np.asarray([]),
-            "min_y": np.asarray([]),
-            "max_y": np.asarray([]),
-        },
+        "lanes_bounds": np.empty((0, 2, 2)),
         "crosswalks": [],
-        "crosswalks_bounds": {
-            "min_x": np.asarray([]),
-            "max_x": np.asarray([]),
-            "min_y": np.asarray([]),
-            "max_y": np.asarray([]),
-        },
+        "crosswalks_bounds": np.empty((0, 2, 2)),
     }
 
     raster_size = cfg["raster_params"]["raster_size"]

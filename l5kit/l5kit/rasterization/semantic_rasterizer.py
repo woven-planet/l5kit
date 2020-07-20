@@ -27,18 +27,18 @@ def render_semantic_map(
 
     img = 255 * np.ones(shape=(raster_size[1], raster_size[0], 3), dtype=np.uint8)
 
+    # TODO refactor (scope variables) and explain what's happening
     def map_to_image(px: np.ndarray, py: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         rx = (np.cos(yaw) * (px - x) - np.sin(yaw) * (py - y)) / pixel_size[0] + 0.5 * raster_size[0]
         ry = (np.sin(yaw) * (px - x) + np.cos(yaw) * (py - y)) / pixel_size[1] + 0.5 * raster_size[1]
         return rx.astype(int) * 256, ry.astype(int) * 256
 
-    def elements_within_radius(bounding_box: dict, r: np.ndarray) -> np.ndarray:
-        return np.nonzero(
-            (x > bounding_box["min_x"] - r)
-            & (x < bounding_box["max_x"] + r)
-            & (y > bounding_box["min_y"] - r)
-            & (y < bounding_box["max_y"] + r)
-        )[0]
+    def elements_within_radius(bounds: dict, radius: np.ndarray) -> np.ndarray:
+        x_min_in = x > bounds[:, 0, 0] - radius
+        y_min_in = y > bounds[:, 0, 1] - radius
+        x_max_in = x < bounds[:, 1, 0] + radius
+        y_max_in = y < bounds[:, 1, 1] + radius
+        return np.nonzero(x_min_in & y_min_in & x_max_in & y_max_in)[0]
 
     r = np.linalg.norm(raster_size * pixel_size)
 
@@ -46,8 +46,8 @@ def render_semantic_map(
     lines = []
     for i in elements_within_radius(semantic_map["lanes_bounds"], r):
         lane = semantic_map["lanes"][i]
-        x1, y1 = map_to_image(lane[0][0], lane[0][1])
-        x2, y2 = map_to_image(lane[1][0], lane[1][1])
+        x1, y1 = map_to_image(lane["xyz_left"][0], lane["xyz_left"][1])
+        x2, y2 = map_to_image(lane["xyz_right"][0], lane["xyz_right"][1])
         pts1 = np.vstack((x1, y1)).T
         pts2 = np.vstack((x2, y2)).T
         lines.append(pts1)
@@ -61,7 +61,7 @@ def render_semantic_map(
     crosswalks = []
     for i in elements_within_radius(semantic_map["crosswalks_bounds"], r):
         crosswalk = semantic_map["crosswalks"][i]
-        x1, y1 = map_to_image(crosswalk[0], crosswalk[1])
+        x1, y1 = map_to_image(crosswalk["xyz"][0], crosswalk["xyz"][1])
         pts = np.vstack((x1, y1)).T
         crosswalks.append(pts)
 
