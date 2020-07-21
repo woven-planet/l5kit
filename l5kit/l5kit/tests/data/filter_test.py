@@ -5,7 +5,7 @@ from l5kit.data import ChunkedStateDataset, filter_agents_by_frames
 
 @pytest.fixture(scope="module")
 def zarr_dataset() -> ChunkedStateDataset:
-    zarr_dataset = ChunkedStateDataset(path="./l5kit/tests/data/single_scene.zarr")
+    zarr_dataset = ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
     zarr_dataset.open()
     return zarr_dataset
 

@@ -9,14 +9,14 @@ from l5kit.rasterization import StubRasterizer
 
 @pytest.fixture(scope="module")
 def zarr_dataset() -> ChunkedStateDataset:
-    zarr_dataset = ChunkedStateDataset(path="./l5kit/tests/data/single_scene.zarr")
+    zarr_dataset = ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
     zarr_dataset.open()
     return zarr_dataset
 
 
 @pytest.fixture(scope="module")
 def base_displacement(zarr_dataset: ChunkedStateDataset) -> np.ndarray:
-    cfg = load_config_data("./l5kit/configs/default.yaml")
+    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
     cfg["raster_params"]["raster_size"] = (100, 100)
     cfg["raster_params"]["ego_center"] = np.asarray((0.5, 0.5))
     cfg["raster_params"]["pixel_size"] = np.asarray((0.25, 0.25))
@@ -46,7 +46,7 @@ def test_same_displacement(
     ego_center: tuple,
     pixel_size: tuple,
 ) -> None:
-    cfg = load_config_data("./l5kit/configs/default.yaml")
+    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
     cfg["raster_params"]["raster_size"] = raster_size
     cfg["raster_params"]["ego_center"] = np.asarray(ego_center)
     cfg["raster_params"]["pixel_size"] = np.asarray(pixel_size)

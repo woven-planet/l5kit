@@ -1,39 +1,37 @@
-import os
-import unittest
-from tempfile import TemporaryDirectory
+from pathlib import Path
 
 import numpy as np
 
 from l5kit.visualization import write_video
 
 
-class TestVideoVisualizationHelpers(unittest.TestCase):
-    def test_write_video(self) -> None:
-        # Just a smoke test
-        images = (np.random.rand(5, 512, 512, 3) * 255).astype(np.uint8)
+def test_write_video(tmp_path: Path) -> None:
+    # Just a smoke test
+    images = (np.random.rand(5, 512, 512, 3) * 255).astype(np.uint8)
 
-        with TemporaryDirectory() as d:
-            video_filepath = os.path.join(d, "test_video.mp4")
-            write_video(video_filepath, images, (512, 512))
+    video_filepath = tmp_path / "test_video.mp4"
+    write_video(str(video_filepath), images, (512, 512))
 
-            self.assertTrue(os.path.isfile(video_filepath))
+    assert video_filepath.exists()
 
-    def test_write_video_with_resize(self) -> None:
-        # Just a smoke test
-        images = (np.random.rand(5, 256, 256, 3) * 255).astype(np.uint8)
 
-        with TemporaryDirectory() as d:
-            video_filepath = os.path.join(d, "test_video.mp4")
-            write_video(video_filepath, images, (512, 512))
+def test_write_video_with_resize(tmp_path: Path) -> None:
+    # Just a smoke test
+    images = (np.random.rand(5, 256, 256, 3) * 255).astype(np.uint8)
 
-            self.assertTrue(os.path.isfile(video_filepath))
+    video_filepath = tmp_path / "test_video.mp4"
+    write_video(str(video_filepath), images, (512, 512))
 
-    def test_write_video_bw(self) -> None:
-        # Just a smoke test
-        images = (np.random.rand(5, 512, 512) * 255).astype(np.uint8)
+    assert video_filepath.exists()
+    assert video_filepath.is_file()
 
-        with TemporaryDirectory() as d:
-            video_filepath = os.path.join(d, "test_video.mp4")
-            write_video(video_filepath, images, (512, 512))
 
-            self.assertTrue(os.path.isfile(video_filepath))
+def test_write_video_bw(tmp_path: Path) -> None:
+    # Just a smoke test
+    images = (np.random.rand(5, 512, 512) * 255).astype(np.uint8)
+
+    video_filepath = tmp_path / "test_video.mp4"
+    write_video(str(video_filepath), images, (512, 512))
+
+    assert video_filepath.exists()
+    assert video_filepath.is_file()

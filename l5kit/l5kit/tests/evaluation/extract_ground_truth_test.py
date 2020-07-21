@@ -6,7 +6,7 @@ from l5kit.evaluation import extract_ground_truth
 
 def test_export_to_zarr(tmp_path: Path) -> None:
 
-    data = zarr_dataset.ChunkedStateDataset(path="./l5kit/tests/data/single_scene.zarr")
+    data = zarr_dataset.ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
     data.open()
     tmp_path = tmp_path / "out.csv"
     extract_ground_truth.export_zarr_to_ground_truth_csv(
