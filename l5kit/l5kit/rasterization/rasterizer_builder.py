@@ -9,6 +9,7 @@ from ..data import DataManager, load_semantic_map
 from .box_rasterizer import BoxRasterizer
 from .rasterizer import Rasterizer
 from .sat_box_rasterizer import SatBoxRasterizer
+from .satellite_rasterizer import SatelliteRasterizer
 from .sem_box_rasterizer import SemBoxRasterizer
 
 
@@ -135,5 +136,33 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         )
     elif map_type == "box_debug":
         return BoxRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold, history_num_frames)
+    elif map_type == "satellite_debug":
+        sat_image_key = raster_cfg["satellite_map_key"]
+        sat_meta_key = os.path.splitext(sat_image_key)[0] + ".json"
+
+        sat_image = _load_satellite_map(sat_image_key, data_manager)
+        sat_meta = _load_metadata(sat_meta_key, data_manager)
+        ecef_to_sat = np.array(sat_meta["ecef_to_image"], dtype=np.float64)
+
+        try:
+            dataset_meta = _load_metadata(dataset_meta_key, data_manager)
+            pose_to_ecef = np.array(dataset_meta["pose_to_ecef"], dtype=np.float64)
+        except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
+            print(
+                "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
+                "This will be deprecated in future releases"
+            )
+            pose_to_ecef = np.asarray(
+                [
+                    [8.46617444e-01, 3.23463078e-01, -4.22623402e-01, -2.69876744e06],
+                    [-5.32201938e-01, 5.14559352e-01, -6.72301845e-01, -4.29315158e06],
+                    [-3.05311332e-16, 7.94103464e-01, 6.07782600e-01, 3.85516476e06],
+                    [0.00000000e00, 0.00000000e00, 0.00000000e00, 1.00000000e00],
+                ],
+                dtype=np.float64,
+            )
+
+        map_to_sat = np.matmul(ecef_to_sat, pose_to_ecef)
+        return SatelliteRasterizer(raster_size, pixel_size, ego_center, sat_image, map_to_sat)
     else:
         raise NotImplementedError(f"Rasterizer for map type {map_type} is not supported.")
