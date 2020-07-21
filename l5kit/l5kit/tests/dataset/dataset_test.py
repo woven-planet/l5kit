@@ -34,7 +34,7 @@ def check_torch_loading(dataset: Dataset) -> None:
     next(iterator)
 
 
-@pytest.mark.parametrize("rast_name", ["py_satellite", "py_semantic"])  # TODO others params?
+@pytest.mark.parametrize("rast_name", ["py_satellite", "py_semantic", "box_debug"])
 @pytest.mark.parametrize("dataset_cls", [EgoDataset, AgentDataset])
 def test_dataset_rasterizer(rast_name: str, dataset_cls: Callable, zarr_dataset: ChunkedStateDataset) -> None:
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
