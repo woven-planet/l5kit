@@ -30,19 +30,16 @@ def unpack_crosswalk(e: TrafficControlElement, g: GeoFrame) -> np.ndarray:
     return unpack_deltas_cm(e.points_x_deltas_cm, e.points_y_deltas_cm, e.points_z_deltas_cm, g)
 
 
-def load_semantic_map(semantic_map_path: str) -> dict:
+@no_type_check
+def load_semantic_map(map_fragment: "MapFragment") -> dict:
     """Loads and does preprocessing of given semantic map in binary proto format.
 
     Args:
-        semantic_map_path (str): The path of the semantic map file to load, a binary proto.
+        map_fragment (MapFragment): the external wrapper of the map's elements.
 
     Returns:
         dict: A dict containing the semantic map contents.
     """
-
-    with open(semantic_map_path, "rb") as infile:
-        mf = MapFragment()
-        mf.ParseFromString(infile.read())
 
     # Unpack the semantic map. Right now we only extract position of lanes and crosswalks.
     lanes = []
@@ -51,7 +48,7 @@ def load_semantic_map(semantic_map_path: str) -> dict:
     lanes_bounds = np.empty((0, 2, 2), dtype=np.float)  # [(X_MIN, Y_MIN), (X_MAX, Y_MAX)]
     crosswalks_bounds = np.empty((0, 2, 2), dtype=np.float)  # [(X_MIN, Y_MIN), (X_MAX, Y_MAX)]
 
-    for element in mf.elements:
+    for element in map_fragment.elements:
 
         if element.element.HasField("lane"):
             lane = element.element.lane
