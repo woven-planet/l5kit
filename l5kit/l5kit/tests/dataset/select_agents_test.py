@@ -1,4 +1,5 @@
 from functools import partial
+from pathlib import Path
 
 import numpy as np
 import pytest
@@ -18,8 +19,8 @@ get_valid_agents_p = partial(
 
 
 @pytest.fixture()  # not shared in scope
-def dataset() -> ChunkedStateDataset:
-    dataset = ChunkedStateDataset("")
+def dataset(tmp_path: Path) -> ChunkedStateDataset:
+    dataset = ChunkedStateDataset(str(tmp_path))
     dataset.scenes = np.zeros(1, dtype=dataset.scenes.dtype)
     dataset.frames = np.zeros(SCENE_LENGTH, dtype=dataset.frames.dtype)
     dataset.agents = np.zeros(SCENE_LENGTH, dtype=dataset.agents.dtype)

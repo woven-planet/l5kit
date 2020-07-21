@@ -12,7 +12,7 @@ def dataset() -> ChunkedStateDataset:
     return zarr_dataset
 
 
-def test_shape(dataset: ChunkedStateDataset) -> None:
+def test_shape(dataset: ChunkedStateDataset, dmg: LocalDataManager) -> None:
     hist_length = 10
 
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
@@ -20,8 +20,7 @@ def test_shape(dataset: ChunkedStateDataset) -> None:
     cfg["raster_params"]["filter_agents_threshold"] = 1.0
     cfg["model_params"]["history_num_frames"] = hist_length
 
-    dm = LocalDataManager("./l5kit/tests/artefacts/")
-    rasterizer = build_rasterizer(cfg, dm)
+    rasterizer = build_rasterizer(cfg, dmg)
 
     frames = dataset.frames[: hist_length + 1][::-1]
     agents = filter_agents_by_frames(frames, dataset.agents)

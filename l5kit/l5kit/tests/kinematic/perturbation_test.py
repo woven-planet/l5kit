@@ -10,14 +10,13 @@ from l5kit.rasterization import build_rasterizer
 
 
 @pytest.mark.parametrize("perturb_prob", [1.0, pytest.param(0.0, marks=pytest.mark.xfail)])
-def test_perturbation_is_applied(perturb_prob: float) -> None:
+def test_perturbation_is_applied(perturb_prob: float, dmg: LocalDataManager) -> None:
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
 
     zarr_dataset = ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
     zarr_dataset.open()
 
-    dm = LocalDataManager("./l5kit/tests/artefacts/")
-    rasterizer = build_rasterizer(cfg, dm)
+    rasterizer = build_rasterizer(cfg, dmg)
 
     dataset = EgoDataset(cfg, zarr_dataset, rasterizer, None)  # no perturb
     data_no_perturb = dataset[0]

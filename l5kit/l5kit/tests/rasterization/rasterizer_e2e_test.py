@@ -37,9 +37,8 @@ def check_rasterizer(cfg: dict, rasterizer: Rasterizer, dataset: ChunkedStateDat
 
 
 @pytest.mark.parametrize("map_type", ["py_semantic", "py_satellite", "box_debug"])
-def test_rasterizer_created_from_config(map_type: str, dataset: ChunkedStateDataset) -> None:
+def test_rasterizer_created_from_config(map_type: str, dataset: ChunkedStateDataset, dmg: LocalDataManager) -> None:
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
     cfg["raster_params"]["map_type"] = map_type
-    dm = LocalDataManager("./l5kit/tests/artefacts/")
-    rasterizer = build_rasterizer(cfg, dm)
+    rasterizer = build_rasterizer(cfg, dmg)
     check_rasterizer(cfg, rasterizer, dataset)
