@@ -1,6 +1,5 @@
 import pytest
 
-from l5kit.configs import load_config_data
 from l5kit.data import ChunkedStateDataset, LocalDataManager, filter_agents_by_frames
 from l5kit.rasterization import build_rasterizer
 
@@ -12,10 +11,8 @@ def dataset() -> ChunkedStateDataset:
     return zarr_dataset
 
 
-def test_shape(dataset: ChunkedStateDataset, dmg: LocalDataManager) -> None:
+def test_shape(dataset: ChunkedStateDataset, dmg: LocalDataManager, cfg: dict) -> None:
     hist_length = 10
-
-    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
     cfg["raster_params"]["map_type"] = "py_satellite"
     cfg["raster_params"]["filter_agents_threshold"] = 1.0
     cfg["model_params"]["history_num_frames"] = hist_length

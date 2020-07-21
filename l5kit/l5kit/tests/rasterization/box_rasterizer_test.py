@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 
-from l5kit.configs import load_config_data
 from l5kit.data import AGENT_DTYPE, ChunkedStateDataset, LocalDataManager, filter_agents_by_frames
 from l5kit.rasterization import build_rasterizer
 from l5kit.rasterization.box_rasterizer import draw_boxes
@@ -38,8 +37,7 @@ def hist_data() -> tuple:
 
 
 @pytest.mark.parametrize("ego_center", [(0.5, 0.5), (0.25, 0.5), (0.75, 0.5), (0.5, 0.25), (0.5, 0.75)])
-def test_ego_layer_out_center_configs(ego_center: tuple, hist_data: tuple, dmg: LocalDataManager) -> None:
-    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
+def test_ego_layer_out_center_configs(ego_center: tuple, hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
     cfg["raster_params"]["map_type"] = "box_debug"
     cfg["raster_params"]["ego_center"] = np.asarray(ego_center)
 
@@ -48,8 +46,7 @@ def test_ego_layer_out_center_configs(ego_center: tuple, hist_data: tuple, dmg: 
     assert out[..., -1].sum() > 0
 
 
-def test_agents_layer_out(hist_data: tuple, dmg: LocalDataManager) -> None:
-    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
+def test_agents_layer_out(hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
     cfg["raster_params"]["map_type"] = "box_debug"
 
     cfg["raster_params"]["filter_agents_threshold"] = 1.0
@@ -65,8 +62,7 @@ def test_agents_layer_out(hist_data: tuple, dmg: LocalDataManager) -> None:
     assert out[..., 0].sum() > 0
 
 
-def test_agent_as_ego(hist_data: tuple, dmg: LocalDataManager) -> None:
-    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
+def test_agent_as_ego(hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
     cfg["raster_params"]["map_type"] = "box_debug"
     cfg["raster_params"]["filter_agents_threshold"] = -1  # take everything
     rasterizer = build_rasterizer(cfg, dmg)
@@ -77,10 +73,8 @@ def test_agent_as_ego(hist_data: tuple, dmg: LocalDataManager) -> None:
         assert out[..., -1].sum() > 0
 
 
-def test_out_shape(hist_data: tuple, dmg: LocalDataManager) -> None:
+def test_out_shape(hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
     hist_length = 5
-
-    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
     cfg["raster_params"]["map_type"] = "box_debug"
     cfg["model_params"]["history_num_frames"] = hist_length
 
