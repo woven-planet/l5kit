@@ -31,7 +31,7 @@ def unpack_crosswalk(e: TrafficControlElement, g: GeoFrame) -> np.ndarray:
 
 
 @no_type_check
-def load_semantic_map(map_fragment: "MapFragment") -> dict:
+def proto_to_semantic_map(map_fragment: "MapFragment") -> dict:
     """Loads and does preprocessing of given semantic map in binary proto format.
 
     Args:

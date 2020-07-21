@@ -4,7 +4,7 @@ import cv2
 import numpy as np
 import pymap3d as pm
 
-from ..data import load_semantic_map
+from ..data import proto_to_semantic_map
 from ..data.proto.road_network_pb2 import MapFragment
 from ..geometry import rotation33_as_yaw, transform_point
 from .rasterizer import Rasterizer
@@ -95,7 +95,7 @@ class SemanticRasterizer(Rasterizer):
         with open(semantic_map_path, "rb") as infile:
             mapfrag = MapFragment()
             mapfrag.ParseFromString(infile.read())
-        self.semantic_map = load_semantic_map(mapfrag)
+        self.semantic_map = proto_to_semantic_map(mapfrag)
         self.mapfrag = mapfrag
 
     def rasterize(
