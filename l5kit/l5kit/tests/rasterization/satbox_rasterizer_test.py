@@ -1,33 +1,29 @@
-import unittest
+import pytest
 
-import numpy as np
+from l5kit.configs import load_config_data
+from l5kit.data import ChunkedStateDataset, LocalDataManager, filter_agents_by_frames
+from l5kit.rasterization import build_rasterizer
 
-from l5kit.data import ChunkedStateDataset, filter_agents_by_frames
-from l5kit.rasterization import SatBoxRasterizer
+
+@pytest.fixture(scope="module")
+def dataset() -> ChunkedStateDataset:
+    zarr_dataset = ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
+    zarr_dataset.open()
+    return zarr_dataset
 
 
-class SatBoxRasterizerTest(unittest.TestCase):
-    def __init__(self, *args, **kwargs):  # type: ignore
-        super(SatBoxRasterizerTest, self).__init__(*args, **kwargs)
-        self.dataset = ChunkedStateDataset(path="./l5kit/tests/data/single_scene.zarr")
-        self.dataset.open()
+def test_shape(dataset: ChunkedStateDataset) -> None:
+    hist_length = 10
 
-    def test_shape(self) -> None:
-        map_to_sat = np.block(
-            [[np.eye(3) / 100, np.asarray([[1000], [1000], [1]])], [np.asarray([[0, 0, 0, 1]])]]
-        )  # just a translation and scale
-        hist_length = 10
+    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
+    cfg["raster_params"]["map_type"] = "py_satellite"
+    cfg["raster_params"]["filter_agents_threshold"] = 1.0
+    cfg["model_params"]["history_num_frames"] = hist_length
 
-        rast = SatBoxRasterizer(
-            (224, 224),
-            np.asarray((0.25, 0.25)),
-            np.asarray((0.25, 0.5)),
-            filter_agents_threshold=-1,
-            history_num_frames=hist_length,
-            map_im=np.zeros((10000, 10000, 3), dtype=np.uint8),
-            map_to_sat=map_to_sat,
-        )
-        frames = self.dataset.frames[: hist_length + 1]
-        agents = filter_agents_by_frames(frames, self.dataset.agents)
-        out = rast.rasterize(frames, agents)
-        assert out.shape == (224, 224, (hist_length + 1) * 2 + 3)
+    dm = LocalDataManager("./l5kit/tests/artefacts/")
+    rasterizer = build_rasterizer(cfg, dm)
+
+    frames = dataset.frames[: hist_length + 1][::-1]
+    agents = filter_agents_by_frames(frames, dataset.agents)
+    out = rasterizer.rasterize(frames, agents)
+    assert out.shape == (224, 224, (hist_length + 1) * 2 + 3)
