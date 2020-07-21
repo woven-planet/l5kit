@@ -158,9 +158,8 @@ def select_agents(
     Filter agents from zarr INPUT_FOLDER according to multiple thresholds and store a boolean array of the same shape.
     """
 
-    output_group = f"{th_agent_prob}"
-    if "agents_mask" in zarr_dataset.root and f"agents_mask/{output_group}" in zarr_dataset.root:
-        raise FileExistsError(f"{output_group} exists already! only one is supported for now!")
+    if (Path(zarr_dataset.path) / f"agents_mask/{th_agent_prob}").exists():
+        raise FileExistsError(f"{th_agent_prob} exists already! only one is supported for now!")
 
     frame_index_intervals = zarr_dataset.scenes["frame_index_interval"]
 
@@ -181,7 +180,7 @@ def select_agents(
         pass  # group is already there
 
     agents_mask = zarr.open_array(
-        str(Path(zarr_dataset.path) / "agents_mask" / output_group),
+        str(Path(zarr_dataset.path) / "agents_mask" / f"{th_agent_prob}"),
         mode="w",
         shape=(len(zarr_dataset.agents), 2),
         chunks=(10000,),
