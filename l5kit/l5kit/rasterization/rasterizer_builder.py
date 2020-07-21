@@ -5,7 +5,7 @@ from typing import Tuple, cast
 import cv2
 import numpy as np
 
-from ..data import DataManager, load_semantic_map
+from ..data import DataManager
 from .box_rasterizer import BoxRasterizer
 from .rasterizer import Rasterizer
 from .sat_box_rasterizer import SatBoxRasterizer
@@ -105,8 +105,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
             raster_size, pixel_size, ego_center, filter_agents_threshold, history_num_frames, sat_image, map_to_sat
         )
     elif map_type == "py_semantic":
-        semantic_map_filepath = data_manager.require(raster_cfg["semantic_map_key"])
-        semantic_map = load_semantic_map(semantic_map_filepath)
+        semantic_map_path = data_manager.require(raster_cfg["semantic_map_key"])
         try:
             dataset_meta = _load_metadata(dataset_meta_key, data_manager)
             pose_to_ecef = np.array(dataset_meta["pose_to_ecef"], dtype=np.float64)
@@ -131,7 +130,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
             ego_center,
             filter_agents_threshold,
             history_num_frames,
-            semantic_map,
+            semantic_map_path,
             pose_to_ecef,
         )
     elif map_type == "box_debug":

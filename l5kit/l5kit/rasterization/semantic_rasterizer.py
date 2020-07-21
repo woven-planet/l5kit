@@ -4,6 +4,7 @@ import cv2
 import numpy as np
 import pymap3d as pm
 
+from ..data import load_semantic_map
 from ..geometry import rotation33_as_yaw, transform_point
 from .rasterizer import Rasterizer
 
@@ -80,7 +81,7 @@ class SemanticRasterizer(Rasterizer):
         raster_size: Tuple[int, int],
         pixel_size: np.ndarray,
         ego_center: np.ndarray,
-        semantic_map: dict,
+        semantic_map_path: str,
         pose_to_ecef: np.ndarray,
     ):
         self.raster_size = raster_size
@@ -88,7 +89,8 @@ class SemanticRasterizer(Rasterizer):
         self.ego_center = ego_center
 
         self.pose_to_ecef = pose_to_ecef
-        self.semantic_map = semantic_map
+        self.semantic_map_path = semantic_map_path
+        self.semantic_map = load_semantic_map(semantic_map_path)
 
     def rasterize(
         self, history_frames: np.ndarray, history_agents: List[np.ndarray], agent: Optional[np.ndarray] = None
