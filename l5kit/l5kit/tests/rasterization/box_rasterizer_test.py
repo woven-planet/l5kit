@@ -38,7 +38,7 @@ def hist_data() -> tuple:
 
 
 @pytest.mark.parametrize("ego_center", [(0.5, 0.5), (0.25, 0.5), (0.75, 0.5), (0.5, 0.25), (0.5, 0.75)])
-def test_ego_center(ego_center: tuple, hist_data: tuple) -> None:
+def test_ego_layer_out_center_configs(ego_center: tuple, hist_data: tuple) -> None:
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
     cfg["raster_params"]["map_type"] = "box_debug"
     cfg["raster_params"]["ego_center"] = np.asarray(ego_center)
@@ -49,7 +49,7 @@ def test_ego_center(ego_center: tuple, hist_data: tuple) -> None:
     assert out[..., -1].sum() > 0
 
 
-def test_agents_map(hist_data: tuple) -> None:
+def test_agents_layer_out(hist_data: tuple) -> None:
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
     cfg["raster_params"]["map_type"] = "box_debug"
 
@@ -67,7 +67,7 @@ def test_agents_map(hist_data: tuple) -> None:
     assert out[..., 0].sum() > 0
 
 
-def test_agent_ego(hist_data: tuple) -> None:
+def test_agent_as_ego(hist_data: tuple) -> None:
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
     cfg["raster_params"]["map_type"] = "box_debug"
     cfg["raster_params"]["filter_agents_threshold"] = -1  # take everything
@@ -80,7 +80,7 @@ def test_agent_ego(hist_data: tuple) -> None:
         assert out[..., -1].sum() > 0
 
 
-def test_shape(hist_data: tuple) -> None:
+def test_out_shape(hist_data: tuple) -> None:
     hist_length = 5
 
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
