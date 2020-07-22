@@ -1,18 +1,18 @@
 import pytest
 
 from l5kit.configs import load_config_data
-from l5kit.data import ChunkedStateDataset, LocalDataManager, filter_agents_by_frames
+from l5kit.data import ChunkedDataset, LocalDataManager, filter_agents_by_frames
 from l5kit.rasterization import build_rasterizer
 
 
 @pytest.fixture(scope="module")
-def dataset() -> ChunkedStateDataset:
-    zarr_dataset = ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
+def dataset() -> ChunkedDataset:
+    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
     zarr_dataset.open()
     return zarr_dataset
 
 
-def test_shape(dataset: ChunkedStateDataset) -> None:
+def test_shape(dataset: ChunkedDataset) -> None:
     hist_length = 10
 
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")

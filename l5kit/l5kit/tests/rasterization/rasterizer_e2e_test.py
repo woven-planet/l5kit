@@ -2,19 +2,19 @@ import numpy as np
 import pytest
 
 from l5kit.configs import load_config_data
-from l5kit.data import ChunkedStateDataset, LocalDataManager, filter_agents_by_frames
+from l5kit.data import ChunkedDataset, LocalDataManager, filter_agents_by_frames
 from l5kit.rasterization import Rasterizer, build_rasterizer
 from l5kit.sampling import get_history_slice
 
 
 @pytest.fixture(scope="module")
-def dataset() -> ChunkedStateDataset:
-    zarr_dataset = ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
+def dataset() -> ChunkedDataset:
+    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
     zarr_dataset.open()
     return zarr_dataset
 
 
-def check_rasterizer(cfg: dict, rasterizer: Rasterizer, dataset: ChunkedStateDataset) -> None:
+def check_rasterizer(cfg: dict, rasterizer: Rasterizer, dataset: ChunkedDataset) -> None:
     frames = dataset.frames[:]  # Load all frames into memory
     for current_frame in [0, 50, len(frames) - 1]:
         history_num_frames = cfg["model_params"]["history_num_frames"]
@@ -37,7 +37,7 @@ def check_rasterizer(cfg: dict, rasterizer: Rasterizer, dataset: ChunkedStateDat
 
 
 @pytest.mark.parametrize("map_type", ["py_semantic", "py_satellite", "box_debug"])
-def test_rasterizer_created_from_config(map_type: str, dataset: ChunkedStateDataset) -> None:
+def test_rasterizer_created_from_config(map_type: str, dataset: ChunkedDataset) -> None:
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
     cfg["raster_params"]["map_type"] = map_type
     dm = LocalDataManager("./l5kit/tests/artefacts/")

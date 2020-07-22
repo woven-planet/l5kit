@@ -1,13 +1,13 @@
 import numpy as np
 
-from l5kit.data import ChunkedStateDataset
+from l5kit.data import ChunkedDataset
 from l5kit.dataset import AgentDataset
 from l5kit.evaluation.write_csv import write_coords_as_csv
 from l5kit.rasterization import StubRasterizer
 
 
 def export_zarr_to_ground_truth_csv(
-    zarr_dataset: ChunkedStateDataset,
+    zarr_dataset: ChunkedDataset,
     csv_file_path: str,
     history_num_frames: int,
     future_num_frames: int,

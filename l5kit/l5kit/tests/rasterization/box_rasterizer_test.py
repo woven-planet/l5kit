@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from l5kit.configs import load_config_data
-from l5kit.data import AGENT_DTYPE, ChunkedStateDataset, LocalDataManager, filter_agents_by_frames
+from l5kit.data import AGENT_DTYPE, ChunkedDataset, LocalDataManager, filter_agents_by_frames
 from l5kit.rasterization import build_rasterizer
 from l5kit.rasterization.box_rasterizer import draw_boxes
 
@@ -30,7 +30,7 @@ def test_draw_boxes() -> None:
 
 @pytest.fixture(scope="module")
 def hist_data() -> tuple:
-    zarr_dataset = ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
+    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
     zarr_dataset.open()
     hist_frames = zarr_dataset.frames[100:111][::-1]  # reverse to get them as history
     hist_agents = filter_agents_by_frames(hist_frames, zarr_dataset.agents)

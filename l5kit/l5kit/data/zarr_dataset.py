@@ -39,8 +39,8 @@ AGENT_DTYPE = [
 ]
 
 
-class ChunkedStateDataset:
-    """ChunkedDataSet is a dataset that lives on disk in compressed chunks, it has easy to use data loading and
+class ChunkedDataset:
+    """ChunkedDataset is a dataset that lives on disk in compressed chunks, it has easy to use data loading and
     writing interfaces that involves making numpy-like slices.
 
     Currently only .zarr directory stores are supported (i.e. the data will live in a folder on your
