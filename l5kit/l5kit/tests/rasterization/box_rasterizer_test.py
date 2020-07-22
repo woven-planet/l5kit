@@ -45,7 +45,7 @@ def test_ego_layer_out_center_configs(ego_center: tuple, hist_data: tuple) -> No
 
     dm = LocalDataManager("./l5kit/tests/artefacts/")
     rasterizer = build_rasterizer(cfg, dm)
-    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1])
+    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1], [])  # TODO TR_FACES
     assert out[..., -1].sum() > 0
 
 
@@ -57,13 +57,13 @@ def test_agents_layer_out(hist_data: tuple) -> None:
     dm = LocalDataManager("./l5kit/tests/artefacts/")
     rasterizer = build_rasterizer(cfg, dm)
 
-    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1])
+    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1], [])  # TODO TR_FACES
     assert out[..., 0].sum() == 0
 
     cfg["raster_params"]["filter_agents_threshold"] = 0.0
     rasterizer = build_rasterizer(cfg, dm)
 
-    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1])
+    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1], [])  # TODO TR_FACES
     assert out[..., 0].sum() > 0
 
 
@@ -76,7 +76,7 @@ def test_agent_as_ego(hist_data: tuple) -> None:
 
     agents = hist_data[1][0]
     for ag in agents:
-        out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1], ag)
+        out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1], [], ag)  # TODO TR_FACES
         assert out[..., -1].sum() > 0
 
 
@@ -90,5 +90,5 @@ def test_out_shape(hist_data: tuple) -> None:
     dm = LocalDataManager("./l5kit/tests/artefacts/")
     rasterizer = build_rasterizer(cfg, dm)
 
-    out = rasterizer.rasterize(hist_data[0][: hist_length + 1], hist_data[1][: hist_length + 1])
+    out = rasterizer.rasterize(hist_data[0][: hist_length + 1], hist_data[1][: hist_length + 1], [])  # TODO TR_FACES
     assert out.shape == (224, 224, (hist_length + 1) * 2)

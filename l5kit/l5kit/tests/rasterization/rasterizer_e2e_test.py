@@ -23,7 +23,7 @@ def check_rasterizer(cfg: dict, rasterizer: Rasterizer, dataset: ChunkedStateDat
         frames_to_rasterize = frames[s]
         agents = filter_agents_by_frames(frames_to_rasterize, dataset.agents)
 
-        im = rasterizer.rasterize(frames_to_rasterize, agents)
+        im = rasterizer.rasterize(frames_to_rasterize, agents, [])  # TODO TR_FACES
         assert len(im.shape) == 3
         assert im.shape[:2] == tuple(cfg["raster_params"]["raster_size"])
         assert im.max() <= 1

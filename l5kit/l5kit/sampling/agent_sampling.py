@@ -14,6 +14,7 @@ def generate_agent_sample(
     state_index: int,
     frames: np.ndarray,
     agents: np.ndarray,
+    tr_faces: np.ndarray,
     selected_track_id: Optional[int],
     raster_size: Tuple[int, int],
     pixel_size: np.ndarray,
@@ -33,52 +34,34 @@ def generate_agent_sample(
     This function has a lot of arguments and is intended for internal use, you should try to use higher level classes
     and partials that use this function.
 
-    Arguments:
-        state_index {int} -- The anchor frame index, i.e. the "current" timestep in the scene
-        frames {np.ndarray} -- The scene frames array, can be numpy array or a zarr array.
-        agents {np.ndarray} -- The scene agents array, can be numpy array or a zarr array.
-        selected_track_id: {Optional[int]} -- Either None for AV, or the ID of an agent that you want to
+    Args:
+        state_index (int): The anchor frame index, i.e. the "current" timestep in the scene
+        frames (np.ndarray): The scene frames array, can be numpy array or a zarr array
+        agents (np.ndarray): The full agents array, can be numpy array or a zarr array
+        tr_faces (np.ndarray): The full traffic light faces array, can be numpy array or a zarr array
+        selected_track_id (Optional[int]): Either None for AV, or the ID of an agent that you want to
         predict the future of. This agent is centered in the raster and the returned targets are derived from
         their future states.
-        raster_size {Tuple[int, int]} -- Desired output raster dimensions
-        pixel_size {np.ndarray} -- Size of one pixel in the real world
-        ego_center {np.ndarray} -- Where in the raster to draw the ego, [0.5,0.5] would be the center
-        history_num_states {int} -- Amount of history frames to draw into the rasters.,
-        history_step_size {int} -- Steps to take between frames, can be used to subsample history frames.
-        future_num_states {int} -- Amount of history frames to draw into the rasters.
-        future_step_size {int} -- Steps to take between targets into the future.
-        filter_agents_threshold {float} -- Value between 0 and 1 to use as cutoff value for agent filtering
-        based on their probability of being a relevant agent.
-        rasterizer {Rasterizer} -- Rasterizer of some sort that draws a map image.
-
-        voxel_shape (Tuple[int, int]): Desired output raster dimensions
-        voxel_size (np.ndarray): Size of one pixel in the real world
-        voxel_ego_center (np.ndarray): Where in the raster to draw the ego, [0.5,0.5] would be the center
-        history_num_states (int): Amount of history frames to draw into the rasters.,
-        history_step_size (int): Steps to take between frames, can be used to subsample history frames.
-        future_num_states (int): Amount of history frames to draw into the rasters.
-        future_step_size (int): Steps to take between targets into the future.
+        raster_size (Tuple[int, int]): Desired output raster dimensions
+        pixel_size (np.ndarray): Size of one pixel in the real world
+        ego_center (np.ndarray): Where in the raster to draw the ego, [0.5,0.5] would be the center
+        history_num_frames (int): Amount of history frames to draw into the rasters
+        history_step_size (int): Steps to take between frames, can be used to subsample history frames
+        future_num_frames (int): Amount of history frames to draw into the rasters
+        future_step_size (int): Steps to take between targets into the future
         filter_agents_threshold (float): Value between 0 and 1 to use as cutoff value for agent filtering
-based on their probability of being a relevant agent.
-
-    Keyword Arguments:
-        rasterizer (Optional[Rasterizer]): Rasterizer of some sort that draws a map image.
+        based on their probability of being a relevant agent
+        rasterizer (Optional[Rasterizer]): Rasterizer of some sort that draws a map image
         perturbation (Optional[Perturbation]): Object that perturbs the input and targets, used
-to train models that can recover from slight divergence from training set data (default: {None})
+to train models that can recover from slight divergence from training set data
 
     Raises:
         ValueError: A ValueError is returned if the specified ``selected_track_id`` is not present in the scene
         or was filtered by applying the ``filter_agent_threshold`` probability filtering.
 
     Returns:
-        input_im (np.ndarray): Input raster to be used as input of a learned prediction or planning model.
-        future_coords_offset (np.ndarray): The offset from the current state in terms of translation, currently
-expressed in pixels (to be changed).
-
-        future_yaws_offset (np.ndarray): The yaw offset of future frames from the current frame.
-        future_availability (np.ndarray): A binary mask of ``future_num_states`` length whether there is a valid
-        target for that state. If you sample near the end of a scene, this may contain zeroes.
-
+        dict: a dict object with the raster array, the future offset coordinates (meters),
+        the future yaw angular offset, the future_availability as a binary mask
     """
     #  the history slice is ordered starting from the latest frame and goes backward in time., ex. slice(100, 91, -2)
     history_slice = get_history_slice(state_index, history_num_frames, history_step_size, include_current_state=True)
@@ -87,19 +70,19 @@ expressed in pixels (to be changed).
     history_frames = frames[history_slice].copy()  # copy() required if the object is a np.ndarray
     future_frames = frames[future_slice].copy()
 
-    min_agents_index = history_frames[-1]["agent_index_interval"][0]
-    if len(future_frames) > 0:
-        max_agents_index = future_frames[-1]["agent_index_interval"][1]
-    else:  # future_frames can be empty at scene edges
-        max_agents_index = history_frames[0]["agent_index_interval"][1]
+    sorted_frames = np.concatenate((history_frames[::-1], future_frames))  # from past to future
 
+    # get agents (past and future)
+    min_agents_index = sorted_frames[0]["agent_index_interval"][0]
+    max_agents_index = sorted_frames[-1]["agent_index_interval"][1]
     agents = agents[min_agents_index:max_agents_index].copy()  # this is the minimum slice of agents we need
-
     history_frames["agent_index_interval"] -= min_agents_index  # sync interval with the agents array
     future_frames["agent_index_interval"] -= min_agents_index  # sync interval with the agents array
-
     history_agents = filter_agents_by_frames(history_frames, agents)
     future_agents = filter_agents_by_frames(future_frames, agents)
+
+    # get tr-faces (only past)
+    # TODO TR_FACES
 
     if perturbation is not None:
         history_frames, future_frames = perturbation.perturb(
@@ -128,8 +111,8 @@ expressed in pixels (to be changed).
         agent_yaw = float(agent["yaw"])
         agent_extent = agent["extent"]
         selected_agent = agent
-
-    input_im = None if not rasterizer else rasterizer.rasterize(history_frames, history_agents, selected_agent)
+    # TODO TR_FACES
+    input_im = None if not rasterizer else rasterizer.rasterize(history_frames, history_agents, [], selected_agent)
 
     world_to_image_space = world_to_image_pixels_matrix(
         raster_size,

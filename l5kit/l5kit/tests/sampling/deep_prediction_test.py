@@ -52,7 +52,11 @@ def test_no_frames(zarr_dataset: ChunkedStateDataset, cfg: dict) -> None:
     gen_partial = get_partial(cfg, 2, 1, 4, 1)
     with pytest.raises(IndexError):
         gen_partial(
-            state_index=0, frames=np.zeros(0, FRAME_DTYPE), agents=np.zeros(0, AGENT_DTYPE), selected_track_id=None,
+            state_index=0,
+            frames=np.zeros(0, FRAME_DTYPE),
+            agents=np.zeros(0, AGENT_DTYPE),
+            tr_faces=np.zeros(0),  # TODO TR_FACES
+            selected_track_id=None,
         )
 
 
@@ -62,6 +66,7 @@ def test_out_bounds(zarr_dataset: ChunkedStateDataset, cfg: dict) -> None:
         state_index=0,
         frames=np.asarray(zarr_dataset.frames[90:96]),
         agents=zarr_dataset.agents,
+        tr_faces=np.zeros(0),  # TODO TR_FACES
         selected_track_id=None,
     )
     assert bool(np.all(data["target_availabilities"][:5])) is True
@@ -76,6 +81,7 @@ def test_future(zarr_dataset: ChunkedStateDataset, cfg: dict) -> None:
             state_index=10,
             frames=np.asarray(zarr_dataset.frames[90:150]),
             agents=zarr_dataset.agents,
+            tr_faces=np.zeros(0),  # TODO TR_FACES
             selected_track_id=None,
         )
         assert data["target_positions"].shape == (step, 2)

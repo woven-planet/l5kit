@@ -25,5 +25,5 @@ def test_shape(dataset: ChunkedStateDataset) -> None:
 
     frames = dataset.frames[: hist_length + 1][::-1]
     agents = filter_agents_by_frames(frames, dataset.agents)
-    out = rasterizer.rasterize(frames, agents)
+    out = rasterizer.rasterize(frames, agents, [])  # TODO TR_FACES
     assert out.shape == (224, 224, (hist_length + 1) * 2 + 3)
