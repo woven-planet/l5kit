@@ -57,19 +57,6 @@ def filter_agents_by_labels(agents: np.ndarray, threshold: float = 0.5) -> np.nd
     return agents[label_indices]
 
 
-def filter_agents_by_frame(all_agents: np.ndarray, frame: np.ndarray) -> np.ndarray:
-    """Given all agents, returns those in the given frame.
-
-    Arguments:
-        all_agents (np.ndarray): agents array
-        frame (np.ndarray): frame whose agent_index_interval will be used to slice ``all_agents``.
-
-    Returns:
-        np.ndarray -- An array of agents that is a subset of `all_agents`
-    """
-    return all_agents[frame["agent_index_interval"][0] : frame["agent_index_interval"][1]]
-
-
 def filter_agents_by_track_id(agents: np.ndarray, track_id: int) -> np.ndarray:
     """Return all agent object (np.ndarray) of a given track_id.
 
@@ -114,4 +101,5 @@ def filter_agents_by_frames(frames: np.ndarray, agents: np.ndarray) -> List[np.n
     Returns:
         List[np.ndarray] with the agents divided by frame
     """
+    assert frames.shape != (), "an array of frames is required, use frames[None] or un-squeeze"
     return [agents[slice(*frame["agent_index_interval"])] for frame in frames]

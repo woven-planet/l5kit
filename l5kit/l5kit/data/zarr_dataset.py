@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import zarr
 from prettytable import PrettyTable
@@ -69,6 +71,8 @@ class ChunkedDataset:
         # Note: we still support only zarr. However, some functions build a new dataset so we cannot raise error.
         if ".zarr" not in self.path:
             print("zarr dataset path should end with .zarr (for now). Open will fail for this dataset!")
+        if not Path(self.path).exists():
+            print("zarr dataset path doesn't exist. Open will fail for this dataset!")
 
     def initialize(self, mode: str = "w", scenes_num: int = 0, frames_num: int = 0, agents_num: int = 0) -> None:
         """Initializes a new zarr dataset, creating the underlying arrays.
