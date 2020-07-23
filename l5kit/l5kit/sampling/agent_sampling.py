@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 
-from ..data import filter_agents_by_labels
+from ..data import TR_FACES_DTYPE, filter_agents_by_labels, filter_tr_faces_by_frames
 from ..data.filter import filter_agents_by_frames, get_agent_by_track_id
 from ..geometry import rotation33_as_yaw, world_to_image_pixels_matrix
 from ..kinematic import Perturbation
@@ -81,8 +81,16 @@ to train models that can recover from slight divergence from training set data
     history_agents = filter_agents_by_frames(history_frames, agents)
     future_agents = filter_agents_by_frames(future_frames, agents)
 
-    # get tr-faces (only past)
-    # TODO TR_FACES
+    try:
+        min_tl_index = history_frames[-1]["tr_faces_index_interval"][0]  # -1 is the farthest in the past
+        max_tl_index = history_frames[0]["tr_faces_index_interval"][1]
+        tr_faces = tr_faces[min_tl_index:max_tl_index].copy()  # only history tr_faces
+        history_frames["tr_faces_index_interval"] -= min_tl_index  # sync interval with the tr_faces array
+        history_tr_faces = filter_tr_faces_by_frames(history_frames, tr_faces)
+    except ValueError:
+        # TODO TR_FACES
+        history_tr_faces = [np.empty(0, dtype=TR_FACES_DTYPE) for _ in history_frames]
+        print("!!traffic light information not available")
 
     if perturbation is not None:
         history_frames, future_frames = perturbation.perturb(
@@ -111,8 +119,12 @@ to train models that can recover from slight divergence from training set data
         agent_yaw = float(agent["yaw"])
         agent_extent = agent["extent"]
         selected_agent = agent
-    # TODO TR_FACES
-    input_im = None if not rasterizer else rasterizer.rasterize(history_frames, history_agents, [], selected_agent)
+
+    input_im = (
+        None
+        if not rasterizer
+        else rasterizer.rasterize(history_frames, history_agents, history_tr_faces, selected_agent)
+    )
 
     world_to_image_space = world_to_image_pixels_matrix(
         raster_size,

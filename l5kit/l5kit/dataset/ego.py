@@ -75,8 +75,7 @@ None if not desired
         """
         frame_interval = self.dataset.scenes[scene_index]["frame_index_interval"]
         frames = self.dataset.frames[frame_interval[0] : frame_interval[1]]
-        # TODO TR_FACES
-        data = self.sample_function(state_index, frames, self.dataset.agents, np.zeros(0), track_id)
+        data = self.sample_function(state_index, frames, self.dataset.agents, self.dataset.tr_faces, track_id)
         # 0,1,C -> C,0,1
         image = data["image"].transpose(2, 0, 1)
 

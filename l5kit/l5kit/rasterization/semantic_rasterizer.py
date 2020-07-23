@@ -105,6 +105,7 @@ class SemanticRasterizer(Rasterizer):
         history_tr_faces: List[np.ndarray],
         agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
+        # TODO TR_FACES
 
         if agent is None:
             ego_translation = history_frames[0]["ego_translation"]
