@@ -101,5 +101,6 @@ def filter_agents_by_frames(frames: np.ndarray, agents: np.ndarray) -> List[np.n
     Returns:
         List[np.ndarray] with the agents divided by frame
     """
-    assert frames.shape != (), "an array of frames is required, use frames[None] or un-squeeze"
+    if frames.shape == ():
+        frames = frames[None]  # add and axis if a single frame is passed
     return [agents[slice(*frame["agent_index_interval"])] for frame in frames]
