@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def single_trajectory_metrics(gt: np.ndarray, pred: np.ndarray) -> np.ndarray:
+def single_trajectory_metric(gt: np.ndarray, pred: np.ndarray) -> np.ndarray:
     """
     Compute the RMSE (root of the mean of squared errors)
     Time dimension is not reduced
@@ -23,7 +23,7 @@ def single_trajectory_metrics(gt: np.ndarray, pred: np.ndarray) -> np.ndarray:
     return error
 
 
-def multi_trajectory_metrics(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray) -> np.ndarray:
+def multi_trajectory_metric(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray) -> np.ndarray:
     """
     Compute a negative log-likelihood for the multi-mode scenario.
     # TODO insert formula here

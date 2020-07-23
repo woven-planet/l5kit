@@ -1,7 +1,10 @@
 import argparse
 import csv
+from collections import OrderedDict
 
 import numpy as np
+
+from .metrics import single_trajectory_metric
 
 
 def compute_mse_error_csv(ground_truth_path: str, inference_output_path: str) -> np.ndarray:
@@ -24,8 +27,12 @@ def compute_mse_error_csv(ground_truth_path: str, inference_output_path: str) ->
     def parse_values(values: list) -> np.ndarray:
         return np.reshape(np.array(values).astype(np.float64), (-1, 2))
 
-    ground_truth = {to_key(i[0:2]): parse_values(i[2:]) for i in ground_truth_rows}
-    inference = {to_key(i[0:2]): parse_values(i[2:]) for i in inference_rows}
+    ground_truth = OrderedDict()
+    inference = OrderedDict()
+    for gt_row in ground_truth_rows:
+        ground_truth[to_key(gt_row[:2])] = parse_values(gt_row[2:])
+    for inf_row in inference_rows:
+        inference[to_key(inf_row[:2])] = parse_values(inf_row[2:])
 
     def validate(ground_truth: dict, inference: dict) -> bool:
         valid = True
@@ -33,7 +40,7 @@ def compute_mse_error_csv(ground_truth_path: str, inference_output_path: str) ->
         if not (len(ground_truth.keys()) == len(inference.keys())):
             print(
                 f"""Incorrect number of rows in inference csv. Expected {len(ground_truth.keys())},
-Got {len(inference.keys())}"""
+                Got {len(inference.keys())}"""
             )
             valid = False
 
@@ -53,19 +60,12 @@ Got {len(inference.keys())}"""
 
         return valid
 
-    valid = validate(ground_truth, inference)
-
-    if not valid:
+    if not validate(ground_truth, inference):
         raise ValueError("Error validating csv, see above for details.")
 
-    def compute_mse(A: np.ndarray, B: np.ndarray) -> np.ndarray:
-        return ((A - B) ** 2).mean(axis=-1)  # reduce coords, keep steps
-
-    errors = []
-    for key, ground_truth_value in ground_truth.items():
-        errors.append(compute_mse(ground_truth_value, inference[key]))
-
-    return np.array(errors).mean(axis=0)  # reduce samples, keep steps
+    ground_truth_values = np.stack(list(ground_truth.values()))
+    inference_values = np.stack(list(inference.values()))
+    return single_trajectory_metric(ground_truth_values, inference_values)
 
 
 if __name__ == "__main__":
