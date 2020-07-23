@@ -3,7 +3,7 @@ import numpy as np
 
 def single_trajectory_metrics(gt: np.ndarray, pred: np.ndarray) -> np.ndarray:
     """
-    Compute the mean over sample of the euclidean distance between gt and pred coords.
+    Compute the RMSE (root of the mean of squared errors)
     Time dimension is not reduced
 
     Args:
@@ -17,8 +17,9 @@ def single_trajectory_metrics(gt: np.ndarray, pred: np.ndarray) -> np.ndarray:
     assert gt.shape == pred.shape, "print gt and pred shape don't match"
     assert len(gt.shape) == 3, f"expected 3D (BxTxC) array for gt, got {len(gt.shape)}"
     assert len(pred.shape) == 3, f"expected 3D (BxTxC) array for pred, got {len(pred.shape)}"
-    eucl_dis = np.linalg.norm(gt - pred, axis=-1)  # reduce coords
-    error = eucl_dis.mean(axis=0)  # reduce samples, keep time
+    error = np.sum((gt - pred) ** 2, axis=-1)  # reduce coords
+    error = error.mean(axis=0)  # reduce samples, keep time
+    error = np.sqrt(error)
     return error
 
 
@@ -43,24 +44,8 @@ def multi_trajectory_metrics(gt: np.ndarray, pred: np.ndarray, confidences: np.n
 
     gt = np.expand_dims(gt, 1)
 
-    eucl_dis = np.linalg.norm(gt - pred, axis=-1)  # reduce coords
-
-    error = confidences * np.exp(-0.5 * eucl_dis.sum(axis=-1))  # reduce time
+    error = np.sum((gt - pred) ** 2, axis=-1)  # reduce coords
+    error = confidences * np.exp(-0.5 * error.sum(axis=-1))  # reduce time
     error = -np.log(np.sum(error, axis=-1))  # reduce modes
     error = np.mean(error)  # reduce samples
     return error
-
-
-if __name__ == "__main__":
-    pred = np.zeros((1, 2, 3, 1))
-    pred[0, 0] = [[0], [0], [0]]
-    pred[0, 1] = [[10], [10], [10]]
-
-    gt = np.ones((1, 3, 1))
-    gt[0] = [[5], [5], [5]]
-
-    confs = np.random.rand(1, 2)
-    confs[0] = [1, 0]
-
-    err = multi_trajectory_metrics(gt, pred, confs)
-    print(err)
