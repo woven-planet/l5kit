@@ -11,6 +11,7 @@ from .rasterizer import Rasterizer
 from .sat_box_rasterizer import SatBoxRasterizer
 from .satellite_rasterizer import SatelliteRasterizer
 from .sem_box_rasterizer import SemBoxRasterizer
+from .semantic_rasterizer import SemanticRasterizer
 
 
 def _load_metadata(meta_key: str, data_manager: DataManager) -> dict:
@@ -47,6 +48,29 @@ def _load_satellite_map(image_key: str, data_manager: DataManager) -> np.ndarray
         raise Exception(f"Failed to load image from {image_path}")
 
     return image
+
+
+def get_hardcoded_pose_to_ecef() -> np.ndarray:  # TODO remove when new dataset version is available
+    """
+    Return and hardcoded pose_to_ecef matrix for dataset V1.0
+
+    Returns:
+        np.ndarray: 4x4 matrix
+    """
+    print(
+        "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
+        "This will be deprecated in future releases"
+    )
+    pose_to_ecef = np.asarray(
+        [
+            [8.46617444e-01, 3.23463078e-01, -4.22623402e-01, -2.69876744e06],
+            [-5.32201938e-01, 5.14559352e-01, -6.72301845e-01, -4.29315158e06],
+            [-3.05311332e-16, 7.94103464e-01, 6.07782600e-01, 3.85516476e06],
+            [0.00000000e00, 0.00000000e00, 0.00000000e00, 1.00000000e00],
+        ],
+        dtype=np.float64,
+    )
+    return pose_to_ecef
 
 
 def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
@@ -86,19 +110,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
             dataset_meta = _load_metadata(dataset_meta_key, data_manager)
             pose_to_ecef = np.array(dataset_meta["pose_to_ecef"], dtype=np.float64)
         except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
-            print(
-                "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
-                "This will be deprecated in future releases"
-            )
-            pose_to_ecef = np.asarray(
-                [
-                    [8.46617444e-01, 3.23463078e-01, -4.22623402e-01, -2.69876744e06],
-                    [-5.32201938e-01, 5.14559352e-01, -6.72301845e-01, -4.29315158e06],
-                    [-3.05311332e-16, 7.94103464e-01, 6.07782600e-01, 3.85516476e06],
-                    [0.00000000e00, 0.00000000e00, 0.00000000e00, 1.00000000e00],
-                ],
-                dtype=np.float64,
-            )
+            pose_to_ecef = get_hardcoded_pose_to_ecef()
 
         map_to_sat = np.matmul(ecef_to_sat, pose_to_ecef)
         return SatBoxRasterizer(
@@ -111,19 +123,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
             dataset_meta = _load_metadata(dataset_meta_key, data_manager)
             pose_to_ecef = np.array(dataset_meta["pose_to_ecef"], dtype=np.float64)
         except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
-            print(
-                "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
-                "This will be deprecated in future releases"
-            )
-            pose_to_ecef = np.asarray(
-                [
-                    [8.46617444e-01, 3.23463078e-01, -4.22623402e-01, -2.69876744e06],
-                    [-5.32201938e-01, 5.14559352e-01, -6.72301845e-01, -4.29315158e06],
-                    [-3.05311332e-16, 7.94103464e-01, 6.07782600e-01, 3.85516476e06],
-                    [0.00000000e00, 0.00000000e00, 0.00000000e00, 1.00000000e00],
-                ],
-                dtype=np.float64,
-            )
+            pose_to_ecef = get_hardcoded_pose_to_ecef()
 
         return SemBoxRasterizer(
             raster_size,
@@ -148,21 +148,19 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
             dataset_meta = _load_metadata(dataset_meta_key, data_manager)
             pose_to_ecef = np.array(dataset_meta["pose_to_ecef"], dtype=np.float64)
         except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
-            print(
-                "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
-                "This will be deprecated in future releases"
-            )
-            pose_to_ecef = np.asarray(
-                [
-                    [8.46617444e-01, 3.23463078e-01, -4.22623402e-01, -2.69876744e06],
-                    [-5.32201938e-01, 5.14559352e-01, -6.72301845e-01, -4.29315158e06],
-                    [-3.05311332e-16, 7.94103464e-01, 6.07782600e-01, 3.85516476e06],
-                    [0.00000000e00, 0.00000000e00, 0.00000000e00, 1.00000000e00],
-                ],
-                dtype=np.float64,
-            )
+            pose_to_ecef = get_hardcoded_pose_to_ecef()
 
         map_to_sat = np.matmul(ecef_to_sat, pose_to_ecef)
         return SatelliteRasterizer(raster_size, pixel_size, ego_center, sat_image, map_to_sat)
+    elif map_type == "semantic_debug":
+        semantic_map_filepath = data_manager.require(raster_cfg["semantic_map_key"])
+        semantic_map = load_semantic_map(semantic_map_filepath)
+        try:
+            dataset_meta = _load_metadata(dataset_meta_key, data_manager)
+            pose_to_ecef = np.array(dataset_meta["pose_to_ecef"], dtype=np.float64)
+        except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
+            pose_to_ecef = get_hardcoded_pose_to_ecef()
+
+        return SemanticRasterizer(raster_size, pixel_size, ego_center, semantic_map, pose_to_ecef,)
     else:
         raise NotImplementedError(f"Rasterizer for map type {map_type} is not supported.")
