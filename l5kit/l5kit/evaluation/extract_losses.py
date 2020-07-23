@@ -1,4 +1,3 @@
-import argparse
 import csv
 from collections import OrderedDict
 
@@ -66,16 +65,3 @@ def compute_mse_error_csv(ground_truth_path: str, inference_output_path: str) ->
     ground_truth_values = np.stack(list(ground_truth.values()))
     inference_values = np.stack(list(inference.values()))
     return single_trajectory_metric(ground_truth_values, inference_values)
-
-
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser(
-        description="""Print mean squared error for a deep prediction run. Takes as input a csv file for ground truth,
-                                     another as output from inference. """
-    )
-    parser.add_argument("ground_truth_csv", type=str, help="Path to the csv containing ground truth.")
-    parser.add_argument("inference_csv", type=str, help="Path to the csv containing output from an inference run.")
-    args = parser.parse_args()
-
-    mse = compute_mse_error_csv(args.ground_truth_csv, args.inference_csv)
-    print("mse", mse)
