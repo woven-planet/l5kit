@@ -91,12 +91,13 @@ class SemanticRasterizer(Rasterizer):
 
         self.pose_to_ecef = pose_to_ecef
 
-        # load protobuf and convert it into dict, but keep also the original proto
+        # load protobuf and process it, but keep also the original proto elements
         with open(semantic_map_path, "rb") as infile:
             mapfrag = MapFragment()
             mapfrag.ParseFromString(infile.read())
+
         self.semantic_map = proto_to_semantic_map(mapfrag)
-        self.mapfrag = mapfrag
+        self.elements_lookup = {el.id.id.decode("utf-8"): el for el in mapfrag.elements}
 
     def rasterize(
         self,
