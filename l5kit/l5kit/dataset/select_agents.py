@@ -14,7 +14,7 @@ import zarr
 from prettytable import PrettyTable
 from tqdm import tqdm
 
-from l5kit.data import ChunkedStateDataset
+from l5kit.data import ChunkedDataset
 from l5kit.data.filter import _get_label_filter  # TODO expose this without digging
 
 multiprocessing.set_start_method("fork", force=True)  # this fix loop in python 3.8 on MacOS
@@ -64,7 +64,7 @@ def update_mask(mask: np.ndarray, agent_list: list) -> None:
 
 def get_valid_agents(
     frames_range: np.ndarray,
-    dataset: ChunkedStateDataset,
+    dataset: ChunkedDataset,
     th_agent_filter_probability_threshold: float,
     th_yaw_degree: float,
     th_extent_ratio: float,
@@ -148,7 +148,7 @@ def get_valid_agents(
 
 
 def select_agents(
-    zarr_dataset: ChunkedStateDataset,
+    zarr_dataset: ChunkedDataset,
     th_agent_prob: float,
     th_yaw_degree: float,
     th_extent_ratio: float,
@@ -237,7 +237,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     for input_folder in args.input_folders:
-        zarr_dataset = ChunkedStateDataset(path=input_folder)
+        zarr_dataset = ChunkedDataset(path=input_folder)
         zarr_dataset.open()
 
         select_agents(

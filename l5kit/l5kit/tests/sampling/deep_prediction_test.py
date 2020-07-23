@@ -5,14 +5,14 @@ import numpy as np
 import pytest
 
 from l5kit.configs import load_config_data
-from l5kit.data import AGENT_DTYPE, FRAME_DTYPE, ChunkedStateDataset
+from l5kit.data import AGENT_DTYPE, FRAME_DTYPE, ChunkedDataset
 from l5kit.rasterization import StubRasterizer
 from l5kit.sampling import generate_agent_sample
 
 
 @pytest.fixture(scope="module")
-def zarr_dataset() -> ChunkedStateDataset:
-    zarr_dataset = ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
+def zarr_dataset() -> ChunkedDataset:
+    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
     zarr_dataset.open()
     return zarr_dataset
 
@@ -48,7 +48,7 @@ def get_partial(
     )
 
 
-def test_no_frames(zarr_dataset: ChunkedStateDataset, cfg: dict) -> None:
+def test_no_frames(zarr_dataset: ChunkedDataset, cfg: dict) -> None:
     gen_partial = get_partial(cfg, 2, 1, 4, 1)
     with pytest.raises(IndexError):
         gen_partial(
@@ -56,7 +56,7 @@ def test_no_frames(zarr_dataset: ChunkedStateDataset, cfg: dict) -> None:
         )
 
 
-def test_out_bounds(zarr_dataset: ChunkedStateDataset, cfg: dict) -> None:
+def test_out_bounds(zarr_dataset: ChunkedDataset, cfg: dict) -> None:
     gen_partial = get_partial(cfg, 0, 1, 10, 1)
     data = gen_partial(
         state_index=0,
@@ -68,7 +68,7 @@ def test_out_bounds(zarr_dataset: ChunkedStateDataset, cfg: dict) -> None:
     assert bool(np.all(data["target_availabilities"][5:])) is False
 
 
-def test_future(zarr_dataset: ChunkedStateDataset, cfg: dict) -> None:
+def test_future(zarr_dataset: ChunkedDataset, cfg: dict) -> None:
     steps = [(1, 1), (2, 2), (4, 4)]  # all of these should work
     for step, step_size in steps:
         gen_partial = get_partial(cfg, 2, 1, step, step_size)

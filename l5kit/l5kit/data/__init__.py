@@ -3,13 +3,13 @@ from .filter import filter_agents_by_frame, filter_agents_by_frames, filter_agen
 from .labels import LABEL_TO_INDEX, LABELS
 from .local_data_manager import DataManager, LocalDataManager
 from .map import load_semantic_map
-from .zarr_dataset import AGENT_DTYPE, FRAME_DTYPE, SCENE_DTYPE, ChunkedStateDataset
+from .zarr_dataset import AGENT_DTYPE, FRAME_DTYPE, SCENE_DTYPE, ChunkedDataset
 
 __all__ = [
     "get_combined_scenes",
     "DataManager",
     "LocalDataManager",
-    "ChunkedStateDataset",
+    "ChunkedDataset",
     "SCENE_DTYPE",
     "FRAME_DTYPE",
     "AGENT_DTYPE",

@@ -2,7 +2,7 @@ import numpy as np
 import pytest
 
 from l5kit.configs import load_config_data
-from l5kit.data import ChunkedStateDataset, LocalDataManager
+from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
 from l5kit.kinematic import AckermanPerturbation
 from l5kit.random import ReplayRandomGenerator
@@ -13,7 +13,7 @@ from l5kit.rasterization import build_rasterizer
 def test_perturbation_is_applied(perturb_prob: float) -> None:
     cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
 
-    zarr_dataset = ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
+    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
     zarr_dataset.open()
 
     dm = LocalDataManager("./l5kit/tests/artefacts/")

@@ -5,7 +5,7 @@ from typing import Optional
 import numpy as np
 from zarr import convenience
 
-from ..data import ChunkedStateDataset
+from ..data import ChunkedDataset
 from ..kinematic import Perturbation
 from ..rasterization import Rasterizer
 from .ego import EgoDataset
@@ -16,7 +16,7 @@ class AgentDataset(EgoDataset):
     def __init__(
         self,
         cfg: dict,
-        zarr_dataset: ChunkedStateDataset,
+        zarr_dataset: ChunkedDataset,
         rasterizer: Rasterizer,
         perturbation: Optional[Perturbation] = None,
         agents_mask: Optional[np.ndarray] = None,
