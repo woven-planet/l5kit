@@ -115,3 +115,18 @@ def filter_agents_by_frames(frames: np.ndarray, agents: np.ndarray) -> List[np.n
         List[np.ndarray] with the agents divided by frame
     """
     return [agents[slice(*frame["agent_index_interval"])] for frame in frames]
+
+
+def filter_tr_faces_by_frames(frames: np.ndarray, tr_faces: np.ndarray) -> List[np.ndarray]:
+    """
+    Get a list of tr_faces array, one array per frame.
+    This functions mimics `filter_agents_by_frames` for tr_faces
+
+    Args:
+        frames (np.ndarray): an array of frames
+        tr_faces (np.ndarray): an array of traffic light faces
+
+    Returns:
+        List[np.ndarray] with the tr_faces divided by frame
+    """
+    return [tr_faces[slice(*frame["tr_faces_index_interval"])] for frame in frames]

@@ -113,7 +113,7 @@ class ChunkedStateDataset:
         Keyword Arguments:
             mode (str): Mode to open dataset in, default to read-only (default: {"r"})
             cached (bool): Whether to cache files read from disk using a LRU cache. (default: {True})
-            cache_size (int): Size of cache in bytes (default: {1e9} (1GB))
+            cache_size_bytes (int): Size of cache in bytes (default: {1e9} (1GB))
 
         Raises:
             Exception: When any of the expected arrays (frames, agents, scenes) is missing or the store couldn't be
@@ -132,6 +132,7 @@ opened.
             self.tr_faces = self.root[TR_FACES_ARRAY_KEY]
         except KeyError:
             print(f"{TR_FACES_ARRAY_KEY} not found in {self.path}! Traffic lights will be disabled")
+            self.tr_faces = np.empty((0,), dtype=TR_FACES_DTYPE)
 
     def __repr__(self) -> str:
         fields = [
