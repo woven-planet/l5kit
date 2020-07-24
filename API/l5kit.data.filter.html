@@ -188,23 +188,6 @@
   <div class="section" id="module-l5kit.data.filter">
 <span id="l5kit-data-filter-module"></span><h1>l5kit.data.filter module<a class="headerlink" href="#module-l5kit.data.filter" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="l5kit.data.filter.filter_agents_by_frame">
-<code class="sig-prename descclassname">l5kit.data.filter.</code><code class="sig-name descname">filter_agents_by_frame</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">all_agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">frame</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.data.filter.filter_agents_by_frame" title="Permalink to this definition">¶</a></dt>
-<dd><p>Given all agents, returns those in the given frame.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>all_agents</strong> (<em>np.ndarray</em>) – agents array</p></li>
-<li><p><strong>frame</strong> (<em>np.ndarray</em>) – frame whose agent_index_interval will be used to slice <code class="docutils literal notranslate"><span class="pre">all_agents</span></code>.</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>np.ndarray – An array of agents that is a subset of <cite>all_agents</cite></p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
 <dt id="l5kit.data.filter.filter_agents_by_frames">
 <code class="sig-prename descclassname">l5kit.data.filter.</code><code class="sig-name descname">filter_agents_by_frames</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.data.filter.filter_agents_by_frames" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of agents array, one array per frame. Note that “agent_index_interval” is used to filter agents,
