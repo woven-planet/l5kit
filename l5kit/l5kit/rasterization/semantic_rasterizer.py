@@ -2,11 +2,10 @@ from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
-import pymap3d as pm
 
 from ..data import proto_to_semantic_map
 from ..data.proto.road_network_pb2 import MapFragment
-from ..geometry import rotation33_as_yaw, transform_point, world_to_image_pixels_matrix
+from ..geometry import rotation33_as_yaw, transform_point, transform_points, world_to_image_pixels_matrix
 from .rasterizer import Rasterizer
 
 
@@ -69,7 +68,9 @@ class SemanticRasterizer(Rasterizer):
             mapfrag = MapFragment()
             mapfrag.ParseFromString(infile.read())
 
-        self.semantic_map = proto_to_semantic_map(mapfrag)
+        ecef_to_pose = np.linalg.inv(self.pose_to_ecef)
+
+        self.semantic_map = proto_to_semantic_map(mapfrag, ecef_to_pose)
         self.elements_lookup = {el.id.id.decode("utf-8"): el for el in mapfrag.elements}
 
     def rasterize(
@@ -95,24 +96,19 @@ class SemanticRasterizer(Rasterizer):
         # get pose of center pixel
         center_pixel = np.asarray(self.raster_size) * (0.5, 0.5)
         world_translation = transform_point(center_pixel, np.linalg.inv(world_to_image_space))
-        world_translation = np.append(world_translation, ego_translation[2])
-
-        # move pose to enu frame the semantic map is stored in (pose->ecef, ecef->enu)
-        xyz = transform_point(world_translation, self.pose_to_ecef)
-        x, y, z = pm.ecef2enu(xyz[0], xyz[1], xyz[2], self.semantic_map["lat"], self.semantic_map["lon"], 0)
+        xyz = np.append(world_translation, ego_translation[2])
 
         # TODO (lberg): understand -yaw here in relation with map_to_image
-        sem_im = self.render_semantic_map(float(x), float(y), -ego_yaw)
+        sem_im = self.render_semantic_map(xyz[0], xyz[1], world_to_image_space)
         return sem_im.astype(np.float32) / 255
 
-    def render_semantic_map(self, x: float, y: float, yaw: float) -> np.ndarray:
+    def render_semantic_map(self, x: float, y: float, world_to_image_space: np.ndarray) -> np.ndarray:
         """Renders the semantic map at given x,y coordinate with rotation ``yaw``.
 
         Args:
             x (float): X coordinate to center crop from.
             y (float): Y coordinate to center crop from.
-            yaw (float): Rotation of the cropped image.
-
+            world_to_image_space (np.ndarray):
         Returns:
             np.ndarray: RGB raster
 
@@ -125,18 +121,12 @@ class SemanticRasterizer(Rasterizer):
         lines = []
         for idx in elements_within_radius(x, y, self.semantic_map["lanes_bounds"], r):
             lane = self.semantic_map["lanes"][idx]
+            xy_left = transform_points(lane["xyz_left"][:, :2], world_to_image_space).astype(np.int) * 256
+            xy_right = transform_points(lane["xyz_right"][:, :2], world_to_image_space).astype(np.int) * 256
 
-            x1, y1 = map_to_image(
-                x, y, yaw, lane["xyz_left"][0], lane["xyz_left"][1], self.raster_size, self.pixel_size
-            )
-            x2, y2 = map_to_image(
-                x, y, yaw, lane["xyz_right"][0], lane["xyz_right"][1], self.raster_size, self.pixel_size
-            )
-            pts1 = np.vstack((x1, y1)).T
-            pts2 = np.vstack((x2, y2)).T
-            lines.append(pts1)
-            lines.append(pts2)
-            poly = np.vstack((pts1, np.flip(pts2, 0)))
+            lines.append(xy_left)
+            lines.append(xy_right)
+            poly = np.vstack((xy_left, np.flip(xy_right, 0)))
             cv2.fillPoly(img, [poly], (17, 17, 31), lineType=cv2.LINE_AA, shift=8)
 
         cv2.polylines(img, lines, False, (255, 217, 82), lineType=cv2.LINE_AA, shift=8)
@@ -145,11 +135,8 @@ class SemanticRasterizer(Rasterizer):
         crosswalks = []
         for idx in elements_within_radius(x, y, self.semantic_map["crosswalks_bounds"], r):
             crosswalk = self.semantic_map["crosswalks"][idx]
-            x1, y1 = map_to_image(
-                x, y, yaw, crosswalk["xyz"][0], crosswalk["xyz"][1], self.raster_size, self.pixel_size
-            )
-            pts = np.vstack((x1, y1)).T
-            crosswalks.append(pts)
+            xy_cross = transform_points(crosswalk["xyz"][:, :2], world_to_image_space).astype(np.int) * 256
+            crosswalks.append(xy_cross)
 
         cv2.polylines(img, crosswalks, True, (255, 117, 69), lineType=cv2.LINE_AA, shift=8)
 
