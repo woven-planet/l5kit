@@ -90,7 +90,6 @@ to train models that can recover from slight divergence from training set data
     except ValueError:
         # TODO TR_FACES
         history_tr_faces = [np.empty(0, dtype=TR_FACES_DTYPE) for _ in history_frames]
-        print("!!traffic light information not available")
 
     if perturbation is not None:
         history_frames, future_frames = perturbation.perturb(
