@@ -6,7 +6,7 @@ import pymap3d as pm
 
 from ..data import proto_to_semantic_map
 from ..data.proto.road_network_pb2 import MapFragment
-from ..geometry import rotation33_as_yaw, transform_point
+from ..geometry import rotation33_as_yaw, transform_point, world_to_image_pixels_matrix
 from .rasterizer import Rasterizer
 
 
@@ -83,26 +83,26 @@ class SemanticRasterizer(Rasterizer):
 
         if agent is None:
             ego_translation = history_frames[0]["ego_translation"]
-            ego_yaw = -rotation33_as_yaw(history_frames[0]["ego_rotation"])
+            ego_yaw = rotation33_as_yaw(history_frames[0]["ego_rotation"])
         else:
             ego_translation = np.append(agent["centroid"], history_frames[0]["ego_translation"][-1])
-            ego_yaw = -agent["yaw"]
+            ego_yaw = agent["yaw"]
 
-        # move pose to enu frame the semantic map is stored in
-        xyz = transform_point(ego_translation, self.pose_to_ecef)
+        world_to_image_space = world_to_image_pixels_matrix(
+            self.raster_size, self.pixel_size, ego_translation, ego_yaw, self.ego_center,
+        )
+
+        # get pose of center pixel
+        center_pixel = np.asarray(self.raster_size) * (0.5, 0.5)
+        world_translation = transform_point(center_pixel, np.linalg.inv(world_to_image_space))
+        world_translation = np.append(world_translation, ego_translation[2])
+
+        # move pose to enu frame the semantic map is stored in (pose->ecef, ecef->enu)
+        xyz = transform_point(world_translation, self.pose_to_ecef)
         x, y, z = pm.ecef2enu(xyz[0], xyz[1], xyz[2], self.semantic_map["lat"], self.semantic_map["lon"], 0)
 
-        # Apply ego_center offset
-        # get_sat_image_crop_scaled crops around a point.
-        # That point is ego_translation iff ego_center is [0.5, 0.5]
-        # if not, we can compute by how much we need to translate in meters in the two directions and rotate the vector
-        ego_offset = (0.5, 0.5) - np.asarray(self.ego_center)
-        ego_offset_meters = np.asarray(self.pixel_size) * np.asarray(self.raster_size) * ego_offset
-
-        rot_m = np.asarray([[np.cos(ego_yaw), np.sin(ego_yaw)], [-np.sin(ego_yaw), np.cos(ego_yaw)]])
-        ego_offset_meters = rot_m @ ego_offset_meters
-
-        sem_im = self.render_semantic_map(x + ego_offset_meters[0], y + ego_offset_meters[1], ego_yaw)
+        # TODO (lberg): understand -yaw here in relation with map_to_image
+        sem_im = self.render_semantic_map(float(x), float(y), -ego_yaw)
         return sem_im.astype(np.float32) / 255
 
     def render_semantic_map(self, x: float, y: float, yaw: float) -> np.ndarray:
