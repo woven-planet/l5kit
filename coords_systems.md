@@ -16,18 +16,18 @@ if you're trying a more experimental workflow.
 # Coordinates Systems
 
 ## World Coordinate System
-We refer to the coordinates system in the `.zarr` dataset as **world**. This is shared by *all* our prediction datasets
+We refer to the coordinate system in the `.zarr` dataset as **world**. This is shared by *all* our prediction datasets
 and is a 3D metric space. The entities living in this space are the AV and the agents:
 - AV: samples from the AV are collected using several sensors placed in the car. The AV translation is a 3D vector (XYZ), 
 while the orientation is expressed as a 3x3 rotation matrix (counterclockwise in a right-hand system).
 - Agents: samples from other agents are generated while the AV moves around. The translation is a 2D vector (XY) and the orientation
 is expressed via a single [yaw angle](https://en.wikipedia.org/wiki/Yaw_(rotation)) (counterclockwise in radians).
 
-The origin of this space is located in Palo Alto (California, USA) (TODO: add exact location).
+The origin of the **world** coordinate system is located in Palo Alto (California, USA) (TODO: add exact location).
 
 ## Image Coordinate System
 Once rasterisation is complete, the final multi-channel image will be in the image space. This is a 2D space where (0,0)
-is located in the top-left corner. 
+is located in the top-left corner.
 
 If you're using one of our high-level dataset objects (either `EgoDataset` or `AgentDataset`) to generate samples, you can 
 access the world-to-image matrix using the `world_to_image` key on the returned dict. When building this matrix, several steps are combined:
@@ -36,7 +36,7 @@ access the world-to-image matrix using the `world_to_image` key on the returned 
 - Scale from meters to pixels based on the value `pixel_size` set in the configuration;
 - Translate again such that the ego is aligned to the value `ego_center` in the configuration.
 
-With this matrix, you can convert a point from world to image space and back (using its inverse).
+With this matrix, you can transform a point from world to image space and vice versa using its inverse.
 
 One application of this is drawing trajectories on the image:
 
