@@ -9,21 +9,6 @@ from ..geometry import rotation33_as_yaw, transform_point, transform_points, wor
 from .rasterizer import Rasterizer
 
 
-# TODO refactor and explain what's happening
-def map_to_image(
-    x: float,
-    y: float,
-    yaw: float,
-    px: np.ndarray,
-    py: np.ndarray,
-    raster_size: Tuple[int, int],
-    pixel_size: np.ndarray,
-) -> Tuple[np.ndarray, np.ndarray]:
-    rx = (np.cos(yaw) * (px - x) - np.sin(yaw) * (py - y)) / pixel_size[0] + 0.5 * raster_size[0]
-    ry = (np.sin(yaw) * (px - x) + np.cos(yaw) * (py - y)) / pixel_size[1] + 0.5 * raster_size[1]
-    return rx.astype(int) * 256, ry.astype(int) * 256
-
-
 def elements_within_radius(x: float, y: float, bounds: np.ndarray, radius: float) -> np.ndarray:
     """
     Get indices of elements for which bounds are inside a radius from center (x,y)
