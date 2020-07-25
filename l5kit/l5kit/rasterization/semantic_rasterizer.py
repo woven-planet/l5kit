@@ -83,7 +83,6 @@ class SemanticRasterizer(Rasterizer):
         world_translation = transform_point(center_pixel, np.linalg.inv(world_to_image_space))
         xyz = np.append(world_translation, ego_translation[2])
 
-        # TODO (lberg): understand -yaw here in relation with map_to_image
         sem_im = self.render_semantic_map(xyz[0], xyz[1], world_to_image_space)
         return sem_im.astype(np.float32) / 255
 
