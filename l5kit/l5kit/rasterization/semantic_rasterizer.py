@@ -9,23 +9,24 @@ from ..geometry import rotation33_as_yaw, transform_point, transform_points, wor
 from .rasterizer import Rasterizer
 
 
-def elements_within_radius(x: float, y: float, bounds: np.ndarray, radius: float) -> np.ndarray:
+def elements_within_radius(center: np.ndarray, bounds: np.ndarray, radius: float) -> np.ndarray:
     """
     Get indices of elements for which bounds are inside a radius from center (x,y)
 
     Args:
-        x (float): center x
-        y (float): center y
+        center (float): XYZ of the center
         bounds (np.ndarray): array of shape Nx2x2 [[x_min,y_min],[x_max, y_max]]
         radius (float): radius value
 
     Returns:
         np.ndarray: indices of elements inside radius from center
     """
-    x_min_in = x > bounds[:, 0, 0] - radius
-    y_min_in = y > bounds[:, 0, 1] - radius
-    x_max_in = x < bounds[:, 1, 0] + radius
-    y_max_in = y < bounds[:, 1, 1] + radius
+    x_center, y_center, z_center = center
+
+    x_min_in = x_center > bounds[:, 0, 0] - radius
+    y_min_in = y_center > bounds[:, 0, 1] - radius
+    x_max_in = x_center < bounds[:, 1, 0] + radius
+    y_max_in = y_center < bounds[:, 1, 1] + radius
     return np.nonzero(x_min_in & y_min_in & x_max_in & y_max_in)[0]
 
 
@@ -78,20 +79,20 @@ class SemanticRasterizer(Rasterizer):
             self.raster_size, self.pixel_size, ego_translation, ego_yaw, self.ego_center,
         )
 
-        # get pose of center pixel
+        # get XYZ of center pixel in world coordinate
         center_pixel = np.asarray(self.raster_size) * (0.5, 0.5)
-        world_translation = transform_point(center_pixel, np.linalg.inv(world_to_image_space))
-        xyz = np.append(world_translation, ego_translation[2])
+        center_world = transform_point(center_pixel, np.linalg.inv(world_to_image_space))
+        center_world = np.append(center_world, ego_translation[2])
 
-        sem_im = self.render_semantic_map(xyz[0], xyz[1], world_to_image_space)
+        sem_im = self.render_semantic_map(center_world, world_to_image_space)
         return sem_im.astype(np.float32) / 255
 
-    def render_semantic_map(self, x: float, y: float, world_to_image_space: np.ndarray) -> np.ndarray:
-        """Renders the semantic map at given x,y coordinate with rotation ``yaw``.
+    def render_semantic_map(self, center_world: np.ndarray, world_to_image_space: np.ndarray) -> np.ndarray:
+        """Renders the semantic map at given x,y coordinates.
+        Note (lberg): the *256 is for cv2 drawing ONLY (note the shift=8 in each call)
 
         Args:
-            x (float): X coordinate to center crop from.
-            y (float): Y coordinate to center crop from.
+            center_world (np.ndarray): XYZ of the image center in world ref system
             world_to_image_space (np.ndarray):
         Returns:
             np.ndarray: RGB raster
@@ -99,27 +100,36 @@ class SemanticRasterizer(Rasterizer):
         """
 
         img = 255 * np.ones(shape=(self.raster_size[1], self.raster_size[0], 3), dtype=np.uint8)
-        r = float(np.linalg.norm(self.raster_size * self.pixel_size))
+
+        # TODO this can be speed up by looking at the image corners coordinates
+        radius = float(np.linalg.norm(self.raster_size * self.pixel_size))  # compute a radius around the center
 
         # plot lanes
-        lines = []
-        for idx in elements_within_radius(x, y, self.semantic_map["lanes_bounds"], r):
+        lanes_lines = []
+        for idx in elements_within_radius(center_world, self.semantic_map["lanes_bounds"], radius):
             lane = self.semantic_map["lanes"][idx]
-            xy_left = transform_points(lane["xyz_left"][:, :2], world_to_image_space).astype(np.int) * 256
-            xy_right = transform_points(lane["xyz_right"][:, :2], world_to_image_space).astype(np.int) * 256
 
-            lines.append(xy_left)
-            lines.append(xy_right)
-            poly = np.vstack((xy_left, np.flip(xy_right, 0)))
-            cv2.fillPoly(img, [poly], (17, 17, 31), lineType=cv2.LINE_AA, shift=8)
+            # get image coords
+            xy_left = transform_points(lane["xyz_left"][:, :2], world_to_image_space).astype(np.int)
+            xy_right = transform_points(lane["xyz_right"][:, :2], world_to_image_space).astype(np.int)
 
-        cv2.polylines(img, lines, False, (255, 217, 82), lineType=cv2.LINE_AA, shift=8)
+            xy_left, xy_right = xy_left * 256, xy_right * 256
+            lanes_lines.append(xy_left)
+            lanes_lines.append(xy_right)
+
+            lanes_area = np.vstack((xy_left, np.flip(xy_right, 0)))  # start->end left then end->start right
+
+            cv2.fillPoly(img, [lanes_area], (17, 17, 31), lineType=cv2.LINE_AA, shift=8)
+
+        cv2.polylines(img, lanes_lines, False, (255, 217, 82), lineType=cv2.LINE_AA, shift=8)
 
         # plot crosswalks
         crosswalks = []
-        for idx in elements_within_radius(x, y, self.semantic_map["crosswalks_bounds"], r):
+        for idx in elements_within_radius(center_world, self.semantic_map["crosswalks_bounds"], radius):
             crosswalk = self.semantic_map["crosswalks"][idx]
-            xy_cross = transform_points(crosswalk["xyz"][:, :2], world_to_image_space).astype(np.int) * 256
+            xy_cross = transform_points(crosswalk["xyz"][:, :2], world_to_image_space).astype(np.int)
+
+            xy_cross = xy_cross * 256
             crosswalks.append(xy_cross)
 
         cv2.polylines(img, crosswalks, True, (255, 117, 69), lineType=cv2.LINE_AA, shift=8)
