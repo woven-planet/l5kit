@@ -54,4 +54,10 @@ draw_trajectory(im, positions_pixels, data["target_yaws"], TARGET_POINTS_COLOR)
 TODO
 
 ## Semantic Coordinate System
-TODO
+Semantic information is stored as a protobuf file. The protobuf store information as a list of elements of different types.
+Each elements features are localised in its own reference system, which is itself geo-localised. Features can be
+lanes coordinates or crosswalks boundaries. So you will have:
+- the features, expressed in centimeters in an ENU (East-North-Up) reference system. This system is valid **only** for that feature 
+(i.e. two features with the same values are not in the same location)
+- the system latitude and longitude, which can be used to move the feature into a common space (e.g. world or ECEF)
+
