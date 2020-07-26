@@ -8,6 +8,9 @@ from ..data.proto.road_network_pb2 import MapFragment
 from ..geometry import rotation33_as_yaw, transform_point, transform_points, world_to_image_pixels_matrix
 from .rasterizer import Rasterizer
 
+# sub-pixel drawing precision constants
+CV2_SHIFT = 8  # how many bits to shift in drawing
+
 
 def elements_within_radius(center: np.ndarray, bounds: np.ndarray, radius: float) -> np.ndarray:
     """
@@ -28,6 +31,21 @@ def elements_within_radius(center: np.ndarray, bounds: np.ndarray, radius: float
     x_max_in = x_center < bounds[:, 1, 0] + radius
     y_max_in = y_center < bounds[:, 1, 1] + radius
     return np.nonzero(x_min_in & y_min_in & x_max_in & y_max_in)[0]
+
+
+def cv2_subpixel(coords: np.ndarray) -> np.ndarray:
+    """
+    Cast coordinates to numpy.int but keep fractional part by previously multiplying by 2**CV2_SHIFT
+
+    Args:
+        coords (np.ndarray): XY coords as float
+
+    Returns:
+        np.ndarray: XY coords as int for cv2 shift draw
+    """
+    coords = coords * 2 ** CV2_SHIFT
+    coords = coords.astype(np.int)
+    return coords
 
 
 class SemanticRasterizer(Rasterizer):
@@ -89,7 +107,6 @@ class SemanticRasterizer(Rasterizer):
 
     def render_semantic_map(self, center_world: np.ndarray, world_to_image_space: np.ndarray) -> np.ndarray:
         """Renders the semantic map at given x,y coordinates.
-        Note (lberg): the *256 is for cv2 drawing ONLY (note the shift=8 in each call)
 
         Args:
             center_world (np.ndarray): XYZ of the image center in world ref system
@@ -106,33 +123,32 @@ class SemanticRasterizer(Rasterizer):
 
         # plot lanes
         lanes_lines = []
+
         for idx in elements_within_radius(center_world, self.semantic_map["lanes_bounds"], radius):
             lane = self.semantic_map["lanes"][idx]
 
             # get image coords
-            xy_left = transform_points(lane["xyz_left"][:, :2], world_to_image_space).astype(np.int)
-            xy_right = transform_points(lane["xyz_right"][:, :2], world_to_image_space).astype(np.int)
-
-            xy_left, xy_right = xy_left * 256, xy_right * 256
-            lanes_lines.append(xy_left)
-            lanes_lines.append(xy_right)
+            xy_left = cv2_subpixel(transform_points(lane["xyz_left"][:, :2], world_to_image_space))
+            xy_right = cv2_subpixel(transform_points(lane["xyz_right"][:, :2], world_to_image_space))
 
             lanes_area = np.vstack((xy_left, np.flip(xy_right, 0)))  # start->end left then end->start right
 
-            cv2.fillPoly(img, [lanes_area], (17, 17, 31), lineType=cv2.LINE_AA, shift=8)
+            # TODO this on all polygons skips some of them, don't know why
+            cv2.fillPoly(img, [lanes_area], (17, 17, 31), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
 
-        cv2.polylines(img, lanes_lines, False, (255, 217, 82), lineType=cv2.LINE_AA, shift=8)
+            lanes_lines.append(xy_left)
+            lanes_lines.append(xy_right)
+
+        cv2.polylines(img, lanes_lines, False, (255, 217, 82), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
 
         # plot crosswalks
         crosswalks = []
         for idx in elements_within_radius(center_world, self.semantic_map["crosswalks_bounds"], radius):
             crosswalk = self.semantic_map["crosswalks"][idx]
-            xy_cross = transform_points(crosswalk["xyz"][:, :2], world_to_image_space).astype(np.int)
-
-            xy_cross = xy_cross * 256
+            xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], world_to_image_space))
             crosswalks.append(xy_cross)
 
-        cv2.polylines(img, crosswalks, True, (255, 117, 69), lineType=cv2.LINE_AA, shift=8)
+        cv2.polylines(img, crosswalks, True, (255, 117, 69), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
 
         return img
 
