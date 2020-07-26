@@ -118,8 +118,8 @@ class SemanticRasterizer(Rasterizer):
 
         img = 255 * np.ones(shape=(self.raster_size[1], self.raster_size[0], 3), dtype=np.uint8)
 
-        # TODO this can be speed up by looking at the image corners coordinates
-        radius = float(np.linalg.norm(self.raster_size * self.pixel_size))  # compute a radius around the center
+        # filter using half the radius from the center
+        radius = float(np.linalg.norm(self.raster_size * self.pixel_size)) / 2
 
         # plot lanes
         lanes_lines = []
