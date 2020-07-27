@@ -44,9 +44,8 @@ class AgentDataset(EgoDataset):
         """
         agent_prob = self.cfg["raster_params"]["filter_agents_threshold"]
 
-        try:
-            agents_mask = self.dataset.root[f"agents_mask/{agent_prob}"]
-        except KeyError:
+        agents_mask_path = Path(self.dataset.path) / f"agents_mask/{agent_prob}"
+        if not agents_mask_path.exists():  # don't check in root but check for the path
             print(
                 f"cannot find the right config in {self.dataset.path},\n"
                 f"your cfg has loaded filter_agents_threshold={agent_prob};\n"
@@ -61,9 +60,7 @@ class AgentDataset(EgoDataset):
                 th_distance_av=TH_DISTANCE_AV,
             )
 
-            array_path = Path(self.dataset.path) / f"agents_mask/{agent_prob}"
-            agents_mask = convenience.load(str(array_path))  # note (lberg): this doesn't update root
-
+        agents_mask = convenience.load(str(agents_mask_path))  # note (lberg): this doesn't update root
         return agents_mask
 
     def __len__(self) -> int:
