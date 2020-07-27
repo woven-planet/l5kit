@@ -18,14 +18,14 @@ def elements_within_bounds(center: np.ndarray, bounds: np.ndarray, half_side: fl
     center (squared with side 2*radius)
 
     Args:
-        center (float): XYZ of the center
+        center (float): XY of the center
         bounds (np.ndarray): array of shape Nx2x2 [[x_min,y_min],[x_max, y_max]]
         half_side (float): half the side of the bounding box centered around center
 
     Returns:
         np.ndarray: indices of elements inside radius from center
     """
-    x_center, y_center, z_center = center
+    x_center, y_center = center
 
     x_min_in = x_center > bounds[:, 0, 0] - half_side
     y_min_in = y_center > bounds[:, 0, 1] - half_side
@@ -98,10 +98,9 @@ class SemanticRasterizer(Rasterizer):
             self.raster_size, self.pixel_size, ego_translation, ego_yaw, self.ego_center,
         )
 
-        # get XYZ of center pixel in world coordinate
+        # get XY of center pixel in world coordinate
         center_pixel = np.asarray(self.raster_size) * (0.5, 0.5)
         center_world = transform_point(center_pixel, np.linalg.inv(world_to_image_space))
-        center_world = np.append(center_world, ego_translation[2])
 
         sem_im = self.render_semantic_map(center_world, world_to_image_space)
         return sem_im.astype(np.float32) / 255
@@ -110,7 +109,7 @@ class SemanticRasterizer(Rasterizer):
         """Renders the semantic map at given x,y coordinates.
 
         Args:
-            center_world (np.ndarray): XYZ of the image center in world ref system
+            center_world (np.ndarray): XY of the image center in world ref system
             world_to_image_space (np.ndarray):
         Returns:
             np.ndarray: RGB raster
