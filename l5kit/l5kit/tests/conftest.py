@@ -25,5 +25,4 @@ def cfg() -> dict:
     Returns:
         dict: the config python dict
     """
-    print("asa")
     return load_config_data("./l5kit/tests/artefacts/config.yaml")
