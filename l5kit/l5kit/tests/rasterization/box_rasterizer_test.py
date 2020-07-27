@@ -28,9 +28,7 @@ def test_draw_boxes() -> None:
 
 
 @pytest.fixture(scope="module")
-def hist_data() -> tuple:
-    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
-    zarr_dataset.open()
+def hist_data(zarr_dataset: ChunkedDataset) -> tuple:
     hist_frames = zarr_dataset.frames[100:111][::-1]  # reverse to get them as history
     hist_agents = filter_agents_by_frames(hist_frames, zarr_dataset.agents)
     return hist_frames, hist_agents

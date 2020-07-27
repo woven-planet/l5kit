@@ -9,11 +9,9 @@ from l5kit.rasterization import build_rasterizer
 
 
 @pytest.mark.parametrize("perturb_prob", [1.0, pytest.param(0.0, marks=pytest.mark.xfail)])
-def test_perturbation_is_applied(perturb_prob: float, dmg: LocalDataManager, cfg: dict) -> None:
-    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
-
-    zarr_dataset.open()
-
+def test_perturbation_is_applied(
+    perturb_prob: float, dmg: LocalDataManager, cfg: dict, zarr_dataset: ChunkedDataset
+) -> None:
     rasterizer = build_rasterizer(cfg, dmg)
 
     dataset = EgoDataset(cfg, zarr_dataset, rasterizer, None)  # no perturb

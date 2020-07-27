@@ -6,21 +6,14 @@ from l5kit.rasterization import Rasterizer, build_rasterizer
 from l5kit.sampling import get_history_slice
 
 
-@pytest.fixture(scope="module")
-def dataset() -> ChunkedDataset:
-    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
-    zarr_dataset.open()
-    return zarr_dataset
-
-
-def check_rasterizer(cfg: dict, rasterizer: Rasterizer, dataset: ChunkedDataset) -> None:
-    frames = dataset.frames[:]  # Load all frames into memory
+def check_rasterizer(cfg: dict, rasterizer: Rasterizer, zarr_dataset: ChunkedDataset) -> None:
+    frames = zarr_dataset.frames[:]  # Load all frames into memory
     for current_frame in [0, 50, len(frames) - 1]:
         history_num_frames = cfg["model_params"]["history_num_frames"]
         history_step_size = cfg["model_params"]["history_step_size"]
         s = get_history_slice(current_frame, history_num_frames, history_step_size, include_current_state=True)
         frames_to_rasterize = frames[s]
-        agents = filter_agents_by_frames(frames_to_rasterize, dataset.agents)
+        agents = filter_agents_by_frames(frames_to_rasterize, zarr_dataset.agents)
 
         im = rasterizer.rasterize(frames_to_rasterize, agents)
         assert len(im.shape) == 3
@@ -37,8 +30,8 @@ def check_rasterizer(cfg: dict, rasterizer: Rasterizer, dataset: ChunkedDataset)
 
 @pytest.mark.parametrize("map_type", ["py_semantic", "py_satellite", "box_debug"])
 def test_rasterizer_created_from_config(
-    map_type: str, dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
+    map_type: str, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
 ) -> None:
     cfg["raster_params"]["map_type"] = map_type
     rasterizer = build_rasterizer(cfg, dmg)
-    check_rasterizer(cfg, rasterizer, dataset)
+    check_rasterizer(cfg, rasterizer, zarr_dataset)

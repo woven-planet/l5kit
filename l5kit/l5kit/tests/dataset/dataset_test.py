@@ -9,13 +9,6 @@ from l5kit.dataset import AgentDataset, EgoDataset
 from l5kit.rasterization import StubRasterizer, build_rasterizer
 
 
-@pytest.fixture(scope="module")
-def zarr_dataset() -> ChunkedDataset:
-    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
-    zarr_dataset.open()
-    return zarr_dataset
-
-
 def check_sample(cfg: dict, dataset: Dataset) -> None:
     iterator = iter(dataset)  # type: ignore
     for i in range(10):

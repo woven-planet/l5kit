@@ -9,13 +9,6 @@ from l5kit.rasterization import StubRasterizer
 from l5kit.sampling import generate_agent_sample
 
 
-@pytest.fixture(scope="module")
-def zarr_dataset() -> ChunkedDataset:
-    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
-    zarr_dataset.open()
-    return zarr_dataset
-
-
 def get_partial(
     cfg: dict, history_num_frames: int, history_step_size: int, future_num_frames: int, future_step_size: int
 ) -> Callable:

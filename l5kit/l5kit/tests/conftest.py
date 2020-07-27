@@ -1,7 +1,7 @@
 import pytest
 
 from l5kit.configs import load_config_data
-from l5kit.data import LocalDataManager
+from l5kit.data import ChunkedDataset, LocalDataManager
 
 
 @pytest.fixture(scope="session")
@@ -26,3 +26,10 @@ def cfg() -> dict:
         dict: the config python dict
     """
     return load_config_data("./l5kit/tests/artefacts/config.yaml")
+
+
+@pytest.fixture(scope="session")
+def zarr_dataset() -> ChunkedDataset:
+    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
+    zarr_dataset.open()
+    return zarr_dataset

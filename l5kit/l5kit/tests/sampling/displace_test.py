@@ -8,13 +8,6 @@ from l5kit.rasterization import StubRasterizer
 from l5kit.sampling.agent_sampling import _create_targets_for_deep_prediction
 
 
-@pytest.fixture(scope="module")
-def zarr_dataset() -> ChunkedDataset:
-    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
-    zarr_dataset.open()
-    return zarr_dataset
-
-
 @pytest.fixture(scope="function")
 def base_displacement(zarr_dataset: ChunkedDataset, cfg: dict) -> np.ndarray:
     future_num_frames = cfg["model_params"]["future_num_frames"]
