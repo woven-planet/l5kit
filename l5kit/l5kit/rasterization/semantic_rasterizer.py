@@ -12,24 +12,25 @@ from .rasterizer import Rasterizer
 CV2_SHIFT = 8  # how many bits to shift in drawing
 
 
-def elements_within_radius(center: np.ndarray, bounds: np.ndarray, radius: float) -> np.ndarray:
+def elements_within_bounds(center: np.ndarray, bounds: np.ndarray, half_side: float) -> np.ndarray:
     """
-    Get indices of elements for which bounds are inside a radius from center (x,y)
+    Get indices of elements for which the bounding box described by bounds intersect the one defined around
+    center (squared with side 2*radius)
 
     Args:
         center (float): XYZ of the center
         bounds (np.ndarray): array of shape Nx2x2 [[x_min,y_min],[x_max, y_max]]
-        radius (float): radius value
+        half_side (float): half the side of the bounding box centered around center
 
     Returns:
         np.ndarray: indices of elements inside radius from center
     """
     x_center, y_center, z_center = center
 
-    x_min_in = x_center > bounds[:, 0, 0] - radius
-    y_min_in = y_center > bounds[:, 0, 1] - radius
-    x_max_in = x_center < bounds[:, 1, 0] + radius
-    y_max_in = y_center < bounds[:, 1, 1] + radius
+    x_min_in = x_center > bounds[:, 0, 0] - half_side
+    y_min_in = y_center > bounds[:, 0, 1] - half_side
+    x_max_in = x_center < bounds[:, 1, 0] + half_side
+    y_max_in = y_center < bounds[:, 1, 1] + half_side
     return np.nonzero(x_min_in & y_min_in & x_max_in & y_max_in)[0]
 
 
@@ -118,13 +119,13 @@ class SemanticRasterizer(Rasterizer):
 
         img = 255 * np.ones(shape=(self.raster_size[1], self.raster_size[0], 3), dtype=np.uint8)
 
-        # filter using half the radius from the center
-        radius = float(np.linalg.norm(self.raster_size * self.pixel_size)) / 2
+        # filter using half a radius from the center
+        half_side = float(np.linalg.norm(self.raster_size * self.pixel_size)) / 2
 
         # plot lanes
         lanes_lines = []
 
-        for idx in elements_within_radius(center_world, self.semantic_map["lanes_bounds"], radius):
+        for idx in elements_within_bounds(center_world, self.semantic_map["lanes_bounds"], half_side):
             lane = self.semantic_map["lanes"][idx]
 
             # get image coords
@@ -133,7 +134,7 @@ class SemanticRasterizer(Rasterizer):
 
             lanes_area = np.vstack((xy_left, np.flip(xy_right, 0)))  # start->end left then end->start right
 
-            # TODO this on all polygons skips some of them, don't know why
+            # Note(lberg): this called on all polygons skips some of them, don't know why
             cv2.fillPoly(img, [lanes_area], (17, 17, 31), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
 
             lanes_lines.append(xy_left)
@@ -143,7 +144,7 @@ class SemanticRasterizer(Rasterizer):
 
         # plot crosswalks
         crosswalks = []
-        for idx in elements_within_radius(center_world, self.semantic_map["crosswalks_bounds"], radius):
+        for idx in elements_within_bounds(center_world, self.semantic_map["crosswalks_bounds"], half_side):
             crosswalk = self.semantic_map["crosswalks"][idx]
             xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], world_to_image_space))
             crosswalks.append(xy_cross)
