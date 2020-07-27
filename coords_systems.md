@@ -51,13 +51,27 @@ draw_trajectory(im, positions_pixels, data["target_yaws"], TARGET_POINTS_COLOR)
 ```
 
 ## Satellite Coordinate System
-TODO
+Satellite information is stored as an RGB image in the `aerial_map` folder of the dataset. Together with that we provide
+a matrix to convert from the [ECEF](https://en.wikipedia.org/wiki/ECEF) reference system to this image reference system (i.e. how to convert a XYZ ECEF coord into a 2D pixel coord).
+
+Because the `.zarr` stores information in the world reference system, an additional conversion is usually required:
+- world coordinates must be converted into ECEF coordinates. This transformation matrix is currently hard-coded and will be shipped with the dataset
+in the future. It is **dataset dependent** as it encode where the dataset world origin is located in the Earth frame;
+- ECEF coordinates must be converted into the aerial image reference system using the above mentioned matrix.
+
+The `SatelliteRasterizer` and its derived classes combined these two matrix into a single one and directly convert
+world coordinates from the `.zarr` into 2D pixels coordinates.
 
 ## Semantic Coordinate System
-Semantic information is stored as a protobuf file. The protobuf store information as a list of elements of different types.
-Each elements features are localised in its own reference system, which is itself geo-localised. Features can be
-lanes coordinates or crosswalks boundaries. So you will have:
-- the features, expressed in centimeters in an ENU (East-North-Up) reference system. This system is valid **only** for that feature 
-(i.e. two features with the same values are not in the same location)
-- the system latitude and longitude, which can be used to move the feature into a common space (e.g. world or ECEF)
+Semantic information is stored as a protobuf file. The protobuf store information as a list of elements of different types (e.g lanes, crosswalks, etc).
 
+Each elements can have one or multiple geometric features (e.g. the left and right delimiting lines for a lane) which are described
+as a list of 3D points.
+
+Each elements features are localised in its own reference system, which is itself geo-localised:
+- features cords are expressed in centimeters deltas in an [ENU](https://en.wikipedia.org/wiki/Local_tangent_plane_coordinates) reference system. This system is valid **only** for that feature 
+(i.e. two features with the same coordinates values are not in the same location)
+- the system latitude and longitude, which localise the feature in a global reference system. 
+This can be used for example to move the feature into a common space (e.g. world or ECEF)
+
+TODO add example of conversion and what happens in the semantic rasteriser (it is being currently changed)
