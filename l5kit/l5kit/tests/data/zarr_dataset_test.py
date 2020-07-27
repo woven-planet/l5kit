@@ -5,7 +5,7 @@ from l5kit.data import zarr_dataset
 
 
 def test_load_dataset() -> None:
-    data = zarr_dataset.ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
+    data = zarr_dataset.ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
     data.open()
 
     assert len(data.frames) == 775

@@ -1,20 +1,20 @@
 import numpy as np
 import pytest
 
-from l5kit.data import ChunkedStateDataset
+from l5kit.data import ChunkedDataset
 from l5kit.dataset import EgoDataset
 from l5kit.rasterization import StubRasterizer
 
 
 @pytest.fixture(scope="module")
-def zarr_dataset() -> ChunkedStateDataset:
-    zarr_dataset = ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
+def zarr_dataset() -> ChunkedDataset:
+    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
     zarr_dataset.open()
     return zarr_dataset
 
 
 @pytest.fixture(scope="function")
-def base_displacement(zarr_dataset: ChunkedStateDataset, cfg: dict) -> np.ndarray:
+def base_displacement(zarr_dataset: ChunkedDataset, cfg: dict) -> np.ndarray:
     cfg["raster_params"]["raster_size"] = (100, 100)
     cfg["raster_params"]["ego_center"] = np.asarray((0.5, 0.5))
     cfg["raster_params"]["pixel_size"] = np.asarray((0.25, 0.25))
@@ -39,7 +39,7 @@ def base_displacement(zarr_dataset: ChunkedStateDataset, cfg: dict) -> np.ndarra
 @pytest.mark.parametrize("pixel_size", [(0.25, 0.25), (0.25, 0.5)])
 def test_same_displacement(
     cfg: dict,
-    zarr_dataset: ChunkedStateDataset,
+    zarr_dataset: ChunkedDataset,
     base_displacement: np.ndarray,
     raster_size: tuple,
     ego_center: tuple,

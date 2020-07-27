@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from l5kit.data import ChunkedStateDataset, LocalDataManager
+from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
 from l5kit.kinematic import AckermanPerturbation
 from l5kit.random import ReplayRandomGenerator
@@ -10,7 +10,8 @@ from l5kit.rasterization import build_rasterizer
 
 @pytest.mark.parametrize("perturb_prob", [1.0, pytest.param(0.0, marks=pytest.mark.xfail)])
 def test_perturbation_is_applied(perturb_prob: float, dmg: LocalDataManager, cfg: dict) -> None:
-    zarr_dataset = ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
+    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
+
     zarr_dataset.open()
 
     rasterizer = build_rasterizer(cfg, dmg)
