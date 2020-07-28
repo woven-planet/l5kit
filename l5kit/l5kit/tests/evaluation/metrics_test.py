@@ -73,18 +73,23 @@ def test_multi_trajectory_metrics() -> None:
     confs = np.zeros((1, 2))
     confs[0] = [1, 0]
 
-    assert np.allclose(multi_trajectory_metric(gt, pred, confs), 0)
+    assert np.allclose(multi_trajectory_metric(gt, pred, confs), [0, 0, 0])
 
     # 50% on correct one
     confs[0] = [0.5, 0.5]
-    # TODO
+    assert np.allclose(multi_trajectory_metric(gt, pred, confs), [0.69314, 0.69314, 0.69314], atol=1e-4)
 
     # answer in between, conf 0.5
     gt[0] = [[5], [5], [5]]
     confs[0] = [0.5, 0.5]
-    # TODO
+    assert np.allclose(multi_trajectory_metric(gt, pred, confs), [12.5, 12.5, 12.5], atol=1e-4)
 
-    # answer in between, conf 1.0
-    gt[0] = [[5], [5], [5]]
+    # example 5
+    gt[0] = [[0], [10], [0]]
     confs[0] = [1, 0]
-    # TODO
+    assert np.allclose(multi_trajectory_metric(gt, pred, confs), [0, 50, 0], atol=1e-4)
+
+    # example 6
+    gt[0] = [[0], [10], [0]]
+    confs[0] = [0.5, 0.5]
+    assert np.allclose(multi_trajectory_metric(gt, pred, confs), [0.69314, 0.69314, 0.69314], atol=1e-4)
