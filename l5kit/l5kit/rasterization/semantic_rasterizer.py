@@ -88,8 +88,7 @@ class SemanticRasterizer(Rasterizer):
         for element in self.proto_API:
             element_id = ProtoAPI.get_element_id(element)
 
-            if element.element.HasField("lane"):
-
+            if self.proto_API.is_lane(element):
                 lane = self.proto_API.get_lane_coords(element_id)
                 # store bounds for fast rasterisation look-up
                 x_min = min(np.min(lane["xyz_left"][:, 0]), np.min(lane["xyz_right"][:, 0]))
@@ -100,22 +99,18 @@ class SemanticRasterizer(Rasterizer):
                 lanes_bounds = np.append(lanes_bounds, np.asarray([[[x_min, y_min], [x_max, y_max]]]), axis=0)
                 lanes_ids.append(element_id)
 
-            if element.element.HasField("traffic_control_element"):
+            if self.proto_API.is_crosswalk(element):
+                crosswalk = self.proto_API.get_crossword_coords(element_id)
+                # store bounds for fast rasterisation look-up
+                x_min = np.min(crosswalk["xyz"][:, 0])
+                y_min = np.min(crosswalk["xyz"][:, 1])
+                x_max = np.max(crosswalk["xyz"][:, 0])
+                y_max = np.max(crosswalk["xyz"][:, 1])
 
-                traffic_element = element.element.traffic_control_element
-
-                if traffic_element.HasField("pedestrian_crosswalk") and traffic_element.points_x_deltas_cm:
-                    crosswalk = self.proto_API.get_crossword_coords(element_id)
-                    # store bounds for fast rasterisation look-up
-                    x_min = np.min(crosswalk["xyz"][:, 0])
-                    y_min = np.min(crosswalk["xyz"][:, 1])
-                    x_max = np.max(crosswalk["xyz"][:, 0])
-                    y_max = np.max(crosswalk["xyz"][:, 1])
-
-                    crosswalks_bounds = np.append(
-                        crosswalks_bounds, np.asarray([[[x_min, y_min], [x_max, y_max]]]), axis=0,
-                    )
-                    crosswalks_ids.append(element_id)
+                crosswalks_bounds = np.append(
+                    crosswalks_bounds, np.asarray([[[x_min, y_min], [x_max, y_max]]]), axis=0,
+                )
+                crosswalks_ids.append(element_id)
 
         return {
             "lanes": {"bounds": lanes_bounds, "ids": lanes_ids},

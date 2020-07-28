@@ -1,5 +1,5 @@
 from functools import lru_cache
-from typing import Any, Sequence, Union, no_type_check
+from typing import Sequence, Union, no_type_check
 
 import numpy as np
 import pymap3d as pm
@@ -70,6 +70,20 @@ class ProtoAPI:
         xyz = transform_points(xyz, self.ecef_to_pose)
         return xyz
 
+    @staticmethod
+    @no_type_check
+    def is_lane(element: MapElement) -> bool:
+        """
+        Check whether an element is a valid lane
+
+        Args:
+            element (MapElement): a proto element
+
+        Returns:
+            bool: True if the element is a valid lane
+        """
+        return bool(element.element.HasField("lane"))
+
     @lru_cache(maxsize=CACHE_SIZE)
     def get_lane_coords(self, element_id: str) -> dict:
         """
@@ -83,7 +97,7 @@ class ProtoAPI:
             dict: a dict with the two boundaries coordinates as (Nx3) XYZ arrays
         """
         element = self[element_id]
-        assert element.element.HasField("lane")
+        assert self.is_lane(element)
 
         lane = element.element.lane
         left_boundary = lane.left_boundary
@@ -104,6 +118,23 @@ class ProtoAPI:
 
         return {"xyz_left": xyz_left, "xyz_right": xyz_right}
 
+    @staticmethod
+    @no_type_check
+    def is_crosswalk(element: MapElement) -> bool:
+        """
+        Check whether an element is a valid crosswalk
+
+        Args:
+            element (MapElement): a proto element
+
+        Returns:
+            bool: True if the element is a valid crosswalk
+        """
+        if not element.element.HasField("traffic_control_element"):
+            return False
+        traffic_element = element.element.traffic_control_element
+        return bool(traffic_element.HasField("pedestrian_crosswalk") and traffic_element.points_x_deltas_cm)
+
     @lru_cache(maxsize=CACHE_SIZE)
     def get_crossword_coords(self, element_id: str) -> dict:
         """
@@ -117,9 +148,8 @@ class ProtoAPI:
             dict: a dict with the polygon coordinates as an (Nx3) XYZ array
         """
         element = self[element_id]
-        assert element.element.HasField("traffic_control_element")
+        assert self.is_crosswalk(element)
         traffic_element = element.element.traffic_control_element
-        assert traffic_element.HasField("pedestrian_crosswalk") and traffic_element.points_x_deltas_cm
 
         xyz = self.unpack_deltas_cm(
             traffic_element.points_x_deltas_cm,
@@ -130,7 +160,8 @@ class ProtoAPI:
 
         return {"xyz": xyz}
 
-    def __getitem__(self, item: Union[int, str]) -> Any:
+    @no_type_check
+    def __getitem__(self, item: Union[int, str]) -> MapElement:
         if isinstance(item, str):
             return self.elements[self.ids_to_el[item]]
         elif isinstance(item, int):
@@ -141,6 +172,7 @@ class ProtoAPI:
     def __len__(self) -> int:
         return len(self.elements)
 
-    def __iter__(self) -> Any:
+    @no_type_check
+    def __iter__(self) -> MapElement:
         for i in range(len(self)):
             yield self[i]
