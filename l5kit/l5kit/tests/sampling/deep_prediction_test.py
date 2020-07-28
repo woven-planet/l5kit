@@ -4,23 +4,9 @@ from typing import Callable
 import numpy as np
 import pytest
 
-from l5kit.configs import load_config_data
 from l5kit.data import AGENT_DTYPE, FRAME_DTYPE, ChunkedDataset
 from l5kit.rasterization import StubRasterizer
 from l5kit.sampling import generate_agent_sample
-
-
-@pytest.fixture(scope="module")
-def zarr_dataset() -> ChunkedDataset:
-    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
-    zarr_dataset.open()
-    return zarr_dataset
-
-
-@pytest.fixture(scope="module")
-def cfg() -> dict:
-    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
-    return cfg
 
 
 def get_partial(

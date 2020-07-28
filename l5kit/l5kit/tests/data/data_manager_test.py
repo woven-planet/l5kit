@@ -6,7 +6,6 @@ from l5kit.data import LocalDataManager
 
 
 def test_require_existing_file(tmp_path: Path) -> None:
-    print(tmp_path)
     p = tmp_path / "my_file.txt"
     open(str(p), "w").write("hello")
 
