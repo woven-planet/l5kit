@@ -3,8 +3,7 @@ from typing import List, Optional, Tuple
 import cv2
 import numpy as np
 
-from ..data import proto_to_semantic_map
-from ..data.proto.road_network_pb2 import MapFragment
+from ..data.proto_api import ProtoAPI
 from ..geometry import rotation33_as_yaw, transform_point, transform_points, world_to_image_pixels_matrix
 from .rasterizer import Rasterizer
 
@@ -68,15 +67,55 @@ class SemanticRasterizer(Rasterizer):
 
         self.pose_to_ecef = pose_to_ecef
 
-        # load protobuf and process it, but keep also the original proto elements
-        with open(semantic_map_path, "rb") as infile:
-            mapfrag = MapFragment()
-            mapfrag.ParseFromString(infile.read())
+        self.proto_API = ProtoAPI(semantic_map_path, pose_to_ecef)
 
-        ecef_to_pose = np.linalg.inv(self.pose_to_ecef)
+        self.bounds_info = self.get_bounds()
 
-        self.semantic_map = proto_to_semantic_map(mapfrag, ecef_to_pose)
-        self.elements_lookup = {el.id.id.decode("utf-8"): el for el in mapfrag.elements}
+    # TODO is this the right place for this function?
+    def get_bounds(self) -> dict:
+        # TODO add docstring
+        lanes_ids = []
+        crosswalks_ids = []
+
+        lanes_bounds = np.empty((0, 2, 2), dtype=np.float)  # [(X_MIN, Y_MIN), (X_MAX, Y_MAX)]
+        crosswalks_bounds = np.empty((0, 2, 2), dtype=np.float)  # [(X_MIN, Y_MIN), (X_MAX, Y_MAX)]
+
+        for element in self.proto_API:
+            element_id = ProtoAPI.get_element_id(element)
+
+            if element.element.HasField("lane"):
+
+                lane = self.proto_API.get_lane_coords(element_id)
+                # store bounds for fast rasterisation look-up
+                x_min = min(np.min(lane["xyz_left"][:, 0]), np.min(lane["xyz_right"][:, 0]))
+                y_min = min(np.min(lane["xyz_left"][:, 1]), np.min(lane["xyz_right"][:, 1]))
+                x_max = max(np.max(lane["xyz_left"][:, 0]), np.max(lane["xyz_right"][:, 0]))
+                y_max = max(np.max(lane["xyz_left"][:, 1]), np.max(lane["xyz_right"][:, 1]))
+
+                lanes_bounds = np.append(lanes_bounds, np.asarray([[[x_min, y_min], [x_max, y_max]]]), axis=0)
+                lanes_ids.append(element_id)
+
+            if element.element.HasField("traffic_control_element"):
+
+                traffic_element = element.element.traffic_control_element
+
+                if traffic_element.HasField("pedestrian_crosswalk") and traffic_element.points_x_deltas_cm:
+                    crosswalk = self.proto_API.get_crossword_coords(element_id)
+                    # store bounds for fast rasterisation look-up
+                    x_min = np.min(crosswalk["xyz"][:, 0])
+                    y_min = np.min(crosswalk["xyz"][:, 1])
+                    x_max = np.max(crosswalk["xyz"][:, 0])
+                    y_max = np.max(crosswalk["xyz"][:, 1])
+
+                    crosswalks_bounds = np.append(
+                        crosswalks_bounds, np.asarray([[[x_min, y_min], [x_max, y_max]]]), axis=0,
+                    )
+                    crosswalks_ids.append(element_id)
+
+        return {
+            "lanes": {"bounds": lanes_bounds, "ids": lanes_ids},
+            "crosswalks": {"bounds": crosswalks_bounds, "ids": crosswalks_ids},
+        }
 
     def rasterize(
         self,
@@ -124,8 +163,8 @@ class SemanticRasterizer(Rasterizer):
         # plot lanes
         lanes_lines = []
 
-        for idx in elements_within_bounds(center_world, self.semantic_map["lanes_bounds"], raster_radius):
-            lane = self.semantic_map["lanes"][idx]
+        for idx in elements_within_bounds(center_world, self.bounds_info["lanes"]["bounds"], raster_radius):
+            lane = self.proto_API.get_lane_coords(self.bounds_info["lanes"]["ids"][idx])
 
             # get image coords
             xy_left = cv2_subpixel(transform_points(lane["xyz_left"][:, :2], world_to_image_space))
@@ -143,8 +182,9 @@ class SemanticRasterizer(Rasterizer):
 
         # plot crosswalks
         crosswalks = []
-        for idx in elements_within_bounds(center_world, self.semantic_map["crosswalks_bounds"], raster_radius):
-            crosswalk = self.semantic_map["crosswalks"][idx]
+        for idx in elements_within_bounds(center_world, self.bounds_info["crosswalks"]["bounds"], raster_radius):
+            crosswalk = self.proto_API.get_crossword_coords(self.bounds_info["crosswalks"]["ids"][idx])
+
             xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], world_to_image_space))
             crosswalks.append(xy_cross)
 
