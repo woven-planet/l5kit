@@ -73,7 +73,12 @@ class SemanticRasterizer(Rasterizer):
 
     # TODO is this the right place for this function?
     def get_bounds(self) -> dict:
-        # TODO add docstring
+        """
+        For each elements of interest returns bounds [[min_x, min_y],[max_x, max_y]] and proto ids
+
+        Returns:
+            dict: keys are classes of elements, values are dict with `bounds` and `ids` keys
+        """
         lanes_ids = []
         crosswalks_ids = []
 

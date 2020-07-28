@@ -74,6 +74,7 @@ class ProtoAPI:
     def get_lane_coords(self, element_id: str) -> dict:
         """
         Get XYZ coordinates in world ref system for a lane given its id
+        lru_cached for O(1) access
 
         Args:
             element_id (str): lane element id
@@ -107,6 +108,7 @@ class ProtoAPI:
     def get_crossword_coords(self, element_id: str) -> dict:
         """
         Get XYZ coordinates in world ref system for a crosswalk given its id
+        lru_cached for O(1) access
 
         Args:
             element_id (str): crosswalk element id
