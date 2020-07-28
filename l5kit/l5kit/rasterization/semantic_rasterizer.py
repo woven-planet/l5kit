@@ -12,25 +12,25 @@ from .rasterizer import Rasterizer
 CV2_SHIFT = 8  # how many bits to shift in drawing
 
 
-def elements_within_bounds(center: np.ndarray, bounds: np.ndarray, half_side: float) -> np.ndarray:
+def elements_within_bounds(center: np.ndarray, bounds: np.ndarray, half_extent: float) -> np.ndarray:
     """
-    Get indices of elements for which the bounding box described by bounds intersect the one defined around
-    center (squared with side 2*radius)
+    Get indices of elements for which the bounding box described by bounds intersects the one defined around
+    center (square with side 2*half_side)
 
     Args:
         center (float): XY of the center
         bounds (np.ndarray): array of shape Nx2x2 [[x_min,y_min],[x_max, y_max]]
-        half_side (float): half the side of the bounding box centered around center
+        half_extent (float): half the side of the bounding box centered around center
 
     Returns:
         np.ndarray: indices of elements inside radius from center
     """
     x_center, y_center = center
 
-    x_min_in = x_center > bounds[:, 0, 0] - half_side
-    y_min_in = y_center > bounds[:, 0, 1] - half_side
-    x_max_in = x_center < bounds[:, 1, 0] + half_side
-    y_max_in = y_center < bounds[:, 1, 1] + half_side
+    x_min_in = x_center > bounds[:, 0, 0] - half_extent
+    y_min_in = y_center > bounds[:, 0, 1] - half_extent
+    x_max_in = x_center < bounds[:, 1, 0] + half_extent
+    y_max_in = y_center < bounds[:, 1, 1] + half_extent
     return np.nonzero(x_min_in & y_min_in & x_max_in & y_max_in)[0]
 
 
@@ -98,7 +98,7 @@ class SemanticRasterizer(Rasterizer):
             self.raster_size, self.pixel_size, ego_translation, ego_yaw, self.ego_center,
         )
 
-        # get XY of center pixel in world coordinate
+        # get XY of center pixel in world coordinates
         center_pixel = np.asarray(self.raster_size) * (0.5, 0.5)
         center_world = transform_point(center_pixel, np.linalg.inv(world_to_image_space))
 
@@ -119,12 +119,12 @@ class SemanticRasterizer(Rasterizer):
         img = 255 * np.ones(shape=(self.raster_size[1], self.raster_size[0], 3), dtype=np.uint8)
 
         # filter using half a radius from the center
-        half_side = float(np.linalg.norm(self.raster_size * self.pixel_size)) / 2
+        raster_radius = float(np.linalg.norm(self.raster_size * self.pixel_size)) / 2
 
         # plot lanes
         lanes_lines = []
 
-        for idx in elements_within_bounds(center_world, self.semantic_map["lanes_bounds"], half_side):
+        for idx in elements_within_bounds(center_world, self.semantic_map["lanes_bounds"], raster_radius):
             lane = self.semantic_map["lanes"][idx]
 
             # get image coords
@@ -143,7 +143,7 @@ class SemanticRasterizer(Rasterizer):
 
         # plot crosswalks
         crosswalks = []
-        for idx in elements_within_bounds(center_world, self.semantic_map["crosswalks_bounds"], half_side):
+        for idx in elements_within_bounds(center_world, self.semantic_map["crosswalks_bounds"], raster_radius):
             crosswalk = self.semantic_map["crosswalks"][idx]
             xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], world_to_image_space))
             crosswalks.append(xy_cross)

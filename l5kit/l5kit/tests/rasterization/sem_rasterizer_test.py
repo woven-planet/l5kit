@@ -5,7 +5,7 @@ from l5kit.rasterization.semantic_rasterizer import elements_within_bounds
 
 def test_elements_within_bounds() -> None:
     center = np.zeros(2)
-    half_side = 0.5  # square centered on origin with side 1
+    half_side = 0.5  # square centered around origin with side 1
     bounds = np.zeros((1, 2, 2))
 
     # non-intersecting
