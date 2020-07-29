@@ -50,6 +50,8 @@ def export_zarr_to_ground_truth_csv(
     dataset = AgentDataset(cfg=cfg, zarr_dataset=zarr_dataset, rasterizer=rasterizer)
 
     future_coords_offsets = []
+    future_availabilities = []
+
     timestamps = []
     agent_ids = []
 
@@ -57,12 +59,12 @@ def export_zarr_to_ground_truth_csv(
         future_coords_offsets.append(el["target_positions"])
         timestamps.append(el["timestamp"])
         agent_ids.append(el["track_id"])
-        # TODO export availability
+        future_availabilities.append(el["target_availabilities"][:, 0])  # remove single axis
 
     write_coords_as_csv(
         csv_file_path,
-        future_num_frames,
         np.asarray(future_coords_offsets),
+        np.asarray(future_availabilities),
         np.asarray(timestamps),
         np.asarray(agent_ids),
     )
