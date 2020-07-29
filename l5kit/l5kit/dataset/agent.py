@@ -11,6 +11,9 @@ from ..rasterization import Rasterizer
 from .ego import EgoDataset
 from .select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE, select_agents
 
+# WARNING: changing this value impact the number of instances selected for both train and inference!
+MIN_FRAME_PAST = 10  # minimum number of frames an agents must have in the past to be picked
+
 
 class AgentDataset(EgoDataset):
     def __init__(
@@ -26,9 +29,7 @@ class AgentDataset(EgoDataset):
         super(AgentDataset, self).__init__(cfg, zarr_dataset, rasterizer, perturbation)
         if agents_mask is None:  # if not provided try to load it from the zarr
             agents_mask = self.load_agents_mask()
-            past_mask = agents_mask[:, 0] >= cfg["model_params"]["history_num_frames"]
-            future_mask = agents_mask[:, 1] >= cfg["model_params"]["future_num_frames"]
-            agents_mask = past_mask * future_mask
+            agents_mask = agents_mask[:, 0] >= MIN_FRAME_PAST  # check only past
 
         # store the valid agents indexes
         self.agents_indices = np.nonzero(agents_mask)[0]
