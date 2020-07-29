@@ -12,7 +12,7 @@ from .ego import EgoDataset
 from .select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE, select_agents
 
 # WARNING: changing this value impact the number of instances selected for both train and inference!
-MIN_FRAME_PAST = 10  # minimum number of frames an agents must have in the past to be picked
+MIN_FRAME_HISTORY = 10  # minimum number of frames an agents must have in the past to be picked
 
 
 class AgentDataset(EgoDataset):
@@ -23,13 +23,19 @@ class AgentDataset(EgoDataset):
         rasterizer: Rasterizer,
         perturbation: Optional[Perturbation] = None,
         agents_mask: Optional[np.ndarray] = None,
+        min_frame_history: int = MIN_FRAME_HISTORY,
     ):
         assert perturbation is None, "AgentDataset does not support perturbation (yet)"
 
         super(AgentDataset, self).__init__(cfg, zarr_dataset, rasterizer, perturbation)
         if agents_mask is None:  # if not provided try to load it from the zarr
             agents_mask = self.load_agents_mask()
-            agents_mask = agents_mask[:, 0] >= MIN_FRAME_PAST  # check only past
+            agents_mask = agents_mask[:, 0] >= min_frame_history  # check only past
+            if min_frame_history != MIN_FRAME_HISTORY:
+                print(f"warning, you're running with custom min_frame_history of {min_frame_history}")
+
+        else:
+            print("warning, you're running with a custom agents_mask")
 
         # store the valid agents indexes
         self.agents_indices = np.nonzero(agents_mask)[0]
