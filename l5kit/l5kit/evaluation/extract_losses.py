@@ -77,8 +77,8 @@ def compute_mse_error_csv(ground_truth_path: str, inference_output_path: str) ->
         errors.append(compute_mse(gt_coords, pred_coords))
         gt_avails.append(ground_truth_value["avail"])
 
-    # use numpy masked package to get a mean where non available elements are masked out
-    mask = ~np.array(gt_avails).astype(np.bool)
+    # use numpy masked package to get a mean where unavailable elements are masked out
+    mask = ~np.array(gt_avails).astype(np.bool)  # note the ~ here, masked seems to assume 0 means keep
     errors = np.ma.masked_array(np.array(errors), mask=mask)
     return np.mean(errors, axis=0).data
 
