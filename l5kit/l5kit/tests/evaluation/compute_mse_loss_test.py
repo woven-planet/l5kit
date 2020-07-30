@@ -8,8 +8,10 @@ from l5kit.evaluation import compute_mse_error_csv, export_zarr_to_ground_truth_
 
 
 def test_compute_mse_error(tmp_path: Path, zarr_dataset: ChunkedDataset) -> None:
-    export_zarr_to_ground_truth_csv(zarr_dataset, str(tmp_path / "gt1.csv"), 12, 0.5)
-    export_zarr_to_ground_truth_csv(zarr_dataset, str(tmp_path / "gt2.csv"), 12, 0.5)
+    future_num_frames = 12  # coords displacements we want to predict
+
+    export_zarr_to_ground_truth_csv(zarr_dataset, str(tmp_path / "gt1.csv"), future_num_frames, 0.5)
+    export_zarr_to_ground_truth_csv(zarr_dataset, str(tmp_path / "gt2.csv"), future_num_frames, 0.5)
     err = compute_mse_error_csv(str(tmp_path / "gt1.csv"), str(tmp_path / "gt2.csv"))
     assert np.all(err == 0.0)
 
@@ -19,7 +21,7 @@ def test_compute_mse_error(tmp_path: Path, zarr_dataset: ChunkedDataset) -> None
     data_fake.agents = np.asarray(zarr_dataset.agents).copy()
     data_fake.agents["centroid"] += np.random.rand(*data_fake.agents["centroid"].shape) * 1e-2
 
-    export_zarr_to_ground_truth_csv(data_fake, str(tmp_path / "gt3.csv"), 12, 0.5)
+    export_zarr_to_ground_truth_csv(data_fake, str(tmp_path / "gt3.csv"), future_num_frames, 0.5)
     err = compute_mse_error_csv(str(tmp_path / "gt1.csv"), str(tmp_path / "gt3.csv"))
     assert np.any(err > 0.0)
 
