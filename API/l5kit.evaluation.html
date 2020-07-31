@@ -196,20 +196,17 @@
 
 <dl class="py function">
 <dt id="l5kit.evaluation.export_zarr_to_ground_truth_csv">
-<code class="sig-prename descclassname">l5kit.evaluation.</code><code class="sig-name descname">export_zarr_to_ground_truth_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zarr_dataset</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset">l5kit.data.zarr_dataset.ChunkedDataset</a></span></em>, <em class="sig-param"><span class="n">csv_file_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">history_num_frames</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">future_num_frames</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">filter_agents_threshold</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">pixel_size</span><span class="p">:</span> <span class="n">numpy.ndarray</span> <span class="o">=</span> <span class="default_value">array([0.25, 0.25])</span></em>, <em class="sig-param"><span class="n">history_step_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">future_step_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.evaluation.export_zarr_to_ground_truth_csv" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">l5kit.evaluation.</code><code class="sig-name descname">export_zarr_to_ground_truth_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zarr_dataset</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset">l5kit.data.zarr_dataset.ChunkedDataset</a></span></em>, <em class="sig-param"><span class="n">csv_file_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">future_num_frames</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">filter_agents_threshold</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">history_step_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">future_step_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.evaluation.export_zarr_to_ground_truth_csv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Produces a csv file containing the ground truth from a zarr file.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>zarr_dataset</strong> (<em>np.ndarray</em>) – The open zarr dataset.</p></li>
 <li><p><strong>csv_file_path</strong> (<em>str</em>) – File path to write a CSV to.</p></li>
-<li><p><strong>history_num_frames</strong> (<em>int</em>) – Amount of history frames to draw into the rasters.</p></li>
-<li><p><strong>future_num_frames</strong> (<em>int</em>) – Amount of history frames to draw into the rasters.</p></li>
+<li><p><strong>future_num_frames</strong> (<em>int</em>) – Amount of future displacements we want.</p></li>
 <li><p><strong>filter_agents_threshold</strong> (<em>float</em>) – Value between 0 and 1 to use as cutoff value for agent filtering</p></li>
-<li><p><strong>pixel_size</strong> (<em>np.ndarray</em>) – </p></li>
 <li><p><strong>history_step_size</strong> (<em>int</em>) – Steps to take between frames, can be used to subsample history frames.</p></li>
 <li><p><strong>future_step_size</strong> (<em>int</em>) – Steps to take between targets into the future.</p></li>
-<li><p><strong>on their probability of being a relevant agent.</strong> (<em>based</em>) – </p></li>
 </ul>
 </dd>
 </dl>
@@ -217,14 +214,14 @@
 
 <dl class="py function">
 <dt id="l5kit.evaluation.write_coords_as_csv">
-<code class="sig-prename descclassname">l5kit.evaluation.</code><code class="sig-name descname">write_coords_as_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">csv_file_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">future_num_frames</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">future_coords_offsets</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">timestamps</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">agent_ids</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.evaluation.write_coords_as_csv" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">l5kit.evaluation.</code><code class="sig-name descname">write_coords_as_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">csv_file_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">future_coords_offsets</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">target_availabilities</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">timestamps</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">agent_ids</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.evaluation.write_coords_as_csv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Write coordinates as a csv file</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>csv_file_path</strong> (<em>str</em>) – csv path</p></li>
-<li><p><strong>future_num_frames</strong> (<em>int</em>) – numbers of frames in the future for each prediction</p></li>
-<li><p><strong>future_coords_offsets</strong> (<em>np.ndarray</em>) – array of size N x future_num_frames of displacements</p></li>
+<li><p><strong>future_coords_offsets</strong> (<em>np.ndarray</em>) – array of size N x future_num_frames x coords of displacements</p></li>
+<li><p><strong>target_availabilities</strong> (<em>np.ndarray</em>) – array of size N x future_num_frames x 1 of (0,1) availability</p></li>
 <li><p><strong>timestamps</strong> (<em>np.ndarray</em>) – array of size N with timestamps int64</p></li>
 <li><p><strong>agent_ids</strong> (<em>np.ndarray</em>) – array for size N with track_ids int64</p></li>
 </ul>
