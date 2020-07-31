@@ -179,5 +179,5 @@ None if not desired
         assert frame_idx < len(frames), f"frame_idx {frame_idx} is over len {len(frames)}"
         return np.asarray((frame_idx,), dtype=np.int64)
 
-    def __repr__(self) -> str:
-        return self.dataset.__repr__()
+    def __str__(self) -> str:
+        return self.dataset.__str__()

@@ -121,7 +121,7 @@ opened.
         self.agents = self.root[AGENT_ARRAY_KEY]
         self.scenes = self.root[SCENE_ARRAY_KEY]
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         fields = [
             "Num Scenes",
             "Num Frames",
