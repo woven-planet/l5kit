@@ -66,7 +66,7 @@ def test_future(zarr_dataset: ChunkedDataset, cfg: dict) -> None:
         )
         assert data["target_positions"].shape == (step, 2)
         assert data["target_yaws"].shape == (step, 1)
-        assert data["target_availabilities"].shape == (step, 3)
+        assert data["target_availabilities"].shape == (step, 1)
         assert data["centroid"].shape == (2,)
         assert isinstance(data["yaw"], float)
         assert data["extent"].shape == (3,)
