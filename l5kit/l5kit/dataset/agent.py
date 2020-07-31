@@ -11,8 +11,9 @@ from ..rasterization import Rasterizer
 from .ego import EgoDataset
 from .select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE, select_agents
 
-# WARNING: changing this value impact the number of instances selected for both train and inference!
+# WARNING: changing these values impact the number of instances selected for both train and inference!
 MIN_FRAME_HISTORY = 10  # minimum number of frames an agents must have in the past to be picked
+MIN_FRAME_FUTURE = 0  # minimum number of frames an agents must have in the future to be picked
 
 
 class AgentDataset(EgoDataset):
@@ -24,16 +25,21 @@ class AgentDataset(EgoDataset):
         perturbation: Optional[Perturbation] = None,
         agents_mask: Optional[np.ndarray] = None,
         min_frame_history: int = MIN_FRAME_HISTORY,
+        min_frame_future: int = MIN_FRAME_FUTURE,
     ):
         assert perturbation is None, "AgentDataset does not support perturbation (yet)"
 
         super(AgentDataset, self).__init__(cfg, zarr_dataset, rasterizer, perturbation)
         if agents_mask is None:  # if not provided try to load it from the zarr
             agents_mask = self.load_agents_mask()
-            agents_mask = agents_mask[:, 0] >= min_frame_history  # check only past
+            past_mask = agents_mask[:, 0] >= min_frame_history
+            future_mask = agents_mask[:, 1] >= min_frame_future
+            agents_mask = past_mask * future_mask
+
             if min_frame_history != MIN_FRAME_HISTORY:
                 print(f"warning, you're running with custom min_frame_history of {min_frame_history}")
-
+            if min_frame_future != MIN_FRAME_FUTURE:
+                print(f"warning, you're running with custom min_frame_future of {min_frame_future}")
         else:
             print("warning, you're running with a custom agents_mask")
 
