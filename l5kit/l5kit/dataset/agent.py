@@ -13,7 +13,7 @@ from .select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE, selec
 
 # WARNING: changing these values impact the number of instances selected for both train and inference!
 MIN_FRAME_HISTORY = 10  # minimum number of frames an agents must have in the past to be picked
-MIN_FRAME_FUTURE = 0  # minimum number of frames an agents must have in the future to be picked
+MIN_FRAME_FUTURE = 1  # minimum number of frames an agents must have in the future to be picked
 
 
 class AgentDataset(EgoDataset):
