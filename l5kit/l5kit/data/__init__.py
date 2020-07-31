@@ -8,7 +8,7 @@ from .filter import (
 )
 from .labels import LABEL_TO_INDEX, LABELS
 from .local_data_manager import DataManager, LocalDataManager
-from .proto_api import ProtoAPI
+from .map_api import MapAPI
 from .zarr_dataset import AGENT_DTYPE, FRAME_DTYPE, SCENE_DTYPE, TR_FACES_DTYPE, ChunkedStateDataset
 
 __all__ = [
@@ -27,5 +27,5 @@ __all__ = [
     "get_agent_by_track_id",
     "filter_agents_by_frames",
     "filter_tr_faces_by_frames",
-    "ProtoAPI",
+    "MapAPI",
 ]

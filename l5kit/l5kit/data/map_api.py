@@ -10,7 +10,7 @@ from .proto.road_network_pb2 import GeoFrame, MapElement, MapFragment
 CACHE_SIZE = int(1e5)
 
 
-class ProtoAPI:
+class MapAPI:
     def __init__(self, protobuf_map_path: str, pose_to_ecef: np.ndarray):
         """
         Interface to the raw protobuf map file with the following features:

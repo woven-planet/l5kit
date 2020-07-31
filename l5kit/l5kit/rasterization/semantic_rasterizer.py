@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple
 import cv2
 import numpy as np
 
-from ..data.proto_api import ProtoAPI
+from ..data.map_api import MapAPI
 from ..geometry import rotation33_as_yaw, transform_point, transform_points, world_to_image_pixels_matrix
 from .rasterizer import Rasterizer
 
@@ -67,7 +67,7 @@ class SemanticRasterizer(Rasterizer):
 
         self.pose_to_ecef = pose_to_ecef
 
-        self.proto_API = ProtoAPI(semantic_map_path, pose_to_ecef)
+        self.proto_API = MapAPI(semantic_map_path, pose_to_ecef)
 
         self.bounds_info = self.get_bounds()
 
@@ -86,7 +86,7 @@ class SemanticRasterizer(Rasterizer):
         crosswalks_bounds = np.empty((0, 2, 2), dtype=np.float)  # [(X_MIN, Y_MIN), (X_MAX, Y_MAX)]
 
         for element in self.proto_API:
-            element_id = ProtoAPI.get_element_id(element)
+            element_id = MapAPI.get_element_id(element)
 
             if self.proto_API.is_lane(element):
                 lane = self.proto_API.get_lane_coords(element_id)
