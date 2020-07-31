@@ -104,6 +104,7 @@
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.local_data_manager.html">l5kit.data.local_data_manager module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.map.html">l5kit.data.map module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.zarr_dataset.html">l5kit.data.zarr_dataset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.data.zarr_utils.html">l5kit.data.zarr_utils module</a></li>
 </ul>
 </li>
 </ul>
@@ -362,6 +363,23 @@ of combined scenes.</p>
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt id="l5kit.data.zarr_concat">
+<code class="sig-prename descclassname">l5kit.data.</code><code class="sig-name descname">zarr_concat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_zarrs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">output_zarr</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.data.zarr_concat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concat many zarr into a single one. Takes care of updating indices for frames and agents.
+The output zarr can also already exists. In that case, new data is appended</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_zarrs</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – a list of paths to input zarrs</p></li>
+<li><p><strong>output_zarr</strong> (<em>str</em>) – the path to the output zarr</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – chatty output</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
 <div class="section" id="subpackages">
 <h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
@@ -386,6 +404,7 @@ of combined scenes.</p>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.data.local_data_manager.html">l5kit.data.local_data_manager module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.data.map.html">l5kit.data.map module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.data.zarr_dataset.html">l5kit.data.zarr_dataset module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="l5kit.data.zarr_utils.html">l5kit.data.zarr_utils module</a></li>
 </ul>
 </div>
 </div>

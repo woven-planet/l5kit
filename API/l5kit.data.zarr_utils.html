@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>l5kit.data.filter module &mdash; L5Kit 1.0.3 documentation</title>
+  <title>l5kit.data.zarr_utils module &mdash; L5Kit 1.0.3 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="l5kit.data.labels module" href="l5kit.data.labels.html" />
-    <link rel="prev" title="l5kit.data.combine module" href="l5kit.data.combine.html" /> 
+    <link rel="next" title="l5kit.dataset package" href="l5kit.dataset.html" />
+    <link rel="prev" title="l5kit.data.zarr_dataset module" href="l5kit.data.zarr_dataset.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -96,12 +96,12 @@
 <li class="toctree-l3"><a class="reference internal" href="l5kit.data.html#subpackages">Subpackages</a></li>
 <li class="toctree-l3 current"><a class="reference internal" href="l5kit.data.html#submodules">Submodules</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.combine.html">l5kit.data.combine module</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.data.filter module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.data.filter.html">l5kit.data.filter module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.labels.html">l5kit.data.labels module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.local_data_manager.html">l5kit.data.local_data_manager module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.map.html">l5kit.data.map module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.zarr_dataset.html">l5kit.data.zarr_dataset module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.data.zarr_utils.html">l5kit.data.zarr_utils module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.data.zarr_utils module</a></li>
 </ul>
 </li>
 </ul>
@@ -167,13 +167,13 @@
         
           <li><a href="l5kit.data.html">l5kit.data package</a> &raquo;</li>
         
-      <li>l5kit.data.filter module</li>
+      <li>l5kit.data.zarr_utils module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/API/l5kit.data.filter.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/API/l5kit.data.zarr_utils.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -186,76 +186,23 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-l5kit.data.filter">
-<span id="l5kit-data-filter-module"></span><h1>l5kit.data.filter module<a class="headerlink" href="#module-l5kit.data.filter" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-l5kit.data.zarr_utils">
+<span id="l5kit-data-zarr-utils-module"></span><h1>l5kit.data.zarr_utils module<a class="headerlink" href="#module-l5kit.data.zarr_utils" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="l5kit.data.filter.filter_agents_by_frames">
-<code class="sig-prename descclassname">l5kit.data.filter.</code><code class="sig-name descname">filter_agents_by_frames</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.data.filter.filter_agents_by_frames" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a list of agents array, one array per frame. Note that “agent_index_interval” is used to filter agents,
-so you should take care of re-setting it if you have previously sliced agents.</p>
+<dt id="l5kit.data.zarr_utils.zarr_concat">
+<code class="sig-prename descclassname">l5kit.data.zarr_utils.</code><code class="sig-name descname">zarr_concat</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_zarrs</span><span class="p">:</span> <span class="n">List<span class="p">[</span>str<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">output_zarr</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">verbose</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.data.zarr_utils.zarr_concat" title="Permalink to this definition">¶</a></dt>
+<dd><p>Concat many zarr into a single one. Takes care of updating indices for frames and agents.
+The output zarr can also already exists. In that case, new data is appended</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>frames</strong> (<em>np.ndarray</em>) – an array of frames</p></li>
-<li><p><strong>agents</strong> (<em>np.ndarray</em>) – an array of agents</p></li>
+<li><p><strong>input_zarrs</strong> (<em>List</em><em>[</em><em>str</em><em>]</em>) – a list of paths to input zarrs</p></li>
+<li><p><strong>output_zarr</strong> (<em>str</em>) – the path to the output zarr</p></li>
+<li><p><strong>verbose</strong> (<em>bool</em>) – chatty output</p></li>
 </ul>
 </dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>List[np.ndarray] with the agents divided by frame</p>
-</dd>
 </dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="l5kit.data.filter.filter_agents_by_labels">
-<code class="sig-prename descclassname">l5kit.data.filter.</code><code class="sig-name descname">filter_agents_by_labels</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">threshold</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.5</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.data.filter.filter_agents_by_labels" title="Permalink to this definition">¶</a></dt>
-<dd><p>Filters an agents array, keeping those agents that meet the threshold.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>agents</strong> (<em>np.ndarray</em>) – Agents array</p>
-</dd>
-<dt class="field-even">Keyword Arguments</dt>
-<dd class="field-even"><p><strong>threshold</strong> (<em>float</em>) – probability threshold for filtering (default: {0.5})</p>
-</dd>
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>np.ndarray – A subset of input <code class="docutils literal notranslate"><span class="pre">agents</span></code> array.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="l5kit.data.filter.filter_agents_by_track_id">
-<code class="sig-prename descclassname">l5kit.data.filter.</code><code class="sig-name descname">filter_agents_by_track_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">track_id</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.data.filter.filter_agents_by_track_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return all agent object (np.ndarray) of a given track_id.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>agents</strong> (<em>np.ndarray</em>) – agents array</p></li>
-<li><p><strong>track_id</strong> (<em>int</em>) – agent track id to select</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>np.ndarray – Selected agent.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="l5kit.data.filter.get_agent_by_track_id">
-<code class="sig-prename descclassname">l5kit.data.filter.</code><code class="sig-name descname">get_agent_by_track_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">agents_frame</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">track_id</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.data.filter.get_agent_by_track_id" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the agent object (np.ndarray) of a given track_id in a frame.
-Return None if the agent is not among those in the frame.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>agents_frame</strong> (<em>np.ndarray</em>) – frame agents array</p></li>
-<li><p><strong>track_id</strong> (<em>int</em>) – agent track id to select</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>Optional[np.ndarray] – Selected agent, or None if this agent is not present in given frame.</p>
-</dd>
-</dl>
+<p>Returns:</p>
 </dd></dl>
 
 </div>
@@ -268,10 +215,10 @@ Return None if the agent is not among those in the frame.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="l5kit.data.labels.html" class="btn btn-neutral float-right" title="l5kit.data.labels module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="l5kit.dataset.html" class="btn btn-neutral float-right" title="l5kit.dataset package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="l5kit.data.combine.html" class="btn btn-neutral float-left" title="l5kit.data.combine module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="l5kit.data.zarr_dataset.html" class="btn btn-neutral float-left" title="l5kit.data.zarr_dataset module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
