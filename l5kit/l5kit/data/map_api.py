@@ -47,6 +47,19 @@ class MapAPI:
         """
         return element.id.id.decode("utf-8")
 
+    @staticmethod
+    def _undo_e7(value: float) -> float:
+        """
+        Latitude and longitude are store as value*1e7 in the protobuf for efficiency purposes. Invert this scale
+
+        Args:
+            value (float): the scaled value
+
+        Returns:
+            float: the unscaled value
+        """
+        return value / 1e7
+
     @no_type_check
     def unpack_deltas_cm(self, dx: Sequence[int], dy: Sequence[int], dz: Sequence[int], frame: GeoFrame) -> np.ndarray:
         """
@@ -66,7 +79,8 @@ class MapAPI:
         x = np.cumsum(np.asarray(dx) / 100)
         y = np.cumsum(np.asarray(dy) / 100)
         z = np.cumsum(np.asarray(dz) / 100)
-        xyz = np.stack(pm.enu2ecef(x, y, z, frame.origin.lat_e7 * 1e-7, frame.origin.lng_e7 * 1e-7, 0), axis=-1)
+        frame_lat, frame_lng = self._undo_e7(frame.origin.lat_e7), self._undo_e7(frame.origin.lng_e7)
+        xyz = np.stack(pm.enu2ecef(x, y, z, frame_lat, frame_lng, 0), axis=-1)
         xyz = transform_points(xyz, self.ecef_to_pose)
         return xyz
 
