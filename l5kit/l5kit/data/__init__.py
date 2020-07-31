@@ -4,6 +4,7 @@ from .labels import LABEL_TO_INDEX, LABELS
 from .local_data_manager import DataManager, LocalDataManager
 from .map import load_semantic_map
 from .zarr_dataset import AGENT_DTYPE, FRAME_DTYPE, SCENE_DTYPE, ChunkedDataset
+from .zarr_utils import zarr_concat
 
 __all__ = [
     "get_combined_scenes",
@@ -19,4 +20,5 @@ __all__ = [
     "get_agent_by_track_id",
     "filter_agents_by_frames",
     "load_semantic_map",
+    "zarr_concat",
 ]
