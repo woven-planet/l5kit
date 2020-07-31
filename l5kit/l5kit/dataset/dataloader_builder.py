@@ -3,7 +3,7 @@ from typing import Callable, Dict, Optional
 import numpy as np
 from torch.utils.data import ConcatDataset, DataLoader, Subset
 
-from l5kit.data import ChunkedStateDataset, DataManager, get_combined_scenes
+from l5kit.data import ChunkedDataset, DataManager, get_combined_scenes
 from l5kit.kinematic import Perturbation
 from l5kit.rasterization import Rasterizer
 
@@ -38,7 +38,7 @@ def build_dataloader(
     datasets = []
     for dataset_param in data_loader_cfg["datasets"]:
         zarr_dataset_path = data_manager.require(key=dataset_param["key"])
-        zarr_dataset = ChunkedStateDataset(path=zarr_dataset_path)
+        zarr_dataset = ChunkedDataset(path=zarr_dataset_path)
         zarr_dataset.open()
         if combine_scenes:  # possible future deprecation
             zarr_dataset.scenes = get_combined_scenes(zarr_dataset.scenes)

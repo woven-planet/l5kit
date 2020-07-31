@@ -8,8 +8,7 @@ def test_load_config_data() -> None:
     assert isinstance(cfg, dict)
 
 
-def test_save_config_data(tmp_path: Path) -> None:
-    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
+def test_save_config_data(tmp_path: Path, cfg: dict) -> None:
     tmp_path = tmp_path / "default.yaml"
     save_config_data(cfg, str(tmp_path))
     assert tmp_path.exists()

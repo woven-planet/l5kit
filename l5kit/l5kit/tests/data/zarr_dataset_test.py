@@ -1,18 +1,16 @@
 import numpy as np
 import numpy.testing
 
-from l5kit.data import zarr_dataset
+from l5kit.data import ChunkedDataset
 
 
-def test_load_dataset() -> None:
-    data = zarr_dataset.ChunkedStateDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
-    data.open()
+def test_load_dataset(zarr_dataset: ChunkedDataset) -> None:
 
-    assert len(data.frames) == 775
-    assert len(data.agents) == 67954
-    assert len(data.scenes) == 1
+    assert len(zarr_dataset.frames) == 775
+    assert len(zarr_dataset.agents) == 67954
+    assert len(zarr_dataset.scenes) == 1
 
-    frame = data.frames[0]
+    frame = zarr_dataset.frames[0]
 
     assert frame["timestamp"] == 1266597039003039366
     numpy.testing.assert_allclose(frame["agent_index_interval"], (0, 88))
