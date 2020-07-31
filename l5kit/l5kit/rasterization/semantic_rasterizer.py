@@ -100,7 +100,7 @@ class SemanticRasterizer(Rasterizer):
                 lanes_ids.append(element_id)
 
             if self.proto_API.is_crosswalk(element):
-                crosswalk = self.proto_API.get_crossword_coords(element_id)
+                crosswalk = self.proto_API.get_crosswalk_coords(element_id)
                 # store bounds for fast rasterisation look-up
                 x_min = np.min(crosswalk["xyz"][:, 0])
                 y_min = np.min(crosswalk["xyz"][:, 1])
@@ -183,7 +183,7 @@ class SemanticRasterizer(Rasterizer):
         # plot crosswalks
         crosswalks = []
         for idx in elements_within_bounds(center_world, self.bounds_info["crosswalks"]["bounds"], raster_radius):
-            crosswalk = self.proto_API.get_crossword_coords(self.bounds_info["crosswalks"]["ids"][idx])
+            crosswalk = self.proto_API.get_crosswalk_coords(self.bounds_info["crosswalks"]["ids"][idx])
 
             xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], world_to_image_space))
             crosswalks.append(xy_cross)

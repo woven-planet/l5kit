@@ -136,7 +136,7 @@ class ProtoAPI:
         return bool(traffic_element.HasField("pedestrian_crosswalk") and traffic_element.points_x_deltas_cm)
 
     @lru_cache(maxsize=CACHE_SIZE)
-    def get_crossword_coords(self, element_id: str) -> dict:
+    def get_crosswalk_coords(self, element_id: str) -> dict:
         """
         Get XYZ coordinates in world ref system for a crosswalk given its id
         lru_cached for O(1) access
