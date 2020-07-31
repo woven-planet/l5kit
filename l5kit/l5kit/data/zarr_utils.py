@@ -6,7 +6,7 @@ import numpy as np
 from . import FRAME_DTYPE, SCENE_DTYPE, ChunkedDataset
 
 
-def zarr_concat(input_zarrs: List[str], output_zarr: str) -> None:
+def zarr_concat(input_zarrs: List[str], output_zarr: str, verbose: bool = False) -> None:
     """
     Concat many zarr into a single one. Takes care of updating indices for frames and agents.
     The output zarr can also already exists. In that case, new data is appended
@@ -14,6 +14,7 @@ def zarr_concat(input_zarrs: List[str], output_zarr: str) -> None:
     Args:
         input_zarrs (List[str]): a list of paths to input zarrs
         output_zarr (str): the path to the output zarr
+        verbose (bool): chatty output
 
     Returns:
 
@@ -30,9 +31,10 @@ def zarr_concat(input_zarrs: List[str], output_zarr: str) -> None:
         input_dataset = ChunkedDataset(input_zarr)
         input_dataset.open()
 
-        print(f"input scenes size: {input_dataset.scenes.shape[0]}")
-        print(f"input frames size: {input_dataset.frames.shape[0]}")
-        print(f"input agents size: {input_dataset.agents.shape[0]}")
+        if verbose:
+            print(f"input scenes size: {input_dataset.scenes.shape[0]}")
+            print(f"input frames size: {input_dataset.frames.shape[0]}")
+            print(f"input agents size: {input_dataset.agents.shape[0]}")
 
         frame_offset = output_dataset.frames.shape[0]
         new_scenes = np.zeros(input_dataset.scenes.shape[0], dtype=SCENE_DTYPE)
@@ -51,6 +53,7 @@ def zarr_concat(input_zarrs: List[str], output_zarr: str) -> None:
 
         output_dataset.agents.append(input_dataset.agents)  # add new agents to the zarr
 
-    print(f"output scenes size: {output_dataset.scenes.shape[0]}")
-    print(f"output frames size: {output_dataset.frames.shape[0]}")
-    print(f"output agents size: {output_dataset.agents.shape[0]}")
+    if verbose:
+        print(f"output scenes size: {output_dataset.scenes.shape[0]}")
+        print(f"output frames size: {output_dataset.frames.shape[0]}")
+        print(f"output agents size: {output_dataset.agents.shape[0]}")
