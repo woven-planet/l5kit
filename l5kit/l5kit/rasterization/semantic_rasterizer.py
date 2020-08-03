@@ -86,7 +86,7 @@ class SemanticRasterizer(Rasterizer):
         crosswalks_bounds = np.empty((0, 2, 2), dtype=np.float)  # [(X_MIN, Y_MIN), (X_MAX, Y_MAX)]
 
         for element in self.proto_API:
-            element_id = MapAPI.get_element_id(element)
+            element_id = MapAPI.id_as_str(element.id)
 
             if self.proto_API.is_lane(element):
                 lane = self.proto_API.get_lane_coords(element_id)
@@ -163,6 +163,7 @@ class SemanticRasterizer(Rasterizer):
         raster_radius = float(np.linalg.norm(self.raster_size * self.pixel_size)) / 2
 
         # plot lanes
+        active_tl_ids = set(tr_faces["gid"].tolist())
         lanes_lines: Dict[str, List] = {"unknown": [], "red": [], "green": []}
 
         for idx in elements_within_bounds(center_world, self.bounds_info["lanes"]["bounds"], raster_radius):
@@ -179,29 +180,13 @@ class SemanticRasterizer(Rasterizer):
 
             # check if we have any TF info
             lane_type = "unknown"
-            # TODO add some API for this and maybe write a function
-            lane_tl_ids = [la_tc.id.decode("utf-8") for la_tc in lane.traffic_controls]
-            for lane_tf_id in lane_tl_ids:
-                if lane_tf_id in tr_faces["gid"]:
-                    # we have found the lane this traffic face affect
-                    # TODO change the next lane (lanes_ahead) status
-                    traffic_el = self.proto_API[lane_tf_id].element.traffic_control_element
-                    if (
-                        traffic_el.HasField("signal_red_face")
-                        or traffic_el.HasField("signal_left_arrow_red_face")
-                        or traffic_el.HasField("signal_right_arrow_red_face")
-                        or traffic_el.HasField("signal_upper_left_arrow_red_face")
-                        or traffic_el.HasField("signal_upper_right_arrow_red_face")
-                    ):
-                        lane_type = "red"
-                    elif (
-                        traffic_el.HasField("signal_green_face")
-                        or traffic_el.HasField("signal_left_arrow_green_face")
-                        or traffic_el.HasField("signal_right_arrow_green_face")
-                        or traffic_el.HasField("signal_upper_left_arrow_green_face")
-                        or traffic_el.HasField("signal_upper_right_arrow_green_face")
-                    ):
-                        lane_type = "green"
+            # TODO should we change the next lane (lanes_ahead) status?
+            lane_tl_ids = set([MapAPI.id_as_str(la_tc) for la_tc in lane.traffic_controls])
+            for tl_id in lane_tl_ids.intersection(active_tl_ids):
+                if self.proto_API.is_traffic_face_red(tl_id):
+                    lane_type = "red"
+                elif self.proto_API.is_traffic_face_green(tl_id):
+                    lane_type = "green"
 
             lanes_lines[lane_type].extend([xy_left, xy_right])
 

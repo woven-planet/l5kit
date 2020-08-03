@@ -1,13 +1,14 @@
 from functools import lru_cache
-from typing import Sequence, Union, no_type_check
+from typing import Iterator, Sequence, Union, no_type_check
 
 import numpy as np
 import pymap3d as pm
 
 from ..geometry import transform_points
-from .proto.road_network_pb2 import GeoFrame, MapElement, MapFragment
+from .proto.road_network_pb2 import GeoFrame, GlobalId, MapElement, MapFragment
 
 CACHE_SIZE = int(1e5)
+ENCODING = "utf-8"
 
 
 class MapAPI:
@@ -30,22 +31,22 @@ class MapAPI:
             mf.ParseFromString(infile.read())
 
         self.elements = mf.elements
-        self.ids_to_el = {self.get_element_id(el): idx for idx, el in enumerate(self.elements)}  # fast lookup table
+        self.ids_to_el = {self.id_as_str(el.id): idx for idx, el in enumerate(self.elements)}  # store a look-up table
 
     @staticmethod
     @no_type_check
-    def get_element_id(element: MapElement) -> str:
+    def id_as_str(element_id: GlobalId) -> str:
         """
         Get the element id as a string.
         Elements ids are stored as a variable len sequence of bytes in the protobuf
 
         Args:
-            element (MapElement): the element in the protobuf
+            element_id (GlobalId): the GlobalId in the protobuf
 
         Returns:
             str: the id as a str
         """
-        return element.id.id.decode("utf-8")
+        return element_id.id.decode(ENCODING)
 
     @staticmethod
     def _undo_e7(value: float) -> float:
@@ -174,19 +175,68 @@ class MapAPI:
 
         return {"xyz": xyz}
 
+    def is_traffic_face_red(self, element_id: str) -> bool:
+        """
+        Check if the element is a red traffic light face
+
+        Args:
+            element_id (str): the id (utf-8 encode) of the element
+
+        Returns:
+            True if the element is a red traffic light
+        """
+        element = self[element_id]
+        if not element.element.HasField("traffic_control_element"):
+            return False
+        traffic_el = element.element.traffic_control_element
+        if (
+            traffic_el.HasField("signal_red_face")
+            or traffic_el.HasField("signal_left_arrow_red_face")
+            or traffic_el.HasField("signal_right_arrow_red_face")
+            or traffic_el.HasField("signal_upper_left_arrow_red_face")
+            or traffic_el.HasField("signal_upper_right_arrow_red_face")
+        ):
+            return True
+        return False
+
+    def is_traffic_face_green(self, element_id: str) -> bool:
+        """
+        Check if the element is a green traffic light face
+
+        Args:
+            element_id (str): the id (utf-8 encode) of the element
+
+        Returns:
+            True if the element is a green traffic light
+        """
+        element = self[element_id]
+        if not element.element.HasField("traffic_control_element"):
+            return False
+        traffic_el = element.element.traffic_control_element
+        if (
+            traffic_el.HasField("signal_green_face")
+            or traffic_el.HasField("signal_left_arrow_green_face")
+            or traffic_el.HasField("signal_right_arrow_green_face")
+            or traffic_el.HasField("signal_upper_left_arrow_green_face")
+            or traffic_el.HasField("signal_upper_right_arrow_green_face")
+        ):
+            return True
+        return False
+
     @no_type_check
-    def __getitem__(self, item: Union[int, str]) -> MapElement:
+    def __getitem__(self, item: Union[int, str, bytes]) -> MapElement:
         if isinstance(item, str):
             return self.elements[self.ids_to_el[item]]
         elif isinstance(item, int):
             return self.elements[item]
+        elif isinstance(item, bytes):
+            return self.elements[self.ids_to_el[item.decode(ENCODING)]]
         else:
-            raise TypeError("only str or int allowed in API __getitem__")
+            raise TypeError("only str, bytes and int are allowed in API __getitem__")
 
     def __len__(self) -> int:
         return len(self.elements)
 
-    @no_type_check
-    def __iter__(self) -> MapElement:
+    def __iter__(self) -> Iterator:
         for i in range(len(self)):
             yield self[i]
