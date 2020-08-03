@@ -141,10 +141,12 @@ class SemanticRasterizer(Rasterizer):
         center_pixel = np.asarray(self.raster_size) * (0.5, 0.5)
         center_world = transform_point(center_pixel, np.linalg.inv(world_to_image_space))
 
-        sem_im = self.render_semantic_map(center_world, world_to_image_space)
+        sem_im = self.render_semantic_map(center_world, world_to_image_space, history_tr_faces[0])
         return sem_im.astype(np.float32) / 255
 
-    def render_semantic_map(self, center_world: np.ndarray, world_to_image_space: np.ndarray) -> np.ndarray:
+    def render_semantic_map(
+        self, center_world: np.ndarray, world_to_image_space: np.ndarray, tr_faces: np.ndarray
+    ) -> np.ndarray:
         """Renders the semantic map at given x,y coordinates.
 
         Args:
@@ -161,24 +163,56 @@ class SemanticRasterizer(Rasterizer):
         raster_radius = float(np.linalg.norm(self.raster_size * self.pixel_size)) / 2
 
         # plot lanes
-        lanes_lines = []
+        # lanes_lines = []
+        # lane_tl_ids = []
 
         for idx in elements_within_bounds(center_world, self.bounds_info["lanes"]["bounds"], raster_radius):
-            lane = self.proto_API.get_lane_coords(self.bounds_info["lanes"]["ids"][idx])
+            lane = self.proto_API[self.bounds_info["lanes"]["ids"][idx]].element.lane
+
+            # get traffic faces information from the lane
+            # TODO add some API for this and maybe write a function
+            lane_colour = (255, 217, 82)  # status of the lane wrt traffic faces
+            lane_tl_ids = [la_tc.id.decode("utf-8") for la_tc in lane.traffic_controls]
+            for lane_tf_id in lane_tl_ids:
+                if lane_tf_id in tr_faces["gid"]:
+                    print("found something")
+                    # we have found the lane this traffic face affect
+                    # TODO change the next lane (lanes_ahead) status
+                    el = self.proto_API[lane_tf_id].element.traffic_control_element
+                    if (
+                        el.HasField("signal_red_face")
+                        or el.HasField("signal_left_arrow_red_face")
+                        or el.HasField("signal_right_arrow_red_face")
+                        or el.HasField("signal_upper_left_arrow_red_face")
+                        or el.HasField("signal_upper_right_arrow_red_face")
+                    ):
+                        lane_colour = (255, 0, 0)  # TODO constant for this
+                    elif (
+                        el.HasField("signal_green_face")
+                        or el.HasField("signal_left_arrow_green_face")
+                        or el.HasField("signal_right_arrow_green_face")
+                        or el.HasField("signal_upper_left_arrow_green_face")
+                        or el.HasField("signal_upper_right_arrow_green_face")
+                    ):
+                        lane_colour = (0, 255, 0)  # TODO constant for this
+
+            lane_coords = self.proto_API.get_lane_coords(self.bounds_info["lanes"]["ids"][idx])
 
             # get image coords
-            xy_left = cv2_subpixel(transform_points(lane["xyz_left"][:, :2], world_to_image_space))
-            xy_right = cv2_subpixel(transform_points(lane["xyz_right"][:, :2], world_to_image_space))
+            xy_left = cv2_subpixel(transform_points(lane_coords["xyz_left"][:, :2], world_to_image_space))
+            xy_right = cv2_subpixel(transform_points(lane_coords["xyz_right"][:, :2], world_to_image_space))
 
             lanes_area = np.vstack((xy_left, np.flip(xy_right, 0)))  # start->end left then end->start right
 
             # Note(lberg): this called on all polygons skips some of them, don't know why
             cv2.fillPoly(img, [lanes_area], (17, 17, 31), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
+            # Note(lberg): I've moved this here to avoid storing colours, but it may have performance issues
+            cv2.polylines(img, [xy_left, xy_right], False, lane_colour, lineType=cv2.LINE_AA, shift=CV2_SHIFT)
 
-            lanes_lines.append(xy_left)
-            lanes_lines.append(xy_right)
+            # lanes_lines.append(xy_left)
+            # lanes_lines.append(xy_right)
 
-        cv2.polylines(img, lanes_lines, False, (255, 217, 82), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
+        # cv2.polylines(img, lanes_lines, False, (255, 217, 82), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
 
         # plot crosswalks
         crosswalks = []
