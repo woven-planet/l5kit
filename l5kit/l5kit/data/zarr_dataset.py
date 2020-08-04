@@ -12,12 +12,12 @@ FORMAT_VERSION = 2
 FRAME_ARRAY_KEY = "frames"
 AGENT_ARRAY_KEY = "agents"
 SCENE_ARRAY_KEY = "scenes"
-TR_FACES_ARRAY_KEY = "traffic_faces"
+TL_FACES_ARRAY_KEY = "traffic_light_faces"
 
 FRAME_CHUNK_SIZE = (10_000,)
 AGENT_CHUNK_SIZE = (20_000,)
 SCENE_CHUNK_SIZE = (10_000,)
-TR_FACES_CHUNK_SIZE = (10_000,)
+TL_FACES_CHUNK_SIZE = (10_000,)
 
 SCENE_DTYPE = [
     ("frame_index_interval", np.int64, (2,)),
@@ -29,7 +29,7 @@ SCENE_DTYPE = [
 FRAME_DTYPE = [
     ("timestamp", np.int64),
     ("agent_index_interval", np.int64, (2,)),
-    ("tr_faces_index_interval", np.int64, (2,)),
+    ("tl_faces_index_interval", np.int64, (2,)),
     ("ego_translation", np.float64, (3,)),
     ("ego_rotation", np.float64, (3, 3)),
 ]
@@ -43,7 +43,7 @@ AGENT_DTYPE = [
     ("label_probabilities", np.float32, (len(LABELS),)),
 ]
 
-TR_FACES_DTYPE = [("gid", "<U16")]
+TL_FACES_DTYPE = [("gid", "<U16"), ("traffic_light_gid", "<U16")]
 
 
 class ChunkedDataset:
@@ -72,7 +72,7 @@ class ChunkedDataset:
         self.frames = np.empty(0, dtype=FRAME_DTYPE)
         self.scenes = np.empty(0, dtype=SCENE_DTYPE)
         self.agents = np.empty(0, dtype=AGENT_DTYPE)
-        self.tr_faces = np.empty(0, dtype=TR_FACES_DTYPE)
+        self.tl_faces = np.empty(0, dtype=TL_FACES_DTYPE)
 
         # Note: we still support only zarr. However, some functions build a new dataset so we cannot raise error.
         if ".zarr" not in self.path:
@@ -81,7 +81,7 @@ class ChunkedDataset:
             print("zarr dataset path doesn't exist. Open will fail for this dataset!")
 
     def initialize(
-        self, mode: str = "w", scenes_num: int = 0, frames_num: int = 0, agents_num: int = 0, tr_faces_num: int = 0
+        self, mode: str = "w", scenes_num: int = 0, frames_num: int = 0, agents_num: int = 0, tl_faces_num: int = 0
     ) -> None:
         """Initializes a new zarr dataset, creating the underlying arrays.
 
@@ -90,7 +90,7 @@ class ChunkedDataset:
             scenes_num (int): pre-allocate this number of scenes
             frames_num (int): pre-allocate this number of frames
             agents_num (int): pre-allocate this number of agents
-            tr_faces_num (int): pre-allocate this number of traffic lights
+            tl_faces_num (int): pre-allocate this number of traffic lights
         """
 
         self.root = zarr.open_group(self.path, mode=mode)
@@ -104,8 +104,8 @@ class ChunkedDataset:
         self.scenes = self.root.require_dataset(
             SCENE_ARRAY_KEY, dtype=SCENE_DTYPE, chunks=SCENE_CHUNK_SIZE, shape=(scenes_num,)
         )
-        self.tr_faces = self.root.require_dataset(
-            TR_FACES_ARRAY_KEY, dtype=TR_FACES_DTYPE, chunks=TR_FACES_CHUNK_SIZE, shape=(tr_faces_num,)
+        self.tl_faces = self.root.require_dataset(
+            TL_FACES_ARRAY_KEY, dtype=TL_FACES_DTYPE, chunks=TL_FACES_CHUNK_SIZE, shape=(tl_faces_num,)
         )
 
         self.root.attrs["format_version"] = FORMAT_VERSION
@@ -133,10 +133,10 @@ opened.
         self.agents = self.root[AGENT_ARRAY_KEY]
         self.scenes = self.root[SCENE_ARRAY_KEY]
         try:
-            self.tr_faces = self.root[TR_FACES_ARRAY_KEY]
+            self.tl_faces = self.root[TL_FACES_ARRAY_KEY]
         except KeyError:
-            print(f"{TR_FACES_ARRAY_KEY} not found in {self.path}! Traffic lights will be disabled")
-            self.tr_faces = np.empty((0,), dtype=TR_FACES_DTYPE)
+            print(f"{TL_FACES_ARRAY_KEY} not found in {self.path}! Traffic lights will be disabled")
+            self.tl_faces = np.empty((0,), dtype=TL_FACES_DTYPE)
 
     def __str__(self) -> str:
         fields = [

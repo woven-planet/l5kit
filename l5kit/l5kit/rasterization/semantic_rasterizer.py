@@ -121,7 +121,7 @@ class SemanticRasterizer(Rasterizer):
         self,
         history_frames: np.ndarray,
         history_agents: List[np.ndarray],
-        history_tr_faces: List[np.ndarray],
+        history_tl_faces: List[np.ndarray],
         agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         # TODO TR_FACES
@@ -141,11 +141,11 @@ class SemanticRasterizer(Rasterizer):
         center_pixel = np.asarray(self.raster_size) * (0.5, 0.5)
         center_world = transform_point(center_pixel, np.linalg.inv(world_to_image_space))
 
-        sem_im = self.render_semantic_map(center_world, world_to_image_space, history_tr_faces[0])
+        sem_im = self.render_semantic_map(center_world, world_to_image_space, history_tl_faces[0])
         return sem_im.astype(np.float32) / 255
 
     def render_semantic_map(
-        self, center_world: np.ndarray, world_to_image_space: np.ndarray, tr_faces: np.ndarray
+        self, center_world: np.ndarray, world_to_image_space: np.ndarray, tl_faces: np.ndarray
     ) -> np.ndarray:
         """Renders the semantic map at given x,y coordinates.
 
@@ -163,7 +163,7 @@ class SemanticRasterizer(Rasterizer):
         raster_radius = float(np.linalg.norm(self.raster_size * self.pixel_size)) / 2
 
         # plot lanes
-        active_tl_ids = set(tr_faces["gid"].tolist())
+        active_tl_ids = set(tl_faces["gid"].tolist())
         lanes_lines: Dict[str, List] = {"unknown": [], "red": [], "green": []}
 
         for idx in elements_within_bounds(center_world, self.bounds_info["lanes"]["bounds"], raster_radius):

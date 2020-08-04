@@ -99,7 +99,7 @@ class BoxRasterizer(Rasterizer):
         self,
         history_frames: np.ndarray,
         history_agents: List[np.ndarray],
-        history_tr_faces: List[np.ndarray],
+        history_tl_faces: List[np.ndarray],
         agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         # all frames are drawn relative to this one"

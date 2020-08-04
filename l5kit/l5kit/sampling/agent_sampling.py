@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 
-from ..data import TR_FACES_DTYPE, filter_agents_by_labels, filter_tr_faces_by_frames
+from ..data import TL_FACES_DTYPE, filter_agents_by_labels, filter_tl_faces_by_frames
 from ..data.filter import filter_agents_by_frames, get_agent_by_track_id
 from ..geometry import rotation33_as_yaw, world_to_image_pixels_matrix
 from ..kinematic import Perturbation
@@ -14,7 +14,7 @@ def generate_agent_sample(
     state_index: int,
     frames: np.ndarray,
     agents: np.ndarray,
-    tr_faces: np.ndarray,
+    tl_faces: np.ndarray,
     selected_track_id: Optional[int],
     raster_size: Tuple[int, int],
     pixel_size: np.ndarray,
@@ -38,7 +38,7 @@ def generate_agent_sample(
         state_index (int): The anchor frame index, i.e. the "current" timestep in the scene
         frames (np.ndarray): The scene frames array, can be numpy array or a zarr array
         agents (np.ndarray): The full agents array, can be numpy array or a zarr array
-        tr_faces (np.ndarray): The full traffic light faces array, can be numpy array or a zarr array
+        tl_faces (np.ndarray): The full traffic light faces array, can be numpy array or a zarr array
         selected_track_id (Optional[int]): Either None for AV, or the ID of an agent that you want to
         predict the future of. This agent is centered in the raster and the returned targets are derived from
         their future states.
@@ -82,14 +82,14 @@ to train models that can recover from slight divergence from training set data
     future_agents = filter_agents_by_frames(future_frames, agents)
 
     try:
-        min_tl_index = history_frames[-1]["tr_faces_index_interval"][0]  # -1 is the farthest in the past
-        max_tl_index = history_frames[0]["tr_faces_index_interval"][1]
-        tr_faces = tr_faces[min_tl_index:max_tl_index].copy()  # only history tr_faces
-        history_frames["tr_faces_index_interval"] -= min_tl_index  # sync interval with the tr_faces array
-        history_tr_faces = filter_tr_faces_by_frames(history_frames, tr_faces)
+        min_tl_index = history_frames[-1]["tl_faces_index_interval"][0]  # -1 is the farthest in the past
+        max_tl_index = history_frames[0]["tl_faces_index_interval"][1]
+        tl_faces = tl_faces[min_tl_index:max_tl_index].copy()  # only history traffic light faces
+        history_frames["tl_faces_index_interval"] -= min_tl_index  # sync interval with the traffic light faces array
+        history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces)
     except ValueError:
         # TODO TR_FACES
-        history_tr_faces = [np.empty(0, dtype=TR_FACES_DTYPE) for _ in history_frames]
+        history_tl_faces = [np.empty(0, dtype=TL_FACES_DTYPE) for _ in history_frames]
 
     if perturbation is not None:
         history_frames, future_frames = perturbation.perturb(
@@ -122,7 +122,7 @@ to train models that can recover from slight divergence from training set data
     input_im = (
         None
         if not rasterizer
-        else rasterizer.rasterize(history_frames, history_agents, history_tr_faces, selected_agent)
+        else rasterizer.rasterize(history_frames, history_agents, history_tl_faces, selected_agent)
     )
 
     world_to_image_space = world_to_image_pixels_matrix(
