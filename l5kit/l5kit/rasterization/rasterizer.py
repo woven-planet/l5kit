@@ -28,4 +28,4 @@ class Rasterizer(ABC):
 
     @abstractmethod
     def route_frenet_coordinates_from_xy_heading(self, xy: np.ndarray, heading: float) -> Tuple[np.ndarray, float]:
-        assert False "Generic rasterizer does not have access to the planned path to convert to Frenet frame"
+        assert False, "Generic rasterizer does not have access to the planned path to convert to Frenet frame"
