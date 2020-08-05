@@ -2,7 +2,7 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 
-from ..data import TL_FACES_DTYPE, filter_agents_by_labels, filter_tl_faces_by_frames
+from ..data import TL_FACE_DTYPE, filter_agents_by_labels, filter_tl_faces_by_frames
 from ..data.filter import filter_agents_by_frames, get_agent_by_track_id
 from ..geometry import rotation33_as_yaw, world_to_image_pixels_matrix
 from ..kinematic import Perturbation
@@ -89,7 +89,7 @@ to train models that can recover from slight divergence from training set data
         history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces)
     except ValueError:
         # TODO TR_FACES
-        history_tl_faces = [np.empty(0, dtype=TL_FACES_DTYPE) for _ in history_frames]
+        history_tl_faces = [np.empty(0, dtype=TL_FACE_DTYPE) for _ in history_frames]
 
     if perturbation is not None:
         history_frames, future_frames = perturbation.perturb(
