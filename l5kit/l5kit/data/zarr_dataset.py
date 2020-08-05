@@ -4,7 +4,7 @@ import numpy as np
 import zarr
 from prettytable import PrettyTable
 
-from .labels import AGENT_LABELS, TRAFFIC_FACE_LABELS
+from .labels import PERCEPTION_LABELS, Tl_FACE_LABELS
 
 # When changing the schema bump this number
 FORMAT_VERSION = 2
@@ -12,12 +12,12 @@ FORMAT_VERSION = 2
 FRAME_ARRAY_KEY = "frames"
 AGENT_ARRAY_KEY = "agents"
 SCENE_ARRAY_KEY = "scenes"
-TL_FACES_ARRAY_KEY = "traffic_light_faces"
+TL_FACE_ARRAY_KEY = "traffic_light_faces"
 
 FRAME_CHUNK_SIZE = (10_000,)
 AGENT_CHUNK_SIZE = (20_000,)
 SCENE_CHUNK_SIZE = (10_000,)
-TL_FACES_CHUNK_SIZE = (10_000,)
+TL_FACE_CHUNK_SIZE = (10_000,)
 
 SCENE_DTYPE = [
     ("frame_index_interval", np.int64, (2,)),
@@ -40,13 +40,13 @@ AGENT_DTYPE = [
     ("yaw", np.float32),
     ("velocity", np.float32, (2,)),
     ("track_id", np.uint64),
-    ("label_probabilities", np.float32, (len(AGENT_LABELS),)),
+    ("label_probabilities", np.float32, (len(PERCEPTION_LABELS),)),
 ]
 
-TL_FACES_DTYPE = [
+TL_FACE_DTYPE = [
     ("gid", "<U16"),
     ("traffic_light_gid", "<U16"),
-    ("traffic_light_type", np.float32, (len(TRAFFIC_FACE_LABELS,))),
+    ("traffic_light_type", np.float32, (len(Tl_FACE_LABELS,))),
 ]
 
 
@@ -76,7 +76,7 @@ class ChunkedDataset:
         self.frames = np.empty(0, dtype=FRAME_DTYPE)
         self.scenes = np.empty(0, dtype=SCENE_DTYPE)
         self.agents = np.empty(0, dtype=AGENT_DTYPE)
-        self.tl_faces = np.empty(0, dtype=TL_FACES_DTYPE)
+        self.tl_faces = np.empty(0, dtype=TL_FACE_DTYPE)
 
         # Note: we still support only zarr. However, some functions build a new dataset so we cannot raise error.
         if ".zarr" not in self.path:
@@ -109,11 +109,11 @@ class ChunkedDataset:
             SCENE_ARRAY_KEY, dtype=SCENE_DTYPE, chunks=SCENE_CHUNK_SIZE, shape=(scenes_num,)
         )
         self.tl_faces = self.root.require_dataset(
-            TL_FACES_ARRAY_KEY, dtype=TL_FACES_DTYPE, chunks=TL_FACES_CHUNK_SIZE, shape=(tl_faces_num,)
+            TL_FACE_ARRAY_KEY, dtype=TL_FACE_DTYPE, chunks=TL_FACE_CHUNK_SIZE, shape=(tl_faces_num,)
         )
 
         self.root.attrs["format_version"] = FORMAT_VERSION
-        self.root.attrs["labels"] = AGENT_LABELS
+        self.root.attrs["labels"] = PERCEPTION_LABELS
 
     def open(self, mode: str = "r", cached: bool = True, cache_size_bytes: int = int(1e9)) -> None:
         """Opens a zarr dataset from disk from the path supplied in the constructor.
@@ -137,10 +137,10 @@ opened.
         self.agents = self.root[AGENT_ARRAY_KEY]
         self.scenes = self.root[SCENE_ARRAY_KEY]
         try:
-            self.tl_faces = self.root[TL_FACES_ARRAY_KEY]
+            self.tl_faces = self.root[TL_FACE_ARRAY_KEY]
         except KeyError:
-            print(f"{TL_FACES_ARRAY_KEY} not found in {self.path}! Traffic lights will be disabled")
-            self.tl_faces = np.empty((0,), dtype=TL_FACES_DTYPE)
+            print(f"{TL_FACE_ARRAY_KEY} not found in {self.path}! Traffic lights will be disabled")
+            self.tl_faces = np.empty((0,), dtype=TL_FACE_DTYPE)
 
     def __str__(self) -> str:
         # TODO add traffic faces
