@@ -18,11 +18,13 @@ __pycache__/
 *.avi
 
 .coverage
+.coverage.*
 .pytest_cache/
 dist/
 /API/
 build
 coverage_report*
 
-.env/
-.venv/
+.env*/
+.venv*/
+agents_mask/

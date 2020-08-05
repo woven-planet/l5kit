@@ -186,7 +186,7 @@ def _create_targets_for_deep_prediction(
     future_yaws_offset = np.zeros((future_num_frames, 1), dtype=np.float32)
 
     # 1 if a target is present, 0 if not. This can be used to multiply the loss.
-    future_availability = np.zeros((future_num_frames, 3), dtype=np.float32)
+    future_availability = np.zeros((future_num_frames, 1), dtype=np.float32)
 
     for i, (frame, agents) in enumerate(zip(future_frames, future_agents)):
         if selected_track_id is None:

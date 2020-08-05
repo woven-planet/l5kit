@@ -1,29 +1,48 @@
 import bisect
+from pathlib import Path
 from typing import Optional
 
 import numpy as np
+from zarr import convenience
 
-from ..data import ChunkedStateDataset
+from ..data import ChunkedDataset
 from ..kinematic import Perturbation
 from ..rasterization import Rasterizer
 from .ego import EgoDataset
-from .select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_MOVEMENT, TH_YAW_DEGREE, select_agents
+from .select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE, select_agents
+
+# WARNING: changing these values impact the number of instances selected for both train and inference!
+MIN_FRAME_HISTORY = 10  # minimum number of frames an agents must have in the past to be picked
+MIN_FRAME_FUTURE = 1  # minimum number of frames an agents must have in the future to be picked
 
 
 class AgentDataset(EgoDataset):
     def __init__(
         self,
         cfg: dict,
-        zarr_dataset: ChunkedStateDataset,
+        zarr_dataset: ChunkedDataset,
         rasterizer: Rasterizer,
         perturbation: Optional[Perturbation] = None,
         agents_mask: Optional[np.ndarray] = None,
+        min_frame_history: int = MIN_FRAME_HISTORY,
+        min_frame_future: int = MIN_FRAME_FUTURE,
     ):
         assert perturbation is None, "AgentDataset does not support perturbation (yet)"
 
         super(AgentDataset, self).__init__(cfg, zarr_dataset, rasterizer, perturbation)
         if agents_mask is None:  # if not provided try to load it from the zarr
             agents_mask = self.load_agents_mask()
+            past_mask = agents_mask[:, 0] >= min_frame_history
+            future_mask = agents_mask[:, 1] >= min_frame_future
+            agents_mask = past_mask * future_mask
+
+            if min_frame_history != MIN_FRAME_HISTORY:
+                print(f"warning, you're running with custom min_frame_history of {min_frame_history}")
+            if min_frame_future != MIN_FRAME_FUTURE:
+                print(f"warning, you're running with custom min_frame_future of {min_frame_future}")
+        else:
+            print("warning, you're running with a custom agents_mask")
+
         # store the valid agents indexes
         self.agents_indices = np.nonzero(agents_mask)[0]
         # this will be used to get the frame idx from the agent idx
@@ -36,35 +55,25 @@ class AgentDataset(EgoDataset):
         Returns: a boolean mask of the same length of the dataset agents
 
         """
-        history_num_frames = self.cfg["model_params"]["history_num_frames"]
-        future_num_frames = self.cfg["model_params"]["future_num_frames"]
         agent_prob = self.cfg["raster_params"]["filter_agents_threshold"]
 
-        group_name = f"{history_num_frames}_{future_num_frames}_{agent_prob}"
-        try:
-            agents_mask = self.dataset.root[f"agents_mask/{group_name}"]
-        except KeyError:
+        agents_mask_path = Path(self.dataset.path) / f"agents_mask/{agent_prob}"
+        if not agents_mask_path.exists():  # don't check in root but check for the path
             print(
-                f"cannot find {group_name} in {self.dataset.path},\n"
-                f"your cfg has loaded history_num_frames={history_num_frames}, future_num_frames={future_num_frames} "
-                f"and filter_agents_threshold={agent_prob};\n"
-                "but those values don't have a match among the agents_mask in the zarr\n"
-                "Mask will now be generated for these parameters."
+                f"cannot find the right config in {self.dataset.path},\n"
+                f"your cfg has loaded filter_agents_threshold={agent_prob};\n"
+                "but that value doesn't have a match among the agents_mask in the zarr\n"
+                "Mask will now be generated for that parameter."
             )
             select_agents(
-                self.dataset.path,
+                self.dataset,
                 agent_prob,
-                history_num_frames,
-                future_num_frames,
                 th_yaw_degree=TH_YAW_DEGREE,
                 th_extent_ratio=TH_EXTENT_RATIO,
-                th_movement=TH_MOVEMENT,
                 th_distance_av=TH_DISTANCE_AV,
-                num_workers=8,
-            )  # TODO maybe set in env var?
-            self.dataset.open()  # ensure root is updated
-            agents_mask = self.dataset.root[f"agents_mask/{group_name}"]
+            )
 
+        agents_mask = convenience.load(str(agents_mask_path))  # note (lberg): this doesn't update root
         return agents_mask
 
     def __len__(self) -> int:

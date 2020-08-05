@@ -5,7 +5,7 @@ from typing import Optional, Tuple, cast
 import numpy as np
 from torch.utils.data import Dataset
 
-from ..data import ChunkedStateDataset
+from ..data import ChunkedDataset
 from ..kinematic import Perturbation
 from ..rasterization import Rasterizer
 from ..sampling import generate_agent_sample
@@ -15,7 +15,7 @@ class EgoDataset(Dataset):
     def __init__(
         self,
         cfg: dict,
-        zarr_dataset: ChunkedStateDataset,
+        zarr_dataset: ChunkedDataset,
         rasterizer: Rasterizer,
         perturbation: Optional[Perturbation] = None,
     ):
@@ -24,7 +24,7 @@ class EgoDataset(Dataset):
 
         Args:
             cfg (dict): configuration file
-            zarr_dataset (ChunkedStateDataset): the raw zarr dataset
+            zarr_dataset (ChunkedDataset): the raw zarr dataset
             rasterizer (Rasterizer): an object that support rasterisation around an agent (AV or not)
             perturbation (Optional[Perturbation]): an object that takes care of applying trajectory perturbations.
 None if not desired
@@ -170,7 +170,7 @@ None if not desired
         frames["agent_index_interval"] -= start_index
         scenes["frame_index_interval"] -= frame_interval[0]
 
-        dataset = ChunkedStateDataset("")
+        dataset = ChunkedDataset("")
         dataset.frames = frames
         dataset.agents = agents
         dataset.scenes = scenes
@@ -204,5 +204,5 @@ None if not desired
         assert frame_idx < len(frames), f"frame_idx {frame_idx} is over len {len(frames)}"
         return np.asarray((frame_idx,), dtype=np.int64)
 
-    def __repr__(self) -> str:
-        return self.dataset.__repr__()
+    def __str__(self) -> str:
+        return self.dataset.__str__()

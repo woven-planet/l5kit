@@ -1,3 +1,5 @@
+from pathlib import Path
+
 import numpy as np
 import zarr
 from prettytable import PrettyTable
@@ -39,8 +41,8 @@ AGENT_DTYPE = [
 ]
 
 
-class ChunkedStateDataset:
-    """ChunkedDataSet is a dataset that lives on disk in compressed chunks, it has easy to use data loading and
+class ChunkedDataset:
+    """ChunkedDataset is a dataset that lives on disk in compressed chunks, it has easy to use data loading and
     writing interfaces that involves making numpy-like slices.
 
     Currently only .zarr directory stores are supported (i.e. the data will live in a folder on your
@@ -69,6 +71,8 @@ class ChunkedStateDataset:
         # Note: we still support only zarr. However, some functions build a new dataset so we cannot raise error.
         if ".zarr" not in self.path:
             print("zarr dataset path should end with .zarr (for now). Open will fail for this dataset!")
+        if not Path(self.path).exists():
+            print("zarr dataset path doesn't exist. Open will fail for this dataset!")
 
     def initialize(self, mode: str = "w", scenes_num: int = 0, frames_num: int = 0, agents_num: int = 0) -> None:
         """Initializes a new zarr dataset, creating the underlying arrays.
@@ -117,7 +121,7 @@ opened.
         self.agents = self.root[AGENT_ARRAY_KEY]
         self.scenes = self.root[SCENE_ARRAY_KEY]
 
-    def __repr__(self) -> str:
+    def __str__(self) -> str:
         fields = [
             "Num Scenes",
             "Num Frames",

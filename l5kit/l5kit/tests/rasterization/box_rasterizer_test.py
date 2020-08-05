@@ -1,9 +1,9 @@
-import unittest
-
 import numpy as np
+import pytest
 
-from l5kit.data import AGENT_DTYPE, ChunkedStateDataset, filter_agents_by_frames
-from l5kit.rasterization.box_rasterizer import BoxRasterizer, draw_boxes
+from l5kit.data import AGENT_DTYPE, ChunkedDataset, LocalDataManager, filter_agents_by_frames
+from l5kit.rasterization import build_rasterizer
+from l5kit.rasterization.box_rasterizer import draw_boxes
 
 
 def test_empty_boxes() -> None:
@@ -27,48 +27,56 @@ def test_draw_boxes() -> None:
     assert im.sum() == (21 * 21) * 2
 
 
-class BoxRasterizerTest(unittest.TestCase):
-    def __init__(self, *args, **kwargs):  # type: ignore
-        super(BoxRasterizerTest, self).__init__(*args, **kwargs)
-        self.dataset = ChunkedStateDataset(path="./l5kit/tests/data/single_scene.zarr")
-        self.dataset.open()
-        self.hist_frames = self.dataset.frames[100:101]  # we know this has agents
-        self.hist_agents = filter_agents_by_frames(self.hist_frames, self.dataset.agents)
+@pytest.fixture(scope="module")
+def hist_data(zarr_dataset: ChunkedDataset) -> tuple:
+    hist_frames = zarr_dataset.frames[100:111][::-1]  # reverse to get them as history
+    hist_agents = filter_agents_by_frames(hist_frames, zarr_dataset.agents)
+    return hist_frames, hist_agents
 
-    def test_ego_center(self) -> None:
-        values = [(0.5, 0.5), (0.25, 0.5), (0.75, 0.5), (0.5, 0.25), (0.5, 0.75)]
-        for v in values:
-            rast = BoxRasterizer(
-                (224, 224),
-                np.asarray((0.25, 0.25)),
-                ego_center=np.asarray(v),
-                filter_agents_threshold=0.0,
-                history_num_frames=0,
-            )
-            out = rast.rasterize(self.hist_frames, self.hist_agents)
-            assert out[..., -1].sum() > 0
 
-    def test_agents_map(self) -> None:
-        rast = BoxRasterizer((224, 224), np.asarray((0.25, 0.25)), np.asarray((0.25, 0.5)), 1.0, 0)
-        out = rast.rasterize(self.hist_frames, self.hist_agents)
-        assert out[..., 0].sum() == 0
+@pytest.mark.parametrize("ego_center", [(0.5, 0.5), (0.25, 0.5), (0.75, 0.5), (0.5, 0.25), (0.5, 0.75)])
+def test_ego_layer_out_center_configs(ego_center: tuple, hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
+    cfg["raster_params"]["map_type"] = "box_debug"
+    cfg["raster_params"]["ego_center"] = np.asarray(ego_center)
 
-        rast = BoxRasterizer((224, 224), np.asarray((0.25, 0.25)), np.asarray((0.25, 0.5)), 0.0, 0)
-        out = rast.rasterize(self.hist_frames, self.hist_agents)
-        assert out[..., 0].sum() > 0
+    rasterizer = build_rasterizer(cfg, dmg)
+    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1])
+    assert out[..., -1].sum() > 0
 
-    def test_agent_ego(self) -> None:
-        rast = BoxRasterizer((224, 224), np.asarray((0.25, 0.25)), np.asarray((0.25, 0.5)), -1, 0)
 
-        agents = self.hist_agents[0]
-        for ag in agents:
-            out = rast.rasterize(self.hist_frames, self.hist_agents, ag)
-            assert out[..., -1].sum() > 0
+def test_agents_layer_out(hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
+    cfg["raster_params"]["map_type"] = "box_debug"
 
-    def test_shape(self) -> None:
-        hist_length = 10
-        rast = BoxRasterizer(
-            (224, 224), np.asarray((0.25, 0.25)), np.asarray((0.25, 0.5)), -1, history_num_frames=hist_length
-        )
-        out = rast.rasterize(self.dataset.frames[: hist_length + 1], self.hist_agents[: hist_length + 1])
-        assert out.shape == (224, 224, (hist_length + 1) * 2)
+    cfg["raster_params"]["filter_agents_threshold"] = 1.0
+    rasterizer = build_rasterizer(cfg, dmg)
+
+    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1])
+    assert out[..., 0].sum() == 0
+
+    cfg["raster_params"]["filter_agents_threshold"] = 0.0
+    rasterizer = build_rasterizer(cfg, dmg)
+
+    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1])
+    assert out[..., 0].sum() > 0
+
+
+def test_agent_as_ego(hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
+    cfg["raster_params"]["map_type"] = "box_debug"
+    cfg["raster_params"]["filter_agents_threshold"] = -1  # take everything
+    rasterizer = build_rasterizer(cfg, dmg)
+
+    agents = hist_data[1][0]
+    for ag in agents:
+        out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1], ag)
+        assert out[..., -1].sum() > 0
+
+
+def test_out_shape(hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
+    hist_length = 5
+    cfg["raster_params"]["map_type"] = "box_debug"
+    cfg["model_params"]["history_num_frames"] = hist_length
+
+    rasterizer = build_rasterizer(cfg, dmg)
+
+    out = rasterizer.rasterize(hist_data[0][: hist_length + 1], hist_data[1][: hist_length + 1])
+    assert out.shape == (224, 224, (hist_length + 1) * 2)
