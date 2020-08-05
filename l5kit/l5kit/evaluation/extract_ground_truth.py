@@ -2,11 +2,12 @@ import numpy as np
 
 from l5kit.data import ChunkedDataset
 from l5kit.dataset import AgentDataset
-from l5kit.evaluation.write_csv import write_coords_as_csv
 from l5kit.rasterization import StubRasterizer
 
+from . import write_gt_csv
 
-def export_zarr_to_ground_truth_csv(
+
+def export_zarr_to_csv(
     zarr_dataset: ChunkedDataset,
     csv_file_path: str,
     future_num_frames: int,
@@ -61,10 +62,10 @@ def export_zarr_to_ground_truth_csv(
         agent_ids.append(el["track_id"])
         target_availabilities.append(el["target_availabilities"])
 
-    write_coords_as_csv(
+    write_gt_csv(
         csv_file_path,
-        np.asarray(future_coords_offsets),
-        np.asarray(target_availabilities),
         np.asarray(timestamps),
         np.asarray(agent_ids),
+        np.asarray(future_coords_offsets),
+        np.asarray(target_availabilities),
     )
