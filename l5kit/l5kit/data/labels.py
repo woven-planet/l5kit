@@ -1,4 +1,4 @@
-LABELS = [
+AGENT_LABELS = [
     "PERCEPTION_LABEL_NOT_SET",
     "PERCEPTION_LABEL_UNKNOWN",
     "PERCEPTION_LABEL_DONTCARE",
@@ -17,4 +17,12 @@ LABELS = [
     "PERCEPTION_LABEL_ANIMAL",
     "AVRESEARCH_LABEL_DONTCARE",
 ]
-LABEL_TO_INDEX = {label: index for (index, label) in enumerate(LABELS)}
+AGENT_LABEL_TO_INDEX = {label: index for (index, label) in enumerate(AGENT_LABELS)}
+
+
+TRAFFIC_FACE_LABELS = [
+    "ACTIVE",
+    "INACTIVE",
+    "UNKNOWN",
+]
+TRAFFIC_FACE_LABEL_TO_INDEX = {label: index for (index, label) in enumerate(TRAFFIC_FACE_LABELS)}

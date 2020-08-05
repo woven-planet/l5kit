@@ -4,7 +4,7 @@ import numpy as np
 import zarr
 from prettytable import PrettyTable
 
-from .labels import LABELS
+from .labels import AGENT_LABELS, TRAFFIC_FACE_LABELS
 
 # When changing the schema bump this number
 FORMAT_VERSION = 2
@@ -40,10 +40,14 @@ AGENT_DTYPE = [
     ("yaw", np.float32),
     ("velocity", np.float32, (2,)),
     ("track_id", np.uint64),
-    ("label_probabilities", np.float32, (len(LABELS),)),
+    ("label_probabilities", np.float32, (len(AGENT_LABELS),)),
 ]
 
-TL_FACES_DTYPE = [("gid", "<U16"), ("traffic_light_gid", "<U16")]
+TL_FACES_DTYPE = [
+    ("gid", "<U16"),
+    ("traffic_light_gid", "<U16"),
+    ("traffic_light_type", np.float32, (len(TRAFFIC_FACE_LABELS,))),
+]
 
 
 class ChunkedDataset:
@@ -109,7 +113,7 @@ class ChunkedDataset:
         )
 
         self.root.attrs["format_version"] = FORMAT_VERSION
-        self.root.attrs["labels"] = LABELS
+        self.root.attrs["labels"] = AGENT_LABELS
 
     def open(self, mode: str = "r", cached: bool = True, cache_size_bytes: int = int(1e9)) -> None:
         """Opens a zarr dataset from disk from the path supplied in the constructor.
@@ -139,6 +143,7 @@ opened.
             self.tl_faces = np.empty((0,), dtype=TL_FACES_DTYPE)
 
     def __str__(self) -> str:
+        # TODO add traffic faces
         fields = [
             "Num Scenes",
             "Num Frames",
