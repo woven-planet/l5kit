@@ -163,7 +163,7 @@ def write_pred_csv(
     coords_padded[:, :num_modes] = coords
     confs_padded = np.zeros((num_example, MAX_MODES))
     confs_padded[:, :num_modes] = confs
-
+    # TODO check sum to 1
     coords_keys_list = [_generate_coords_keys(future_len, mode_index=idx) for idx in range(MAX_MODES)]
     confs_keys = _generate_confs_keys()
 
