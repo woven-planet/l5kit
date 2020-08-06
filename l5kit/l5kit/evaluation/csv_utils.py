@@ -6,6 +6,23 @@ import numpy as np
 
 MAX_MODES = 3
 
+"""
+These utilities write and read csv with ground-truth and prediction data.
+Both share the first two field (timestamp and track_id) which are used to identify a single record.
+
+GT:
+Single mode future prediction with availabilities (either 1->available or 0->unavailable).
+Header fields have these meanings:
+timestamp, track_id, avail_time_0, avail_time_1, ..., coord_x_time_0, coord_y_time_0, ...
+
+PRED:
+Multi mode future prediction with confidence score (one value per mode up to MAX_MODES, sum to 1).
+Header fields have these meanings:
+timestamp, track_id, conf_mode_0, conf_mode_1, ..., coord_x_time_0_mode_0, coord_y_time_0_mode_0, ...,
+coord_x_time_0_mode_1, coord_y_time_0_mode_1, ...
+
+"""
+
 
 def _generate_coords_keys(future_len: int, mode_index: int = 0) -> List[str]:
     """
