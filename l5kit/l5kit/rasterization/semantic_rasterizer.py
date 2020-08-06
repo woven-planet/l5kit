@@ -79,6 +79,7 @@ class SemanticRasterizer(Rasterizer):
     def get_bounds(self) -> dict:
         """
         For each elements of interest returns bounds [[min_x, min_y],[max_x, max_y]] and proto ids
+        Coords are computed by the MapAPI and, as such, are in the world ref system.
 
         Returns:
             dict: keys are classes of elements, values are dict with `bounds` and `ids` keys
