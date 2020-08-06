@@ -1,4 +1,5 @@
-from typing import Dict, List, Optional, Tuple
+from collections import defaultdict
+from typing import List, Optional, Tuple
 
 import cv2
 import numpy as np
@@ -167,7 +168,7 @@ class SemanticRasterizer(Rasterizer):
         active_tl_ids = set(get_tl_faces_active(tl_faces)["gid"].tolist())
 
         # plot lanes
-        lanes_lines: Dict[str, List] = {"default": [], "red": [], "green": [], "unknown": []}
+        lanes_lines = defaultdict(list)
 
         for idx in elements_within_bounds(center_world, self.bounds_info["lanes"]["bounds"], raster_radius):
             lane = self.proto_API[self.bounds_info["lanes"]["ids"][idx]].element.lane
@@ -189,11 +190,14 @@ class SemanticRasterizer(Rasterizer):
                     lane_type = "red"
                 elif self.proto_API.is_traffic_face_green(tl_id):
                     lane_type = "green"
+                elif self.proto_API.is_traffic_face_yellow(tl_id):
+                    lane_type = "yellow"
 
             lanes_lines[lane_type].extend([xy_left, xy_right])
 
         cv2.polylines(img, lanes_lines["default"], False, (255, 217, 82), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
         cv2.polylines(img, lanes_lines["green"], False, (0, 255, 0), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
+        cv2.polylines(img, lanes_lines["yellow"], False, (255, 255, 0), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
         cv2.polylines(img, lanes_lines["red"], False, (255, 0, 0), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
 
         # plot crosswalks

@@ -223,6 +223,30 @@ class MapAPI:
             return True
         return False
 
+    def is_traffic_face_yellow(self, element_id: str) -> bool:
+        """
+        Check if the element is a yellow traffic light face
+
+        Args:
+            element_id (str): the id (utf-8 encode) of the element
+
+        Returns:
+            True if the element is a yellow traffic light
+        """
+        element = self[element_id]
+        if not element.element.HasField("traffic_control_element"):
+            return False
+        traffic_el = element.element.traffic_control_element
+        if (
+            traffic_el.HasField("signal_yellow_face")
+            or traffic_el.HasField("signal_left_arrow_yellow_face")
+            or traffic_el.HasField("signal_right_arrow_yellow_face")
+            or traffic_el.HasField("signal_upper_left_arrow_yellow_face")
+            or traffic_el.HasField("signal_upper_right_arrow_yellow_face")
+        ):
+            return True
+        return False
+
     @no_type_check
     def __getitem__(self, item: Union[int, str, bytes]) -> MapElement:
         if isinstance(item, str):
