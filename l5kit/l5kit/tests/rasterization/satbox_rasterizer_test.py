@@ -9,8 +9,7 @@ def test_shape(zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict) -
     cfg["model_params"]["history_num_frames"] = hist_length
 
     rasterizer = build_rasterizer(cfg, dmg)
-
     frames = zarr_dataset.frames[: hist_length + 1][::-1]
     agents = filter_agents_by_frames(frames, zarr_dataset.agents)
-    out = rasterizer.rasterize(frames, agents)
+    out = rasterizer.rasterize(frames, agents, [])  # TODO TR_FACES
     assert out.shape == (224, 224, (hist_length + 1) * 2 + 3)
