@@ -90,7 +90,6 @@ to train models that can recover from slight divergence from training set data
         ] -= min_tl_index  # sync interval with the traffic light faces array
         history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces)
     except ValueError:
-        # TODO TR_FACES
         history_tl_faces = [np.empty(0, dtype=TL_FACE_DTYPE) for _ in history_frames]
 
     if perturbation is not None:
