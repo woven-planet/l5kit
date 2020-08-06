@@ -95,7 +95,6 @@ class SemanticRasterizer(Rasterizer):
 
             if self.proto_API.is_lane(element):
                 lane = self.proto_API.get_lane_coords(element_id)
-                # store bounds for fast rasterisation look-up
                 x_min = min(np.min(lane["xyz_left"][:, 0]), np.min(lane["xyz_right"][:, 0]))
                 y_min = min(np.min(lane["xyz_left"][:, 1]), np.min(lane["xyz_right"][:, 1]))
                 x_max = max(np.max(lane["xyz_left"][:, 0]), np.max(lane["xyz_right"][:, 0]))
