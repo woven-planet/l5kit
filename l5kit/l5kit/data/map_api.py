@@ -175,74 +175,26 @@ class MapAPI:
 
         return {"xyz": xyz}
 
-    def is_traffic_face_red(self, element_id: str) -> bool:
+    def is_traffic_face_colour(self, element_id: str, colour: str) -> bool:
         """
-        Check if the element is a red traffic light face
+        Check if the element is a traffic light face of the given colour
 
         Args:
             element_id (str): the id (utf-8 encode) of the element
-
+            colour (str): the colour to check
         Returns:
-            True if the element is a red traffic light
+            True if the element is a traffic light with the given colour
         """
         element = self[element_id]
         if not element.element.HasField("traffic_control_element"):
             return False
         traffic_el = element.element.traffic_control_element
         if (
-            traffic_el.HasField("signal_red_face")
-            or traffic_el.HasField("signal_left_arrow_red_face")
-            or traffic_el.HasField("signal_right_arrow_red_face")
-            or traffic_el.HasField("signal_upper_left_arrow_red_face")
-            or traffic_el.HasField("signal_upper_right_arrow_red_face")
-        ):
-            return True
-        return False
-
-    def is_traffic_face_green(self, element_id: str) -> bool:
-        """
-        Check if the element is a green traffic light face
-
-        Args:
-            element_id (str): the id (utf-8 encode) of the element
-
-        Returns:
-            True if the element is a green traffic light
-        """
-        element = self[element_id]
-        if not element.element.HasField("traffic_control_element"):
-            return False
-        traffic_el = element.element.traffic_control_element
-        if (
-            traffic_el.HasField("signal_green_face")
-            or traffic_el.HasField("signal_left_arrow_green_face")
-            or traffic_el.HasField("signal_right_arrow_green_face")
-            or traffic_el.HasField("signal_upper_left_arrow_green_face")
-            or traffic_el.HasField("signal_upper_right_arrow_green_face")
-        ):
-            return True
-        return False
-
-    def is_traffic_face_yellow(self, element_id: str) -> bool:
-        """
-        Check if the element is a yellow traffic light face
-
-        Args:
-            element_id (str): the id (utf-8 encode) of the element
-
-        Returns:
-            True if the element is a yellow traffic light
-        """
-        element = self[element_id]
-        if not element.element.HasField("traffic_control_element"):
-            return False
-        traffic_el = element.element.traffic_control_element
-        if (
-            traffic_el.HasField("signal_yellow_face")
-            or traffic_el.HasField("signal_left_arrow_yellow_face")
-            or traffic_el.HasField("signal_right_arrow_yellow_face")
-            or traffic_el.HasField("signal_upper_left_arrow_yellow_face")
-            or traffic_el.HasField("signal_upper_right_arrow_yellow_face")
+            traffic_el.HasField(f"signal_{colour}_face")
+            or traffic_el.HasField(f"signal_left_arrow_{colour}_face")
+            or traffic_el.HasField(f"signal_right_arrow_{colour}_face")
+            or traffic_el.HasField(f"signal_upper_left_arrow_{colour}_face")
+            or traffic_el.HasField(f"signal_upper_right_arrow_{colour}_face")
         ):
             return True
         return False

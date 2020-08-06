@@ -188,11 +188,11 @@ class SemanticRasterizer(Rasterizer):
             # TODO should we change the next lane (lanes_ahead) status?
             lane_tl_ids = set([MapAPI.id_as_str(la_tc) for la_tc in lane.traffic_controls])
             for tl_id in lane_tl_ids.intersection(active_tl_ids):
-                if self.proto_API.is_traffic_face_red(tl_id):
+                if self.proto_API.is_traffic_face_colour(tl_id, "red"):
                     lane_type = "red"
-                elif self.proto_API.is_traffic_face_green(tl_id):
+                elif self.proto_API.is_traffic_face_colour(tl_id, "green"):
                     lane_type = "green"
-                elif self.proto_API.is_traffic_face_yellow(tl_id):
+                elif self.proto_API.is_traffic_face_colour(tl_id, "yellow"):
                     lane_type = "yellow"
 
             lanes_lines[lane_type].extend([xy_left, xy_right])
