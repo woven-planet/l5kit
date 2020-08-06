@@ -105,7 +105,6 @@ class SemanticRasterizer(Rasterizer):
 
             if self.proto_API.is_crosswalk(element):
                 crosswalk = self.proto_API.get_crosswalk_coords(element_id)
-                # store bounds for fast rasterisation look-up
                 x_min = np.min(crosswalk["xyz"][:, 0])
                 y_min = np.min(crosswalk["xyz"][:, 1])
                 x_max = np.max(crosswalk["xyz"][:, 0])
