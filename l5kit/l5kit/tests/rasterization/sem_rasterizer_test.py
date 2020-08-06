@@ -42,3 +42,7 @@ def test_elements_within_bounds() -> None:
     bounds[0, 0] = (-4, -4)
     bounds[0, 1] = (4, 4)
     assert len(elements_within_bounds(center, bounds, half_side)) == 1
+
+    # empty case
+    bounds = np.empty((0, 2, 2), dtype=np.float32)
+    assert len(elements_within_bounds(center, bounds, half_side)) == 0
