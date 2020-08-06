@@ -167,7 +167,7 @@ class SemanticRasterizer(Rasterizer):
         raster_radius = float(np.linalg.norm(self.raster_size * self.pixel_size)) / 2
 
         # get active traffic light faces
-        active_tl_ids = set(filter_tl_faces_by_status(tl_faces, "ACTIVE")["gid"].tolist())
+        active_tl_ids = set(filter_tl_faces_by_status(tl_faces, "ACTIVE")["face_id"].tolist())
 
         # plot lanes
         lanes_lines = defaultdict(list)
