@@ -4,7 +4,7 @@ import numpy as np
 import zarr
 from prettytable import PrettyTable
 
-from .labels import PERCEPTION_LABELS, Tl_FACE_LABELS
+from .labels import PERCEPTION_LABELS, TL_FACE_LABELS
 
 # When changing the schema bump this number
 FORMAT_VERSION = 2
@@ -46,7 +46,7 @@ AGENT_DTYPE = [
 TL_FACE_DTYPE = [
     ("gid", "<U16"),
     ("traffic_light_gid", "<U16"),
-    ("traffic_face_type", np.float32, (len(Tl_FACE_LABELS,))),
+    ("traffic_face_type", np.float32, (len(TL_FACE_LABELS,))),
 ]
 
 

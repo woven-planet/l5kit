@@ -2,7 +2,7 @@ from typing import List, Optional
 
 import numpy as np
 
-from .labels import PERCEPTION_LABEL_TO_INDEX, Tl_FACE_LABEL_TO_INDEX
+from .labels import PERCEPTION_LABEL_TO_INDEX, TL_FACE_LABEL_TO_INDEX
 
 # Labels that belong to "agents" of some sort.
 PERCEPTION_LABELS_TO_KEEP = [
@@ -130,7 +130,7 @@ def get_tl_faces_active(tl_faces: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: active traffic faces
     """
-    return tl_faces[tl_faces["traffic_face_type"][:, Tl_FACE_LABEL_TO_INDEX["ACTIVE"]] > 0]
+    return tl_faces[tl_faces["traffic_face_type"][:, TL_FACE_LABEL_TO_INDEX["ACTIVE"]] > 0]
 
 
 def get_tl_faces_inactive(tl_faces: np.ndarray) -> np.ndarray:
@@ -142,7 +142,7 @@ def get_tl_faces_inactive(tl_faces: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: inactive traffic faces
     """
-    return tl_faces[tl_faces["traffic_face_type"][:, Tl_FACE_LABEL_TO_INDEX["INACTIVE"]] > 0]
+    return tl_faces[tl_faces["traffic_face_type"][:, TL_FACE_LABEL_TO_INDEX["INACTIVE"]] > 0]
 
 
 def get_tl_faces_unknown(tl_faces: np.ndarray) -> np.ndarray:
@@ -154,4 +154,4 @@ def get_tl_faces_unknown(tl_faces: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: unknown traffic faces
     """
-    return tl_faces[tl_faces["traffic_face_type"][:, Tl_FACE_LABEL_TO_INDEX["UNKNOWN"]] > 0]
+    return tl_faces[tl_faces["traffic_face_type"][:, TL_FACE_LABEL_TO_INDEX["UNKNOWN"]] > 0]

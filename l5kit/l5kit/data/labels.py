@@ -20,9 +20,9 @@ PERCEPTION_LABELS = [
 PERCEPTION_LABEL_TO_INDEX = {label: index for (index, label) in enumerate(PERCEPTION_LABELS)}
 
 
-Tl_FACE_LABELS = [
+TL_FACE_LABELS = [
     "ACTIVE",
     "INACTIVE",
     "UNKNOWN",
 ]
-Tl_FACE_LABEL_TO_INDEX = {label: index for (index, label) in enumerate(Tl_FACE_LABELS)}
+TL_FACE_LABEL_TO_INDEX = {label: index for (index, label) in enumerate(TL_FACE_LABELS)}
