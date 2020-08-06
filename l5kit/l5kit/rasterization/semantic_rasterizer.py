@@ -3,10 +3,10 @@ from typing import Dict, List, Optional, Tuple
 import cv2
 import numpy as np
 
+from ..data.filter import get_tl_faces_active
 from ..data.map_api import MapAPI
 from ..geometry import rotation33_as_yaw, transform_point, transform_points, world_to_image_pixels_matrix
 from .rasterizer import Rasterizer
-from ..data.filter import get_tl_faces_active
 
 # sub-pixel drawing precision constants
 CV2_SHIFT = 8  # how many bits to shift in drawing
