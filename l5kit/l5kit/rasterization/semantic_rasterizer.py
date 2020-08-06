@@ -6,6 +6,7 @@ import numpy as np
 from ..data.map_api import MapAPI
 from ..geometry import rotation33_as_yaw, transform_point, transform_points, world_to_image_pixels_matrix
 from .rasterizer import Rasterizer
+from ..data.filter import get_tl_faces_active
 
 # sub-pixel drawing precision constants
 CV2_SHIFT = 8  # how many bits to shift in drawing
@@ -162,9 +163,11 @@ class SemanticRasterizer(Rasterizer):
         # filter using half a radius from the center
         raster_radius = float(np.linalg.norm(self.raster_size * self.pixel_size)) / 2
 
+        # get active traffic light faces
+        active_tl_ids = set(get_tl_faces_active(tl_faces)["gid"].tolist())
+
         # plot lanes
-        active_tl_ids = set(tl_faces["gid"].tolist())
-        lanes_lines: Dict[str, List] = {"unknown": [], "red": [], "green": []}
+        lanes_lines: Dict[str, List] = {"default": [], "red": [], "green": [], "unknown": []}
 
         for idx in elements_within_bounds(center_world, self.bounds_info["lanes"]["bounds"], raster_radius):
             lane = self.proto_API[self.bounds_info["lanes"]["ids"][idx]].element.lane
@@ -178,8 +181,7 @@ class SemanticRasterizer(Rasterizer):
             # Note(lberg): this called on all polygons skips some of them, don't know why
             cv2.fillPoly(img, [lanes_area], (17, 17, 31), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
 
-            # check if we have any TF info
-            lane_type = "unknown"
+            lane_type = "default"  # no traffic light face is controlling this lane
             # TODO should we change the next lane (lanes_ahead) status?
             lane_tl_ids = set([MapAPI.id_as_str(la_tc) for la_tc in lane.traffic_controls])
             for tl_id in lane_tl_ids.intersection(active_tl_ids):
@@ -190,7 +192,7 @@ class SemanticRasterizer(Rasterizer):
 
             lanes_lines[lane_type].extend([xy_left, xy_right])
 
-        cv2.polylines(img, lanes_lines["unknown"], False, (255, 217, 82), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
+        cv2.polylines(img, lanes_lines["default"], False, (255, 217, 82), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
         cv2.polylines(img, lanes_lines["green"], False, (0, 255, 0), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
         cv2.polylines(img, lanes_lines["red"], False, (255, 0, 0), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
 
