@@ -138,11 +138,19 @@ to train models that can recover from slight divergence from training set data
         future_num_frames, future_frames, selected_track_id, future_agents, agent_centroid[:2], agent_yaw,
     )
 
+    # history_num_frames + 1 because it also counter the current frame
+    history_coords_offset, history_yaws_offset, history_availability = _create_targets_for_deep_prediction(
+        history_num_frames + 1, history_frames, selected_track_id, history_agents, agent_centroid[:2], agent_yaw,
+    )
+
     return {
         "image": input_im,
         "target_positions": future_coords_offset,
         "target_yaws": future_yaws_offset,
         "target_availabilities": future_availability,
+        "history_positions": history_coords_offset,
+        "history_yaws": history_yaws_offset,
+        "history_availabilities": history_availability,
         "world_to_image": world_to_image_space,
         "centroid": agent_centroid,
         "yaw": agent_yaw,
