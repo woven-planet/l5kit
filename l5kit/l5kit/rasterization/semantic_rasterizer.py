@@ -4,7 +4,7 @@ from typing import List, Optional, Tuple
 import cv2
 import numpy as np
 
-from ..data.filter import get_tl_faces_active
+from ..data.filter import filter_tl_faces_by_status
 from ..data.map_api import MapAPI
 from ..geometry import rotation33_as_yaw, transform_point, transform_points, world_to_image_pixels_matrix
 from .rasterizer import Rasterizer
@@ -167,7 +167,7 @@ class SemanticRasterizer(Rasterizer):
         raster_radius = float(np.linalg.norm(self.raster_size * self.pixel_size)) / 2
 
         # get active traffic light faces
-        active_tl_ids = set(get_tl_faces_active(tl_faces)["gid"].tolist())
+        active_tl_ids = set(filter_tl_faces_by_status(tl_faces, "ACTIVE")["gid"].tolist())
 
         # plot lanes
         lanes_lines = defaultdict(list)

@@ -1,5 +1,11 @@
 from .combine import get_combined_scenes
-from .filter import filter_agents_by_frames, filter_agents_by_labels, filter_tl_faces_by_frames, get_agent_by_track_id
+from .filter import (
+    filter_agents_by_frames,
+    filter_agents_by_labels,
+    filter_tl_faces_by_frames,
+    filter_tl_faces_by_status,
+    get_agent_by_track_id,
+)
 from .labels import PERCEPTION_LABEL_TO_INDEX, PERCEPTION_LABELS, TL_FACE_LABEL_TO_INDEX, TL_FACE_LABELS
 from .local_data_manager import DataManager, LocalDataManager
 from .map_api import MapAPI
@@ -25,4 +31,5 @@ __all__ = [
     "zarr_concat",
     "TL_FACE_LABEL_TO_INDEX",
     "TL_FACE_LABELS",
+    "filter_tl_faces_by_status",
 ]

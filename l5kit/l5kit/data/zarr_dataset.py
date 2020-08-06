@@ -46,7 +46,7 @@ AGENT_DTYPE = [
 TL_FACE_DTYPE = [
     ("gid", "<U16"),
     ("traffic_light_gid", "<U16"),
-    ("traffic_light_face_type", np.float32, (len(TL_FACE_LABELS,))),
+    ("traffic_light_face_status", np.float32, (len(TL_FACE_LABELS,))),
 ]
 
 
