@@ -51,7 +51,8 @@ class MapAPI:
     @staticmethod
     def _undo_e7(value: float) -> float:
         """
-        Latitude and longitude are store as value*1e7 in the protobuf for efficiency purposes. Invert this scale
+        Latitude and longitude are stored as value*1e7 in the protobuf for efficiency and guaranteed accuracy.
+        Convert them back to float.
 
         Args:
             value (float): the scaled value
