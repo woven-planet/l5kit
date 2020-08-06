@@ -29,7 +29,7 @@ SCENE_DTYPE = [
 FRAME_DTYPE = [
     ("timestamp", np.int64),
     ("agent_index_interval", np.int64, (2,)),
-    ("tl_faces_index_interval", np.int64, (2,)),
+    ("traffic_light_faces_index_interval", np.int64, (2,)),
     ("ego_translation", np.float64, (3,)),
     ("ego_rotation", np.float64, (3, 3)),
 ]
@@ -46,7 +46,7 @@ AGENT_DTYPE = [
 TL_FACE_DTYPE = [
     ("gid", "<U16"),
     ("traffic_light_gid", "<U16"),
-    ("traffic_face_type", np.float32, (len(TL_FACE_LABELS,))),
+    ("traffic_light_face_type", np.float32, (len(TL_FACE_LABELS,))),
 ]
 
 

@@ -39,6 +39,7 @@ def elements_within_bounds(center: np.ndarray, bounds: np.ndarray, half_extent: 
 def cv2_subpixel(coords: np.ndarray) -> np.ndarray:
     """
     Cast coordinates to numpy.int but keep fractional part by previously multiplying by 2**CV2_SHIFT
+    cv2 calls will use shift to restore original values with higher precision
 
     Args:
         coords (np.ndarray): XY coords as float

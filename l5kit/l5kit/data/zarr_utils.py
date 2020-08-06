@@ -52,7 +52,7 @@ def zarr_concat(input_zarrs: List[str], output_zarr: str, verbose: bool = False)
         new_frames = np.zeros(len(input_dataset.frames), dtype=FRAME_DTYPE)
         for i, frame in enumerate(input_dataset.frames):  # add new frames to the zarr
             frame["agent_index_interval"] = frame["agent_index_interval"] + agent_offset
-            frame["tl_faces_index_interval"] = frame["tl_faces_index_interval"] + tl_faces_offset
+            frame["traffic_light_faces_index_interval"] = frame["traffic_light_faces_index_interval"] + tl_faces_offset
             new_frames[i] = frame
         output_dataset.frames.append(new_frames)
 

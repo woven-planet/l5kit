@@ -108,7 +108,7 @@ def filter_agents_by_frames(frames: np.ndarray, agents: np.ndarray) -> List[np.n
 
 def filter_tl_faces_by_frames(frames: np.ndarray, tl_faces: np.ndarray) -> List[np.ndarray]:
     """
-    Get a list of traffic faces array, one array per frame.
+    Get a list of traffic light faces arrays, one array per frame.
     This functions mimics `filter_agents_by_frames` for traffic light faces
 
     Args:
@@ -118,7 +118,7 @@ def filter_tl_faces_by_frames(frames: np.ndarray, tl_faces: np.ndarray) -> List[
     Returns:
         List[np.ndarray] with the traffic light faces divided by frame
     """
-    return [tl_faces[slice(*frame["tl_faces_index_interval"])] for frame in frames]
+    return [tl_faces[slice(*frame["traffic_light_faces_index_interval"])] for frame in frames]
 
 
 def get_tl_faces_active(tl_faces: np.ndarray) -> np.ndarray:
@@ -130,7 +130,7 @@ def get_tl_faces_active(tl_faces: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: active traffic faces
     """
-    return tl_faces[tl_faces["traffic_face_type"][:, TL_FACE_LABEL_TO_INDEX["ACTIVE"]] > 0]
+    return tl_faces[tl_faces["traffic_light_face_type"][:, TL_FACE_LABEL_TO_INDEX["ACTIVE"]] > 0]
 
 
 def get_tl_faces_inactive(tl_faces: np.ndarray) -> np.ndarray:
@@ -142,7 +142,7 @@ def get_tl_faces_inactive(tl_faces: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: inactive traffic faces
     """
-    return tl_faces[tl_faces["traffic_face_type"][:, TL_FACE_LABEL_TO_INDEX["INACTIVE"]] > 0]
+    return tl_faces[tl_faces["traffic_light_face_type"][:, TL_FACE_LABEL_TO_INDEX["INACTIVE"]] > 0]
 
 
 def get_tl_faces_unknown(tl_faces: np.ndarray) -> np.ndarray:
@@ -154,4 +154,4 @@ def get_tl_faces_unknown(tl_faces: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: unknown traffic faces
     """
-    return tl_faces[tl_faces["traffic_face_type"][:, TL_FACE_LABEL_TO_INDEX["UNKNOWN"]] > 0]
+    return tl_faces[tl_faces["traffic_light_face_type"][:, TL_FACE_LABEL_TO_INDEX["UNKNOWN"]] > 0]

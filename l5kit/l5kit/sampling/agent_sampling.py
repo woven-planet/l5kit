@@ -82,10 +82,12 @@ to train models that can recover from slight divergence from training set data
     future_agents = filter_agents_by_frames(future_frames, agents)
 
     try:
-        min_tl_index = history_frames[-1]["tl_faces_index_interval"][0]  # -1 is the farthest in the past
-        max_tl_index = history_frames[0]["tl_faces_index_interval"][1]
+        min_tl_index = history_frames[-1]["traffic_light_faces_index_interval"][0]  # -1 is the farthest in the past
+        max_tl_index = history_frames[0]["traffic_light_faces_index_interval"][1]
         tl_faces = tl_faces[min_tl_index:max_tl_index].copy()  # only history traffic light faces
-        history_frames["tl_faces_index_interval"] -= min_tl_index  # sync interval with the traffic light faces array
+        history_frames[
+            "traffic_light_faces_index_interval"
+        ] -= min_tl_index  # sync interval with the traffic light faces array
         history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces)
     except ValueError:
         # TODO TR_FACES
