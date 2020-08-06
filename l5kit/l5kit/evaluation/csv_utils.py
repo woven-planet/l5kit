@@ -82,6 +82,7 @@ def write_gt_csv(
     """
     assert len(coords.shape) == 3
     num_example, future_len, num_coords = coords.shape
+    assert num_coords == 2
     assert timestamps.shape == track_ids.shape == (num_example,)
     assert avails.shape == (num_example, future_len)
 
@@ -171,6 +172,7 @@ def write_pred_csv(
         confs = np.ones((len(coords), 1))  # full confidence
 
     num_example, num_modes, future_len, num_coords = coords.shape
+    assert num_coords == 2
     assert timestamps.shape == track_ids.shape == (num_example,)
     assert confs is not None and confs.shape == (num_example, num_modes)
     assert num_modes <= MAX_MODES
