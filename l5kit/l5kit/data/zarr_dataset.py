@@ -85,31 +85,31 @@ class ChunkedDataset:
             print("zarr dataset path doesn't exist. Open will fail for this dataset!")
 
     def initialize(
-        self, mode: str = "w", scenes_num: int = 0, frames_num: int = 0, agents_num: int = 0, tl_faces_num: int = 0
+        self, mode: str = "w", num_scenes: int = 0, num_frames: int = 0, num_agents: int = 0, num_tl_faces: int = 0
     ) -> None:
         """Initializes a new zarr dataset, creating the underlying arrays.
 
         Keyword Arguments:
             mode (str): Mode to open dataset in, should be something that supports writing. (default: {"w"})
-            scenes_num (int): pre-allocate this number of scenes
-            frames_num (int): pre-allocate this number of frames
-            agents_num (int): pre-allocate this number of agents
-            tl_faces_num (int): pre-allocate this number of traffic lights
+            num_scenes (int): pre-allocate this number of scenes
+            num_frames (int): pre-allocate this number of frames
+            num_agents (int): pre-allocate this number of agents
+            num_tl_faces (int): pre-allocate this number of traffic lights
         """
 
         self.root = zarr.open_group(self.path, mode=mode)
 
         self.frames = self.root.require_dataset(
-            FRAME_ARRAY_KEY, dtype=FRAME_DTYPE, chunks=FRAME_CHUNK_SIZE, shape=(frames_num,)
+            FRAME_ARRAY_KEY, dtype=FRAME_DTYPE, chunks=FRAME_CHUNK_SIZE, shape=(num_frames,)
         )
         self.agents = self.root.require_dataset(
-            AGENT_ARRAY_KEY, dtype=AGENT_DTYPE, chunks=AGENT_CHUNK_SIZE, shape=(agents_num,)
+            AGENT_ARRAY_KEY, dtype=AGENT_DTYPE, chunks=AGENT_CHUNK_SIZE, shape=(num_agents,)
         )
         self.scenes = self.root.require_dataset(
-            SCENE_ARRAY_KEY, dtype=SCENE_DTYPE, chunks=SCENE_CHUNK_SIZE, shape=(scenes_num,)
+            SCENE_ARRAY_KEY, dtype=SCENE_DTYPE, chunks=SCENE_CHUNK_SIZE, shape=(num_scenes,)
         )
         self.tl_faces = self.root.require_dataset(
-            TL_FACE_ARRAY_KEY, dtype=TL_FACE_DTYPE, chunks=TL_FACE_CHUNK_SIZE, shape=(tl_faces_num,)
+            TL_FACE_ARRAY_KEY, dtype=TL_FACE_DTYPE, chunks=TL_FACE_CHUNK_SIZE, shape=(num_tl_faces,)
         )
 
         self.root.attrs["format_version"] = FORMAT_VERSION
