@@ -184,7 +184,6 @@ class SemanticRasterizer(Rasterizer):
             cv2.fillPoly(img, [lanes_area], (17, 17, 31), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
 
             lane_type = "default"  # no traffic light face is controlling this lane
-            # TODO should we change the next lane (lanes_ahead) status?
             lane_tl_ids = set([MapAPI.id_as_str(la_tc) for la_tc in lane.traffic_controls])
             for tl_id in lane_tl_ids.intersection(active_tl_ids):
                 if self.proto_API.is_traffic_face_colour(tl_id, "red"):
