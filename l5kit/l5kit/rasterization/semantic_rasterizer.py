@@ -11,6 +11,7 @@ from .rasterizer import Rasterizer
 
 # sub-pixel drawing precision constants
 CV2_SHIFT = 8  # how many bits to shift in drawing
+CV2_SHIFT_VALUE = 2 ** CV2_SHIFT
 
 
 def elements_within_bounds(center: np.ndarray, bounds: np.ndarray, half_extent: float) -> np.ndarray:
@@ -45,7 +46,7 @@ def cv2_subpixel(coords: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: XY coords as int for cv2 shift draw
     """
-    coords = coords * 2 ** CV2_SHIFT
+    coords = coords * CV2_SHIFT_VALUE
     coords = coords.astype(np.int)
     return coords
 
