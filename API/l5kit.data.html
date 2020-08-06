@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>l5kit.data package &mdash; L5Kit 1.0.4 documentation</title>
+  <title>l5kit.data package &mdash; L5Kit 1.0.5 documentation</title>
   
 
   
@@ -102,7 +102,7 @@
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.filter.html">l5kit.data.filter module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.labels.html">l5kit.data.labels module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.local_data_manager.html">l5kit.data.local_data_manager module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.data.map.html">l5kit.data.map module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.data.map_api.html">l5kit.data.map_api module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.zarr_dataset.html">l5kit.data.zarr_dataset module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.zarr_utils.html">l5kit.data.zarr_utils module</a></li>
 </ul>
@@ -199,15 +199,16 @@ writing interfaces that involves making numpy-like slices.</p>
 local filesystem called &lt;something&gt;.zarr).</p>
 <dl class="py method">
 <dt id="l5kit.data.ChunkedDataset.initialize">
-<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'w'</span></em>, <em class="sig-param"><span class="n">scenes_num</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">frames_num</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">agents_num</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.data.ChunkedDataset.initialize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'w'</span></em>, <em class="sig-param"><span class="n">num_scenes</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_frames</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_agents</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_tl_faces</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.data.ChunkedDataset.initialize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a new zarr dataset, creating the underlying arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mode</strong> (<em>str</em>) – Mode to open dataset in, should be something that supports writing. (default: {“w”})</p></li>
-<li><p><strong>scenes_num</strong> (<em>int</em>) – pre-allocate this number of scenes</p></li>
-<li><p><strong>frames_num</strong> (<em>int</em>) – pre-allocate this number of frames</p></li>
-<li><p><strong>agents_num</strong> (<em>int</em>) – pre-allocate this number of agents</p></li>
+<li><p><strong>num_scenes</strong> (<em>int</em>) – pre-allocate this number of scenes</p></li>
+<li><p><strong>num_frames</strong> (<em>int</em>) – pre-allocate this number of frames</p></li>
+<li><p><strong>num_agents</strong> (<em>int</em>) – pre-allocate this number of agents</p></li>
+<li><p><strong>num_tl_faces</strong> (<em>int</em>) – pre-allocate this number of traffic lights</p></li>
 </ul>
 </dd>
 </dl>
@@ -221,7 +222,7 @@ local filesystem called &lt;something&gt;.zarr).</p>
 <div><dl class="simple">
 <dt>Keyword Arguments:</dt><dd><p>mode (str): Mode to open dataset in, default to read-only (default: {“r”})
 cached (bool): Whether to cache files read from disk using a LRU cache. (default: {True})
-cache_size (int): Size of cache in bytes (default: {1e9} (1GB))</p>
+cache_size_bytes (int): Size of cache in bytes (default: {1e9} (1GB))</p>
 </dd>
 <dt>Raises:</dt><dd><p>Exception: When any of the expected arrays (frames, agents, scenes) is missing or the store couldn’t be</p>
 </dd>
@@ -277,6 +278,140 @@ raises an error. Returns the path to the file otherwise.</p>
 
 </dd></dl>
 
+<dl class="py class">
+<dt id="l5kit.data.MapAPI">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.data.</code><code class="sig-name descname">MapAPI</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">protobuf_map_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">pose_to_ecef</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.data.MapAPI" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="l5kit.data.MapAPI.get_crosswalk_coords">
+<code class="sig-name descname">get_crosswalk_coords</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#l5kit.data.MapAPI.get_crosswalk_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get XYZ coordinates in world ref system for a crosswalk given its id
+lru_cached for O(1) access</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>element_id</strong> (<em>str</em>) – crosswalk element id</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dict with the polygon coordinates as an (Nx3) XYZ array</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.data.MapAPI.get_lane_coords">
+<code class="sig-name descname">get_lane_coords</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#l5kit.data.MapAPI.get_lane_coords" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get XYZ coordinates in world ref system for a lane given its id
+lru_cached for O(1) access</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>element_id</strong> (<em>str</em>) – lane element id</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dict with the two boundaries coordinates as (Nx3) XYZ arrays</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.data.MapAPI.id_as_str">
+<em class="property">static </em><code class="sig-name descname">id_as_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element_id</span><span class="p">:</span> <span class="n">road_network_pb2.GlobalId</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#l5kit.data.MapAPI.id_as_str" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the element id as a string.
+Elements ids are stored as a variable len sequence of bytes in the protobuf</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>element_id</strong> (<em>GlobalId</em>) – the GlobalId in the protobuf</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the id as a str</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.data.MapAPI.is_crosswalk">
+<em class="property">static </em><code class="sig-name descname">is_crosswalk</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element</span><span class="p">:</span> <span class="n">road_network_pb2.MapElement</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#l5kit.data.MapAPI.is_crosswalk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether an element is a valid crosswalk</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>element</strong> (<em>MapElement</em>) – a proto element</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the element is a valid crosswalk</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.data.MapAPI.is_lane">
+<em class="property">static </em><code class="sig-name descname">is_lane</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element</span><span class="p">:</span> <span class="n">road_network_pb2.MapElement</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#l5kit.data.MapAPI.is_lane" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check whether an element is a valid lane</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>element</strong> (<em>MapElement</em>) – a proto element</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the element is a valid lane</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>bool</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.data.MapAPI.is_traffic_face_colour">
+<code class="sig-name descname">is_traffic_face_colour</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">colour</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#l5kit.data.MapAPI.is_traffic_face_colour" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the element is a traffic light face of the given colour</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_id</strong> (<em>str</em>) – the id (utf-8 encode) of the element</p></li>
+<li><p><strong>colour</strong> (<em>str</em>) – the colour to check</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the element is a traffic light with the given colour</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.data.MapAPI.unpack_deltas_cm">
+<code class="sig-name descname">unpack_deltas_cm</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dx</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">dy</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">dz</span><span class="p">:</span> <span class="n">Sequence<span class="p">[</span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">frame</span><span class="p">:</span> <span class="n">road_network_pb2.GeoFrame</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.data.MapAPI.unpack_deltas_cm" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get coords in world reference system (local ENU-&gt;ECEF-&gt;world).
+See the protobuf annotations for additional information about how coordinates are stored</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dx</strong> (<em>Sequence</em><em>[</em><em>int</em><em>]</em>) – X displacement in centimeters in local ENU</p></li>
+<li><p><strong>dy</strong> (<em>Sequence</em><em>[</em><em>int</em><em>]</em>) – Y displacement in centimeters in local ENU</p></li>
+<li><p><strong>dz</strong> (<em>Sequence</em><em>[</em><em>int</em><em>]</em>) – Z displacement in centimeters in local ENU</p></li>
+<li><p><strong>frame</strong> (<em>GeoFrame</em>) – geo-location information for the local ENU. It contains lat and long origin of the frame</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array of shape (Nx3) with XYZ coordinates in world ref system</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt id="l5kit.data.filter_agents_by_frames">
 <code class="sig-prename descclassname">l5kit.data.</code><code class="sig-name descname">filter_agents_by_frames</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.data.filter_agents_by_frames" title="Permalink to this definition">¶</a></dt>
@@ -313,6 +448,42 @@ so you should take care of re-setting it if you have previously sliced agents.</
 </dd></dl>
 
 <dl class="py function">
+<dt id="l5kit.data.filter_tl_faces_by_frames">
+<code class="sig-prename descclassname">l5kit.data.</code><code class="sig-name descname">filter_tl_faces_by_frames</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">tl_faces</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.data.filter_tl_faces_by_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of traffic light faces arrays, one array per frame.
+This functions mimics <cite>filter_agents_by_frames</cite> for traffic light faces</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frames</strong> (<em>np.ndarray</em>) – an array of frames</p></li>
+<li><p><strong>tl_faces</strong> (<em>np.ndarray</em>) – an array of traffic light faces</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List[np.ndarray] with the traffic light faces divided by frame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.data.filter_tl_faces_by_status">
+<code class="sig-prename descclassname">l5kit.data.</code><code class="sig-name descname">filter_tl_faces_by_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tl_faces</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">status</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.data.filter_tl_faces_by_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter tl_faces and keep only active faces
+:param tl_faces: array of traffic faces
+:type tl_faces: np.ndarray
+:param status: status we want to keep TODO refactor for enum
+:type status: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>traffic light faces array with only faces with that status</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="l5kit.data.get_agent_by_track_id">
 <code class="sig-prename descclassname">l5kit.data.</code><code class="sig-name descname">get_agent_by_track_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">agents_frame</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">track_id</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.data.get_agent_by_track_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the agent object (np.ndarray) of a given track_id in a frame.
@@ -344,23 +515,6 @@ of combined scenes.</p>
 </dd>
 </dl>
 </div></blockquote>
-</dd></dl>
-
-<dl class="py function">
-<dt id="l5kit.data.load_semantic_map">
-<code class="sig-prename descclassname">l5kit.data.</code><code class="sig-name descname">load_semantic_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">semantic_map_path</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#l5kit.data.load_semantic_map" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads and does preprocessing of given semantic map in binary proto format.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>semantic_map_path</strong> (<em>str</em>) – The path of the semantic map file to load, a binary proto.</p>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>A dict containing the semantic map contents.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>dict</p>
-</dd>
-</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -402,7 +556,7 @@ The output zarr can also already exists. In that case, new data is appended</p>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.data.filter.html">l5kit.data.filter module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.data.labels.html">l5kit.data.labels module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.data.local_data_manager.html">l5kit.data.local_data_manager module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="l5kit.data.map.html">l5kit.data.map module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="l5kit.data.map_api.html">l5kit.data.map_api module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.data.zarr_dataset.html">l5kit.data.zarr_dataset module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.data.zarr_utils.html">l5kit.data.zarr_utils module</a></li>
 </ul>

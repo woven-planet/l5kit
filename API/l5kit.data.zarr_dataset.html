@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>l5kit.data.zarr_dataset module &mdash; L5Kit 1.0.4 documentation</title>
+  <title>l5kit.data.zarr_dataset module &mdash; L5Kit 1.0.5 documentation</title>
   
 
   
@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="l5kit.data.zarr_utils module" href="l5kit.data.zarr_utils.html" />
-    <link rel="prev" title="l5kit.data.map module" href="l5kit.data.map.html" /> 
+    <link rel="prev" title="l5kit.data.map_api module" href="l5kit.data.map_api.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -99,7 +99,7 @@
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.filter.html">l5kit.data.filter module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.labels.html">l5kit.data.labels module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.local_data_manager.html">l5kit.data.local_data_manager module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.data.map.html">l5kit.data.map module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.data.map_api.html">l5kit.data.map_api module</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.data.zarr_dataset module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.zarr_utils.html">l5kit.data.zarr_utils module</a></li>
 </ul>
@@ -198,15 +198,16 @@ writing interfaces that involves making numpy-like slices.</p>
 local filesystem called &lt;something&gt;.zarr).</p>
 <dl class="py method">
 <dt id="l5kit.data.zarr_dataset.ChunkedDataset.initialize">
-<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'w'</span></em>, <em class="sig-param"><span class="n">scenes_num</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">frames_num</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">agents_num</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.data.zarr_dataset.ChunkedDataset.initialize" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'w'</span></em>, <em class="sig-param"><span class="n">num_scenes</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_frames</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_agents</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_tl_faces</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.data.zarr_dataset.ChunkedDataset.initialize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a new zarr dataset, creating the underlying arrays.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Keyword Arguments</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>mode</strong> (<em>str</em>) – Mode to open dataset in, should be something that supports writing. (default: {“w”})</p></li>
-<li><p><strong>scenes_num</strong> (<em>int</em>) – pre-allocate this number of scenes</p></li>
-<li><p><strong>frames_num</strong> (<em>int</em>) – pre-allocate this number of frames</p></li>
-<li><p><strong>agents_num</strong> (<em>int</em>) – pre-allocate this number of agents</p></li>
+<li><p><strong>num_scenes</strong> (<em>int</em>) – pre-allocate this number of scenes</p></li>
+<li><p><strong>num_frames</strong> (<em>int</em>) – pre-allocate this number of frames</p></li>
+<li><p><strong>num_agents</strong> (<em>int</em>) – pre-allocate this number of agents</p></li>
+<li><p><strong>num_tl_faces</strong> (<em>int</em>) – pre-allocate this number of traffic lights</p></li>
 </ul>
 </dd>
 </dl>
@@ -220,7 +221,7 @@ local filesystem called &lt;something&gt;.zarr).</p>
 <div><dl class="simple">
 <dt>Keyword Arguments:</dt><dd><p>mode (str): Mode to open dataset in, default to read-only (default: {“r”})
 cached (bool): Whether to cache files read from disk using a LRU cache. (default: {True})
-cache_size (int): Size of cache in bytes (default: {1e9} (1GB))</p>
+cache_size_bytes (int): Size of cache in bytes (default: {1e9} (1GB))</p>
 </dd>
 <dt>Raises:</dt><dd><p>Exception: When any of the expected arrays (frames, agents, scenes) is missing or the store couldn’t be</p>
 </dd>
@@ -244,7 +245,7 @@ cache_size (int): Size of cache in bytes (default: {1e9} (1GB))</p>
         <a href="l5kit.data.zarr_utils.html" class="btn btn-neutral float-right" title="l5kit.data.zarr_utils module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="l5kit.data.map.html" class="btn btn-neutral float-left" title="l5kit.data.map module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="l5kit.data.map_api.html" class="btn btn-neutral float-left" title="l5kit.data.map_api module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

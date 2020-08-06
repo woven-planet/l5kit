@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>l5kit.data.filter module &mdash; L5Kit 1.0.4 documentation</title>
+  <title>l5kit.data.filter module &mdash; L5Kit 1.0.5 documentation</title>
   
 
   
@@ -99,7 +99,7 @@
 <li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.data.filter module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.labels.html">l5kit.data.labels module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.local_data_manager.html">l5kit.data.local_data_manager module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.data.map.html">l5kit.data.map module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.data.map_api.html">l5kit.data.map_api module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.zarr_dataset.html">l5kit.data.zarr_dataset module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.data.zarr_utils.html">l5kit.data.zarr_utils module</a></li>
 </ul>
@@ -236,6 +236,42 @@ so you should take care of re-setting it if you have previously sliced agents.</
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>np.ndarray – Selected agent.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.data.filter.filter_tl_faces_by_frames">
+<code class="sig-prename descclassname">l5kit.data.filter.</code><code class="sig-name descname">filter_tl_faces_by_frames</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">tl_faces</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.data.filter.filter_tl_faces_by_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a list of traffic light faces arrays, one array per frame.
+This functions mimics <cite>filter_agents_by_frames</cite> for traffic light faces</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>frames</strong> (<em>np.ndarray</em>) – an array of frames</p></li>
+<li><p><strong>tl_faces</strong> (<em>np.ndarray</em>) – an array of traffic light faces</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>List[np.ndarray] with the traffic light faces divided by frame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.data.filter.filter_tl_faces_by_status">
+<code class="sig-prename descclassname">l5kit.data.filter.</code><code class="sig-name descname">filter_tl_faces_by_status</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tl_faces</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">status</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.data.filter.filter_tl_faces_by_status" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter tl_faces and keep only active faces
+:param tl_faces: array of traffic faces
+:type tl_faces: np.ndarray
+:param status: status we want to keep TODO refactor for enum
+:type status: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>traffic light faces array with only faces with that status</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>

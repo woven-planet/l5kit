@@ -24,6 +24,6 @@ Submodules
    l5kit.data.filter
    l5kit.data.labels
    l5kit.data.local_data_manager
-   l5kit.data.map
+   l5kit.data.map_api
    l5kit.data.zarr_dataset
    l5kit.data.zarr_utils
