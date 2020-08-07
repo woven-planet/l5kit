@@ -123,7 +123,6 @@ def _append_zarr_subset(
         idx_output_tl_face += len(tl_faces)
 
 
-# TODO add testing
 def zarr_concat(input_zarrs: List[str], output_zarr: str) -> None:
     """
     Concat many zarr into a single one. Takes care of updating indices for frames and agents.
@@ -163,11 +162,6 @@ def zarr_concat(input_zarrs: List[str], output_zarr: str) -> None:
 
         _append_zarr_subset(input_dataset, output_dataset, 0, len(input_dataset.scenes), cur_num_els)
         cur_num_els += Counter(num_els_inputs_zarrs[idx])
-
-        # TODO move into tests
-        assert np.all(output_dataset.agents[cur_num_els["num_agents"] - 1] == input_dataset.agents[-1])
-        if len(input_dataset.tl_faces) > 0:
-            assert np.all(output_dataset.tl_faces[cur_num_els["num_tl_faces"] - 1] == input_dataset.tl_faces[-1])
 
 
 def zarr_split(input_zarr: str, output_zarr_1: str, output_zarr_2: str, size_output_zarr_1_gb: float) -> None:
