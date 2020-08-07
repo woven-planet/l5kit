@@ -1,5 +1,5 @@
 {
-    "format_version": 1,
+    "format_version": 2,
     "labels": [
         "PERCEPTION_LABEL_NOT_SET",
         "PERCEPTION_LABEL_UNKNOWN",
