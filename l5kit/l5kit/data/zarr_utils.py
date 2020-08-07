@@ -139,29 +139,30 @@ def zarr_concat(input_zarrs: List[str], output_zarr: str) -> None:
     assert not os.path.exists(output_zarr), "we need to pre-allocate zarr, can't append fast"
     output_dataset = ChunkedDataset(output_zarr)
 
-    # we need to estimate how much to allocate first by reading all input zarrs lens
-    num_els_inputs_zarrs = {}
+    # we need to estimate how much to allocate by reading all input zarrs lens
+    # we also store them for later use
+    num_els_inputs_zarrs = []
     for input_zarr in input_zarrs:
         input_dataset = ChunkedDataset(input_zarr)
         input_dataset.open()
-        num_els_inputs_zarrs[input_zarr] = _get_num_els_in_scene_range(input_dataset, 0, len(input_dataset.scenes))
+        num_els_inputs_zarrs.append(_get_num_els_in_scene_range(input_dataset, 0, len(input_dataset.scenes)))
 
     # we can now pre-allocate the output dataset
     total_num_els: Counter = Counter()
-    for num_el in num_els_inputs_zarrs.values():
+    for num_el in num_els_inputs_zarrs:
         total_num_els += Counter(num_el)
     output_dataset.initialize(**total_num_els)
 
     cur_num_els = Counter({"num_scenes": 0, "num_frames": 0, "num_agents": 0, "num_tl_faces": 0})
     tqdm_bar = tqdm(input_zarrs)
-    for input_zarr in tqdm_bar:
+    for idx, input_zarr in enumerate(tqdm_bar):
         tqdm_bar.set_description(f"working on {input_zarr}")
 
         input_dataset = ChunkedDataset(input_zarr)
         input_dataset.open()
 
         _append_zarr_subset(input_dataset, output_dataset, 0, len(input_dataset.scenes), cur_num_els)
-        cur_num_els += Counter(num_els_inputs_zarrs[input_zarr])
+        cur_num_els += Counter(num_els_inputs_zarrs[idx])
 
         # TODO move into tests
         assert np.all(output_dataset.agents[cur_num_els["num_agents"] - 1] == input_dataset.agents[-1])
