@@ -4,7 +4,7 @@ from uuid import uuid4
 import numpy as np
 
 from l5kit.data import ChunkedDataset, LocalDataManager
-from l5kit.data.zarr_utils import zarr_concat
+from l5kit.data.zarr_utils import zarr_concat, zarr_split
 
 
 def test_zarr_concat(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: ChunkedDataset) -> None:
@@ -83,6 +83,45 @@ def test_zarr_concat(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: Chunke
         assert output_tl_b == input_tl_b
 
 
-def test_zarr_split() -> None:
-    # TODO write test
-    pass
+def test_zarr_split(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: ChunkedDataset) -> None:
+    concat_count = 10
+    zarr_input_path = dmg.require("single_scene.zarr")
+    zarr_cat_path = str(tmp_path / f"{uuid4()}.zarr")
+    zarr_concat([zarr_input_path] * concat_count, zarr_cat_path)
+
+    zarr_output_1 = str(tmp_path / f"{uuid4()}.zarr")
+    zarr_output_2 = str(tmp_path / f"{uuid4()}.zarr")
+
+    scene_split = zarr_split(zarr_cat_path, zarr_output_1, zarr_output_2, 0.001)  # cut around 1MB
+
+    # load the three zarr and check elements
+    zarr_cat = ChunkedDataset(zarr_cat_path)
+    zarr_cat.open()
+
+    zarr_split_1 = ChunkedDataset(zarr_output_1)
+    zarr_split_1.open()
+    zarr_split_2 = ChunkedDataset(zarr_output_2)
+    zarr_split_2.open()
+
+    # check elements at the start
+    # TODO some tests are missing
+    assert zarr_cat.scenes[0] == zarr_split_1.scenes[0]
+    assert zarr_cat.frames[0] == zarr_split_1.frames[0]
+    assert zarr_cat.agents[0] == zarr_split_1.agents[0]
+    assert zarr_cat.tl_faces[0] == zarr_split_1.tl_faces[0]
+
+    # check elements at the end
+    assert zarr_cat.agents[-1] == zarr_split_2.agents[-1]
+    assert zarr_cat.tl_faces[-1] == zarr_split_2.tl_faces[-1]
+
+    # check elements around the split
+    scene_split_a = zarr_cat.scenes[scene_split - 1]
+    scene_split_b = zarr_cat.scenes[scene_split]
+    frame_split_a = zarr_cat.frames[scene_split_a["frame_index_interval"][1] - 1]
+    frame_split_b = zarr_cat.frames[scene_split_b["frame_index_interval"][0]]
+
+    assert zarr_cat.agents[frame_split_b["agent_index_interval"][0]] == zarr_split_2.agents[0]
+    assert zarr_cat.agents[frame_split_a["agent_index_interval"][1] - 1] == zarr_split_1.agents[-1]
+
+    assert zarr_cat.tl_faces[frame_split_b["traffic_light_faces_index_interval"][0]] == zarr_split_2.tl_faces[0]
+    assert zarr_cat.tl_faces[frame_split_a["traffic_light_faces_index_interval"][1] - 1] == zarr_split_1.tl_faces[-1]

@@ -3,7 +3,6 @@ from collections import Counter
 from pathlib import Path
 from typing import List, Optional
 
-import numpy as np
 from tqdm import tqdm
 
 from . import ChunkedDataset
@@ -164,7 +163,7 @@ def zarr_concat(input_zarrs: List[str], output_zarr: str) -> None:
         cur_num_els += Counter(num_els_inputs_zarrs[idx])
 
 
-def zarr_split(input_zarr: str, output_zarr_1: str, output_zarr_2: str, size_output_zarr_1_gb: float) -> None:
+def zarr_split(input_zarr: str, output_zarr_1: str, output_zarr_2: str, size_output_zarr_1_gb: float) -> int:
     """
     Split the input zarr into two zarrs. The first one (zarr_1) will be cut from the left side and will have size
     size_output_zarr_1_gb. The rest of the zarr will end in zarr_2.
@@ -181,7 +180,7 @@ def zarr_split(input_zarr: str, output_zarr_1: str, output_zarr_2: str, size_out
         size_output_zarr_1_gb (float): size of the first output zarr
 
     Returns:
-
+        int: the index of the scene where the split occurred
     """
     input_dataset = ChunkedDataset(input_zarr)
     input_dataset.open()
@@ -211,25 +210,4 @@ def zarr_split(input_zarr: str, output_zarr_1: str, output_zarr_2: str, size_out
     _append_zarr_subset(input_dataset, output_dataset_1, 0, num_scenes_output_zarr_1)
     _append_zarr_subset(input_dataset, output_dataset_2, num_scenes_output_zarr_1, num_scenes_input_zarr)
 
-    # safety checks TODO move to test (but artefacts there are very very tiny)
-    output_dataset_1 = ChunkedDataset(output_zarr_1)
-    output_dataset_1.open()
-
-    assert np.all(output_dataset_1.scenes[0] == input_dataset.scenes[0])
-    assert np.all(output_dataset_1.frames[0] == input_dataset.frames[0])
-    assert np.all(output_dataset_1.agents[0] == input_dataset.agents[0])
-    assert np.all(output_dataset_1.tl_faces[0] == input_dataset.tl_faces[0])
-
-    output_dataset_2 = ChunkedDataset(output_zarr_2)
-    output_dataset_2.open()
-
-    # can't check easily frames and scene as interval_index are different
-    scene = input_dataset.scenes[num_scenes_output_zarr_1]
-    frame = input_dataset.frames[scene["frame_index_interval"][0]]
-    assert np.all(output_dataset_2.agents[0] == input_dataset.agents[frame["agent_index_interval"][0]])
-    assert np.all(
-        output_dataset_2.tl_faces[0] == input_dataset.tl_faces[frame["traffic_light_faces_index_interval"][0]]
-    )
-
-    assert np.all(output_dataset_2.agents[-1] == input_dataset.agents[-1])
-    assert np.all(output_dataset_2.tl_faces[-1] == input_dataset.tl_faces[-1])
+    return num_scenes_output_zarr_1
