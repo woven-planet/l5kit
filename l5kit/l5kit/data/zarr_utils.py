@@ -146,7 +146,7 @@ def zarr_concat(input_zarrs: List[str], output_zarr: str) -> None:
         try:
             input_dataset = ChunkedDataset(input_zarr)
             input_dataset.open()
-        except ValueError:
+        except (ValueError, KeyError):
             print(f"{input_zarr} is not valid! skipping")
             continue
         num_els_inputs_zarrs.append(_get_num_els_in_scene_range(input_dataset, 0, len(input_dataset.scenes)))
