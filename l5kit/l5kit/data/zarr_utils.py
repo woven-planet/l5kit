@@ -139,23 +139,23 @@ def zarr_concat(input_zarrs: List[str], output_zarr: str) -> None:
 
     # we need to estimate how much to allocate by reading all input zarrs lens
     # we also store them for later use
-    num_els_inputs_zarrs = []
+    num_els_valid_zarrs = []
     valid_zarrs = []
 
-    for input_zarr in input_zarrs:
+    tqdm_bar = tqdm(input_zarrs, desc="computing total size to allocate")
+    for input_zarr in tqdm_bar:
         try:
             input_dataset = ChunkedDataset(input_zarr)
             input_dataset.open()
         except (ValueError, KeyError):
             print(f"{input_zarr} is not valid! skipping")
             continue
-        num_els_inputs_zarrs.append(_get_num_els_in_scene_range(input_dataset, 0, len(input_dataset.scenes)))
+        num_els_valid_zarrs.append(_get_num_els_in_scene_range(input_dataset, 0, len(input_dataset.scenes)))
         valid_zarrs.append(input_zarr)
 
     # we can now pre-allocate the output dataset
     total_num_els: Counter = Counter()
-    tqdm_bar = tqdm(num_els_inputs_zarrs, desc="computing total size to allocate")
-    for num_el in tqdm_bar:
+    for num_el in num_els_valid_zarrs:
         total_num_els += Counter(num_el)
     output_dataset.initialize(**total_num_els)
 
@@ -168,7 +168,7 @@ def zarr_concat(input_zarrs: List[str], output_zarr: str) -> None:
         input_dataset.open()
 
         _append_zarr_subset(input_dataset, output_dataset, 0, len(input_dataset.scenes), cur_num_els)
-        cur_num_els += Counter(num_els_inputs_zarrs[idx])
+        cur_num_els += Counter(num_els_valid_zarrs[idx])
 
 
 def zarr_split(input_zarr: str, output_zarr_1: str, output_zarr_2: str, size_output_zarr_1_gb: float) -> int:
