@@ -154,7 +154,8 @@ def zarr_concat(input_zarrs: List[str], output_zarr: str) -> None:
 
     # we can now pre-allocate the output dataset
     total_num_els: Counter = Counter()
-    for num_el in num_els_inputs_zarrs:
+    tqdm_bar = tqdm(num_els_inputs_zarrs, desc="computing total size to allocate")
+    for num_el in tqdm_bar:
         total_num_els += Counter(num_el)
     output_dataset.initialize(**total_num_els)
 
