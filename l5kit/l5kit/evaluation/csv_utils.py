@@ -8,7 +8,7 @@ MAX_MODES = 3
 
 """
 These utilities write and read csv with ground-truth and prediction data.
-Both share the first two field (timestamp and track_id) which are used to identify a single record.
+Both share the first two fields (timestamp and track_id) which are used to identify a single record.
 
 GT:
 Single mode future prediction with availabilities (either 1->available or 0->unavailable).
@@ -30,7 +30,7 @@ def _generate_coords_keys(future_len: int, mode_index: int = 0) -> List[str]:
     Two keys for each mode and future step.
 
     Args:
-        future_len (int): how many prediction in the future data has
+        future_len (int): how many prediction the data has in the future
         mode_index (int): what mode are we reading/writing
 
     Returns:
@@ -91,9 +91,7 @@ def write_gt_csv(
 
     # create and write HEADER
     # order is (timestamp,track_id,availabilities,coords)
-    fieldnames = ["timestamp", "track_id"]
-    fieldnames.extend(avails_keys)
-    fieldnames.extend(coords_keys)
+    fieldnames = ["timestamp", "track_id"] + avails_keys + coords_keys
     writer = csv.DictWriter(open(csv_path, "w"), fieldnames)
     writer.writeheader()
 
@@ -109,7 +107,7 @@ def write_gt_csv(
 
 def read_gt_csv(csv_path: str) -> Iterator[dict]:
     """
-    Generator function that returns a line at the time from the csv file as a dict
+    Generator function that returns a line at a time from the csv file as a dict
 
     Args:
         csv_path (str): path of the csv to read
@@ -150,8 +148,8 @@ def write_pred_csv(
     """
     Encode the ground truth into a csv file. Coords can have an additional axis for multi-mode.
     We handle up to MAX_MODES modes.
-    For the uni-modal case, coords should not have the additional axis and confs should be set to None.
-    In this case, a single mode with confidence 1 will be written.
+    For the uni-modal case (i.e. all predictions have just a single mode), coords should not have the additional axis
+    and confs should be set to None. In this case, a single mode with confidence 1 will be written.
 
     Args:
         csv_path (str): path to the csv to write
@@ -188,8 +186,7 @@ def write_pred_csv(
 
     # create and write HEADER
     # order is (timestamp,track_id,confidences,coords)
-    fieldnames = ["timestamp", "track_id"]
-    fieldnames.extend(confs_keys)  # all confidences before coordinates
+    fieldnames = ["timestamp", "track_id"] + confs_keys  # all confidences before coordinates
     for coords_labels in coords_keys_list:
         fieldnames.extend(coords_labels)
 
