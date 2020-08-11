@@ -1,7 +1,7 @@
 import os
 from collections import Counter
 from pathlib import Path
-from typing import List, Optional
+from typing import List, Optional, Tuple
 
 from tqdm import tqdm
 
@@ -172,51 +172,52 @@ def zarr_concat(input_zarrs: List[str], output_zarr: str) -> None:
         cur_num_els += Counter(num_els_valid_zarrs[idx])
 
 
-def zarr_split(input_zarr: str, output_zarr_1: str, output_zarr_2: str, size_output_zarr_1_gb: float) -> int:
+def zarr_split(input_zarr: str, output_path: str, split_infos: List[dict]) -> List[Tuple[int, int]]:
     """
-    Split the input zarr into two zarrs. The first one (zarr_1) will be cut from the left side and will have size
-    size_output_zarr_1_gb. The rest of the zarr will end in zarr_2.
-    The assumption here is that scenes have roughly the same size.
-
-    If zarr is 20GB and size_output_zarr_1_gb is 5Gb then:
-    zarr_1 -> first 5GB of zarr
-    zarr_2 -> last 15GB of zarr
+    Split the input zarr into many zarrs. Names and sizes can be passed using the split_infos arg.
 
     Args:
         input_zarr (str): path of the original zarr
-        output_zarr_1 (str): path to the first output zarr
-        output_zarr_2 (str): path to second output zarr
-        size_output_zarr_1_gb (float): size of the first output zarr
+        output_path (str): base destination path
+        split_infos (List[dict]): list of dict. Each element should have `name` (final path is output_path+name)
+        and `split_size_GB` with the size of the split. Last element must have `split_size_GB` set to -1 to collect
+        the last part of the input_zarrr.
 
     Returns:
-        int: the index of the scene where the split occurred
+        List[Tuple[int, int]]: indices of scenes where a split occurred
     """
     input_dataset = ChunkedDataset(input_zarr)
     input_dataset.open()
 
-    # compute the size of the input_dataset in GB and check if the provided one for the cut is lower
-    size_input_zarr_gb = _compute_path_size(input_zarr) / GIGABYTE
-    assert (
-        size_output_zarr_1_gb < size_input_zarr_gb
-    ), f"input size: {size_input_zarr_gb} smaller than {size_output_zarr_1_gb}"
+    assert len(split_infos) > 0
+    assert split_infos[-1]["split_size_GB"] == -1, "last split element should have split_size_GB equal to -1"
 
-    # convert gb size in number of scenes (assumption: scene have the same size)
-    num_scenes_input_zarr = len(input_dataset.scenes)
-    num_scenes_output_zarr_1 = int(num_scenes_input_zarr * size_output_zarr_1_gb / size_input_zarr_gb)
-    num_scenes_output_zarr_2 = num_scenes_input_zarr - num_scenes_output_zarr_1
-    assert num_scenes_output_zarr_2 > 0
+    # compute the size of the input_dataset in GB
+    size_input_gb = _compute_path_size(input_zarr) / GIGABYTE
+    num_scenes_input = len(input_dataset.scenes)
 
-    # instead of appending in the output zarrs, we can pre-allocate and assign (faster)
-    num_els_output_zarr_1 = _get_num_els_in_scene_range(input_dataset, 0, num_scenes_output_zarr_1)
-    num_els_output_zarr_2 = _get_num_els_in_scene_range(input_dataset, num_scenes_output_zarr_1, num_scenes_input_zarr)
+    # ensure we can fit everything
+    num_scenes_output = [
+        int(num_scenes_input * split_info["split_size_GB"] / size_input_gb) for split_info in split_infos[:-1]
+    ]
+    assert sum(num_scenes_output) < num_scenes_input, "size exceed"
+    num_scenes_output.append(num_scenes_input - sum(num_scenes_output))
 
-    output_dataset_1 = ChunkedDataset(output_zarr_1)
-    output_dataset_1.initialize(**num_els_output_zarr_1)
+    cur_scene = 0
+    cuts_track = []  # keep track of start-end of the cuts
+    tqdm_bar = tqdm(zip(num_scenes_output, split_infos))
+    for num_scenes, split_info in tqdm_bar:
+        start_cut = cur_scene
+        end_cut = cur_scene + num_scenes
+        tqdm_bar.set_description(f"cutting scenes {start_cut}-{end_cut} into {split_info['name']}")
 
-    output_dataset_2 = ChunkedDataset(output_zarr_2)
-    output_dataset_2.initialize(**num_els_output_zarr_2)
+        num_els_output = _get_num_els_in_scene_range(input_dataset, start_cut, end_cut)
 
-    _append_zarr_subset(input_dataset, output_dataset_1, 0, num_scenes_output_zarr_1)
-    _append_zarr_subset(input_dataset, output_dataset_2, num_scenes_output_zarr_1, num_scenes_input_zarr)
+        output_dataset = ChunkedDataset(str(Path(output_path) / split_info["name"]))
+        output_dataset.initialize(**num_els_output)
 
-    return num_scenes_output_zarr_1
+        _append_zarr_subset(input_dataset, output_dataset, start_cut, end_cut)
+        cuts_track.append((start_cut, end_cut))
+        cur_scene = end_cut
+
+    return cuts_track

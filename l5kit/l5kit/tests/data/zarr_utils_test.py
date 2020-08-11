@@ -89,39 +89,36 @@ def test_zarr_split(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: Chunked
     zarr_cat_path = str(tmp_path / f"{uuid4()}.zarr")
     zarr_concat([zarr_input_path] * concat_count, zarr_cat_path)
 
-    zarr_output_1 = str(tmp_path / f"{uuid4()}.zarr")
-    zarr_output_2 = str(tmp_path / f"{uuid4()}.zarr")
+    split_infos = [
+        {"name": f"{uuid4()}.zarr", "split_size_GB": 0.002},  # cut around 2MB
+        {"name": f"{uuid4()}.zarr", "split_size_GB": 0.001},  # cut around 0.5MB
+        {"name": f"{uuid4()}.zarr", "split_size_GB": -1},
+    ]  # everything else
 
-    scene_split = zarr_split(zarr_cat_path, zarr_output_1, zarr_output_2, 0.001)  # cut around 1MB
+    scene_splits = zarr_split(zarr_cat_path, str(tmp_path), split_infos)
 
-    # load the three zarr and check elements
+    # load the zarrs and check elements
     zarr_cat = ChunkedDataset(zarr_cat_path)
     zarr_cat.open()
 
-    zarr_split_1 = ChunkedDataset(zarr_output_1)
-    zarr_split_1.open()
-    zarr_split_2 = ChunkedDataset(zarr_output_2)
-    zarr_split_2.open()
+    for scene_split, split_info in zip(scene_splits, split_infos):
+        zarr_out = ChunkedDataset(str(tmp_path / str(split_info["name"])))
+        zarr_out.open()
 
-    # check elements at the start
-    # TODO some tests are missing
-    assert zarr_cat.scenes[0] == zarr_split_1.scenes[0]
-    assert zarr_cat.frames[0] == zarr_split_1.frames[0]
-    assert zarr_cat.agents[0] == zarr_split_1.agents[0]
-    assert zarr_cat.tl_faces[0] == zarr_split_1.tl_faces[0]
+        # compare elements at the start and end with the input zarr
+        input_scene_start = zarr_cat.scenes[scene_split[0]]
+        input_scene_end = zarr_cat.scenes[scene_split[1] - 1]
+        input_frame_start = zarr_cat.frames[input_scene_start["frame_index_interval"][0]]
+        input_frame_end = zarr_cat.frames[input_scene_end["frame_index_interval"][1] - 1]
 
-    # check elements at the end
-    assert zarr_cat.agents[-1] == zarr_split_2.agents[-1]
-    assert zarr_cat.tl_faces[-1] == zarr_split_2.tl_faces[-1]
+        # output_scene_start = zarr_out.scenes[0]
+        # output_scene_end = zarr_out.scenes[-1]
+        # output_frame_start = zarr_out.frames[output_scene_start["frame_index_interval"][0]]
+        # output_frame_end = zarr_out.frames[output_scene_end["frame_index_interval"][1] - 1]
 
-    # check elements around the split
-    scene_split_a = zarr_cat.scenes[scene_split - 1]
-    scene_split_b = zarr_cat.scenes[scene_split]
-    frame_split_a = zarr_cat.frames[scene_split_a["frame_index_interval"][1] - 1]
-    frame_split_b = zarr_cat.frames[scene_split_b["frame_index_interval"][0]]
+        # TODO some tests are missing
+        assert zarr_cat.agents[input_frame_start["agent_index_interval"][0]] == zarr_out.agents[0]
+        assert zarr_cat.agents[input_frame_end["agent_index_interval"][1] - 1] == zarr_out.agents[-1]
 
-    assert zarr_cat.agents[frame_split_b["agent_index_interval"][0]] == zarr_split_2.agents[0]
-    assert zarr_cat.agents[frame_split_a["agent_index_interval"][1] - 1] == zarr_split_1.agents[-1]
-
-    assert zarr_cat.tl_faces[frame_split_b["traffic_light_faces_index_interval"][0]] == zarr_split_2.tl_faces[0]
-    assert zarr_cat.tl_faces[frame_split_a["traffic_light_faces_index_interval"][1] - 1] == zarr_split_1.tl_faces[-1]
+        assert zarr_cat.tl_faces[input_frame_start["traffic_light_faces_index_interval"][0]] == zarr_out.tl_faces[0]
+        assert zarr_cat.tl_faces[input_frame_end["traffic_light_faces_index_interval"][1] - 1] == zarr_out.tl_faces[-1]
