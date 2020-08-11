@@ -66,3 +66,10 @@ def test_neg_multi_log_likelihood_known_results() -> None:
     gt[1, 0] = 10
     confs = np.asarray((0.5, 0.5))
     assert np.allclose(neg_multi_log_likelihood(gt, pred, confs, avail), 50.6931, atol=1e-4)
+
+    # Test overflow resistance
+    confs = np.asarray((0.5, 0.5))
+    pred[0] = [[1000], [1000], [1000]]
+    pred[1] = [[1000], [1000], [1000]]
+    gt = np.zeros((future_len, num_coords))
+    assert not np.isinf(neg_multi_log_likelihood(gt, pred, confs, avail))
