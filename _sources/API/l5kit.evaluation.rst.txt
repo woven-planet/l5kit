@@ -12,6 +12,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   l5kit.evaluation.csv_utils
    l5kit.evaluation.extract_ground_truth
    l5kit.evaluation.extract_losses
    l5kit.evaluation.write_csv
