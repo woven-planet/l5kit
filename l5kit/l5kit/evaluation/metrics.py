@@ -27,9 +27,8 @@ def neg_multi_log_likelihood(
     avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
 
     error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
-    error = -0.5 * np.sum(error, axis=-1)  # reduce time
+    error = np.log(confidences) - 0.5 * np.sum(error, axis=-1)  # reduce time
     # use max aggregator on modes for numerical stability
     max_value = error.max()  # error are negative at this point, so max() gives the minimum one
-    error = confidences * np.exp(error - max_value)
-    error = -np.log(np.sum(error, axis=-1)) - max_value  # reduce modes
+    error = -np.log(np.sum(np.exp(error - max_value), axis=-1)) - max_value  # reduce modes
     return error
