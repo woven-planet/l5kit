@@ -1,7 +1,6 @@
 import numpy as np
 import pytest
 
-from l5kit.configs import load_config_data
 from l5kit.data import AGENT_DTYPE, ChunkedDataset, LocalDataManager, filter_agents_by_frames
 from l5kit.rasterization import build_rasterizer
 from l5kit.rasterization.box_rasterizer import draw_boxes
@@ -29,66 +28,55 @@ def test_draw_boxes() -> None:
 
 
 @pytest.fixture(scope="module")
-def hist_data() -> tuple:
-    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
-    zarr_dataset.open()
+def hist_data(zarr_dataset: ChunkedDataset) -> tuple:
     hist_frames = zarr_dataset.frames[100:111][::-1]  # reverse to get them as history
     hist_agents = filter_agents_by_frames(hist_frames, zarr_dataset.agents)
     return hist_frames, hist_agents
 
 
 @pytest.mark.parametrize("ego_center", [(0.5, 0.5), (0.25, 0.5), (0.75, 0.5), (0.5, 0.25), (0.5, 0.75)])
-def test_ego_layer_out_center_configs(ego_center: tuple, hist_data: tuple) -> None:
-    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
+def test_ego_layer_out_center_configs(ego_center: tuple, hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
     cfg["raster_params"]["map_type"] = "box_debug"
     cfg["raster_params"]["ego_center"] = np.asarray(ego_center)
 
-    dm = LocalDataManager("./l5kit/tests/artefacts/")
-    rasterizer = build_rasterizer(cfg, dm)
-    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1])
+    rasterizer = build_rasterizer(cfg, dmg)
+    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1], [])
     assert out[..., -1].sum() > 0
 
 
-def test_agents_layer_out(hist_data: tuple) -> None:
-    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
+def test_agents_layer_out(hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
     cfg["raster_params"]["map_type"] = "box_debug"
 
     cfg["raster_params"]["filter_agents_threshold"] = 1.0
-    dm = LocalDataManager("./l5kit/tests/artefacts/")
-    rasterizer = build_rasterizer(cfg, dm)
+    rasterizer = build_rasterizer(cfg, dmg)
 
-    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1])
+    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1], [])
     assert out[..., 0].sum() == 0
 
     cfg["raster_params"]["filter_agents_threshold"] = 0.0
-    rasterizer = build_rasterizer(cfg, dm)
+    rasterizer = build_rasterizer(cfg, dmg)
 
-    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1])
+    out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1], [])
     assert out[..., 0].sum() > 0
 
 
-def test_agent_as_ego(hist_data: tuple) -> None:
-    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
+def test_agent_as_ego(hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
     cfg["raster_params"]["map_type"] = "box_debug"
     cfg["raster_params"]["filter_agents_threshold"] = -1  # take everything
-    dm = LocalDataManager("./l5kit/tests/artefacts/")
-    rasterizer = build_rasterizer(cfg, dm)
+    rasterizer = build_rasterizer(cfg, dmg)
 
     agents = hist_data[1][0]
     for ag in agents:
-        out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1], ag)
+        out = rasterizer.rasterize(hist_data[0][:1], hist_data[1][:1], [], ag)
         assert out[..., -1].sum() > 0
 
 
-def test_out_shape(hist_data: tuple) -> None:
+def test_out_shape(hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
     hist_length = 5
-
-    cfg = load_config_data("./l5kit/tests/artefacts/config.yaml")
     cfg["raster_params"]["map_type"] = "box_debug"
     cfg["model_params"]["history_num_frames"] = hist_length
 
-    dm = LocalDataManager("./l5kit/tests/artefacts/")
-    rasterizer = build_rasterizer(cfg, dm)
+    rasterizer = build_rasterizer(cfg, dmg)
 
-    out = rasterizer.rasterize(hist_data[0][: hist_length + 1], hist_data[1][: hist_length + 1])
+    out = rasterizer.rasterize(hist_data[0][: hist_length + 1], hist_data[1][: hist_length + 1], [])
     assert out.shape == (224, 224, (hist_length + 1) * 2)

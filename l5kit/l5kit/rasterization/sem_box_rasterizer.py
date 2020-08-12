@@ -18,7 +18,7 @@ class SemBoxRasterizer(Rasterizer):
         ego_center: np.ndarray,
         filter_agents_threshold: float,
         history_num_frames: int,
-        semantic_map: dict,
+        semantic_map_path: str,
         pose_to_ecef: np.ndarray,
     ):
         super(SemBoxRasterizer, self).__init__()
@@ -29,13 +29,17 @@ class SemBoxRasterizer(Rasterizer):
         self.history_num_frames = history_num_frames
 
         self.box_rast = BoxRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold, history_num_frames)
-        self.sat_rast = SemanticRasterizer(raster_size, pixel_size, ego_center, semantic_map, pose_to_ecef)
+        self.sat_rast = SemanticRasterizer(raster_size, pixel_size, ego_center, semantic_map_path, pose_to_ecef)
 
     def rasterize(
-        self, history_frames: np.ndarray, history_agents: List[np.ndarray], agent: Optional[np.ndarray] = None
+        self,
+        history_frames: np.ndarray,
+        history_agents: List[np.ndarray],
+        history_tl_faces: List[np.ndarray],
+        agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
-        im_out_box = self.box_rast.rasterize(history_frames, history_agents, agent)
-        im_out_sat = self.sat_rast.rasterize(history_frames, history_agents, agent)
+        im_out_box = self.box_rast.rasterize(history_frames, history_agents, history_tl_faces, agent)
+        im_out_sat = self.sat_rast.rasterize(history_frames, history_agents, history_tl_faces, agent)
         return np.concatenate([im_out_box, im_out_sat], -1)
 
     def to_rgb(self, in_im: np.ndarray, **kwargs: dict) -> np.ndarray:

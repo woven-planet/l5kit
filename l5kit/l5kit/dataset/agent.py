@@ -11,6 +11,10 @@ from ..rasterization import Rasterizer
 from .ego import EgoDataset
 from .select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE, select_agents
 
+# WARNING: changing these values impact the number of instances selected for both train and inference!
+MIN_FRAME_HISTORY = 10  # minimum number of frames an agents must have in the past to be picked
+MIN_FRAME_FUTURE = 1  # minimum number of frames an agents must have in the future to be picked
+
 
 class AgentDataset(EgoDataset):
     def __init__(
@@ -20,15 +24,24 @@ class AgentDataset(EgoDataset):
         rasterizer: Rasterizer,
         perturbation: Optional[Perturbation] = None,
         agents_mask: Optional[np.ndarray] = None,
+        min_frame_history: int = MIN_FRAME_HISTORY,
+        min_frame_future: int = MIN_FRAME_FUTURE,
     ):
         assert perturbation is None, "AgentDataset does not support perturbation (yet)"
 
         super(AgentDataset, self).__init__(cfg, zarr_dataset, rasterizer, perturbation)
         if agents_mask is None:  # if not provided try to load it from the zarr
             agents_mask = self.load_agents_mask()
-            past_mask = agents_mask[:, 0] >= cfg["model_params"]["history_num_frames"]
-            future_mask = agents_mask[:, 1] >= cfg["model_params"]["future_num_frames"]
+            past_mask = agents_mask[:, 0] >= min_frame_history
+            future_mask = agents_mask[:, 1] >= min_frame_future
             agents_mask = past_mask * future_mask
+
+            if min_frame_history != MIN_FRAME_HISTORY:
+                print(f"warning, you're running with custom min_frame_history of {min_frame_history}")
+            if min_frame_future != MIN_FRAME_FUTURE:
+                print(f"warning, you're running with custom min_frame_future of {min_frame_future}")
+        else:
+            print("warning, you're running with a custom agents_mask")
 
         # store the valid agents indexes
         self.agents_indices = np.nonzero(agents_mask)[0]
@@ -44,9 +57,8 @@ class AgentDataset(EgoDataset):
         """
         agent_prob = self.cfg["raster_params"]["filter_agents_threshold"]
 
-        try:
-            agents_mask = self.dataset.root[f"agents_mask/{agent_prob}"]
-        except KeyError:
+        agents_mask_path = Path(self.dataset.path) / f"agents_mask/{agent_prob}"
+        if not agents_mask_path.exists():  # don't check in root but check for the path
             print(
                 f"cannot find the right config in {self.dataset.path},\n"
                 f"your cfg has loaded filter_agents_threshold={agent_prob};\n"
@@ -61,9 +73,7 @@ class AgentDataset(EgoDataset):
                 th_distance_av=TH_DISTANCE_AV,
             )
 
-            array_path = Path(self.dataset.path) / f"agents_mask/{agent_prob}"
-            agents_mask = convenience.load(str(array_path))  # note (lberg): this doesn't update root
-
+        agents_mask = convenience.load(str(agents_mask_path))  # note (lberg): this doesn't update root
         return agents_mask
 
     def __len__(self) -> int:

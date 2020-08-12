@@ -75,8 +75,7 @@ None if not desired
         """
         frame_interval = self.dataset.scenes[scene_index]["frame_index_interval"]
         frames = self.dataset.frames[frame_interval[0] : frame_interval[1]]
-
-        data = self.sample_function(state_index, frames, self.dataset.agents, track_id)
+        data = self.sample_function(state_index, frames, self.dataset.agents, self.dataset.tl_faces, track_id)
         # 0,1,C -> C,0,1
         image = data["image"].transpose(2, 0, 1)
 
@@ -179,5 +178,5 @@ None if not desired
         assert frame_idx < len(frames), f"frame_idx {frame_idx} is over len {len(frames)}"
         return np.asarray((frame_idx,), dtype=np.int64)
 
-    def __repr__(self) -> str:
-        return self.dataset.__repr__()
+    def __str__(self) -> str:
+        return self.dataset.__str__()

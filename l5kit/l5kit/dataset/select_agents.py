@@ -6,6 +6,7 @@ from collections import Counter, defaultdict
 from functools import partial
 from multiprocessing import Pool, cpu_count
 from pathlib import Path
+from tempfile import gettempdir
 from typing import Tuple
 from uuid import uuid4
 
@@ -157,10 +158,10 @@ def select_agents(
     """
     Filter agents from zarr INPUT_FOLDER according to multiple thresholds and store a boolean array of the same shape.
     """
+    agents_mask_path = Path(zarr_dataset.path) / f"agents_mask/{th_agent_prob}"
 
-    output_group = f"{th_agent_prob}"
-    if "agents_mask" in zarr_dataset.root and f"agents_mask/{output_group}" in zarr_dataset.root:
-        raise FileExistsError(f"{output_group} exists already! only one is supported for now!")
+    if agents_mask_path.exists():
+        raise FileExistsError(f"{th_agent_prob} exists already! only one is supported!")
 
     frame_index_intervals = zarr_dataset.scenes["frame_index_interval"]
 
@@ -181,12 +182,12 @@ def select_agents(
         pass  # group is already there
 
     agents_mask = zarr.open_array(
-        str(Path(zarr_dataset.path) / "agents_mask" / output_group),
+        str(agents_mask_path),
         mode="w",
         shape=(len(zarr_dataset.agents), 2),
         chunks=(10000,),
         dtype=np.uint32,
-        synchronizer=zarr.ProcessSynchronizer(f"/tmp/ag_mask_{str(uuid4())}.sync"),
+        synchronizer=zarr.ProcessSynchronizer(Path(gettempdir()) / f"ag_mask_{str(uuid4())}.sync"),
     )
 
     report: Counter = Counter()

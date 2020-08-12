@@ -5,13 +5,14 @@ from typing import Tuple, cast
 import cv2
 import numpy as np
 
-from ..data import DataManager, load_semantic_map
+from ..data import DataManager
 from .box_rasterizer import BoxRasterizer
 from .rasterizer import Rasterizer
 from .sat_box_rasterizer import SatBoxRasterizer
 from .satellite_rasterizer import SatelliteRasterizer
 from .sem_box_rasterizer import SemBoxRasterizer
 from .semantic_rasterizer import SemanticRasterizer
+from .stub_rasterizer import StubRasterizer
 
 
 def _load_metadata(meta_key: str, data_manager: DataManager) -> dict:
@@ -122,7 +123,6 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
 
     elif map_type in ["py_semantic", "semantic_debug"]:
         semantic_map_filepath = data_manager.require(raster_cfg["semantic_map_key"])
-        semantic_map = load_semantic_map(semantic_map_filepath)
         try:
             dataset_meta = _load_metadata(dataset_meta_key, data_manager)
             pose_to_ecef = np.array(dataset_meta["pose_to_ecef"], dtype=np.float64)
@@ -135,13 +135,15 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
                 ego_center,
                 filter_agents_threshold,
                 history_num_frames,
-                semantic_map,
+                semantic_map_filepath,
                 pose_to_ecef,
             )
         else:
-            return SemanticRasterizer(raster_size, pixel_size, ego_center, semantic_map, pose_to_ecef,)
+            return SemanticRasterizer(raster_size, pixel_size, ego_center, semantic_map_filepath, pose_to_ecef,)
 
     elif map_type == "box_debug":
         return BoxRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold, history_num_frames)
+    elif map_type == "stub_debug":
+        return StubRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold)
     else:
         raise NotImplementedError(f"Rasterizer for map type {map_type} is not supported.")
