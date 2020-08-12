@@ -79,6 +79,8 @@ def test_write_pred_csv(tmpdir: Path) -> None:
     # test a valid multi-mode configuration
     coords = np.zeros((num_example, num_modes, future_len, num_coords))
     confs = np.ones((num_example, num_modes))
+    confs /= np.sum(confs, axis=1, keepdims=True)
+
     dump_path = str(tmpdir / "pred_pred_multi.csv")
     write_pred_csv(dump_path, timestamps, track_ids, coords, confs)
     assert Path(dump_path).exists()
@@ -93,6 +95,8 @@ def test_e2e_multi_pred_csv(tmpdir: Path) -> None:
 
     coords = np.random.randn(*(num_example, num_modes, future_len, num_coords))
     confs = np.random.rand(*(num_example, num_modes))
+    confs /= np.sum(confs, axis=1, keepdims=True)
+
     write_pred_csv(dump_path, timestamps, track_ids, coords, confs)
 
     # read and check values
