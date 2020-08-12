@@ -196,7 +196,7 @@ def zarr_split(input_zarr: str, output_path: str, split_infos: List[dict]) -> Li
     size_input_gb = _compute_path_size(input_zarr) / GIGABYTE
     num_scenes_input = len(input_dataset.scenes)
 
-    # ensure we can fit everything
+    # ensure the defined splits don't overspill the input dataset
     num_scenes_output = [
         int(num_scenes_input * split_info["split_size_GB"] / size_input_gb) for split_info in split_infos[:-1]
     ]
