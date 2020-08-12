@@ -1,3 +1,5 @@
+from collections import OrderedDict
+
 import numpy as np
 
 from . import read_gt_csv, read_pred_csv
@@ -10,8 +12,8 @@ def compute_error_csv(ground_truth_path: str, inference_output_path: str) -> np.
         ground_truth_path (str): Path to the ground truth csv file.
         inference_output_path (str): Path to the csv file containing network output.
     """
-    ground_truth = {}
-    inference = {}
+    ground_truth = OrderedDict()
+    inference = OrderedDict()
 
     for el in read_gt_csv(ground_truth_path):
         ground_truth[el["track_id"] + el["timestamp"]] = el
