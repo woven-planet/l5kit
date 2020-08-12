@@ -173,7 +173,6 @@ def write_pred_csv(
     assert num_coords == 2
     assert timestamps.shape == track_ids.shape == (num_example,)
     assert confs is not None and confs.shape == (num_example, num_modes)
-    print(np.sum(confs, axis=-1))
     assert np.allclose(np.sum(confs, axis=-1), 1.0)
     assert num_modes <= MAX_MODES
 
