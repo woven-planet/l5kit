@@ -16,7 +16,7 @@ if you're trying a more experimental workflow.
 # Coordinates Systems
 
 ## World Coordinate System
-We refer to the coordinate system in the `.zarr` dataset as **world**. This is shared by *all* our prediction datasets
+We refer to the coordinate system in the `.zarr` dataset as **world** or **pose** (TODO chose one). This is shared by *all* our zarrs in a dataset
 and is a 3D metric space. The entities living in this space are the AV and the agents:
 - AV: samples from the AV are collected using several sensors placed in the car. The AV translation is a 3D vector (XYZ), 
 while the orientation is expressed as a 3x3 rotation matrix (counterclockwise in a right-hand system).
@@ -35,6 +35,8 @@ access the world-to-image matrix using the `world_to_image` key on the returned 
 - Rotate counter-clockwise by negative `ego_yaw` to align world such that ego faces right in the image;
 - Scale from meters to pixels based on the value `pixel_size` set in the configuration;
 - Translate again such that the ego is aligned to the value `ego_center` in the configuration.
+ 
+ Note: we ignore the z coordinate for these transformation
 
 With this matrix, you can transform a point from world to image space and vice versa using its inverse.
 
@@ -55,11 +57,11 @@ Satellite information is stored as an RGB image in the `aerial_map` folder of th
 a matrix to convert from the [ECEF](https://en.wikipedia.org/wiki/ECEF) reference system to this image reference system (i.e. how to convert a XYZ ECEF coord into a 2D pixel coord).
 
 Because the `.zarr` stores information in the world reference system, an additional conversion is usually required:
-- world coordinates must be converted into ECEF coordinates. This transformation matrix is currently hard-coded and will be shipped with the dataset
-in the future. It is **dataset dependent** as it encode where the dataset world origin is located in the Earth frame;
+- world coordinates must be converted into ECEF coordinates. This transformation matrix is currently hard-coded but will be shipped with the dataset
+in the future. It is **dataset dependent** as it encodes where the dataset world origin is located in the Earth frame;
 - ECEF coordinates must be converted into the aerial image reference system using the above mentioned matrix.
 
-The `SatelliteRasterizer` and its derived classes combined these two matrix into a single one and directly convert
+The `SatelliteRasterizer` and its derived classes combine these two matrix into a single one and directly convert
 world coordinates from the `.zarr` into 2D pixels coordinates.
 
 ## Semantic Coordinate System
@@ -70,8 +72,14 @@ as a list of 3D points.
 
 Each elements features are localised in its own reference system, which is itself geo-localised:
 - features cords are expressed in centimeters deltas in an [ENU](https://en.wikipedia.org/wiki/Local_tangent_plane_coordinates) reference system. This system is valid **only** for that feature 
-(i.e. two features with the same coordinates values are not in the same location)
+(i.e. two features with the same coordinates values are **not** in the same location)
 - the system latitude and longitude, which localise the feature in a global reference system. 
 This can be used for example to move the feature into a common space (e.g. world or ECEF)
 
-TODO add example of conversion and what happens in the semantic rasteriser (it is being currently changed)
+The `MapAPI` class has a set of functionality to convert these local spaces into a global ref system.
+When you query it for a supported element (only lanes and crosswalks currently):
+- the geometric feature(s) is converted from deltas to absolute values
+- the feature is then converted from ENU into ECEF by using its GeoFrame reference (lat, lng)
+- the features is finally converted from ECEF to world (this is the reason for the `pose_to_ecef` arg in the `MapAPI` constructor)
+
+As these operations are computational expensive, the function results are LRUcached
