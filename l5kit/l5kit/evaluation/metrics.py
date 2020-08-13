@@ -23,15 +23,23 @@ def neg_multi_log_likelihood(
     num_modes, future_len, num_coords = pred.shape
 
     assert gt.shape == (future_len, num_coords), f"expected 2D (TxC) array for gt, got {gt.shape}"
-    assert confidences.shape == (num_modes,)
+    assert confidences.shape == (num_modes,), f"expected 1D (M) array for gt, got {confidences.shape}"
     assert np.allclose(np.sum(confidences), 1), "confidences should sum to 1"
-    assert avails.shape == (future_len,)
+    assert avails.shape == (future_len,), f"expected 1D (T) array for gt, got {avails.shape}"
+    # assert all data are valid
+    assert np.isfinite(pred).all(), "invalid value found in pred"
+    assert np.isfinite(gt).all(), "invalid value found in gt"
+    assert np.isfinite(confidences).all(), "invalid value found in confidences"
+    assert np.isfinite(avails).all(), "invalid value found in avails"
 
     gt = np.expand_dims(gt, 0)  # add modes
     avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
 
     error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
-    error = np.log(confidences) - 0.5 * np.sum(error, axis=-1)  # reduce time
+
+    with np.errstate(divide="ignore"):  # when confidence is 0 log goes to -inf, but we're fine with it
+        error = np.log(confidences) - 0.5 * np.sum(error, axis=-1)  # reduce time
+
     # use max aggregator on modes for numerical stability
     max_value = error.max()  # error are negative at this point, so max() gives the minimum one
     error = -np.log(np.sum(np.exp(error - max_value), axis=-1)) - max_value  # reduce modes
