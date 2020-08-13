@@ -105,20 +105,33 @@ def test_zarr_split(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: Chunked
         zarr_out = ChunkedDataset(str(tmp_path / str(split_info["name"])))
         zarr_out.open()
 
-        # compare elements at the start and end with the input zarr
-        input_scene_start = zarr_cat.scenes[scene_split[0]]
-        input_scene_end = zarr_cat.scenes[scene_split[1] - 1]
-        input_frame_start = zarr_cat.frames[input_scene_start["frame_index_interval"][0]]
-        input_frame_end = zarr_cat.frames[input_scene_end["frame_index_interval"][1] - 1]
+        # compare elements at the start and end of each scene in both zarrs
+        for idx_scene in range(len(zarr_out.scenes)):
 
-        # output_scene_start = zarr_out.scenes[0]
-        # output_scene_end = zarr_out.scenes[-1]
-        # output_frame_start = zarr_out.frames[output_scene_start["frame_index_interval"][0]]
-        # output_frame_end = zarr_out.frames[output_scene_end["frame_index_interval"][1] - 1]
+            # compare elements in the scene
+            input_scene = zarr_cat.scenes[scene_split[0] + idx_scene]
+            input_frames = zarr_cat.frames[slice(*input_scene["frame_index_interval"])]
+            input_agents = zarr_cat.agents[
+                input_frames[0]["agent_index_interval"][0] : input_frames[-1]["agent_index_interval"][1]
+            ]
+            input_tl_faces = zarr_cat.tl_faces[
+                input_frames[0]["traffic_light_faces_index_interval"][0] : input_frames[-1][
+                    "traffic_light_faces_index_interval"
+                ][1]
+            ]
 
-        # TODO some tests are missing
-        assert zarr_cat.agents[input_frame_start["agent_index_interval"][0]] == zarr_out.agents[0]
-        assert zarr_cat.agents[input_frame_end["agent_index_interval"][1] - 1] == zarr_out.agents[-1]
+            output_scene = zarr_out.scenes[idx_scene]
+            output_frames = zarr_out.frames[slice(*output_scene["frame_index_interval"])]
+            output_agents = zarr_out.agents[
+                output_frames[0]["agent_index_interval"][0] : output_frames[-1]["agent_index_interval"][1]
+            ]
+            output_tl_faces = zarr_out.tl_faces[
+                output_frames[0]["traffic_light_faces_index_interval"][0] : output_frames[-1][
+                    "traffic_light_faces_index_interval"
+                ][1]
+            ]
 
-        assert zarr_cat.tl_faces[input_frame_start["traffic_light_faces_index_interval"][0]] == zarr_out.tl_faces[0]
-        assert zarr_cat.tl_faces[input_frame_end["traffic_light_faces_index_interval"][1] - 1] == zarr_out.tl_faces[-1]
+            assert np.all(input_frames["ego_translation"] == output_frames["ego_translation"])
+            assert np.all(input_frames["ego_rotation"] == output_frames["ego_rotation"])
+            assert np.all(input_agents == output_agents)
+            assert np.all(input_tl_faces == output_tl_faces)

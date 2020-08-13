@@ -38,18 +38,18 @@ def _get_num_els_in_scene_range(zarr_dataset: ChunkedDataset, scene_index_start:
     """
     assert scene_index_end > scene_index_start
 
-    scene_a = zarr_dataset.scenes[scene_index_start]
-    scene_b = zarr_dataset.scenes[scene_index_end - 1]
+    scene_start = zarr_dataset.scenes[scene_index_start]
+    scene_end = zarr_dataset.scenes[scene_index_end - 1]
 
-    frame_a = zarr_dataset.frames[scene_a["frame_index_interval"][0]]
-    frame_b = zarr_dataset.frames[scene_b["frame_index_interval"][1] - 1]
+    frame_start = zarr_dataset.frames[scene_start["frame_index_interval"][0]]
+    frame_end = zarr_dataset.frames[scene_end["frame_index_interval"][1] - 1]
 
     return {
         "num_scenes": scene_index_end - scene_index_start,
-        "num_frames": scene_b["frame_index_interval"][1] - scene_a["frame_index_interval"][0],
-        "num_agents": frame_b["agent_index_interval"][1] - frame_a["agent_index_interval"][0],
-        "num_tl_faces": frame_b["traffic_light_faces_index_interval"][1]
-        - frame_a["traffic_light_faces_index_interval"][0],
+        "num_frames": scene_end["frame_index_interval"][1] - scene_start["frame_index_interval"][0],
+        "num_agents": frame_end["agent_index_interval"][1] - frame_start["agent_index_interval"][0],
+        "num_tl_faces": frame_end["traffic_light_faces_index_interval"][1]
+        - frame_start["traffic_light_faces_index_interval"][0],
     }
 
 
@@ -86,13 +86,14 @@ def _append_zarr_subset(
         idx_output_tl_face = output_zarr_num_els["num_tl_faces"]
 
     # relative indices to subtract before copying to erase input history
-    idx_start_frame = -input_zarr.scenes[scene_index_start]["frame_index_interval"][0]
-    idx_start_agent = -input_zarr.frames[idx_start_frame]["agent_index_interval"][0]
-    idx_start_tl_face = -input_zarr.frames[idx_start_frame]["traffic_light_faces_index_interval"][0]
+    idx_start_frame = input_zarr.scenes[scene_index_start]["frame_index_interval"][0]
+    idx_start_agent = input_zarr.frames[idx_start_frame]["agent_index_interval"][0]
+    idx_start_tl_face = input_zarr.frames[idx_start_frame]["traffic_light_faces_index_interval"][0]
+
     # if output_zarr_num_els is not zero we also need to add output_history
-    idx_start_frame += idx_output_frame
-    idx_start_agent += idx_output_agent
-    idx_start_tl_face += idx_output_tl_face
+    idx_start_frame = idx_output_frame - idx_start_frame
+    idx_start_agent = idx_output_agent - idx_start_agent
+    idx_start_tl_face = idx_output_tl_face - idx_start_tl_face
 
     for idx_scene in range(scene_index_start, scene_index_end):
         # get slices from input zarr
