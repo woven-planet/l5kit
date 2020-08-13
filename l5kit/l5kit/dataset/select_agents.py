@@ -192,13 +192,15 @@ def select_agents(
 
     report: Counter = Counter()
     print("starting pool...")
-    with Pool(cpu_count()) as pool:
-        tasks = tqdm(enumerate(pool.imap_unordered(get_valid_agents_partial, frame_index_intervals)))
-        for idx, (mask, count, agents_range) in tasks:
-            report += count
-            agents_mask[agents_range[0] : agents_range[1]] = mask
-            tasks.set_description(f"{idx + 1}/{len(frame_index_intervals)}")
-        print("collecting results..")
+    pool = Pool(cpu_count())
+    tasks = tqdm(enumerate(pool.imap_unordered(get_valid_agents_partial, frame_index_intervals)))
+    for idx, (mask, count, agents_range) in tasks:
+        report += count
+        agents_mask[agents_range[0] : agents_range[1]] = mask
+        tasks.set_description(f"{idx + 1}/{len(frame_index_intervals)}")
+    print("collecting results..")
+    pool.close()
+    pool.join()
 
     agents_cfg = {
         "th_agent_filter_probability_threshold": th_agent_prob,
