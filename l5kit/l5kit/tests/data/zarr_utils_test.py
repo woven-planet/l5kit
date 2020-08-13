@@ -2,9 +2,10 @@ from pathlib import Path
 from uuid import uuid4
 
 import numpy as np
+import pytest
 
 from l5kit.data import ChunkedDataset, LocalDataManager
-from l5kit.data.zarr_utils import zarr_concat, zarr_split
+from l5kit.data.zarr_utils import zarr_concat, zarr_scenes_chunk, zarr_split
 
 
 def test_zarr_concat(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: ChunkedDataset) -> None:
@@ -135,3 +136,66 @@ def test_zarr_split(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: Chunked
             assert np.all(input_frames["ego_rotation"] == output_frames["ego_rotation"])
             assert np.all(input_agents == output_agents)
             assert np.all(input_tl_faces == output_tl_faces)
+
+
+@pytest.mark.parametrize("num_frames_to_copy", [1, 10, 50, pytest.param(500, marks=pytest.mark.xfail)])
+def test_zarr_scenes_chunk(
+    dmg: LocalDataManager, tmp_path: Path, zarr_dataset: ChunkedDataset, num_frames_to_copy: int
+) -> None:
+    # first let's concat so we have multiple scenes
+    concat_count = 10
+    zarr_input_path = dmg.require("single_scene.zarr")
+    zarr_cat_path = str(tmp_path / f"{uuid4()}.zarr")
+    zarr_concat([zarr_input_path] * concat_count, zarr_cat_path)
+
+    # now let's chunk it
+    zarr_chunk_path = str(tmp_path / f"{uuid4()}.zarr")
+    zarr_scenes_chunk(zarr_cat_path, zarr_chunk_path, num_frames_to_copy=num_frames_to_copy)
+
+    # open both and compare
+    zarr_cat = ChunkedDataset(zarr_cat_path)
+    zarr_cat.open()
+    zarr_chunk = ChunkedDataset(zarr_chunk_path)
+    zarr_chunk.open()
+
+    assert len(zarr_cat.scenes) == len(zarr_chunk.scenes)
+    assert len(zarr_chunk.frames) == num_frames_to_copy * len(zarr_chunk.scenes)
+
+    for idx in range(len(zarr_cat.scenes)):
+        scene_cat = zarr_cat.scenes[idx]
+        scene_chunk = zarr_chunk.scenes[idx]
+
+        frames_cat = zarr_cat.frames[
+            scene_cat["frame_index_interval"][0] : scene_cat["frame_index_interval"][0] + num_frames_to_copy
+        ]
+        frames_chunk = zarr_chunk.frames[slice(*scene_chunk["frame_index_interval"])]
+
+        agents_cat = zarr_cat.agents[
+            frames_cat[0]["agent_index_interval"][0] : frames_cat[-1]["agent_index_interval"][1]
+        ]
+        tl_faces_cat = zarr_cat.tl_faces[
+            frames_cat[0]["traffic_light_faces_index_interval"][0] : frames_cat[-1][
+                "traffic_light_faces_index_interval"
+            ][1]
+        ]
+
+        agents_chunk = zarr_chunk.agents[
+            frames_chunk[0]["agent_index_interval"][0] : frames_chunk[-1]["agent_index_interval"][1]
+        ]
+        tl_faces_chunk = zarr_chunk.tl_faces[
+            frames_chunk[0]["traffic_light_faces_index_interval"][0] : frames_chunk[-1][
+                "traffic_light_faces_index_interval"
+            ][1]
+        ]
+
+        assert scene_chunk["host"] == scene_cat["host"]
+        assert scene_chunk["start_time"] == scene_cat["start_time"]
+        assert scene_chunk["end_time"] == scene_cat["end_time"]
+
+        assert len(frames_chunk) == num_frames_to_copy
+
+        assert np.all(frames_chunk["ego_translation"] == frames_cat["ego_translation"][:num_frames_to_copy])
+        assert np.all(frames_chunk["ego_rotation"] == frames_cat["ego_rotation"][:num_frames_to_copy])
+
+        assert np.all(agents_chunk == agents_cat)
+        assert np.all(tl_faces_chunk == tl_faces_cat)
