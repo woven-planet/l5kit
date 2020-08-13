@@ -15,8 +15,8 @@ jobs:
     - name: Set up Python 3.8 and Poetry
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
+      with:
+        python-version: 3.8
     - uses: Gr1N/setup-poetry@v2
       with:
         poetry-version: 1.0.10

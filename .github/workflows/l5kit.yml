@@ -16,8 +16,8 @@ jobs:
     - name: Set up Python ${{ matrix.python-version }} and Poetry
     - uses: actions/checkout@v2
     - uses: actions/setup-python@v1
-        with:
-          python-version: ${{ matrix.python-version }}
+      with:
+        python-version: ${{ matrix.python-version }}
     - uses: Gr1N/setup-poetry@v2
       with:
         poetry-version: 1.0.10
