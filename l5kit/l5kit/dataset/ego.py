@@ -144,15 +144,22 @@ None if not desired
         frame_interval = scenes[0]["frame_index_interval"]
         frames = self.dataset.frames[frame_interval[0] : frame_interval[1]].copy()
         # ASSUMPTION: all agents_index are consecutive
-        start_index = frames[0]["agent_index_interval"][0]
-        end_index = frames[-1]["agent_index_interval"][1]
-        agents = self.dataset.agents[start_index:end_index].copy()
-        frames["agent_index_interval"] -= start_index
+        agents_start_index = frames[0]["agent_index_interval"][0]
+        agents_end_index = frames[-1]["agent_index_interval"][1]
+        agents = self.dataset.agents[agents_start_index:agents_end_index].copy()
+
+        tl_start_index = frames[0]["traffic_light_faces_index_interval"][0]
+        tl_end_index = frames[-1]["traffic_light_faces_index_interval"][1]
+        tl_faces = self.dataset.tl_faces[tl_start_index:tl_end_index].copy()
+
+        frames["agent_index_interval"] -= agents_start_index
+        frames["traffic_light_faces_index_interval"] -= tl_start_index
         scenes["frame_index_interval"] -= frame_interval[0]
 
         dataset = ChunkedDataset("")
-        dataset.frames = frames
         dataset.agents = agents
+        dataset.tl_faces = tl_faces
+        dataset.frames = frames
         dataset.scenes = scenes
 
         return EgoDataset(self.cfg, dataset, self.rasterizer, self.perturbation)
