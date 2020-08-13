@@ -252,35 +252,32 @@ def zarr_scenes_chunk(input_zarr: str, output_zarr: str, num_frames_to_copy: int
     for idx in tqdm(range(len(input_dataset.scenes)), desc="copying"):
 
         # get data but immediately chop frames, agents and tf_lights
-        scenes = input_dataset.scenes[idx : idx + 1]
-        first_frame_idx = scenes["frame_index_interval"][0, 0]
+        scene = input_dataset.scenes[idx]
+        first_frame_idx = scene["frame_index_interval"][0]
 
         frames = input_dataset.frames[first_frame_idx : first_frame_idx + num_frames_to_copy]
-        agents = input_dataset.agents[
-            frames[0]["agent_index_interval"][0] : frames[-1]["agent_index_interval"][-1] - 1
-        ]
+        agents = input_dataset.agents[frames[0]["agent_index_interval"][0] : frames[-1]["agent_index_interval"][1]]
         tl_faces = input_dataset.tl_faces[
-            frames[0]["traffic_light_faces_index_interval"][0] : frames[-1]["traffic_light_faces_index_interval"][-1]
-            - 1
+            frames[0]["traffic_light_faces_index_interval"][0] : frames[-1]["traffic_light_faces_index_interval"][1]
         ]
 
         # reset interval relative to our output (subtract current history and add output history)
-        scenes["frame_index_interval"] -= scenes["frame_index_interval"][0, 0] + cur_idx_scene
-        scenes["frame_index_interval"][0, 1] = cur_idx_scene + num_frames_to_copy  # address for less frames
+        scene["frame_index_interval"][0] = cur_idx_frame
+        scene["frame_index_interval"][1] = cur_idx_frame + num_frames_to_copy  # address for less frames
 
-        frames["agent_index_interval"] -= frames["agent_index_interval"][0] + cur_idx_agent
-        frames["traffic_light_faces_index_interval"] -= (
-            frames["traffic_light_faces_index_interval"][0] + cur_idx_tl_face
+        frames["agent_index_interval"] += cur_idx_agent - frames[0]["agent_index_interval"][0]
+        frames["traffic_light_faces_index_interval"] += (
+            cur_idx_tl_face - frames[0]["traffic_light_faces_index_interval"][0]
         )
 
         # write in dest using append (slow)
-        output_dataset.scenes.append(scenes)
+        output_dataset.scenes.append(scene[None, ...])  # need 2D array to concatenate
         output_dataset.frames.append(frames)
         output_dataset.agents.append(agents)
         output_dataset.tl_faces.append(tl_faces)
 
         # increase indices in output
-        cur_idx_scene += len(scenes)
+        cur_idx_scene += len(scene)
         cur_idx_frame += len(frames)
         cur_idx_agent += len(agents)
         cur_idx_tl_face += len(tl_faces)
