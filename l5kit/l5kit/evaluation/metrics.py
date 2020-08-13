@@ -5,8 +5,8 @@ def neg_multi_log_likelihood(
     gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
 ) -> np.ndarray:
     """
-    Compute a negative log-likelihood for the multi-mode scenario.
-    log-sum-exp trick is used here to avoid overflow and overflow, For more information about it see:
+    Compute a negative log-likelihood for the multi-modal scenario.
+    log-sum-exp trick is used here to avoid underflow and overflow, For more information about it see:
     https://en.wikipedia.org/wiki/LogSumExp#log-sum-exp_trick_for_log-domain_calculations
     https://timvieira.github.io/blog/post/2014/02/11/exp-normalize-trick/
     https://leimao.github.io/blog/LogSumExp/
