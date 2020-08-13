@@ -6,13 +6,13 @@ from . import read_gt_csv, read_pred_csv
 from .metrics import neg_multi_log_likelihood
 
 
-def validate_dicts(ground_truth: dict, inference: dict) -> bool:
+def validate_dicts(ground_truth: dict, predicted: dict) -> bool:
     """
     Validate GT and pred dictionaries by comparing keys
 
     Args:
         ground_truth (dict): mapping from (track_id + timestamp) to an element returned from our csv utils
-        inference (dict): mapping from (track_id + timestamp) to an element returned from our csv utils
+        predicted (dict): mapping from (track_id + timestamp) to an element returned from our csv utils
 
     Returns:
         (bool): True if the 2 dicts match (same keys)
@@ -20,26 +20,26 @@ def validate_dicts(ground_truth: dict, inference: dict) -> bool:
     """
     valid = True
 
-    if not (len(ground_truth.keys()) == len(inference.keys())):
-        print(
-            f"""Incorrect number of rows in inference csv. Expected {len(ground_truth.keys())},
-            Got {len(inference.keys())}"""
-        )
+    num_agents_gt = len(ground_truth)
+    num_agents_pred = len(predicted)
+
+    if num_agents_gt != num_agents_pred:
+        print(f"Incorrect number of rows in inference csv. Expected {num_agents_gt}, Got {num_agents_pred}")
         valid = False
 
-    missing_obstacles = ground_truth.keys() - inference.keys()
-    if len(missing_obstacles):
+    missing_agents = ground_truth.keys() - predicted.keys()
+    if len(missing_agents):
         valid = False
 
-    for missing_obstacle in missing_obstacles:
-        print(f"Missing obstacle: {missing_obstacle}")
+    for missing_agents in missing_agents:
+        print(f"Missing agents: {missing_agents}")
 
-    unknown_obstacles = inference.keys() - ground_truth.keys()
-    if len(unknown_obstacles):
+    unknown_agents = predicted.keys() - ground_truth.keys()
+    if len(unknown_agents):
         valid = False
 
-    for unknown_obstacle in unknown_obstacles:
-        print(f"Unknown obstacle: {unknown_obstacle}")
+    for unknown_obstacle in unknown_agents:
+        print(f"Unknown agents: {unknown_obstacle}")
 
     return valid
 
