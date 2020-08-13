@@ -22,26 +22,33 @@
             ]
         ],
         [
+            "traffic_light_faces_index_interval",
+            "<i8",
+            [
+                2
+            ]
+        ],
+        [
             "ego_translation",
-            "<f4",
+            "<f8",
             [
                 3
             ]
         ],
         [
             "ego_rotation",
-            "<f4",
+            "<f8",
             [
                 3,
                 3
             ]
         ]
     ],
-    "fill_value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA",
+    "fill_value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
     "filters": null,
     "order": "C",
     "shape": [
-        775
+        248
     ],
     "zarr_format": 2
 }
