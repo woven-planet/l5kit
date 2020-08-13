@@ -82,6 +82,9 @@ None if not desired
         target_positions = np.array(data["target_positions"], dtype=np.float32)
         target_yaws = np.array(data["target_yaws"], dtype=np.float32)
 
+        history_positions = np.array(data["history_positions"], dtype=np.float32)
+        history_yaws = np.array(data["history_yaws"], dtype=np.float32)
+
         timestamp = self.dataset.frames[frame_interval[0] + state_index]["timestamp"]
         track_id = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
 
@@ -90,6 +93,9 @@ None if not desired
             "target_positions": target_positions,
             "target_yaws": target_yaws,
             "target_availabilities": data["target_availabilities"],
+            "history_positions": history_positions,
+            "history_yaws": history_yaws,
+            "history_availabilities": data["history_availabilities"],
             "world_to_image": data["world_to_image"],
             "track_id": track_id,
             "timestamp": timestamp,

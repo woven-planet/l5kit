@@ -138,11 +138,19 @@ to train models that can recover from slight divergence from training set data
         future_num_frames, future_frames, selected_track_id, future_agents, agent_centroid[:2], agent_yaw,
     )
 
+    # history_num_frames + 1 because it also includes the current frame
+    history_coords_offset, history_yaws_offset, history_availability = _create_targets_for_deep_prediction(
+        history_num_frames + 1, history_frames, selected_track_id, history_agents, agent_centroid[:2], agent_yaw,
+    )
+
     return {
         "image": input_im,
         "target_positions": future_coords_offset,
         "target_yaws": future_yaws_offset,
         "target_availabilities": future_availability,
+        "history_positions": history_coords_offset,
+        "history_yaws": history_yaws_offset,
+        "history_availabilities": history_availability,
         "world_to_image": world_to_image_space,
         "centroid": agent_centroid,
         "yaw": agent_yaw,
@@ -151,53 +159,52 @@ to train models that can recover from slight divergence from training set data
 
 
 def _create_targets_for_deep_prediction(
-    future_num_frames: int,
-    future_frames: np.ndarray,
+    num_frames: int,
+    frames: np.ndarray,
     selected_track_id: Optional[int],
-    future_agents: List[np.ndarray],
-    agent_centroid: np.ndarray,
-    agent_yaw: float,
+    agents: List[np.ndarray],
+    agent_current_centroid: np.ndarray,
+    agent_current_yaw: float,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Internal function that creates the targets and availability masks for deep prediction-type models.
-    The futures offset (in meters) are computed. When no info is available (e.g. agent not in frame)
+    The futures/history offset (in meters) are computed. When no info is available (e.g. agent not in frame)
     a 0 is set in the availability array (1 otherwise).
 
     Args:
-        future_num_frames (int): number of offset we want in the future
-        future_frames (np.ndarry): available future frames. This may be less than future_num_frames
+        num_frames (int): number of offset we want in the future/history
+        frames (np.ndarray): available frames. This may be less than num_frames
         selected_track_id (Optional[int]): agent track_id or AV (None)
-        future_agents (List[np.ndarray]): list of agents arrays (same len of future_frames)
-        agent_centroid (np.ndarry): centroid of the agent at timestep 0
-        agent_yaw (float): angle of the agent at timestep 0
+        agents (List[np.ndarray]): list of agents arrays (same len of frames)
+        agent_current_centroid (np.ndarray): centroid of the agent at timestep 0
+        agent_current_yaw (float): angle of the agent at timestep 0
 
     Returns:
         Tuple[np.ndarray, np.ndarray, np.ndarray]: position offsets, angle offsets, availabilities
 
     """
-    # How much the future coordinates differ from the current state in meters.
-    # This is generally used as the target in training a deep prediction model.
-    future_coords_offset = np.zeros((future_num_frames, 2), dtype=np.float32)
-    future_yaws_offset = np.zeros((future_num_frames, 1), dtype=np.float32)
+    # How much the coordinates differ from the current state in meters.
+    coords_offset = np.zeros((num_frames, 2), dtype=np.float32)
+    yaws_offset = np.zeros((num_frames, 1), dtype=np.float32)
 
     # 1 if a target is present, 0 if not. This can be used to multiply the loss.
-    future_availability = np.zeros((future_num_frames, 1), dtype=np.float32)
+    availability = np.zeros((num_frames, 1), dtype=np.float32)
 
-    for i, (frame, agents) in enumerate(zip(future_frames, future_agents)):
+    for i, (frame, agents) in enumerate(zip(frames, agents)):
         if selected_track_id is None:
-            future_agent_centroid = frame["ego_translation"][:2]
-            future_agent_yaw = rotation33_as_yaw(frame["ego_rotation"])
+            agent_centroid = frame["ego_translation"][:2]
+            agent_yaw = rotation33_as_yaw(frame["ego_rotation"])
         else:
-            # it's not guaranteed the target will be in every future frame
-            future_agent = get_agent_by_track_id(agents, selected_track_id)
-            if future_agent is None:
-                future_availability[i] = 0.0  # keep track of invalid futures
+            # it's not guaranteed the target will be in every frame
+            agent = get_agent_by_track_id(agents, selected_track_id)
+            if agent is None:
+                availability[i] = 0.0  # keep track of invalid futures/history
                 continue
 
-            future_agent_centroid = future_agent["centroid"]
-            future_agent_yaw = future_agent["yaw"]
+            agent_centroid = agent["centroid"]
+            agent_yaw = agent["yaw"]
 
-        future_coords_offset[i] = future_agent_centroid - agent_centroid
-        future_yaws_offset[i] = future_agent_yaw - agent_yaw
-        future_availability[i] = 1.0
-    return future_coords_offset, future_yaws_offset, future_availability
+        coords_offset[i] = agent_centroid - agent_current_centroid
+        yaws_offset[i] = agent_yaw - agent_current_yaw
+        availability[i] = 1.0
+    return coords_offset, yaws_offset, availability
