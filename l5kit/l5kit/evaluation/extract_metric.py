@@ -38,8 +38,8 @@ def validate_dicts(ground_truth: dict, predicted: dict) -> bool:
     if len(unknown_agents):
         valid = False
 
-    for unknown_obstacle in unknown_agents:
-        print(f"Unknown agents: {unknown_obstacle}")
+    for unknown_agent in unknown_agents:
+        print(f"Unknown agents: {unknown_agent}")
 
     return valid
 
