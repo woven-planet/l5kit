@@ -186,8 +186,6 @@ def _create_targets_for_deep_prediction(
     # How much the coordinates differ from the current state in meters.
     coords_offset = np.zeros((num_frames, 2), dtype=np.float32)
     yaws_offset = np.zeros((num_frames, 1), dtype=np.float32)
-
-    # 1 if a target is present, 0 if not. This can be used to multiply the loss.
     availability = np.zeros((num_frames,), dtype=np.float32)
 
     for i, (frame, agents) in enumerate(zip(frames, agents)):
