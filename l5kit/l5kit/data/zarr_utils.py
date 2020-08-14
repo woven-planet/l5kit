@@ -246,12 +246,12 @@ def zarr_scenes_chunk(input_zarr: str, output_zarr: str, num_frames_to_copy: int
     output_dataset = ChunkedDataset(output_zarr)
     output_dataset.initialize()
 
-    # indices in the ouput_dataset
-    cur_idx_scene, cur_idx_frame, cur_idx_agent, cur_idx_tl_face = 0, 0, 0, 0
+    # current indices where to copy in the output_dataset
+    cur_scene_idx, cur_frame_idx, cur_agent_idx, cur_tl_face_idx = 0, 0, 0, 0
 
     for idx in tqdm(range(len(input_dataset.scenes)), desc="copying"):
 
-        # get data but immediately chop frames, agents and tf_lights
+        # get data and immediately chop frames, agents and traffic lights
         scene = input_dataset.scenes[idx]
         first_frame_idx = scene["frame_index_interval"][0]
 
@@ -262,12 +262,12 @@ def zarr_scenes_chunk(input_zarr: str, output_zarr: str, num_frames_to_copy: int
         ]
 
         # reset interval relative to our output (subtract current history and add output history)
-        scene["frame_index_interval"][0] = cur_idx_frame
-        scene["frame_index_interval"][1] = cur_idx_frame + num_frames_to_copy  # address for less frames
+        scene["frame_index_interval"][0] = cur_frame_idx
+        scene["frame_index_interval"][1] = cur_frame_idx + num_frames_to_copy  # address for less frames
 
-        frames["agent_index_interval"] += cur_idx_agent - frames[0]["agent_index_interval"][0]
+        frames["agent_index_interval"] += cur_agent_idx - frames[0]["agent_index_interval"][0]
         frames["traffic_light_faces_index_interval"] += (
-            cur_idx_tl_face - frames[0]["traffic_light_faces_index_interval"][0]
+            cur_tl_face_idx - frames[0]["traffic_light_faces_index_interval"][0]
         )
 
         # write in dest using append (slow)
@@ -277,7 +277,7 @@ def zarr_scenes_chunk(input_zarr: str, output_zarr: str, num_frames_to_copy: int
         output_dataset.tl_faces.append(tl_faces)
 
         # increase indices in output
-        cur_idx_scene += len(scene)
-        cur_idx_frame += len(frames)
-        cur_idx_agent += len(agents)
-        cur_idx_tl_face += len(tl_faces)
+        cur_scene_idx += len(scene)
+        cur_frame_idx += len(frames)
+        cur_agent_idx += len(agents)
+        cur_tl_face_idx += len(tl_faces)
