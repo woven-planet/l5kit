@@ -99,8 +99,7 @@ def write_gt_csv(
         # writing using dict relieves us from respecting the order
         line = {"timestamp": timestamp, "track_id": track_id}
         line.update({key: ava for key, ava in zip(avails_keys, avail)})
-        # TODO limit digits in coords?
-        line.update({key: cor for key, cor in zip(coords_keys, coord.reshape(-1))})
+        line.update({key: f"{cor:.5f}" for key, cor in zip(coords_keys, coord.reshape(-1))})
 
         writer.writerow(line)
 
@@ -198,9 +197,8 @@ def write_pred_csv(
         line = {"timestamp": timestamp, "track_id": track_id}
         line.update({key: con for key, con in zip(confs_keys, conf)})
 
-        # TODO limit digits in coords?
         for idx in range(MAX_MODES):
-            line.update({key: cor for key, cor in zip(coords_keys_list[idx], coord[idx].reshape(-1))})
+            line.update({key: f"{cor:.5f}" for key, cor in zip(coords_keys_list[idx], coord[idx].reshape(-1))})
 
         writer.writerow(line)
 
