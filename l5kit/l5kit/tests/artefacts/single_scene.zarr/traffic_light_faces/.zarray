@@ -1,0 +1,36 @@
+{
+    "chunks": [
+        10000
+    ],
+    "compressor": {
+        "blocksize": 0,
+        "clevel": 5,
+        "cname": "lz4",
+        "id": "blosc",
+        "shuffle": 1
+    },
+    "dtype": [
+        [
+            "face_id",
+            "<U16"
+        ],
+        [
+            "traffic_light_id",
+            "<U16"
+        ],
+        [
+            "traffic_light_face_status",
+            "<f4",
+            [
+                3
+            ]
+        ]
+    ],
+    "fill_value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+    "filters": null,
+    "order": "C",
+    "shape": [
+        3216
+    ],
+    "zarr_format": 2
+}

@@ -12,7 +12,7 @@
     "dtype": [
         [
             "centroid",
-            "<f4",
+            "<f8",
             [
                 2
             ]
@@ -37,7 +37,7 @@
         ],
         [
             "track_id",
-            "<i4"
+            "<u8"
         ],
         [
             "label_probabilities",
@@ -47,11 +47,11 @@
             ]
         ]
     ],
-    "fill_value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
+    "fill_value": "AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=",
     "filters": null,
     "order": "C",
     "shape": [
-        67954
+        20802
     ],
     "zarr_format": 2
 }

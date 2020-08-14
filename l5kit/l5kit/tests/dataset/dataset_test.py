@@ -38,7 +38,7 @@ def test_dataset_rasterizer(
     check_torch_loading(dataset)
 
 
-@pytest.mark.parametrize("frame_idx", [0, 10, 774, pytest.param(775, marks=pytest.mark.xfail)])
+@pytest.mark.parametrize("frame_idx", [0, 10, 247, pytest.param(775, marks=pytest.mark.xfail)])
 @pytest.mark.parametrize("dataset_cls", [EgoDataset, AgentDataset])
 def test_frame_index_interval(dataset_cls: Callable, frame_idx: int, zarr_dataset: ChunkedDataset, cfg: dict) -> None:
     rasterizer = StubRasterizer((100, 100), np.asarray((0.25, 0.25)), np.asarray((0.5, 0.5)), 0)
