@@ -204,6 +204,22 @@
 </dd></dl>
 
 <dl class="py function">
+<dt id="l5kit.data.zarr_utils.zarr_scenes_chunk">
+<code class="sig-prename descclassname">l5kit.data.zarr_utils.</code><code class="sig-name descname">zarr_scenes_chunk</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_zarr</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">output_zarr</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">num_frames_to_copy</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.data.zarr_utils.zarr_scenes_chunk" title="Permalink to this definition">¶</a></dt>
+<dd><p>Copy <cite>num_frames_to_keep</cite> from each scene in input_zarr and paste them into output_zarr</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>input_zarr</strong> (<em>str</em>) – path to the input zarr</p></li>
+<li><p><strong>output_zarr</strong> (<em>str</em>) – path to the output zarr</p></li>
+<li><p><strong>num_frames_to_copy</strong> (<em>int</em>) – how many frames to copy from the start of each scene</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns:</p>
+</dd></dl>
+
+<dl class="py function">
 <dt id="l5kit.data.zarr_utils.zarr_split">
 <code class="sig-prename descclassname">l5kit.data.zarr_utils.</code><code class="sig-name descname">zarr_split</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_zarr</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">output_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">split_infos</span><span class="p">:</span> <span class="n">List<span class="p">[</span>dict<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#l5kit.data.zarr_utils.zarr_split" title="Permalink to this definition">¶</a></dt>
 <dd><p>Split the input zarr into many zarrs. Names and sizes can be passed using the split_infos arg.</p>
