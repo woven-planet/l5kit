@@ -22,10 +22,10 @@ def neg_multi_log_likelihood(
     assert len(pred.shape) == 3, f"expected 3D (MxTxC) array for pred, got {pred.shape}"
     num_modes, future_len, num_coords = pred.shape
 
-    assert gt.shape == (future_len, num_coords), f"expected 2D (TxC) array for gt, got {gt.shape}"
-    assert confidences.shape == (num_modes,), f"expected 1D (M) array for gt, got {confidences.shape}"
+    assert gt.shape == (future_len, num_coords), f"expected 2D (Time x Coords) array for gt, got {gt.shape}"
+    assert confidences.shape == (num_modes,), f"expected 1D (Modes) array for gt, got {confidences.shape}"
     assert np.allclose(np.sum(confidences), 1), "confidences should sum to 1"
-    assert avails.shape == (future_len,), f"expected 1D (T) array for gt, got {avails.shape}"
+    assert avails.shape == (future_len,), f"expected 1D (Time) array for gt, got {avails.shape}"
     # assert all data are valid
     assert np.isfinite(pred).all(), "invalid value found in pred"
     assert np.isfinite(gt).all(), "invalid value found in gt"
