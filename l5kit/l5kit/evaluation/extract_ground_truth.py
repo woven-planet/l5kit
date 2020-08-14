@@ -1,6 +1,7 @@
 from typing import Optional
 
 import numpy as np
+from tqdm import tqdm
 
 from l5kit.data import ChunkedDataset
 from l5kit.dataset import AgentDataset
@@ -60,7 +61,7 @@ def export_zarr_to_ground_truth_csv(
     timestamps = []
     agent_ids = []
 
-    for el in dataset:  # type: ignore
+    for el in tqdm(dataset, desc="extracting GT"):  # type: ignore
         future_coords_offsets.append(el["target_positions"])
         timestamps.append(el["timestamp"])
         agent_ids.append(el["track_id"])
