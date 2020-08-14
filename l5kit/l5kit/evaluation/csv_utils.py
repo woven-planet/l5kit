@@ -173,6 +173,7 @@ def write_pred_csv(
     assert num_coords == 2
     assert timestamps.shape == track_ids.shape == (num_example,)
     assert confs is not None and confs.shape == (num_example, num_modes)
+    assert np.allclose(np.sum(confs, axis=-1), 1.0)
     assert num_modes <= MAX_MODES
 
     # generate always a fixed size json for MAX_MODES by padding the arrays with zeros
@@ -180,7 +181,7 @@ def write_pred_csv(
     coords_padded[:, :num_modes] = coords
     confs_padded = np.zeros((num_example, MAX_MODES), dtype=confs.dtype)
     confs_padded[:, :num_modes] = confs
-    # TODO check sum to 1
+
     coords_keys_list = [_generate_coords_keys(future_len, mode_index=idx) for idx in range(MAX_MODES)]
     confs_keys = _generate_confs_keys()
 
