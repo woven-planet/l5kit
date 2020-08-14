@@ -10,9 +10,7 @@ from l5kit.rasterization import StubRasterizer
 
 
 def test_compute_mse_error(tmp_path: Path, zarr_dataset: ChunkedDataset, cfg: dict) -> None:
-    rast = StubRasterizer(
-        (10, 10), np.asarray((0.25, 0.25)), np.asarray((0.5, 0.5)), 0.5
-    )  # TODO replace using builder
+    rast = StubRasterizer((10, 10), np.asarray((0.25, 0.25)), np.asarray((0.5, 0.5)), 0.5)
     dataset = AgentDataset(cfg, zarr_dataset, rast)
 
     gt_coords = []
