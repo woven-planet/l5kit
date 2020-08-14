@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>l5kit.evaluation.extract_ground_truth module &mdash; L5Kit 1.0.5 documentation</title>
+  <title>l5kit.evaluation.metrics module &mdash; L5Kit 1.0.5 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="l5kit.evaluation.extract_metric module" href="l5kit.evaluation.extract_metric.html" />
-    <link rel="prev" title="l5kit.evaluation.csv_utils module" href="l5kit.evaluation.csv_utils.html" /> 
+    <link rel="next" title="l5kit.geometry package" href="l5kit.geometry.html" />
+    <link rel="prev" title="l5kit.evaluation.extract_metric module" href="l5kit.evaluation.extract_metric.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -97,9 +97,9 @@
 <li class="toctree-l2 current"><a class="reference internal" href="l5kit.evaluation.html">l5kit.evaluation package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="l5kit.evaluation.html#submodules">Submodules</a><ul class="current">
 <li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.csv_utils.html">l5kit.evaluation.csv_utils module</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.evaluation.extract_ground_truth module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.extract_ground_truth.html">l5kit.evaluation.extract_ground_truth module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.extract_metric.html">l5kit.evaluation.extract_metric module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.metrics.html">l5kit.evaluation.metrics module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.evaluation.metrics module</a></li>
 </ul>
 </li>
 </ul>
@@ -163,13 +163,13 @@
         
           <li><a href="l5kit.evaluation.html">l5kit.evaluation package</a> &raquo;</li>
         
-      <li>l5kit.evaluation.extract_ground_truth module</li>
+      <li>l5kit.evaluation.metrics module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/API/l5kit.evaluation.extract_ground_truth.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/API/l5kit.evaluation.metrics.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -182,22 +182,30 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-l5kit.evaluation.extract_ground_truth">
-<span id="l5kit-evaluation-extract-ground-truth-module"></span><h1>l5kit.evaluation.extract_ground_truth module<a class="headerlink" href="#module-l5kit.evaluation.extract_ground_truth" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-l5kit.evaluation.metrics">
+<span id="l5kit-evaluation-metrics-module"></span><h1>l5kit.evaluation.metrics module<a class="headerlink" href="#module-l5kit.evaluation.metrics" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="l5kit.evaluation.extract_ground_truth.export_zarr_to_csv">
-<code class="sig-prename descclassname">l5kit.evaluation.extract_ground_truth.</code><code class="sig-name descname">export_zarr_to_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zarr_dataset</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset">l5kit.data.zarr_dataset.ChunkedDataset</a></span></em>, <em class="sig-param"><span class="n">csv_file_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">future_num_frames</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">filter_agents_threshold</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">history_step_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">future_step_size</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.evaluation.extract_ground_truth.export_zarr_to_csv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Produces a csv file containing the ground truth from a zarr file.</p>
+<dt id="l5kit.evaluation.metrics.neg_multi_log_likelihood">
+<code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">neg_multi_log_likelihood</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gt</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">confidences</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">avails</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.evaluation.metrics.neg_multi_log_likelihood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a negative log-likelihood for the multi-modal scenario.
+log-sum-exp trick is used here to avoid underflow and overflow, For more information about it see:
+<a class="reference external" href="https://en.wikipedia.org/wiki/LogSumExp#log-sum-exp_trick_for_log-domain_calculations">https://en.wikipedia.org/wiki/LogSumExp#log-sum-exp_trick_for_log-domain_calculations</a>
+<a class="reference external" href="https://timvieira.github.io/blog/post/2014/02/11/exp-normalize-trick/">https://timvieira.github.io/blog/post/2014/02/11/exp-normalize-trick/</a>
+<a class="reference external" href="https://leimao.github.io/blog/LogSumExp/">https://leimao.github.io/blog/LogSumExp/</a></p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>zarr_dataset</strong> (<em>np.ndarray</em>) – The open zarr dataset.</p></li>
-<li><p><strong>csv_file_path</strong> (<em>str</em>) – File path to write a CSV to.</p></li>
-<li><p><strong>future_num_frames</strong> (<em>int</em>) – Amount of future displacements we want.</p></li>
-<li><p><strong>filter_agents_threshold</strong> (<em>float</em>) – Value between 0 and 1 to use as cutoff value for agent filtering</p></li>
-<li><p><strong>history_step_size</strong> (<em>int</em>) – Steps to take between frames, can be used to subsample history frames.</p></li>
-<li><p><strong>future_step_size</strong> (<em>int</em>) – Steps to take between targets into the future.</p></li>
+<li><p><strong>gt</strong> (<em>np.ndarray</em>) – array of shape (time)x(2D coords)</p></li>
+<li><p><strong>pred</strong> (<em>np.ndarray</em>) – array of shape (modes)x(time)x(2D coords)</p></li>
+<li><p><strong>confidences</strong> (<em>np.ndarray</em>) – array of shape (modes) with a confidence for each mode in each sample</p></li>
+<li><p><strong>avails</strong> (<em>np.ndarray</em>) – array of shape (time) with the availability for each gt timestep</p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>negative log-likelihood for this example, a single float number</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -212,10 +220,10 @@
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="l5kit.evaluation.extract_metric.html" class="btn btn-neutral float-right" title="l5kit.evaluation.extract_metric module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="l5kit.geometry.html" class="btn btn-neutral float-right" title="l5kit.geometry package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="l5kit.evaluation.csv_utils.html" class="btn btn-neutral float-left" title="l5kit.evaluation.csv_utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="l5kit.evaluation.extract_metric.html" class="btn btn-neutral float-left" title="l5kit.evaluation.extract_metric module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

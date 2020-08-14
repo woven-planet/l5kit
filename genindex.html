@@ -243,10 +243,10 @@
         <li><a href="API/l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset">(class in l5kit.data.zarr_dataset)</a>
 </li>
       </ul></li>
-      <li><a href="API/l5kit.evaluation.html#l5kit.evaluation.compute_mse_error_csv">compute_mse_error_csv() (in module l5kit.evaluation)</a>
+      <li><a href="API/l5kit.evaluation.html#l5kit.evaluation.compute_error_csv">compute_error_csv() (in module l5kit.evaluation)</a>
 
       <ul>
-        <li><a href="API/l5kit.evaluation.extract_losses.html#l5kit.evaluation.extract_losses.compute_mse_error_csv">(in module l5kit.evaluation.extract_losses)</a>
+        <li><a href="API/l5kit.evaluation.extract_metric.html#l5kit.evaluation.extract_metric.compute_error_csv">(in module l5kit.evaluation.extract_metric)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -317,10 +317,10 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.rasterization.semantic_rasterizer.html#l5kit.rasterization.semantic_rasterizer.elements_within_bounds">elements_within_bounds() (in module l5kit.rasterization.semantic_rasterizer)</a>
 </li>
-      <li><a href="API/l5kit.evaluation.html#l5kit.evaluation.export_zarr_to_ground_truth_csv">export_zarr_to_ground_truth_csv() (in module l5kit.evaluation)</a>
+      <li><a href="API/l5kit.evaluation.html#l5kit.evaluation.export_zarr_to_csv">export_zarr_to_csv() (in module l5kit.evaluation)</a>
 
       <ul>
-        <li><a href="API/l5kit.evaluation.extract_ground_truth.html#l5kit.evaluation.extract_ground_truth.export_zarr_to_ground_truth_csv">(in module l5kit.evaluation.extract_ground_truth)</a>
+        <li><a href="API/l5kit.evaluation.extract_ground_truth.html#l5kit.evaluation.extract_ground_truth.export_zarr_to_csv">(in module l5kit.evaluation.extract_ground_truth)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -711,17 +711,17 @@
 </li>
       </ul></li>
       <li>
-    l5kit.evaluation.extract_losses
+    l5kit.evaluation.extract_metric
 
       <ul>
-        <li><a href="API/l5kit.evaluation.extract_losses.html#module-l5kit.evaluation.extract_losses">module</a>
+        <li><a href="API/l5kit.evaluation.extract_metric.html#module-l5kit.evaluation.extract_metric">module</a>
 </li>
       </ul></li>
       <li>
-    l5kit.evaluation.write_csv
+    l5kit.evaluation.metrics
 
       <ul>
-        <li><a href="API/l5kit.evaluation.write_csv.html#module-l5kit.evaluation.write_csv">module</a>
+        <li><a href="API/l5kit.evaluation.metrics.html#module-l5kit.evaluation.metrics">module</a>
 </li>
       </ul></li>
       <li>
@@ -1006,9 +1006,9 @@
 </li>
         <li><a href="API/l5kit.evaluation.extract_ground_truth.html#module-l5kit.evaluation.extract_ground_truth">l5kit.evaluation.extract_ground_truth</a>
 </li>
-        <li><a href="API/l5kit.evaluation.extract_losses.html#module-l5kit.evaluation.extract_losses">l5kit.evaluation.extract_losses</a>
+        <li><a href="API/l5kit.evaluation.extract_metric.html#module-l5kit.evaluation.extract_metric">l5kit.evaluation.extract_metric</a>
 </li>
-        <li><a href="API/l5kit.evaluation.write_csv.html#module-l5kit.evaluation.write_csv">l5kit.evaluation.write_csv</a>
+        <li><a href="API/l5kit.evaluation.metrics.html#module-l5kit.evaluation.metrics">l5kit.evaluation.metrics</a>
 </li>
         <li><a href="API/l5kit.geometry.html#module-l5kit.geometry">l5kit.geometry</a>
 </li>
@@ -1072,6 +1072,10 @@
 
 <h2 id="N">N</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.neg_multi_log_likelihood">neg_multi_log_likelihood() (in module l5kit.evaluation.metrics)</a>
+</li>
+  </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.geometry.html#l5kit.geometry.normalize_intensity">normalize_intensity() (in module l5kit.geometry)</a>
 
@@ -1329,6 +1333,10 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.evaluation.extract_metric.html#l5kit.evaluation.extract_metric.validate_dicts">validate_dicts() (in module l5kit.evaluation.extract_metric)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.geometry.html#l5kit.geometry.voxel_coords_to_intensity_grid">voxel_coords_to_intensity_grid() (in module l5kit.geometry)</a>
 
       <ul>
@@ -1347,26 +1355,20 @@
         <li><a href="API/l5kit.geometry.transform.html#l5kit.geometry.transform.world_to_image_pixels_matrix">(in module l5kit.geometry.transform)</a>
 </li>
       </ul></li>
-      <li><a href="API/l5kit.evaluation.html#l5kit.evaluation.write_coords_as_csv">write_coords_as_csv() (in module l5kit.evaluation)</a>
-
-      <ul>
-        <li><a href="API/l5kit.evaluation.write_csv.html#l5kit.evaluation.write_csv.write_coords_as_csv">(in module l5kit.evaluation.write_csv)</a>
-</li>
-      </ul></li>
       <li><a href="API/l5kit.visualization.html#l5kit.visualization.write_gif">write_gif() (in module l5kit.visualization)</a>
 
       <ul>
         <li><a href="API/l5kit.visualization.gif.html#l5kit.visualization.gif.write_gif">(in module l5kit.visualization.gif)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.evaluation.html#l5kit.evaluation.write_gt_csv">write_gt_csv() (in module l5kit.evaluation)</a>
 
       <ul>
         <li><a href="API/l5kit.evaluation.csv_utils.html#l5kit.evaluation.csv_utils.write_gt_csv">(in module l5kit.evaluation.csv_utils)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.evaluation.html#l5kit.evaluation.write_pred_csv">write_pred_csv() (in module l5kit.evaluation)</a>
 
       <ul>
