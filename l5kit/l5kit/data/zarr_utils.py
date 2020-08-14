@@ -3,6 +3,7 @@ from collections import Counter
 from pathlib import Path
 from typing import List, Optional, Tuple
 
+import numpy as np
 from tqdm import tqdm
 
 from . import ChunkedDataset
@@ -222,3 +223,61 @@ def zarr_split(input_zarr: str, output_path: str, split_infos: List[dict]) -> Li
         cur_scene = end_cut
 
     return cuts_track
+
+
+def zarr_scenes_chunk(input_zarr: str, output_zarr: str, num_frames_to_copy: int) -> None:
+    """
+    Copy `num_frames_to_keep` from each scene in input_zarr and paste them into output_zarr
+
+    Args:
+        input_zarr (str): path to the input zarr
+        output_zarr (str): path to the output zarr
+        num_frames_to_copy (int): how many frames to copy from the start of each scene
+
+    Returns:
+
+    """
+    input_dataset = ChunkedDataset(input_zarr)
+    input_dataset.open()
+
+    # check we can actually copy the frames we want from each scene
+    assert np.all(np.diff(input_dataset.scenes["frame_index_interval"], 1) > num_frames_to_copy), "not enough frames"
+
+    output_dataset = ChunkedDataset(output_zarr)
+    output_dataset.initialize()
+
+    # current indices where to copy in the output_dataset
+    cur_scene_idx, cur_frame_idx, cur_agent_idx, cur_tl_face_idx = 0, 0, 0, 0
+
+    for idx in tqdm(range(len(input_dataset.scenes)), desc="copying"):
+
+        # get data and immediately chop frames, agents and traffic lights
+        scene = input_dataset.scenes[idx]
+        first_frame_idx = scene["frame_index_interval"][0]
+
+        frames = input_dataset.frames[first_frame_idx : first_frame_idx + num_frames_to_copy]
+        agents = input_dataset.agents[frames[0]["agent_index_interval"][0] : frames[-1]["agent_index_interval"][1]]
+        tl_faces = input_dataset.tl_faces[
+            frames[0]["traffic_light_faces_index_interval"][0] : frames[-1]["traffic_light_faces_index_interval"][1]
+        ]
+
+        # reset interval relative to our output (subtract current history and add output history)
+        scene["frame_index_interval"][0] = cur_frame_idx
+        scene["frame_index_interval"][1] = cur_frame_idx + num_frames_to_copy  # address for less frames
+
+        frames["agent_index_interval"] += cur_agent_idx - frames[0]["agent_index_interval"][0]
+        frames["traffic_light_faces_index_interval"] += (
+            cur_tl_face_idx - frames[0]["traffic_light_faces_index_interval"][0]
+        )
+
+        # write in dest using append (slow)
+        output_dataset.scenes.append(scene[None, ...])  # need 2D array to concatenate
+        output_dataset.frames.append(frames)
+        output_dataset.agents.append(agents)
+        output_dataset.tl_faces.append(tl_faces)
+
+        # increase indices in output
+        cur_scene_idx += len(scene)
+        cur_frame_idx += len(frames)
+        cur_agent_idx += len(agents)
+        cur_tl_face_idx += len(tl_faces)

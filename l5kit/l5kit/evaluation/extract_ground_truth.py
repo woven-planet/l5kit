@@ -1,4 +1,7 @@
+from typing import Optional
+
 import numpy as np
+from tqdm import tqdm
 
 from l5kit.data import ChunkedDataset
 from l5kit.dataset import AgentDataset
@@ -14,6 +17,7 @@ def export_zarr_to_csv(
     filter_agents_threshold: float,
     history_step_size: int = 1,
     future_step_size: int = 1,
+    agents_mask: Optional[np.array] = None,
 ) -> None:
     """Produces a csv file containing the ground truth from a zarr file.
 
@@ -24,6 +28,8 @@ def export_zarr_to_csv(
         filter_agents_threshold (float): Value between 0 and 1 to use as cutoff value for agent filtering
         history_step_size (int): Steps to take between frames, can be used to subsample history frames.
         future_step_size (int): Steps to take between targets into the future.
+        agents_mask (Optional[np.array]): a boolean mask of shape (len(zarr_dataset.agents)) which will be used
+        instead of computing the agents_mask
     """
 
     assert future_step_size == history_step_size == 1, "still not handled in select_agents"
@@ -48,7 +54,7 @@ def export_zarr_to_csv(
         ego_center=cfg["raster_params"]["ego_center"],
         filter_agents_threshold=filter_agents_threshold,
     )
-    dataset = AgentDataset(cfg=cfg, zarr_dataset=zarr_dataset, rasterizer=rasterizer)
+    dataset = AgentDataset(cfg=cfg, zarr_dataset=zarr_dataset, rasterizer=rasterizer, agents_mask=agents_mask)
 
     future_coords_offsets = []
     target_availabilities = []
@@ -56,7 +62,7 @@ def export_zarr_to_csv(
     timestamps = []
     agent_ids = []
 
-    for el in dataset:  # type: ignore
+    for el in tqdm(dataset, desc="extracting GT"):  # type: ignore
         future_coords_offsets.append(el["target_positions"])
         timestamps.append(el["timestamp"])
         agent_ids.append(el["track_id"])

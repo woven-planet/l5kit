@@ -2,9 +2,10 @@ from pathlib import Path
 from uuid import uuid4
 
 import numpy as np
+import pytest
 
 from l5kit.data import ChunkedDataset, LocalDataManager
-from l5kit.data.zarr_utils import zarr_concat, zarr_split
+from l5kit.data.zarr_utils import zarr_concat, zarr_scenes_chunk, zarr_split
 
 
 def test_zarr_concat(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: ChunkedDataset) -> None:
@@ -86,8 +87,8 @@ def test_zarr_concat(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: Chunke
 def test_zarr_split(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: ChunkedDataset) -> None:
     concat_count = 10
     zarr_input_path = dmg.require("single_scene.zarr")
-    zarr_cat_path = str(tmp_path / f"{uuid4()}.zarr")
-    zarr_concat([zarr_input_path] * concat_count, zarr_cat_path)
+    zarr_concatenated_path = str(tmp_path / f"{uuid4()}.zarr")
+    zarr_concat([zarr_input_path] * concat_count, zarr_concatenated_path)
 
     split_infos = [
         {"name": f"{uuid4()}.zarr", "split_size_GB": 0.002},  # cut around 2MB
@@ -95,11 +96,11 @@ def test_zarr_split(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: Chunked
         {"name": f"{uuid4()}.zarr", "split_size_GB": -1},
     ]  # everything else
 
-    scene_splits = zarr_split(zarr_cat_path, str(tmp_path), split_infos)
+    scene_splits = zarr_split(zarr_concatenated_path, str(tmp_path), split_infos)
 
     # load the zarrs and check elements
-    zarr_cat = ChunkedDataset(zarr_cat_path)
-    zarr_cat.open()
+    zarr_concatenated = ChunkedDataset(zarr_concatenated_path)
+    zarr_concatenated.open()
 
     for scene_split, split_info in zip(scene_splits, split_infos):
         zarr_out = ChunkedDataset(str(tmp_path / str(split_info["name"])))
@@ -109,12 +110,12 @@ def test_zarr_split(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: Chunked
         for idx_scene in range(len(zarr_out.scenes)):
 
             # compare elements in the scene
-            input_scene = zarr_cat.scenes[scene_split[0] + idx_scene]
-            input_frames = zarr_cat.frames[slice(*input_scene["frame_index_interval"])]
-            input_agents = zarr_cat.agents[
+            input_scene = zarr_concatenated.scenes[scene_split[0] + idx_scene]
+            input_frames = zarr_concatenated.frames[slice(*input_scene["frame_index_interval"])]
+            input_agents = zarr_concatenated.agents[
                 input_frames[0]["agent_index_interval"][0] : input_frames[-1]["agent_index_interval"][1]
             ]
-            input_tl_faces = zarr_cat.tl_faces[
+            input_tl_faces = zarr_concatenated.tl_faces[
                 input_frames[0]["traffic_light_faces_index_interval"][0] : input_frames[-1][
                     "traffic_light_faces_index_interval"
                 ][1]
@@ -135,3 +136,66 @@ def test_zarr_split(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: Chunked
             assert np.all(input_frames["ego_rotation"] == output_frames["ego_rotation"])
             assert np.all(input_agents == output_agents)
             assert np.all(input_tl_faces == output_tl_faces)
+
+
+@pytest.mark.parametrize("num_frames_to_copy", [1, 10, 50, pytest.param(500, marks=pytest.mark.xfail)])
+def test_zarr_scenes_chunk(
+    dmg: LocalDataManager, tmp_path: Path, zarr_dataset: ChunkedDataset, num_frames_to_copy: int
+) -> None:
+    # first let's concat so we have multiple scenes
+    concat_count = 10
+    zarr_input_path = dmg.require("single_scene.zarr")
+    zarr_concatenated_path = str(tmp_path / f"{uuid4()}.zarr")
+    zarr_concat([zarr_input_path] * concat_count, zarr_concatenated_path)
+
+    # now let's chunk it
+    zarr_chunk_path = str(tmp_path / f"{uuid4()}.zarr")
+    zarr_scenes_chunk(zarr_concatenated_path, zarr_chunk_path, num_frames_to_copy=num_frames_to_copy)
+
+    # open both and compare
+    zarr_concatenated = ChunkedDataset(zarr_concatenated_path)
+    zarr_concatenated.open()
+    zarr_chunk = ChunkedDataset(zarr_chunk_path)
+    zarr_chunk.open()
+
+    assert len(zarr_concatenated.scenes) == len(zarr_chunk.scenes)
+    assert len(zarr_chunk.frames) == num_frames_to_copy * len(zarr_chunk.scenes)
+
+    for idx in range(len(zarr_concatenated.scenes)):
+        scene_cat = zarr_concatenated.scenes[idx]
+        scene_chunk = zarr_chunk.scenes[idx]
+
+        frames_cat = zarr_concatenated.frames[
+            scene_cat["frame_index_interval"][0] : scene_cat["frame_index_interval"][0] + num_frames_to_copy
+        ]
+        frames_chunk = zarr_chunk.frames[slice(*scene_chunk["frame_index_interval"])]
+
+        agents_cat = zarr_concatenated.agents[
+            frames_cat[0]["agent_index_interval"][0] : frames_cat[-1]["agent_index_interval"][1]
+        ]
+        tl_faces_cat = zarr_concatenated.tl_faces[
+            frames_cat[0]["traffic_light_faces_index_interval"][0] : frames_cat[-1][
+                "traffic_light_faces_index_interval"
+            ][1]
+        ]
+
+        agents_chunk = zarr_chunk.agents[
+            frames_chunk[0]["agent_index_interval"][0] : frames_chunk[-1]["agent_index_interval"][1]
+        ]
+        tl_faces_chunk = zarr_chunk.tl_faces[
+            frames_chunk[0]["traffic_light_faces_index_interval"][0] : frames_chunk[-1][
+                "traffic_light_faces_index_interval"
+            ][1]
+        ]
+
+        assert scene_chunk["host"] == scene_cat["host"]
+        assert scene_chunk["start_time"] == scene_cat["start_time"]
+        assert scene_chunk["end_time"] == scene_cat["end_time"]
+
+        assert len(frames_chunk) == num_frames_to_copy
+
+        assert np.all(frames_chunk["ego_translation"] == frames_cat["ego_translation"][:num_frames_to_copy])
+        assert np.all(frames_chunk["ego_rotation"] == frames_cat["ego_rotation"][:num_frames_to_copy])
+
+        assert np.all(agents_chunk == agents_cat)
+        assert np.all(tl_faces_chunk == tl_faces_cat)
