@@ -23,7 +23,10 @@ jobs:
     - name: Set up Poetry
       run: |
         curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
-        source $HOME/.poetry/env
+        echo "::add-path::$HOME/.poetry/bin"
+    - name: echo path
+      run: |
+        echo $PATH
     - name: Install dependencies
       working-directory: l5kit
       run: |
