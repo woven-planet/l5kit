@@ -12,30 +12,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v2
-      - name: Set up Python 3.8
-        uses: actions/setup-python@v1
-        with:
-          python-version: 3.8
-      - name: Set up Poetry
-        uses: Gr1N/setup-poetry@v2
-        with:
-          poetry-version: 1.0.10
-      - name: Install dependencies
-        working-directory: l5kit
-        run: |
-          poetry install
-      - name: Build docs
-        working-directory: .
-        run: |
-          sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
-          sphinx-build . docs_built
+    - uses: actions/checkout@v2
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.8
+    - name: Set up Poetry
+      uses: Gr1N/setup-poetry@v2
+      with:
+        poetry-version: 1.0.10
+    - name: Install dependencies
+      working-directory: l5kit
+      run: |
+        poetry install
+    - name: Build docs
+      working-directory: .
+      run: |
+        sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
+        sphinx-build . docs_built
 
-      - name: Deploy docs
-        uses: JamesIves/github-pages-deploy-action@releases/v3
-        with:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          BASE_BRANCH: master # The branch the action should deploy from.
-          BRANCH: gh-pages # The branch the action should deploy to.
-          FOLDER: docs_built # The folder the action should deploy (only stuff inside will be copied).
-        if: github.event_name == 'push'
+    - name: Deploy docs
+      uses: JamesIves/github-pages-deploy-action@releases/v3
+      with:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        BASE_BRANCH: master # The branch the action should deploy from.
+        BRANCH: gh-pages # The branch the action should deploy to.
+        FOLDER: docs_built # The folder the action should deploy (only stuff inside will be copied).
+      if: github.event_name == 'push'
