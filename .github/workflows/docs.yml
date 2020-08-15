@@ -17,6 +17,9 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
+    - name: Update Pip
+      run: |
+        pip install pip --upgrade
     - name: Set up Poetry
       uses: Gr1N/setup-poetry@v2
       with:
