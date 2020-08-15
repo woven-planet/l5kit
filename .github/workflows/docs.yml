@@ -17,10 +17,6 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: 3.8
-    - name: Set up Poetry
-      uses: Gr1N/setup-poetry@v2
-      with:
-        poetry-version: 1.0.10
     - name: Install dependencies
       working-directory: l5kit
       run: |
