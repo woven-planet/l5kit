@@ -20,11 +20,17 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - name: Update Pip
       run: |
-        pip install pip --upgrade
+        pip3 install pip --upgrade
+    - name: check pip version
+      run: |
+        pip3 --version
     - name: Set up Poetry
       uses: Gr1N/setup-poetry@v2
       with:
         poetry-version: 1.0.10
+    - name: check pip version again
+      run: |
+        pip3 --version
     - name: Install dependencies
       working-directory: l5kit
       run: |
