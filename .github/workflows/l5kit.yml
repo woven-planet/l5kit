@@ -28,7 +28,7 @@ jobs:
       run: |
         poetry install
       env:
-        POETRY_VIRTUALENVS_CREATE=false
+        POETRY_VIRTUALENVS_CREATE: false
     - name: Lint project
       working-directory: l5kit
       run: |
