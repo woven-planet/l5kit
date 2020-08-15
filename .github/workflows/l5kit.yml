@@ -18,17 +18,17 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
-    - name: Update Pip
-      run: |
-        pip3 install pip --upgrade
     - name: Set up Poetry
       run: |
+        pip3 install pip --upgrade
         curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
-        source $HOME/.poetry/env
+        echo "::add-path::$HOME/.poetry/bin"
     - name: Install dependencies
       working-directory: l5kit
       run: |
         poetry install
+      env:
+        POETRY_VIRTUALENVS_CREATE=false
     - name: Lint project
       working-directory: l5kit
       run: |
