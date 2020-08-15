@@ -18,11 +18,14 @@ jobs:
       uses: actions/setup-python@v1
       with:
         python-version: ${{ matrix.python-version }}
+    - name: Set up Poetry
+      uses: Gr1N/setup-poetry@v2
+      with:
+        poetry-version: 1.0.10
     - name: Install dependencies
       working-directory: l5kit
       run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
+        poetry install
     - name: Lint project
       working-directory: l5kit
       run: |
