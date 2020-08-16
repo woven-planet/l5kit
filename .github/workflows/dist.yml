@@ -14,14 +14,16 @@ jobs:
       with:
         python-version: 3.8
     - name: Set up Poetry
-      run: |
-        pip3 install pip --upgrade
-        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
-        echo "::add-path::$HOME/.poetry/bin"
-    - name: Build wheel
+      uses: Gr1N/setup-poetry@v2
+      with:
+        poetry-version: 1.0.10
+    - name: Build Wheel
       working-directory: l5kit
       run: |
+        poetry run pip install --upgrade pip
         poetry build
+      env:
+        POETRY_VIRTUALENVS_CREATE: false
     - name: Publish to PyPI
       if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')  # publish only on annotate commits
       uses: pypa/gh-action-pypi-publish@v1.2.2

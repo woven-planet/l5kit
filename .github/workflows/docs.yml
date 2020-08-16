@@ -18,13 +18,13 @@ jobs:
       with:
         python-version: 3.8
     - name: Set up Poetry
-      run: |
-        pip3 install pip --upgrade
-        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
-        echo "::add-path::$HOME/.poetry/bin"
+      uses: Gr1N/setup-poetry@v2
+      with:
+        poetry-version: 1.0.10
     - name: Install dependencies
       working-directory: l5kit
       run: |
+        poetry run pip install --upgrade pip
         poetry install
       env:
         POETRY_VIRTUALENVS_CREATE: false
