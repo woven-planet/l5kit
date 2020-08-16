@@ -27,7 +27,8 @@ jobs:
       run: |
         poetry run pip install --upgrade pip
         poetry install
-      POETRY_VIRTUALENVS_CREATE: false
+      env:
+        POETRY_VIRTUALENVS_CREATE: false
     - name: Lint project
       working-directory: l5kit
       run: |
