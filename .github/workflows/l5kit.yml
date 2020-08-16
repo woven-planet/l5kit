@@ -19,16 +19,15 @@ jobs:
       with:
         python-version: ${{ matrix.python-version }}
     - name: Set up Poetry
-      run: |
-        pip3 install pip --upgrade
-        curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python3
-        echo "::add-path::$HOME/.poetry/bin"
+      uses: Gr1N/setup-poetry@v2
+      with:
+        poetry-version: 1.0.10
     - name: Install dependencies
       working-directory: l5kit
       run: |
+        poetry run pip install --upgrade pip
         poetry install
-      env:
-        POETRY_VIRTUALENVS_CREATE: false
+      POETRY_VIRTUALENVS_CREATE: false
     - name: Lint project
       working-directory: l5kit
       run: |
