@@ -45,7 +45,9 @@ def clean_mask(zarr_dataset: ChunkedDataset) -> Iterator[None]:
     """
     Auto clean agents_mask for artefacts during tests tear down
     """
-    # nothing to set up
+    agents_mask_path = Path(zarr_dataset.path) / "agents_mask"
+    if agents_mask_path.exists():
+        rmtree(str(agents_mask_path))
     yield None
     # remove agents mask during tear down
     agents_mask_path = Path(zarr_dataset.path) / "agents_mask"
