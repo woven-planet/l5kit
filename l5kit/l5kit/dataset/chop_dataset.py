@@ -13,7 +13,7 @@ MIN_FUTURE_STEPS = 10
 FUTURE_STEPS = 50
 
 
-def chop_dataset(
+def create_chopped_dataset(
     zarr_path: str, th_agent_prob: float, num_frames_to_copy: int, num_frames_gt: int, min_frame_future: int
 ) -> str:
     """
@@ -41,7 +41,7 @@ def chop_dataset(
     gt_path = dest_path / "gt.csv"
     mask_chopped_path = dest_path / "mask"
 
-    # 1: Create original mask
+    # Create standard mask for the dataset so we can use it to filter out unreliable agents
     zarr_dt = ChunkedDataset(str(zarr_path))
     zarr_dt.open()
 
@@ -56,12 +56,12 @@ def chop_dataset(
         )
     agents_mask_origin = np.asarray(convenience.load(str(agents_mask_path)))
 
-    # 2: compute chop
+    # create chopped dataset
     zarr_scenes_chunk(str(zarr_path), str(chopped_path), num_frames_to_copy=num_frames_to_copy)
     zarr_chopped = ChunkedDataset(str(chopped_path))
     zarr_chopped.open()
 
-    # 3: Compute new mask
+    # compute the chopped boolean mask, but also the original one limited to frames of interest for GT csv
     agents_mask_chop_bool = np.zeros(len(zarr_chopped.agents), dtype=np.bool)
     agents_mask_orig_bool = np.zeros(len(zarr_dt.agents), dtype=np.bool)
 
@@ -73,16 +73,13 @@ def chop_dataset(
         frame_chopped = zarr_chopped.frames[zarr_chopped.scenes[idx]["frame_index_interval"][-1] - 1]
         slice_agents_chopped = slice(*frame_chopped["agent_index_interval"])
 
-        # 3.1: filter agents_mask_origin for future
         mask = agents_mask_origin[slice_agents_original][:, 1] >= min_frame_future
         agents_mask_orig_bool[slice_agents_original] = mask.copy()
         agents_mask_chop_bool[slice_agents_chopped] = mask.copy()
 
-    # 4: store information
+    # store the mask and the GT csv for frames on interest
     np.savez(str(mask_chopped_path), agents_mask_chop_bool)
-    export_zarr_to_csv(
-        zarr_dt, str(gt_path), num_frames_gt, th_agent_prob, agents_mask=agents_mask_orig_bool,
-    )
+    export_zarr_to_csv(zarr_dt, str(gt_path), num_frames_gt, th_agent_prob, agents_mask=agents_mask_orig_bool)
     return str(dest_path)
 
 
@@ -95,4 +92,4 @@ if __name__ == "__main__":
     parser.add_argument("--min_future_steps", default=MIN_FUTURE_STEPS, type=int)
     args = parser.parse_args()
     for zarr_path in args.zarr_paths:
-        chop_dataset(zarr_path, args.th_agent_prob, args.num_frames_to_copy, args.future_steps, args.min_future_steps)
+        create_chopped_dataset(zarr_path, args.th_agent_prob, args.num_frames_to_copy, args.future_steps, args.min_future_steps)
