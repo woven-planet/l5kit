@@ -44,3 +44,23 @@ def neg_multi_log_likelihood(
     max_value = error.max()  # error are negative at this point, so max() gives the minimum one
     error = -np.log(np.sum(np.exp(error - max_value), axis=-1)) - max_value  # reduce modes
     return error
+
+
+def rmse(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> np.ndarray:
+    """
+    Return the root mean squared error, computed using the stable nll
+
+    Args:
+        gt (np.ndarray): array of shape (time)x(2D coords)
+        pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
+        confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
+        avails (np.ndarray): array of shape (time) with the availability for each gt timestep
+
+    Returns:
+        np.ndarray: negative log-likelihood for this example, a single float number
+
+    """
+    nll = neg_multi_log_likelihood(gt, pred, confidences, avails)
+    _, future_len, _ = pred.shape
+
+    return np.sqrt(2 * nll / future_len)
