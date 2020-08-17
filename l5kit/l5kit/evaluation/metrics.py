@@ -94,7 +94,7 @@ def prob_true_mode(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, av
         avails (np.ndarray): array of shape (time) with the availability for each gt timestep
 
     Returns:
-        np.ndarray: negative log-likelihood for this example, a single float number
+        np.ndarray: a (modes) numpy array
 
     """
     _assert_shapes(gt, pred, confidences, avails)
@@ -105,3 +105,24 @@ def prob_true_mode(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, av
     error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
     error = - 0.5 * np.sum(error, axis=-1)  # reduce time
     return confidences * np.exp(error)
+
+
+def time_displace(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> np.ndarray:
+    """
+    Return the displacement at time T
+
+    Args:
+        gt (np.ndarray): array of shape (time)x(2D coords)
+        pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
+        confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
+        avails (np.ndarray): array of shape (time) with the availability for each gt timestep
+
+    Returns:
+        np.ndarray: a (time) numpy array
+
+    """
+    true_mode_error = prob_true_mode(gt, pred, confidences, avails)
+    true_mode_error = true_mode_error[:, None]  # add time axis
+
+    error = np.sum(np.abs((gt - pred) * avails), axis=-1)  # reduce coords and use availability
+    return np.sum(true_mode_error * error, axis=0)  # reduce modes

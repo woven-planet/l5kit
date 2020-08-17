@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from l5kit.evaluation.metrics import neg_multi_log_likelihood
+from l5kit.evaluation.metrics import neg_multi_log_likelihood, prob_true_mode, time_displace
 
 
 def test_neg_multi_log_likelihood_shapes() -> None:
