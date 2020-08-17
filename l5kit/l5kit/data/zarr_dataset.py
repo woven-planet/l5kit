@@ -86,7 +86,7 @@ class ChunkedDataset:
 
     def initialize(
         self, mode: str = "w", num_scenes: int = 0, num_frames: int = 0, num_agents: int = 0, num_tl_faces: int = 0
-    ) -> None:
+    ) -> "ChunkedDataset":
         """Initializes a new zarr dataset, creating the underlying arrays.
 
         Keyword Arguments:
@@ -114,8 +114,9 @@ class ChunkedDataset:
 
         self.root.attrs["format_version"] = FORMAT_VERSION
         self.root.attrs["labels"] = PERCEPTION_LABELS
+        return self
 
-    def open(self, mode: str = "r", cached: bool = True, cache_size_bytes: int = int(1e9)) -> None:
+    def open(self, mode: str = "r", cached: bool = True, cache_size_bytes: int = int(1e9)) -> "ChunkedDataset":
         """Opens a zarr dataset from disk from the path supplied in the constructor.
 
         Keyword Arguments:
@@ -141,6 +142,7 @@ opened.
         except KeyError:
             print(f"{TL_FACE_ARRAY_KEY} not found in {self.path}! Traffic lights will be disabled")
             self.tl_faces = np.empty((0,), dtype=TL_FACE_DTYPE)
+        return self
 
     def __str__(self) -> str:
         # TODO add traffic faces
