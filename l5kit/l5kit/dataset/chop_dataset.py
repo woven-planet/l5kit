@@ -10,7 +10,6 @@ from l5kit.dataset.select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_
 from l5kit.evaluation import export_zarr_to_csv
 
 MIN_FUTURE_STEPS = 10
-FUTURE_STEPS = 50
 
 
 def create_chopped_dataset(
