@@ -92,4 +92,6 @@ if __name__ == "__main__":
     parser.add_argument("--min_future_steps", default=MIN_FUTURE_STEPS, type=int)
     args = parser.parse_args()
     for zarr_path in args.zarr_paths:
-        create_chopped_dataset(zarr_path, args.th_agent_prob, args.num_frames_to_copy, args.future_steps, args.min_future_steps)
+        create_chopped_dataset(
+            zarr_path, args.th_agent_prob, args.num_frames_to_copy, args.future_steps, args.min_future_steps
+        )
