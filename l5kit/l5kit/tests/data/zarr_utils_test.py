@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from l5kit.data import ChunkedDataset, LocalDataManager
-from l5kit.data.zarr_utils import zarr_concat, zarr_scenes_chunk, zarr_split
+from l5kit.data.zarr_utils import zarr_concat, zarr_scenes_chop, zarr_split
 
 
 def test_zarr_concat(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: ChunkedDataset) -> None:
@@ -150,7 +150,7 @@ def test_zarr_scenes_chunk(
 
     # now let's chunk it
     zarr_chunk_path = str(tmp_path / f"{uuid4()}.zarr")
-    zarr_scenes_chunk(zarr_concatenated_path, zarr_chunk_path, num_frames_to_copy=num_frames_to_copy)
+    zarr_scenes_chop(zarr_concatenated_path, zarr_chunk_path, num_frames_to_copy=num_frames_to_copy)
 
     # open both and compare
     zarr_concatenated = ChunkedDataset(zarr_concatenated_path)
