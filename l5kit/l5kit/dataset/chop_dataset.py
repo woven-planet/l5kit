@@ -16,13 +16,15 @@ def create_chopped_dataset(
     zarr_path: str, th_agent_prob: float, num_frames_to_copy: int, num_frames_gt: int, min_frame_future: int
 ) -> str:
     """
-    Create a chopped version of the zarr that can be used as a test set. This function is used to generate tests
-    set that have no GT in the data for selected agents.
+    Create a chopped version of the zarr that can be used as a test set.
+    This function was used to generate the test set for the competition so that the future GT is not in the data.
 
     Store:
      - a dataset where each scene has been chopped at `num_frames_to_copy` frames;
      - a mask for agents for those final frames based on the original mask and a threshold on the future_frames;
      - the GT csv for those agents
+
+     For the competition, only the first two (dataset and mask) will be available in the notebooks
 
     Args:
         zarr_path (str): input zarr path to be chopped
