@@ -75,13 +75,15 @@ None if not desired
         """
         frame_interval = self.dataset.scenes[scene_index]["frame_index_interval"]
         frames = self.dataset.frames[frame_interval[0] : frame_interval[1]]
-
-        data = self.sample_function(state_index, frames, self.dataset.agents, track_id)
+        data = self.sample_function(state_index, frames, self.dataset.agents, self.dataset.tl_faces, track_id)
         # 0,1,C -> C,0,1
         image = data["image"].transpose(2, 0, 1)
 
         target_positions = np.array(data["target_positions"], dtype=np.float32)
         target_yaws = np.array(data["target_yaws"], dtype=np.float32)
+
+        history_positions = np.array(data["history_positions"], dtype=np.float32)
+        history_yaws = np.array(data["history_yaws"], dtype=np.float32)
 
         if self.cfg.get("use_frenet", True):  # DO NOT SUBMIT, plumb a config setting for this first
             # Convert from ego-relative coordinates to geomap coordinates
@@ -116,6 +118,9 @@ None if not desired
             "target_positions": target_positions,
             "target_yaws": target_yaws,
             "target_availabilities": data["target_availabilities"],
+            "history_positions": history_positions,
+            "history_yaws": history_yaws,
+            "history_availabilities": data["history_availabilities"],
             "world_to_image": data["world_to_image"],
             "track_id": track_id,
             "timestamp": timestamp,
@@ -164,15 +169,22 @@ None if not desired
         frame_interval = scenes[0]["frame_index_interval"]
         frames = self.dataset.frames[frame_interval[0] : frame_interval[1]].copy()
         # ASSUMPTION: all agents_index are consecutive
-        start_index = frames[0]["agent_index_interval"][0]
-        end_index = frames[-1]["agent_index_interval"][1]
-        agents = self.dataset.agents[start_index:end_index].copy()
-        frames["agent_index_interval"] -= start_index
+        agents_start_index = frames[0]["agent_index_interval"][0]
+        agents_end_index = frames[-1]["agent_index_interval"][1]
+        agents = self.dataset.agents[agents_start_index:agents_end_index].copy()
+
+        tl_start_index = frames[0]["traffic_light_faces_index_interval"][0]
+        tl_end_index = frames[-1]["traffic_light_faces_index_interval"][1]
+        tl_faces = self.dataset.tl_faces[tl_start_index:tl_end_index].copy()
+
+        frames["agent_index_interval"] -= agents_start_index
+        frames["traffic_light_faces_index_interval"] -= tl_start_index
         scenes["frame_index_interval"] -= frame_interval[0]
 
         dataset = ChunkedDataset("")
-        dataset.frames = frames
         dataset.agents = agents
+        dataset.tl_faces = tl_faces
+        dataset.frames = frames
         dataset.scenes = scenes
 
         return EgoDataset(self.cfg, dataset, self.rasterizer, self.perturbation)

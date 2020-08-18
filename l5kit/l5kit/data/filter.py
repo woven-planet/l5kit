@@ -2,10 +2,10 @@ from typing import List, Optional
 
 import numpy as np
 
-from .labels import LABEL_TO_INDEX
+from .labels import PERCEPTION_LABEL_TO_INDEX, TL_FACE_LABEL_TO_INDEX
 
 # Labels that belong to "agents" of some sort.
-LABELS_TO_KEEP = [
+PERCEPTION_LABELS_TO_KEEP = [
     "PERCEPTION_LABEL_CAR",
     "PERCEPTION_LABEL_VAN",
     "PERCEPTION_LABEL_TRAM",
@@ -20,7 +20,7 @@ LABELS_TO_KEEP = [
     "PERCEPTION_LABEL_PEDESTRIAN",
     "PERCEPTION_LABEL_ANIMAL",
 ]
-LABEL_INDICES_TO_KEEP = [LABEL_TO_INDEX[label] for label in LABELS_TO_KEEP]
+PERCEPTION_LABEL_INDICES_TO_KEEP = [PERCEPTION_LABEL_TO_INDEX[label] for label in PERCEPTION_LABELS_TO_KEEP]
 
 
 def _get_label_filter(label_probabilities: np.ndarray, threshold: float) -> np.array:
@@ -38,7 +38,7 @@ def _get_label_filter(label_probabilities: np.ndarray, threshold: float) -> np.a
     Returns:
         np.array -- A binary array which can be used to mask agents.
     """
-    return np.sum(label_probabilities[:, LABEL_INDICES_TO_KEEP], axis=1) > threshold
+    return np.sum(label_probabilities[:, PERCEPTION_LABEL_INDICES_TO_KEEP], axis=1) > threshold
 
 
 def filter_agents_by_labels(agents: np.ndarray, threshold: float = 0.5) -> np.ndarray:
@@ -104,3 +104,31 @@ def filter_agents_by_frames(frames: np.ndarray, agents: np.ndarray) -> List[np.n
     if frames.shape == ():
         frames = frames[None]  # add and axis if a single frame is passed
     return [agents[slice(*frame["agent_index_interval"])] for frame in frames]
+
+
+def filter_tl_faces_by_frames(frames: np.ndarray, tl_faces: np.ndarray) -> List[np.ndarray]:
+    """
+    Get a list of traffic light faces arrays, one array per frame.
+    This functions mimics `filter_agents_by_frames` for traffic light faces
+
+    Args:
+        frames (np.ndarray): an array of frames
+        tl_faces (np.ndarray): an array of traffic light faces
+
+    Returns:
+        List[np.ndarray] with the traffic light faces divided by frame
+    """
+    return [tl_faces[slice(*frame["traffic_light_faces_index_interval"])] for frame in frames]
+
+
+def filter_tl_faces_by_status(tl_faces: np.ndarray, status: str) -> np.ndarray:
+    """
+    Filter tl_faces and keep only active faces
+    Args:
+        tl_faces (np.ndarray): array of traffic faces
+        status (str): status we want to keep TODO refactor for enum
+
+    Returns:
+        np.ndarray: traffic light faces array with only faces with that status
+    """
+    return tl_faces[tl_faces["traffic_light_face_status"][:, TL_FACE_LABEL_TO_INDEX[status]] > 0]

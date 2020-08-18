@@ -1,4 +1,4 @@
-LABELS = [
+PERCEPTION_LABELS = [
     "PERCEPTION_LABEL_NOT_SET",
     "PERCEPTION_LABEL_UNKNOWN",
     "PERCEPTION_LABEL_DONTCARE",
@@ -17,4 +17,12 @@ LABELS = [
     "PERCEPTION_LABEL_ANIMAL",
     "AVRESEARCH_LABEL_DONTCARE",
 ]
-LABEL_TO_INDEX = {label: index for (index, label) in enumerate(LABELS)}
+PERCEPTION_LABEL_TO_INDEX = {label: index for (index, label) in enumerate(PERCEPTION_LABELS)}
+
+
+TL_FACE_LABELS = [
+    "ACTIVE",
+    "INACTIVE",
+    "UNKNOWN",
+]
+TL_FACE_LABEL_TO_INDEX = {label: index for (index, label) in enumerate(TL_FACE_LABELS)}

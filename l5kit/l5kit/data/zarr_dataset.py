@@ -4,18 +4,20 @@ import numpy as np
 import zarr
 from prettytable import PrettyTable
 
-from .labels import LABELS
+from .labels import PERCEPTION_LABELS, TL_FACE_LABELS
 
 # When changing the schema bump this number
-FORMAT_VERSION = 1
+FORMAT_VERSION = 2
 
 FRAME_ARRAY_KEY = "frames"
 AGENT_ARRAY_KEY = "agents"
 SCENE_ARRAY_KEY = "scenes"
+TL_FACE_ARRAY_KEY = "traffic_light_faces"
 
 FRAME_CHUNK_SIZE = (10_000,)
 AGENT_CHUNK_SIZE = (20_000,)
 SCENE_CHUNK_SIZE = (10_000,)
+TL_FACE_CHUNK_SIZE = (10_000,)
 
 SCENE_DTYPE = [
     ("frame_index_interval", np.int64, (2,)),
@@ -27,6 +29,7 @@ SCENE_DTYPE = [
 FRAME_DTYPE = [
     ("timestamp", np.int64),
     ("agent_index_interval", np.int64, (2,)),
+    ("traffic_light_faces_index_interval", np.int64, (2,)),
     ("ego_translation", np.float64, (3,)),
     ("ego_rotation", np.float64, (3, 3)),
 ]
@@ -37,7 +40,13 @@ AGENT_DTYPE = [
     ("yaw", np.float32),
     ("velocity", np.float32, (2,)),
     ("track_id", np.uint64),
-    ("label_probabilities", np.float32, (len(LABELS),)),
+    ("label_probabilities", np.float32, (len(PERCEPTION_LABELS),)),
+]
+
+TL_FACE_DTYPE = [
+    ("face_id", "<U16"),
+    ("traffic_light_id", "<U16"),
+    ("traffic_light_face_status", np.float32, (len(TL_FACE_LABELS,))),
 ]
 
 
@@ -67,6 +76,7 @@ class ChunkedDataset:
         self.frames = np.empty(0, dtype=FRAME_DTYPE)
         self.scenes = np.empty(0, dtype=SCENE_DTYPE)
         self.agents = np.empty(0, dtype=AGENT_DTYPE)
+        self.tl_faces = np.empty(0, dtype=TL_FACE_DTYPE)
 
         # Note: we still support only zarr. However, some functions build a new dataset so we cannot raise error.
         if ".zarr" not in self.path:
@@ -74,38 +84,45 @@ class ChunkedDataset:
         if not Path(self.path).exists():
             print("zarr dataset path doesn't exist. Open will fail for this dataset!")
 
-    def initialize(self, mode: str = "w", scenes_num: int = 0, frames_num: int = 0, agents_num: int = 0) -> None:
+    def initialize(
+        self, mode: str = "w", num_scenes: int = 0, num_frames: int = 0, num_agents: int = 0, num_tl_faces: int = 0
+    ) -> "ChunkedDataset":
         """Initializes a new zarr dataset, creating the underlying arrays.
 
         Keyword Arguments:
             mode (str): Mode to open dataset in, should be something that supports writing. (default: {"w"})
-            scenes_num (int): pre-allocate this number of scenes
-            frames_num (int): pre-allocate this number of frames
-            agents_num (int): pre-allocate this number of agents
+            num_scenes (int): pre-allocate this number of scenes
+            num_frames (int): pre-allocate this number of frames
+            num_agents (int): pre-allocate this number of agents
+            num_tl_faces (int): pre-allocate this number of traffic lights
         """
 
         self.root = zarr.open_group(self.path, mode=mode)
 
         self.frames = self.root.require_dataset(
-            FRAME_ARRAY_KEY, dtype=FRAME_DTYPE, chunks=FRAME_CHUNK_SIZE, shape=(frames_num,)
+            FRAME_ARRAY_KEY, dtype=FRAME_DTYPE, chunks=FRAME_CHUNK_SIZE, shape=(num_frames,)
         )
         self.agents = self.root.require_dataset(
-            AGENT_ARRAY_KEY, dtype=AGENT_DTYPE, chunks=AGENT_CHUNK_SIZE, shape=(agents_num,)
+            AGENT_ARRAY_KEY, dtype=AGENT_DTYPE, chunks=AGENT_CHUNK_SIZE, shape=(num_agents,)
         )
         self.scenes = self.root.require_dataset(
-            SCENE_ARRAY_KEY, dtype=SCENE_DTYPE, chunks=SCENE_CHUNK_SIZE, shape=(scenes_num,)
+            SCENE_ARRAY_KEY, dtype=SCENE_DTYPE, chunks=SCENE_CHUNK_SIZE, shape=(num_scenes,)
+        )
+        self.tl_faces = self.root.require_dataset(
+            TL_FACE_ARRAY_KEY, dtype=TL_FACE_DTYPE, chunks=TL_FACE_CHUNK_SIZE, shape=(num_tl_faces,)
         )
 
         self.root.attrs["format_version"] = FORMAT_VERSION
-        self.root.attrs["labels"] = LABELS
+        self.root.attrs["labels"] = PERCEPTION_LABELS
+        return self
 
-    def open(self, mode: str = "r", cached: bool = True, cache_size_bytes: int = int(1e9)) -> None:
+    def open(self, mode: str = "r", cached: bool = True, cache_size_bytes: int = int(1e9)) -> "ChunkedDataset":
         """Opens a zarr dataset from disk from the path supplied in the constructor.
 
         Keyword Arguments:
             mode (str): Mode to open dataset in, default to read-only (default: {"r"})
             cached (bool): Whether to cache files read from disk using a LRU cache. (default: {True})
-            cache_size (int): Size of cache in bytes (default: {1e9} (1GB))
+            cache_size_bytes (int): Size of cache in bytes (default: {1e9} (1GB))
 
         Raises:
             Exception: When any of the expected arrays (frames, agents, scenes) is missing or the store couldn't be
@@ -120,8 +137,15 @@ opened.
         self.frames = self.root[FRAME_ARRAY_KEY]
         self.agents = self.root[AGENT_ARRAY_KEY]
         self.scenes = self.root[SCENE_ARRAY_KEY]
+        try:
+            self.tl_faces = self.root[TL_FACE_ARRAY_KEY]
+        except KeyError:
+            print(f"{TL_FACE_ARRAY_KEY} not found in {self.path}! Traffic lights will be disabled")
+            self.tl_faces = np.empty((0,), dtype=TL_FACE_DTYPE)
+        return self
 
     def __str__(self) -> str:
+        # TODO add traffic faces
         fields = [
             "Num Scenes",
             "Num Frames",

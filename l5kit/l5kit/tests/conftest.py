@@ -1,3 +1,7 @@
+from pathlib import Path
+from shutil import rmtree
+from typing import Iterator
+
 import pytest
 
 from l5kit.configs import load_config_data
@@ -29,7 +33,23 @@ def cfg() -> dict:
 
 
 @pytest.fixture(scope="session")
-def zarr_dataset() -> ChunkedDataset:
-    zarr_dataset = ChunkedDataset(path="./l5kit/tests/artefacts/single_scene.zarr")
+def zarr_dataset(dmg: LocalDataManager) -> ChunkedDataset:
+    zarr_path = dmg.require("single_scene.zarr")
+    zarr_dataset = ChunkedDataset(path=zarr_path)
     zarr_dataset.open()
     return zarr_dataset
+
+
+@pytest.fixture(scope="session", autouse=True)
+def clean_mask(zarr_dataset: ChunkedDataset) -> Iterator[None]:
+    """
+    Auto clean agents_mask for artefacts during tests tear down
+    """
+    agents_mask_path = Path(zarr_dataset.path) / "agents_mask"
+    if agents_mask_path.exists():
+        rmtree(str(agents_mask_path))
+    yield None
+    # remove agents mask during tear down
+    agents_mask_path = Path(zarr_dataset.path) / "agents_mask"
+    if agents_mask_path.exists():
+        rmtree(str(agents_mask_path))
