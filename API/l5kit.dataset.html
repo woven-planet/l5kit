@@ -96,6 +96,7 @@
 <li class="toctree-l2 current"><a class="current reference internal" href="#">l5kit.dataset package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a><ul>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.agent.html">l5kit.dataset.agent module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.chop_dataset.html">l5kit.dataset.chop_dataset module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.ego.html">l5kit.dataset.ego module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.select_agents.html">l5kit.dataset.select_agents module</a></li>
 </ul>
@@ -314,11 +315,51 @@ of finding the scene boundaries.
 
 </dd></dl>
 
+<dl class="py function">
+<dt id="l5kit.dataset.create_chopped_dataset">
+<code class="sig-prename descclassname">l5kit.dataset.</code><code class="sig-name descname">create_chopped_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zarr_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">th_agent_prob</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">num_frames_to_copy</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">num_frames_gt</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">min_frame_future</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#l5kit.dataset.create_chopped_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a chopped version of the zarr that can be used as a test set.
+This function was used to generate the test set for the competition so that the future GT is not in the data.</p>
+<dl>
+<dt>Store:</dt><dd><ul class="simple">
+<li><p>a dataset where each scene has been chopped at <cite>num_frames_to_copy</cite> frames;</p></li>
+<li><p>a mask for agents for those final frames based on the original mask and a threshold on the future_frames;</p></li>
+<li><p>the GT csv for those agents</p></li>
+</ul>
+<p>For the competition, only the first two (dataset and mask) will be available in the notebooks</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zarr_path</strong> (<em>str</em>) – input zarr path to be chopped</p></li>
+<li><p><strong>th_agent_prob</strong> (<em>float</em>) – threshold over agents probabilities used in select_agents function</p></li>
+<li><p><strong>num_frames_to_copy</strong> (<em>int</em>) – number of frames to copy from the beginning of each scene, others will be discarded</p></li>
+<li><p><strong>min_frame_future</strong> (<em>int</em>) – minimum number of frames that must be available in the future for an agent</p></li>
+<li><p><strong>num_frames_gt</strong> (<em>int</em>) – number of future predictions to store in the GT file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the parent folder of the new datam</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.dataset.select_agents">
+<code class="sig-prename descclassname">l5kit.dataset.</code><code class="sig-name descname">select_agents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zarr_dataset</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset">l5kit.data.zarr_dataset.ChunkedDataset</a></span></em>, <em class="sig-param"><span class="n">th_agent_prob</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">th_yaw_degree</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">th_extent_ratio</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">th_distance_av</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.dataset.select_agents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter agents from zarr INPUT_FOLDER according to multiple thresholds and store a boolean array of the same shape.</p>
+</dd></dl>
+
 <div class="section" id="submodules">
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.dataset.agent.html">l5kit.dataset.agent module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="l5kit.dataset.chop_dataset.html">l5kit.dataset.chop_dataset module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.dataset.ego.html">l5kit.dataset.ego module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.dataset.select_agents.html">l5kit.dataset.select_agents module</a></li>
 </ul>

@@ -1,0 +1,7 @@
+l5kit.dataset.chop\_dataset module
+==================================
+
+.. automodule:: l5kit.dataset.chop_dataset
+   :members:
+   :undoc-members:
+   :show-inheritance:
