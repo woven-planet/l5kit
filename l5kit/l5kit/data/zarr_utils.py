@@ -225,7 +225,7 @@ def zarr_split(input_zarr: str, output_path: str, split_infos: List[dict]) -> Li
     return cuts_track
 
 
-def zarr_scenes_chunk(input_zarr: str, output_zarr: str, num_frames_to_copy: int) -> None:
+def zarr_scenes_chop(input_zarr: str, output_zarr: str, num_frames_to_copy: int) -> None:
     """
     Copy `num_frames_to_keep` from each scene in input_zarr and paste them into output_zarr
 
