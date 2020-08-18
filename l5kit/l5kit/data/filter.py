@@ -113,3 +113,21 @@ def filter_tl_faces_by_status(tl_faces: np.ndarray, status: str) -> np.ndarray:
         np.ndarray: traffic light faces array with only faces with that status
     """
     return tl_faces[tl_faces["traffic_light_face_status"][:, TL_FACE_LABEL_TO_INDEX[status]] > 0]
+
+
+def get_frame_bounds_from_scenes(scene_a: np.ndarray, scene_b: np.ndarray) -> slice:
+    frame_index_start = scene_a["frame_index_interval"][0]
+    frame_index_end = scene_b["frame_index_interval"][1]
+    return slice(frame_index_start, frame_index_end)
+
+
+def get_agents_bounds_from_frames(frame_a: np.ndarray, frame_b: np.ndarray) -> slice:
+    agent_index_start = frame_a["agent_index_interval"][0]
+    agent_index_end = frame_b["agent_index_interval"][1]
+    return slice(agent_index_start, agent_index_end)
+
+
+def get_traffic_faces_bounds_from_frames(frame_a: np.ndarray, frame_b: np.ndarray) -> slice:
+    tl_faces_index_start = frame_a["traffic_light_faces_index_interval"][0]
+    tl_faces_index_end = frame_b["traffic_light_faces_index_interval"][1]
+    return slice(tl_faces_index_start, tl_faces_index_end)
