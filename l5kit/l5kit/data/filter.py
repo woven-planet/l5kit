@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List
 
 import numpy as np
 
@@ -68,25 +68,6 @@ def filter_agents_by_track_id(agents: np.ndarray, track_id: int) -> np.ndarray:
         np.ndarray -- Selected agent.
     """
     return agents[np.nonzero(agents["track_id"] == track_id)[0]]
-
-
-def get_agent_by_track_id(agents_frame: np.ndarray, track_id: int) -> Optional[np.ndarray]:
-    """Return the agent object (np.ndarray) of a given track_id in a frame.
-    Return None if the agent is not among those in the frame.
-
-    Arguments:
-        agents_frame (np.ndarray): frame agents array
-        track_id (int): agent track id to select
-
-    Returns:
-        Optional[np.ndarray] -- Selected agent, or None if this agent is not present in given frame.
-    """
-
-    try:
-        agent = filter_agents_by_track_id(agents_frame, track_id)[0]
-        return agent
-    except IndexError:  # no agent for track_id in this frame
-        return None
 
 
 def filter_agents_by_frames(frames: np.ndarray, agents: np.ndarray) -> List[np.ndarray]:

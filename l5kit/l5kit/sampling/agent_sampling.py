@@ -3,7 +3,7 @@ from typing import List, Optional, Tuple
 import numpy as np
 
 from ..data import TL_FACE_DTYPE, filter_agents_by_labels, filter_tl_faces_by_frames
-from ..data.filter import filter_agents_by_frames, get_agent_by_track_id
+from ..data.filter import filter_agents_by_frames, filter_agents_by_track_id
 from ..geometry import rotation33_as_yaw, world_to_image_pixels_matrix
 from ..kinematic import Perturbation
 from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
@@ -107,14 +107,14 @@ to train models that can recover from slight divergence from training set data
         agent_extent = np.asarray((EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, EGO_EXTENT_HEIGHT))
         selected_agent = None
     else:
-        # we must ensure the requested track is in the cur frame
-        # otherwise we can not center it in the frame
-        agent = get_agent_by_track_id(cur_agents, selected_track_id)
-        if agent is None:
-            raise ValueError(f" track_id {selected_track_id} not in frame")
-
-        if agent not in filter_agents_by_labels(cur_agents, filter_agents_threshold):
-            raise ValueError(f" track_id {selected_track_id} is in frame but under th {filter_agents_threshold}")
+        # this will raise IndexError if the agent is not in the frame or under agent-threshold
+        # this is a strict error, we cannot recover from this situation
+        try:
+            agent = filter_agents_by_track_id(
+                filter_agents_by_labels(cur_agents, filter_agents_threshold), selected_track_id
+            )[0]
+        except IndexError:
+            raise ValueError(f" track_id {selected_track_id} not in frame or below threshold")
         agent_centroid = agent["centroid"]
         agent_yaw = float(agent["yaw"])
         agent_extent = agent["extent"]
@@ -194,8 +194,9 @@ def _create_targets_for_deep_prediction(
             agent_yaw = rotation33_as_yaw(frame["ego_rotation"])
         else:
             # it's not guaranteed the target will be in every frame
-            agent = get_agent_by_track_id(agents, selected_track_id)
-            if agent is None:
+            try:
+                agent = filter_agents_by_track_id(agents, selected_track_id)[0]
+            except IndexError:
                 availability[i] = 0.0  # keep track of invalid futures/history
                 continue
 
