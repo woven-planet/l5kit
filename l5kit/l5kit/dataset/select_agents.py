@@ -231,7 +231,7 @@ def select_agents(
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_folders", nargs="+", type=str, required=True, help="zarr path")
-    parser.add_argument("--th_agent_prob", type=float, default=0.5, help="perception threshold on agents of interest")
+    parser.add_argument("--th_agent_prob", type=float, required=True, help="perception threshold on agents")
     parser.add_argument("--th_yaw_degree", type=float, default=TH_YAW_DEGREE, help="max absolute distance in degree")
     parser.add_argument("--th_extent_ratio", type=float, default=TH_EXTENT_RATIO, help="max change in area allowed")
     parser.add_argument("--th_distance_av", type=float, default=TH_DISTANCE_AV, help="max distance from AV in meters")
