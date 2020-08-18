@@ -1,26 +1,35 @@
 import numpy as np
 import pytest
 
-from l5kit.evaluation.metrics import neg_multi_log_likelihood, prob_true_mode, time_displace
+from l5kit.evaluation.metrics import _assert_shapes, neg_multi_log_likelihood, prob_true_mode, rmse, time_displace
 
 
-def test_neg_multi_log_likelihood_shapes() -> None:
-    gt = np.random.randn(12, 2)
-    pred = np.random.randn(4, 12, 2)
-    avail = np.ones(12)
-    conf = np.random.rand(4)
+def test_assert_shapes() -> None:
+    num_modes, future_len, num_coords = 4, 12, 2
+
+    gt = np.random.randn(future_len, num_coords)
+    pred = np.random.randn(num_modes, future_len, num_coords)
+    avail = np.ones(future_len)
+    conf = np.random.rand(num_modes)
     conf /= np.sum(conf, axis=-1, keepdims=True)
 
-    assert neg_multi_log_likelihood(gt, pred, conf, avail).shape == ()
-
-    # test unnormalised conf
-    conf = np.random.rand(4)
+    # test un-normalised conf
     with pytest.raises(AssertionError):
-        neg_multi_log_likelihood(gt, pred, conf, avail)
+        conf_un = np.random.rand(4)
+        _assert_shapes(gt, pred, conf_un, avail)
 
     # test single pred with no axis
     with pytest.raises(AssertionError):
-        neg_multi_log_likelihood(gt, pred[0], conf, avail)
+        _assert_shapes(gt, pred[0], conf, avail)
+
+    # NLL shape must be ()
+    assert neg_multi_log_likelihood(gt, pred, conf, avail).shape == ()
+    # RMSE shape must be ()
+    assert rmse(gt, pred, conf, avail).shape == ()
+    # prob_true_mode shape must be (M)
+    assert prob_true_mode(gt, pred, conf, avail).shape == (num_modes,)
+    # displace_t shape must be (M)
+    assert time_displace(gt, pred, conf, avail).shape == (future_len,)
 
 
 def test_neg_multi_log_likelihood_known_results() -> None:

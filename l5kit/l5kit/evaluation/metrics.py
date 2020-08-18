@@ -103,8 +103,15 @@ def prob_true_mode(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, av
     avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
 
     error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
-    error = - 0.5 * np.sum(error, axis=-1)  # reduce time
-    return confidences * np.exp(error)
+
+    with np.errstate(divide="ignore"):  # when confidence is 0 log goes to -inf, but we're fine with it
+        error = np.log(confidences) - 0.5 * np.sum(error, axis=-1)  # reduce time
+
+    # use max aggregator on modes for numerical stability
+    max_value = error.max()  # error are negative at this point, so max() gives the minimum one
+
+    error = np.exp(error - max_value) / np.sum(np.exp(error - max_value))
+    return error
 
 
 def time_displace(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> np.ndarray:
@@ -124,5 +131,8 @@ def time_displace(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, ava
     true_mode_error = prob_true_mode(gt, pred, confidences, avails)
     true_mode_error = true_mode_error[:, None]  # add time axis
 
-    error = np.sum(np.abs((gt - pred) * avails), axis=-1)  # reduce coords and use availability
-    return np.sum(true_mode_error * error, axis=0)  # reduce modes
+    gt = np.expand_dims(gt, 0)  # add modes
+    avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
+
+    error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
+    return np.sum(true_mode_error * np.sqrt(error), axis=0)  # reduce modes
