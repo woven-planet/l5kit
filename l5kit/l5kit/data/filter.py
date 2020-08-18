@@ -115,7 +115,7 @@ def filter_tl_faces_by_status(tl_faces: np.ndarray, status: str) -> np.ndarray:
     return tl_faces[tl_faces["traffic_light_face_status"][:, TL_FACE_LABEL_TO_INDEX[status]] > 0]
 
 
-def get_frame_bounds_from_scenes(scene_a: np.ndarray, scene_b: Optional[np.ndarray] = None) -> slice:
+def get_frames_slice_from_scenes(scene_a: np.ndarray, scene_b: Optional[np.ndarray] = None) -> slice:
     """
     Get a slice for indexing frames giving a start and end scene
 
@@ -133,7 +133,7 @@ def get_frame_bounds_from_scenes(scene_a: np.ndarray, scene_b: Optional[np.ndarr
     return slice(frame_index_start, frame_index_end)
 
 
-def get_agents_bounds_from_frames(frame_a: np.ndarray, frame_b: Optional[np.ndarray] = None) -> slice:
+def get_agents_slice_from_frames(frame_a: np.ndarray, frame_b: Optional[np.ndarray] = None) -> slice:
     """
     Get a slice for indexing agents giving a start and end frame
 
@@ -151,7 +151,7 @@ def get_agents_bounds_from_frames(frame_a: np.ndarray, frame_b: Optional[np.ndar
     return slice(agent_index_start, agent_index_end)
 
 
-def get_traffic_faces_bounds_from_frames(frame_a: np.ndarray, frame_b: Optional[np.ndarray] = None) -> slice:
+def get_tl_faces_slice_from_frames(frame_a: np.ndarray, frame_b: Optional[np.ndarray] = None) -> slice:
     """
     Get a slice for indexing traffic light faces giving a start and end frame
 
