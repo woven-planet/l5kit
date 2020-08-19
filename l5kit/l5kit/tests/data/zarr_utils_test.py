@@ -30,6 +30,7 @@ def test_zarr_concat(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: Chunke
     assert len(zarr_cat_dataset.tl_faces) == len(zarr_dataset.tl_faces) * concat_count
 
     # check the first and last element concat_count times
+    # TODO refactor to test all elements
     input_scene_a = zarr_dataset.scenes[0]
     input_scene_b = zarr_dataset.scenes[-1]
     input_frame_a = zarr_dataset.frames[0]
