@@ -68,7 +68,11 @@ The resulting directory structure should be:
 ```
 prediction-dataset/
   +- sample_scenes/
+        +- sample.zarr
   +- scenes/
+        +- train_0.zarr
+        +- train_1.zarr
+        +- train_2.zarr
   +- aerial_map/
   +- semantic_map/
 ```
