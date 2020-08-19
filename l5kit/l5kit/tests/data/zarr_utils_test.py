@@ -4,7 +4,13 @@ from uuid import uuid4
 import numpy as np
 import pytest
 
-from l5kit.data import ChunkedDataset, LocalDataManager
+from l5kit.data import (
+    ChunkedDataset,
+    LocalDataManager,
+    get_agents_slice_from_frames,
+    get_frames_slice_from_scenes,
+    get_tl_faces_slice_from_frames,
+)
 from l5kit.data.zarr_utils import zarr_concat, zarr_scenes_chop, zarr_split
 
 
@@ -111,26 +117,14 @@ def test_zarr_split(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: Chunked
 
             # compare elements in the scene
             input_scene = zarr_concatenated.scenes[scene_split[0] + idx_scene]
-            input_frames = zarr_concatenated.frames[slice(*input_scene["frame_index_interval"])]
-            input_agents = zarr_concatenated.agents[
-                input_frames[0]["agent_index_interval"][0] : input_frames[-1]["agent_index_interval"][1]
-            ]
-            input_tl_faces = zarr_concatenated.tl_faces[
-                input_frames[0]["traffic_light_faces_index_interval"][0] : input_frames[-1][
-                    "traffic_light_faces_index_interval"
-                ][1]
-            ]
+            input_frames = zarr_concatenated.frames[get_frames_slice_from_scenes(input_scene)]
+            input_agents = zarr_concatenated.agents[get_agents_slice_from_frames(*input_frames[[0, -1]])]
+            input_tl_faces = zarr_concatenated.tl_faces[get_tl_faces_slice_from_frames(*input_frames[[0, -1]])]
 
             output_scene = zarr_out.scenes[idx_scene]
-            output_frames = zarr_out.frames[slice(*output_scene["frame_index_interval"])]
-            output_agents = zarr_out.agents[
-                output_frames[0]["agent_index_interval"][0] : output_frames[-1]["agent_index_interval"][1]
-            ]
-            output_tl_faces = zarr_out.tl_faces[
-                output_frames[0]["traffic_light_faces_index_interval"][0] : output_frames[-1][
-                    "traffic_light_faces_index_interval"
-                ][1]
-            ]
+            output_frames = zarr_out.frames[get_frames_slice_from_scenes(output_scene)]
+            output_agents = zarr_out.agents[get_agents_slice_from_frames(*output_frames[[0, -1]])]
+            output_tl_faces = zarr_out.tl_faces[get_tl_faces_slice_from_frames(*output_frames[[0, -1]])]
 
             assert np.all(input_frames["ego_translation"] == output_frames["ego_translation"])
             assert np.all(input_frames["ego_rotation"] == output_frames["ego_rotation"])
@@ -149,53 +143,42 @@ def test_zarr_scenes_chunk(
     zarr_concat([zarr_input_path] * concat_count, zarr_concatenated_path)
 
     # now let's chunk it
-    zarr_chunk_path = str(tmp_path / f"{uuid4()}.zarr")
-    zarr_scenes_chop(zarr_concatenated_path, zarr_chunk_path, num_frames_to_copy=num_frames_to_copy)
+    zarr_chopped_path = str(tmp_path / f"{uuid4()}.zarr")
+    zarr_scenes_chop(zarr_concatenated_path, zarr_chopped_path, num_frames_to_copy=num_frames_to_copy)
 
     # open both and compare
     zarr_concatenated = ChunkedDataset(zarr_concatenated_path)
     zarr_concatenated.open()
-    zarr_chunk = ChunkedDataset(zarr_chunk_path)
-    zarr_chunk.open()
+    zarr_chopped = ChunkedDataset(zarr_chopped_path)
+    zarr_chopped.open()
 
-    assert len(zarr_concatenated.scenes) == len(zarr_chunk.scenes)
-    assert len(zarr_chunk.frames) == num_frames_to_copy * len(zarr_chunk.scenes)
+    assert len(zarr_concatenated.scenes) == len(zarr_chopped.scenes)
+    assert len(zarr_chopped.frames) == num_frames_to_copy * len(zarr_chopped.scenes)
 
     for idx in range(len(zarr_concatenated.scenes)):
         scene_cat = zarr_concatenated.scenes[idx]
-        scene_chunk = zarr_chunk.scenes[idx]
+        scene_chopped = zarr_chopped.scenes[idx]
 
         frames_cat = zarr_concatenated.frames[
             scene_cat["frame_index_interval"][0] : scene_cat["frame_index_interval"][0] + num_frames_to_copy
         ]
-        frames_chunk = zarr_chunk.frames[slice(*scene_chunk["frame_index_interval"])]
 
-        agents_cat = zarr_concatenated.agents[
-            frames_cat[0]["agent_index_interval"][0] : frames_cat[-1]["agent_index_interval"][1]
-        ]
-        tl_faces_cat = zarr_concatenated.tl_faces[
-            frames_cat[0]["traffic_light_faces_index_interval"][0] : frames_cat[-1][
-                "traffic_light_faces_index_interval"
-            ][1]
-        ]
+        frames_chopped = zarr_chopped.frames[get_frames_slice_from_scenes(scene_chopped)]
 
-        agents_chunk = zarr_chunk.agents[
-            frames_chunk[0]["agent_index_interval"][0] : frames_chunk[-1]["agent_index_interval"][1]
-        ]
-        tl_faces_chunk = zarr_chunk.tl_faces[
-            frames_chunk[0]["traffic_light_faces_index_interval"][0] : frames_chunk[-1][
-                "traffic_light_faces_index_interval"
-            ][1]
-        ]
+        agents_cat = zarr_concatenated.agents[get_agents_slice_from_frames(*frames_cat[[0, -1]])]
+        tl_faces_cat = zarr_concatenated.tl_faces[get_tl_faces_slice_from_frames(*frames_cat[[0, -1]])]
 
-        assert scene_chunk["host"] == scene_cat["host"]
-        assert scene_chunk["start_time"] == scene_cat["start_time"]
-        assert scene_chunk["end_time"] == scene_cat["end_time"]
+        agents_chopped = zarr_chopped.agents[get_agents_slice_from_frames(*frames_chopped[[0, -1]])]
+        tl_faces_chopped = zarr_chopped.tl_faces[get_tl_faces_slice_from_frames(*frames_chopped[[0, -1]])]
 
-        assert len(frames_chunk) == num_frames_to_copy
+        assert scene_chopped["host"] == scene_cat["host"]
+        assert scene_chopped["start_time"] == scene_cat["start_time"]
+        assert scene_chopped["end_time"] == scene_cat["end_time"]
 
-        assert np.all(frames_chunk["ego_translation"] == frames_cat["ego_translation"][:num_frames_to_copy])
-        assert np.all(frames_chunk["ego_rotation"] == frames_cat["ego_rotation"][:num_frames_to_copy])
+        assert len(frames_chopped) == num_frames_to_copy
 
-        assert np.all(agents_chunk == agents_cat)
-        assert np.all(tl_faces_chunk == tl_faces_cat)
+        assert np.all(frames_chopped["ego_translation"] == frames_cat["ego_translation"][:num_frames_to_copy])
+        assert np.all(frames_chopped["ego_rotation"] == frames_cat["ego_rotation"][:num_frames_to_copy])
+
+        assert np.all(agents_chopped == agents_cat)
+        assert np.all(tl_faces_chopped == tl_faces_cat)
