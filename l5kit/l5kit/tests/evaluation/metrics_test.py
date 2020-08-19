@@ -104,8 +104,11 @@ def test_other_metrics_known_results() -> None:
     avail = np.ones(3)
 
     pred = np.asarray([[[50, 0], [50, 0], [50, 0]], [[100, 100], [100, 100], [100, 100]]])
-
     confs = np.asarray((0.5, 0.5))
-
     assert np.allclose(prob_true_mode(gt, pred, confs, avail), (1.0, 0.0))
     assert np.allclose(time_displace(gt, pred, confs, avail), (0.0, 0.0, 0.0))
+
+    pred = np.asarray([[[52, 0], [52, 0], [52, 0]], [[49, 0], [51, 0], [50, 2]]])
+    confs = np.asarray((0.1, 0.9))
+    assert np.allclose(prob_true_mode(gt, pred, confs, avail), (0.0055, 0.9944), atol=1e-4)
+    assert np.allclose(time_displace(gt, pred, confs, avail), (1.0055, 1.0055, 2.0), atol=1e-4)
