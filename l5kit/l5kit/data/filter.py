@@ -84,7 +84,7 @@ def filter_agents_by_frames(frames: np.ndarray, agents: np.ndarray) -> List[np.n
     """
     if frames.shape == ():
         frames = frames[None]  # add and axis if a single frame is passed
-    return [agents[slice(*frame["agent_index_interval"])] for frame in frames]
+    return [agents[get_agents_slice_from_frames(frame)] for frame in frames]
 
 
 def filter_tl_faces_by_frames(frames: np.ndarray, tl_faces: np.ndarray) -> List[np.ndarray]:
@@ -99,7 +99,7 @@ def filter_tl_faces_by_frames(frames: np.ndarray, tl_faces: np.ndarray) -> List[
     Returns:
         List[np.ndarray] with the traffic light faces divided by frame
     """
-    return [tl_faces[slice(*frame["traffic_light_faces_index_interval"])] for frame in frames]
+    return [tl_faces[get_tl_faces_slice_from_frames(frame)] for frame in frames]
 
 
 def filter_tl_faces_by_status(tl_faces: np.ndarray, status: str) -> np.ndarray:
