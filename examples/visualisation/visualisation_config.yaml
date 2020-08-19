@@ -34,7 +34,7 @@ raster_params:
   # the keys are relative to the dataset environment variable
   satellite_map_key: "aerial_map/aerial_map.png"
   semantic_map_key: "semantic_map/semantic_map.pb"
-  dataset_meta_key: "meta.json"
+  dataset_meta_key: "semantic_map/meta.json"
 
   # e.g. 0.0 include every obstacle, 0.5 show those obstacles with >0.5 probability of being
   # one of the classes we care about (cars, bikes, peds, etc.), >=1.0 filter all other agents.
