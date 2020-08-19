@@ -5,7 +5,12 @@ from typing import Optional, Tuple, cast
 import numpy as np
 from torch.utils.data import Dataset
 
-from ..data import ChunkedDataset
+from ..data import (
+    ChunkedDataset,
+    get_agents_slice_from_frames,
+    get_frames_slice_from_scenes,
+    get_tl_faces_slice_from_frames,
+)
 from ..kinematic import Perturbation
 from ..rasterization import Rasterizer
 from ..sampling import generate_agent_sample
@@ -73,8 +78,7 @@ None if not desired
             the 2D matrix to center that agent, the agent track (-1 if ego) and the timestamp
 
         """
-        frame_interval = self.dataset.scenes[scene_index]["frame_index_interval"]
-        frames = self.dataset.frames[frame_interval[0] : frame_interval[1]]
+        frames = self.dataset.frames[get_frames_slice_from_scenes(self.dataset.scenes[scene_index])]
         data = self.sample_function(state_index, frames, self.dataset.agents, self.dataset.tl_faces, track_id)
         # 0,1,C -> C,0,1
         image = data["image"].transpose(2, 0, 1)
@@ -85,7 +89,7 @@ None if not desired
         history_positions = np.array(data["history_positions"], dtype=np.float32)
         history_yaws = np.array(data["history_yaws"], dtype=np.float32)
 
-        timestamp = self.dataset.frames[frame_interval[0] + state_index]["timestamp"]
+        timestamp = frames[state_index]["timestamp"]
         track_id = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
 
         return {
@@ -141,20 +145,17 @@ None if not desired
         """
         # copy everything to avoid references (scene is already detached from zarr if get_combined_scene was called)
         scenes = self.dataset.scenes[scene_index : scene_index + 1].copy()
-        frame_interval = scenes[0]["frame_index_interval"]
-        frames = self.dataset.frames[frame_interval[0] : frame_interval[1]].copy()
-        # ASSUMPTION: all agents_index are consecutive
-        agents_start_index = frames[0]["agent_index_interval"][0]
-        agents_end_index = frames[-1]["agent_index_interval"][1]
-        agents = self.dataset.agents[agents_start_index:agents_end_index].copy()
+        frame_slice = get_frames_slice_from_scenes(*scenes)
+        frames = self.dataset.frames[frame_slice].copy()
+        agent_slice = get_agents_slice_from_frames(*frames[[0, -1]])
+        tl_slice = get_tl_faces_slice_from_frames(*frames[[0, -1]])
 
-        tl_start_index = frames[0]["traffic_light_faces_index_interval"][0]
-        tl_end_index = frames[-1]["traffic_light_faces_index_interval"][1]
-        tl_faces = self.dataset.tl_faces[tl_start_index:tl_end_index].copy()
+        agents = self.dataset.agents[agent_slice].copy()
+        tl_faces = self.dataset.tl_faces[tl_slice].copy()
 
-        frames["agent_index_interval"] -= agents_start_index
-        frames["traffic_light_faces_index_interval"] -= tl_start_index
-        scenes["frame_index_interval"] -= frame_interval[0]
+        frames["agent_index_interval"] -= agent_slice.start
+        frames["traffic_light_faces_index_interval"] -= tl_slice.start
+        scenes["frame_index_interval"] -= frame_slice.start
 
         dataset = ChunkedDataset("")
         dataset.agents = agents
