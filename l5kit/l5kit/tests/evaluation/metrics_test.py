@@ -46,35 +46,41 @@ def test_neg_multi_log_likelihood_known_results() -> None:
     confs = np.asarray((1, 0))
 
     assert np.allclose(neg_multi_log_likelihood(gt, pred, confs, avail), 0)
+    assert np.allclose(rmse(gt, pred, confs, avail), 0)
 
     # two equal modes, one 100% right
     confs = np.asarray((0.5, 0.5))
 
     assert np.allclose(neg_multi_log_likelihood(gt, pred, confs, avail), 0.69314, atol=1e-4)
+    assert np.allclose(rmse(gt, pred, confs, avail), np.sqrt(2 * 0.69314 / future_len), atol=1e-4)
 
     # two equal modes, answer in between
     gt = np.full((future_len, num_coords), 5)
     confs = np.asarray((0.5, 0.5))
 
     assert np.allclose(neg_multi_log_likelihood(gt, pred, confs, avail), 37.5, atol=1e-4)
+    assert np.allclose(rmse(gt, pred, confs, avail), np.sqrt(2 * 37.5 / future_len), atol=1e-4)
 
     # two modes, one 50% right = answer in between
     gt = np.full((future_len, num_coords), 5)
     confs = np.asarray((1, 0))
 
     assert np.allclose(neg_multi_log_likelihood(gt, pred, confs, avail), 37.5, atol=1e-4)
+    assert np.allclose(rmse(gt, pred, confs, avail), np.sqrt(2 * 37.5 / future_len), atol=1e-4)
 
     # Example 5
     gt = np.zeros((future_len, num_coords))
     gt[1, 0] = 10
     confs = np.asarray((1, 0))
     assert np.allclose(neg_multi_log_likelihood(gt, pred, confs, avail), 50, atol=1e-4)
+    assert np.allclose(rmse(gt, pred, confs, avail), np.sqrt(2 * 50 / future_len), atol=1e-4)
 
     # Example 6
     gt = np.zeros((future_len, num_coords))
     gt[1, 0] = 10
     confs = np.asarray((0.5, 0.5))
     assert np.allclose(neg_multi_log_likelihood(gt, pred, confs, avail), 50.6931, atol=1e-4)
+    assert np.allclose(rmse(gt, pred, confs, avail), np.sqrt(2 * 50.6931 / future_len), atol=1e-4)
 
     # Test overflow resistance in two situations
     confs = np.asarray((0.5, 0.5))
@@ -82,6 +88,7 @@ def test_neg_multi_log_likelihood_known_results() -> None:
     pred[1] = [[1000], [1000], [1000]]
     gt = np.zeros((future_len, num_coords))
     assert not np.isinf(neg_multi_log_likelihood(gt, pred, confs, avail))
+    assert not np.isinf(rmse(gt, pred, confs, avail))
 
     # this breaks also max-version if confidence is not included in exp
     confs = np.asarray((1.0, 0.0))
@@ -89,3 +96,16 @@ def test_neg_multi_log_likelihood_known_results() -> None:
     pred[1] = [[1000], [1000], [1000]]
     gt = np.zeros((future_len, num_coords))
     assert not np.isinf(neg_multi_log_likelihood(gt, pred, confs, avail))
+    assert not np.isinf(rmse(gt, pred, confs, avail))
+
+
+def test_other_metrics_known_results() -> None:
+    gt = np.asarray([[50, 0], [50, 0], [50, 0]])
+    avail = np.ones(3)
+
+    pred = np.asarray([[[50, 0], [50, 0], [50, 0]], [[100, 100], [100, 100], [100, 100]]])
+
+    confs = np.asarray((0.5, 0.5))
+
+    assert np.allclose(prob_true_mode(gt, pred, confs, avail), (1.0, 0.0))
+    assert np.allclose(time_displace(gt, pred, confs, avail), (0.0, 0.0, 0.0))
