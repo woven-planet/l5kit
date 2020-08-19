@@ -28,7 +28,7 @@ def test_assert_shapes() -> None:
     assert rmse(gt, pred, conf, avail).shape == ()
     # prob_true_mode shape must be (M)
     assert prob_true_mode(gt, pred, conf, avail).shape == (num_modes,)
-    # displace_t shape must be (M)
+    # displace_t shape must be (T)
     assert time_displace(gt, pred, conf, avail).shape == (future_len,)
 
 
