@@ -2,7 +2,13 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 
-from ..data import TL_FACE_DTYPE, filter_agents_by_labels, filter_tl_faces_by_frames
+from ..data import (
+    TL_FACE_DTYPE,
+    filter_agents_by_labels,
+    filter_tl_faces_by_frames,
+    get_agents_slice_from_frames,
+    get_tl_faces_slice_from_frames,
+)
 from ..data.filter import filter_agents_by_frames, filter_agents_by_track_id
 from ..geometry import rotation33_as_yaw, world_to_image_pixels_matrix
 from ..kinematic import Perturbation
@@ -73,21 +79,19 @@ to train models that can recover from slight divergence from training set data
     sorted_frames = np.concatenate((history_frames[::-1], future_frames))  # from past to future
 
     # get agents (past and future)
-    min_agents_index = sorted_frames[0]["agent_index_interval"][0]
-    max_agents_index = sorted_frames[-1]["agent_index_interval"][1]
-    agents = agents[min_agents_index:max_agents_index].copy()  # this is the minimum slice of agents we need
-    history_frames["agent_index_interval"] -= min_agents_index  # sync interval with the agents array
-    future_frames["agent_index_interval"] -= min_agents_index  # sync interval with the agents array
+    agent_slice = get_agents_slice_from_frames(sorted_frames[0], sorted_frames[-1])
+    agents = agents[agent_slice].copy()  # this is the minimum slice of agents we need
+    history_frames["agent_index_interval"] -= agent_slice.start  # sync interval with the agents array
+    future_frames["agent_index_interval"] -= agent_slice.start  # sync interval with the agents array
     history_agents = filter_agents_by_frames(history_frames, agents)
     future_agents = filter_agents_by_frames(future_frames, agents)
 
     try:
-        min_tl_index = history_frames[-1]["traffic_light_faces_index_interval"][0]  # -1 is the farthest in the past
-        max_tl_index = history_frames[0]["traffic_light_faces_index_interval"][1]
-        tl_faces = tl_faces[min_tl_index:max_tl_index].copy()  # only history traffic light faces
-        history_frames[
-            "traffic_light_faces_index_interval"
-        ] -= min_tl_index  # sync interval with the traffic light faces array
+        tl_slice = get_tl_faces_slice_from_frames(history_frames[-1], history_frames[0])  # -1 is the farthest
+        tl_faces = tl_faces[tl_slice].copy()  # only history traffic light faces
+
+        # sync interval with the traffic light faces array
+        history_frames["traffic_light_faces_index_interval"] -= tl_slice.start
         history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces)
     except ValueError:
         history_tl_faces = [np.empty(0, dtype=TL_FACE_DTYPE) for _ in history_frames]
