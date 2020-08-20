@@ -20,7 +20,7 @@ class SatBoxRasterizer(Rasterizer):
         filter_agents_threshold: float,
         history_num_frames: int,
         map_im: np.ndarray,
-        pose_to_aerial: np.ndarray,
+        world_to_aerial: np.ndarray,
         interpolation: int = cv2.INTER_LINEAR,
     ):
         super(SatBoxRasterizer, self).__init__()
@@ -31,11 +31,13 @@ class SatBoxRasterizer(Rasterizer):
         self.history_num_frames = history_num_frames
 
         self.map_im = map_im
-        self.pose_to_aerial = pose_to_aerial
+        self.world_to_aerial = world_to_aerial
         self.interpolation = interpolation
 
         self.box_rast = BoxRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold, history_num_frames)
-        self.sat_rast = SatelliteRasterizer(raster_size, pixel_size, ego_center, map_im, pose_to_aerial, interpolation)
+        self.sat_rast = SatelliteRasterizer(
+            raster_size, pixel_size, ego_center, map_im, world_to_aerial, interpolation
+        )
 
     def rasterize(
         self,
