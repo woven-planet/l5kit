@@ -36,25 +36,3 @@ raster_params:
   # e.g. 0.0 include every obstacle, 0.5 show those obstacles with >0.5 probability of being
   # one of the classes we care about (cars, bikes, peds, etc.), >=1.0 filter all other agents.
   filter_agents_threshold: 0.5
-
-###################
-## Data loader options
-train_data_loader:
-  datasets:
-    - key: "single_scene.zarr"
-      scene_indices:
-        - -1
-  perturb_probability: 0
-  batch_size: 12
-  shuffle: True
-  num_workers: 0
-
-val_data_loader:
-  datasets:
-    - key: "single_scene.zarr"
-      scene_indices:
-        - -1
-  perturb_probability: 0
-  batch_size: 12
-  shuffle: False
-  num_workers: 0
