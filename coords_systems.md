@@ -23,7 +23,7 @@ while the orientation is expressed as a 3x3 rotation matrix (counterclockwise in
 - Agents: samples from other agents are generated while the AV moves around. The translation is a 2D vector (XY) and the orientation
 is expressed via a single [yaw angle](https://en.wikipedia.org/wiki/Yaw_(rotation)) (counterclockwise in radians).
 
-The origin of the **world** coordinate system is located in Palo Alto (California, USA) (TODO: add exact location).
+The origin of the **world** coordinate system is located at [[37°25'45.6"N, 122°09'15.7"W]](https://www.google.com/maps/place/37%C2%B025'45.6%22N+122%C2%B009'15.7%22W/@37.4293427,-122.1565407) in Palo Alto (California, USA).
 
 ## Image Coordinate System
 Once rasterisation is complete, the final multi-channel image will be in the image space. This is a 2D space where (0,0)
