@@ -63,14 +63,20 @@ git clone https://github.com/lyft/l5kit.git ./
 ```
 
 ### 2. Download the datasets
-Register at https://self-driving.lyft.com/level5/data/ and download the [2020 Lyft prediction dataset](https://arxiv.org/abs/2006.14480). Store all files in a single folder.
-The resulting directory structure should be:
+Register at https://self-driving.lyft.com/level5/data/ and download the [2020 Lyft prediction dataset](https://arxiv.org/abs/2006.14480). 
+Store all files in a single folder to match this structure:
 ```
 prediction-dataset/
-  +- sample_scenes/
   +- scenes/
+        +- sample.zarr
+        +- train.zarr
+        +- train_full.zarr
   +- aerial_map/
+        +- aerial_map.png
   +- semantic_map/
+        +- semantic_map.pb
+  +- meta.json/
+
 ```
 
 ### 3. Install L5Kit
