@@ -50,7 +50,7 @@ prediction-dataset/
         +- aerial_map.png
   +- semantic_map/
         +- semantic_map.pb
-  +- meta.json/
+  +- meta.json
 
 ```
 You may find other files and folder downloaded (mainly from `aerial_map`), but they are not required by L5Kit
