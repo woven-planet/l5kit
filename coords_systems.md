@@ -54,15 +54,15 @@ draw_trajectory(im, positions_pixels, data["target_yaws"], TARGET_POINTS_COLOR)
 
 ## Satellite Coordinate System
 Satellite information is stored as an RGB image in the `aerial_map` folder of the dataset. Together with that we provide
-a matrix to convert from the [ECEF](https://en.wikipedia.org/wiki/ECEF) reference system to this image reference system (i.e. how to convert a XYZ ECEF coord into a 2D pixel coord).
+a matrix to convert from the [ECEF](https://en.wikipedia.org/wiki/ECEF) reference system to this image reference system (i.e. converting XYZ ECEF coordinates into a 2D pixel coordinates).
 
-Because the `.zarr` stores information in the world reference system, an additional conversion is usually required:
+However, the `.zarr` stores information in the world reference system. As such, an additional conversion is required from world to this image reference system:
 - world coordinates must be converted into ECEF coordinates. This transformation matrix is currently hard-coded but will be shipped with the dataset
 in the future. It is **dataset dependent** as it encodes where the dataset world origin is located in the Earth frame;
 - ECEF coordinates must be converted into the aerial image reference system using the above mentioned matrix.
 
 The `SatelliteRasterizer` and its derived classes combine these two matrices into a single one and directly convert
-world coordinates from the `.zarr` into 2D pixels coordinates.
+world coordinates from the `.zarr` into 2D pixels coordinates. In this way, you can rasterise around an agent in the `.zarr` (whose coordinates are in the world reference system) 
 
 ## Semantic Coordinate System
 Semantic information is stored as a protobuf file. The protobuf store information as a list of elements of different types (e.g lanes, crosswalks, etc).
