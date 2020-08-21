@@ -28,6 +28,7 @@ def _assert_shapes(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, av
     assert np.isfinite(avails).all(), "invalid value found in avails"
 
 
+
 def neg_multi_log_likelihood(
     gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
 ) -> np.ndarray:
@@ -37,6 +38,11 @@ def neg_multi_log_likelihood(
     https://en.wikipedia.org/wiki/LogSumExp#log-sum-exp_trick_for_log-domain_calculations
     https://timvieira.github.io/blog/post/2014/02/11/exp-normalize-trick/
     https://leimao.github.io/blog/LogSumExp/
+
+    In more details, our loss function is:
+    L = -log p(pred|confidences, gt)
+    = -log (sum_k confidences^k prod_t N(pred_t|mean_t^k=gt_t, variance = 1)
+    = -log (sum_k confidences^k exp(-1/2 sum_t (gt_t - x_t)^
 
     Args:
         gt (np.ndarray): array of shape (time)x(2D coords)
@@ -136,3 +142,14 @@ def time_displace(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, ava
 
     error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
     return np.sum(true_mode_error * np.sqrt(error), axis=0)  # reduce modes
+
+
+T = 12
+modes = 3
+gt = np.zeros((T, 2))
+pred = np.zeros((modes, T, 2))
+confidences = np.zeros((modes))
+confidences[0] = 1
+avails = np.zeros((T))
+
+neg_multi_log_likelihood(gt, pred, confidences, avails)
