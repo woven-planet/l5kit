@@ -3,12 +3,12 @@ import pytest
 
 from l5kit.evaluation.metrics import (
     _assert_shapes,
+    average_displacement_error,
+    final_displacement_error,
     neg_multi_log_likelihood,
     prob_true_mode,
     rmse,
     time_displace,
-    average_displacement_error,
-    final_displacement_error,
 )
 
 

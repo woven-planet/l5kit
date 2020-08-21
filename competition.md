@@ -1,11 +1,11 @@
 # Competition
 
-From 24.08.2020 - TODO we are hosting a Kaggle competition (TODO: link) about predicting future movements of other traffic participants.
+Starting 24.08.2020 we are hosting a [Kaggle competition](https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview) about predicting future movements of other traffic participants.
 This page serves as introduction point for it and gives additional information.
 
 # Scoring
 When taking part in the competition, you will be asked to submit predictions for a private test set (no ground truth is available),
-and your solutions will be scored by Kaggle. The winning team will receive 30.000 USD as price!
+and your solutions will be scored by Kaggle. Overall 30.000 USD as prizes are available!
 As traffic scenes can contain a large amount of ambiguity and uncertainty, we encourage the submission of multi-modal predictions.
 For scoring, we calculate the *negative log-likelihood* of the ground truth data given these multi-modal predictions.
 Let us take a closer look at this.
