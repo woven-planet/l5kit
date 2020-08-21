@@ -157,7 +157,7 @@ TL_FACE_DTYPE = [
 
 ### The ChunkedDataset
 The `ChunkedDataset` (`l5kit.data.zarr_dataset`) is the first interface between raw data on the disk and python accessible information.
-This layer is very thin, and it just provides the four arrays mapped from the disk. When one of these array is indexed (or sliced):
+This layer is very thin, and it provides the four arrays mapped from the disk. When one of these array is indexed (or sliced):
 - `zarr` identifies the chunk(s) to be loaded;
 - the chunk is decompressed on the fly;
 - a numpy array copy is returned; 
@@ -169,15 +169,15 @@ The `ChunkedDataset` also provides a LRUcache; but it works on [compressed chunk
 A very common operation with the `ChunkedDataset` is slicing one array to retrieve some values.
 Let's say we want to retrieve the first 10k agents' centroids and store them in memory.
 
-A first implementation would look like:
+A first implementation would look like this:
 ```python
 from l5kit.data import ChunkedDataset
 
 dt = ChunkedDataset("<path>").open()
-els= []
-for idx in range(10_00):
+centroids= []
+for idx in range(10_000):
     centroid = dt.agents[idx]["centroid"]
-    els.append(centroid)
+    centroids.append(centroid)
 ```
 
 However, in this implementation **we are decompressing the same chunk (or two) 10_000 times!**
@@ -187,7 +187,7 @@ If we rewrite it as:
 from l5kit.data import ChunkedDataset
 
 dt = ChunkedDataset("<path>").open()
-els = dt.agents[slice(10_000)]["centroid"]  # note this is the same as dt.agents[:10_000]
+centroids = dt.agents[slice(10_000)]["centroid"]  # note this is the same as dt.agents[:10_000]
 ```
 
 We reduce the decompression numbers by **a factor of 10K**.
