@@ -96,6 +96,9 @@ Some other zarr benefits are:
 ## 2020 Lyft Competition Dataset format
 The 2020 Lyft competition dataset is stored in four structured arrays: `scenes`, `frames`, `agents` and `tl_faces`.
 
+Note: in the following all `_interval` fields assume that information is stored consecutively in the arrays.
+This means that if `frame_index_interval` for `scene_0` are `(0, 100)`, frames from `scene_1` will start from index 100 in the frames array.
+
 ### Scenes
 A scene is identified by the host (i.e. which car was used to collect it) and a start and end time. It consists of multiple frames (= discretized measurements), in the scene datatype we store the start and end index in the `frames` array described below that correspond to this scene.
 
