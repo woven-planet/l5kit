@@ -214,7 +214,7 @@ def average_displacement_error_mean(
         np.ndarray: mean average displacement error (ADE), a single float number
     """
 
-    return _average_displacement_error(gt, pred, confidences, avails, "oracle")
+    return _average_displacement_error(gt, pred, confidences, avails, "mean")
 
 
 def _final_displacement_error(
