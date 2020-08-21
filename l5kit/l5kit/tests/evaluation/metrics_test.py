@@ -135,7 +135,7 @@ def test_ade_fde_known_results() -> None:
     pred[1] = [[1], [2], [3]]
 
     # Confidences do not matter here.
-    confs = np.asarray((0, 0))
+    confs = np.asarray((0.5, 0.5))
 
     assert np.allclose(average_displacement_error_mean(gt, pred, confs, avail), 1)
     assert np.allclose(average_displacement_error_oracle(gt, pred, confs, avail), 0)
