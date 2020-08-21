@@ -6,10 +6,10 @@ def _assert_shapes(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, av
     Check the shapes of args required by metrics
 
     Args:
-        gt (np.ndarray): array of shape (time)x(2D coords)
-        pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
+        gt (np.ndarray): array of shape (timesteps)x(2D coords)
+        pred (np.ndarray): array of shape (modes)x(timesteps)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
-        avails (np.ndarray): array of shape (time) with the availability for each gt timestep
+        avails (np.ndarray): array of shape (timesteps) with the availability for each gt timesteps
 
     Returns:
 
@@ -39,10 +39,10 @@ def neg_multi_log_likelihood(
     https://leimao.github.io/blog/LogSumExp/
 
     Args:
-        gt (np.ndarray): array of shape (time)x(2D coords)
-        pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
+        gt (np.ndarray): array of shape (timesteps)x(2D coords)
+        pred (np.ndarray): array of shape (modes)x(timesteps)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
-        avails (np.ndarray): array of shape (time) with the availability for each gt timestep
+        avails (np.ndarray): array of shape (timesteps) with the availability for each gt timesteps
 
     Returns:
         np.ndarray: negative log-likelihood for this example, a single float number
@@ -55,7 +55,7 @@ def neg_multi_log_likelihood(
     error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
 
     with np.errstate(divide="ignore"):  # when confidence is 0 log goes to -inf, but we're fine with it
-        error = np.log(confidences) - 0.5 * np.sum(error, axis=-1)  # reduce time
+        error = np.log(confidences) - 0.5 * np.sum(error, axis=-1)  # reduce timesteps
 
     # use max aggregator on modes for numerical stability
     max_value = error.max()  # error are negative at this point, so max() gives the minimum one
@@ -68,10 +68,10 @@ def rmse(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.n
     Return the root mean squared error, computed using the stable nll
 
     Args:
-        gt (np.ndarray): array of shape (time)x(2D coords)
-        pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
+        gt (np.ndarray): array of shape (timesteps)x(2D coords)
+        pred (np.ndarray): array of shape (modes)x(timesteps)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
-        avails (np.ndarray): array of shape (time) with the availability for each gt timestep
+        avails (np.ndarray): array of shape (timesteps) with the availability for each gt timesteps
 
     Returns:
         np.ndarray: negative log-likelihood for this example, a single float number
@@ -88,10 +88,10 @@ def prob_true_mode(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, av
     Return the probability of the true mode
 
     Args:
-        gt (np.ndarray): array of shape (time)x(2D coords)
-        pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
+        gt (np.ndarray): array of shape (timesteps)x(2D coords)
+        pred (np.ndarray): array of shape (modes)x(timesteps)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
-        avails (np.ndarray): array of shape (time) with the availability for each gt timestep
+        avails (np.ndarray): array of shape (timesteps) with the availability for each gt timesteps
 
     Returns:
         np.ndarray: a (modes) numpy array
@@ -105,7 +105,7 @@ def prob_true_mode(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, av
     error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
 
     with np.errstate(divide="ignore"):  # when confidence is 0 log goes to -inf, but we're fine with it
-        error = np.log(confidences) - 0.5 * np.sum(error, axis=-1)  # reduce time
+        error = np.log(confidences) - 0.5 * np.sum(error, axis=-1)  # reduce timesteps
 
     # use max aggregator on modes for numerical stability
     max_value = error.max()  # error are negative at this point, so max() gives the minimum one
@@ -116,20 +116,20 @@ def prob_true_mode(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, av
 
 def time_displace(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> np.ndarray:
     """
-    Return the displacement at time T
+    Return the displacement at timesteps T
 
     Args:
-        gt (np.ndarray): array of shape (time)x(2D coords)
-        pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
+        gt (np.ndarray): array of shape (timesteps)x(2D coords)
+        pred (np.ndarray): array of shape (modes)x(timesteps)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
-        avails (np.ndarray): array of shape (time) with the availability for each gt timestep
+        avails (np.ndarray): array of shape (timesteps) with the availability for each gt timesteps
 
     Returns:
-        np.ndarray: a (time) numpy array
+        np.ndarray: a (timesteps) numpy array
 
     """
     true_mode_error = prob_true_mode(gt, pred, confidences, avails)
-    true_mode_error = true_mode_error[:, None]  # add time axis
+    true_mode_error = true_mode_error[:, None]  # add timesteps axis
 
     gt = np.expand_dims(gt, 0)  # add modes
     avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
