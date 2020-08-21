@@ -39,10 +39,8 @@ def neg_multi_log_likelihood(
     https://timvieira.github.io/blog/post/2014/02/11/exp-normalize-trick/
     https://leimao.github.io/blog/LogSumExp/
 
-    In more details, our loss function is:
-    L = -log p(pred|confidences, gt)
-    = -log (sum_k confidences^k prod_t N(pred_t|mean_t^k=gt_t, variance = 1)
-    = -log (sum_k confidences^k exp(-1/2 sum_t (gt_t - x_t)^
+    For more details about used loss function and reformulation, please see
+    https://github.com/lyft/l5kit/blob/master/competition.md.
 
     Args:
         gt (np.ndarray): array of shape (time)x(2D coords)
@@ -144,12 +142,4 @@ def time_displace(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, ava
     return np.sum(true_mode_error * np.sqrt(error), axis=0)  # reduce modes
 
 
-T = 12
-modes = 3
-gt = np.zeros((T, 2))
-pred = np.zeros((modes, T, 2))
-confidences = np.zeros((modes))
-confidences[0] = 1
-avails = np.zeros((T))
 
-neg_multi_log_likelihood(gt, pred, confidences, avails)
