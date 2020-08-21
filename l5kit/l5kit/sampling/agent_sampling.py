@@ -88,11 +88,9 @@ to train models that can recover from slight divergence from training set data
 
     try:
         tl_slice = get_tl_faces_slice_from_frames(history_frames[-1], history_frames[0])  # -1 is the farthest
-        tl_faces = tl_faces[tl_slice].copy()  # only history traffic light faces
-
         # sync interval with the traffic light faces array
         history_frames["traffic_light_faces_index_interval"] -= tl_slice.start
-        history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces)
+        history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces[tl_slice].copy())
     except ValueError:
         history_tl_faces = [np.empty(0, dtype=TL_FACE_DTYPE) for _ in history_frames]
 
