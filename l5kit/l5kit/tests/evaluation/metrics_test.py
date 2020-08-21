@@ -1,7 +1,8 @@
 import numpy as np
 import pytest
 
-from l5kit.evaluation.metrics import _assert_shapes, neg_multi_log_likelihood, prob_true_mode, rmse, time_displace, average_displacement_error, final_displacement_error
+from l5kit.evaluation.metrics import _assert_shapes, neg_multi_log_likelihood, prob_true_mode, \
+    rmse, time_displace, average_displacement_error, final_displacement_error
 
 
 def test_assert_shapes() -> None:
