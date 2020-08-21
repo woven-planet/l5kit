@@ -13,7 +13,8 @@ Assume, ground truth positions of a sample trajectory are ![equation](http://www
 and we predicted K hypotheses, represented by means ![equation](http://www.sciweavers.org/tex2img.php?eq=%5Cmu_1%5Ek%2C%20%5Cldots%2C%20%5Cmu_N%5Ek&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0).
 In addition, we predict confidences c of these K hypotheses.
 Using a standard Normal distribution, our likelihood is given by
-![equation](http://www.sciweavers.org/tex2img.php?eq=%24p%28x_1%2C%20%5Cldots%2C%20x_N%7Cc%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5Cmu_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%29%20%3D%20%5Csum_k%20c%5Ek%20%5Cmathcal%7BN%7D%28x_1%2C%20%5Cldots%2C%20x_N%7C%5Cmu_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5CSigma%3D1%29%24&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
+![equation](http://www.sciweavers.org/tex2img.php?eq=p%28x_1%2C%20%5Cldots%2C%20x_N%7Cc%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5Cmu_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%29&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
+![equation](http://www.sciweavers.org/tex2img.php?eq=%3D%20%5Csum_k%20c%5Ek%20%5Cmathcal%7BN%7D%28x_1%2C%20%5Cldots%2C%20x_N%7C%5Cmu_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5CSigma%3D1%29&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
 ![equation](http://www.sciweavers.org/tex2img.php?eq=%3D%20%5Csum_k%20c%5Ek%20%5Cprod_t%20%5Cmathcal%7BN%7D%28x_t%7C%5Cmu_t%5Ek%2C%20%5Csigma%3D1%29&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
 yielding the loss
 ![equation](http://www.sciweavers.org/tex2img.php?eq=L%20%3D%20-%20%5Clog%20p%28x_1%2C%20%5Cldots%2C%20x_N%7Cc%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5Cmu_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%29&bc=White&fc=Black&im=jpg&fs=12&ff=arev&edit=0)
