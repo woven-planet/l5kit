@@ -100,7 +100,10 @@ Note: in the following all `_interval` fields assume that information is stored 
 This means that if `frame_index_interval` for `scene_0` are `(0, 100)`, frames from `scene_1` will start from index 100 in the frames array.
 
 ### Scenes
-A scene is identified by the host (i.e. which car was used to collect it) and a start and end time. It consists of multiple frames (= discretized measurements), in the scene datatype we store the start and end index in the `frames` array described below that correspond to this scene.
+A scene is identified by the host (i.e. which car was used to collect it) and a start and end time. 
+It consists of multiple frames (=snapshots at discretized time intervals). 
+The scene datatype stores references to its corresponding frames in terms of the start and end index within the frames array (described below). 
+The frames in between these indices all correspond to the scene (Including start index, excluding end index).
 
 ```python
 SCENE_DTYPE = [
@@ -112,7 +115,15 @@ SCENE_DTYPE = [
 ```
 
 ### Frames
-A frame consists of information about the ego vehicle (e.g. where it was at that time), a timestamp, and a reference to the agents and traffic light faces in that frame. Because there may be multiple agents/faces observed we store the start and the end index.
+A frame captures all information that was observed at a time. This includes
+
+- the timestamp, which the frame describes;
+- data about the ego vehicle itself such as rotation and position;
+- a reference to the other agents (vehicles, cyclists and pedestrians) that were captured by the ego's sensors;
+- a reference to all traffic light faces (red,yellow, green or undetermined) for all visible lanes.
+
+The properties for both agents and traffic light faces are stored in their two respective arrays. 
+The frame contains only pointers to these stored objects in terms of a start and an end index to these arrays (again, start in included while end excluded).
 
 ```python
 FRAME_DTYPE = [
@@ -125,7 +136,10 @@ FRAME_DTYPE = [
 ```
 
 ### Agents
-An agent is an observation by the AV of some other detected object. They each have a probability for each defined class associated with them, the possible labels are defined [here](https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/zarr_dataset.py).
+An agent is an observation by the AV of some other detected object. 
+Each entry describes the object in terms of its attributes such as position and velocity, gives the agent a tracking number to track it over multiple frames (but only within the same scene!) and its most probable label. 
+The label is described as an array of probabilities over each defined class associated with them, 
+the possible labels are defined [here](https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/zarr_dataset.py).
 
 ```python
 AGENT_DTYPE = [
@@ -139,9 +153,9 @@ AGENT_DTYPE = [
 ```
 
 ### Traffic Light Faces
-Note: we refer to traffic light bulbs (e.g. the red light bulb of a specific traffic light) as `faces` in L5Kit.
+Note: we refer to traffic light bulbs (e.g. the red light bulb of a specific traffic light) as `faces` in L5Kit. 
 
-Our semantic map holds static information about the world only. This means it has a list of all traffic lights, but not information about how their status changes through time.
+Our semantic map holds static information about the world only. This means it has a list of all traffic lights, but not information about how their status changes over time.
 This dynamic information is instead stored in this array.
 Each array's element has a unique id to link it to the semantic map, a status (if `>0` then the face is active) and a reference to its parent traffic light.
 
