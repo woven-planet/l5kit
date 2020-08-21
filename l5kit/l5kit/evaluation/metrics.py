@@ -28,7 +28,6 @@ def _assert_shapes(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, av
     assert np.isfinite(avails).all(), "invalid value found in avails"
 
 
-
 def neg_multi_log_likelihood(
     gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
 ) -> np.ndarray:
@@ -140,6 +139,3 @@ def time_displace(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, ava
 
     error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
     return np.sum(true_mode_error * np.sqrt(error), axis=0)  # reduce modes
-
-
-
