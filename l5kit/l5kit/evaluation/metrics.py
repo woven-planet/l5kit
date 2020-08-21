@@ -139,3 +139,99 @@ def time_displace(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, ava
 
     error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
     return np.sum(true_mode_error * np.sqrt(error), axis=0)  # reduce modes
+
+
+def time_displace(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> np.ndarray:
+    """
+    Return the displacement at time T
+
+    Args:
+        gt (np.ndarray): array of shape (time)x(2D coords)
+        pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
+        confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
+        avails (np.ndarray): array of shape (time) with the availability for each gt timestep
+
+    Returns:
+        np.ndarray: a (time) numpy array
+
+    """
+    true_mode_error = prob_true_mode(gt, pred, confidences, avails)
+    true_mode_error = true_mode_error[:, None]  # add time axis
+
+    gt = np.expand_dims(gt, 0)  # add modes
+    avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
+
+    error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
+    return np.sum(true_mode_error * np.sqrt(error), axis=0)  # reduce modes
+
+
+def average_displacement_error(
+    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
+) -> np.ndarray:
+    """
+    Returns the average displacement error (ADE), which is the average displacement over all timesteps
+    - while ignoring confidences. Instead, either the error is averaged over all predictions,
+    or the best one returned.
+
+    Args:
+        gt (np.ndarray): array of shape (time)x(2D coords)
+        pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
+        confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
+        avails (np.ndarray): array of shape (time) with the availability for each gt timestep
+        mode (str): calculation mode - options are 'mean' (average over hypotheses) and 'oracle' (use best hypotheses)
+
+    Returns:
+        np.ndarray: average displacement error (ADE), a single float number
+    """
+    _assert_shapes(gt, pred, confidences, avails)
+
+    gt = np.expand_dims(gt, 0)  # add modes
+    avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
+
+    error = np.sum(((gt - pred) * avails) ** 2, axis=-1)**0.5  # reduce coords and use availability
+    error = np.mean(error, axis=-1)  # average over timesteps
+
+    if mode == 'mean':
+        error = np.mean(error, axis=0)  # average over hypotheses
+    elif mode == 'oracle':
+        error = np.min(error)  # use best hypothesis
+    else:
+        print('Defaulting to mean mode in average_displacement_error().')
+
+    return error
+
+
+def final_displacement_error(
+    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
+) -> np.ndarray:
+    """
+    Returns the final displacement error (FDE), which is the displacement in the last timestep
+    - while ignoring confidences. Instead, either the error is averaged over all predictions,
+    or the best one returned.
+
+    Args:
+        gt (np.ndarray): array of shape (time)x(2D coords)
+        pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
+        confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
+        avails (np.ndarray): array of shape (time) with the availability for each gt timestep
+        mode (str): calculation mode - options are 'mean' (average over hypotheses) and 'oracle' (use best hypotheses)
+
+    Returns:
+        np.ndarray: final displacement error (FDE), a single float number
+    """
+    _assert_shapes(gt, pred, confidences, avails)
+
+    gt = np.expand_dims(gt, 0)  # add modes
+    avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
+
+    error = np.sum(((gt - pred) * avails) ** 2, axis=-1)**0.5  # reduce coords and use availability
+    error = error[:, -1]  # use last timestep
+
+    if mode == 'mean':
+        error = np.mean(error, axis=0)  # average over hypotheses
+    elif mode == 'oracle':
+        error = np.min(error)  # use best hypothesis
+    else:
+        print('Defaulting to mean mode in final_displacement_error().')
+
+    return error

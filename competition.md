@@ -46,3 +46,13 @@ Assume, we need to calculate the logarithm of a sum of exponentials:
 Then, we rewrite this by substracting the maximum value x<sup>*</sup> from each exponent, resulting in much increased numerical stability:
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20LSE%28x_1%2C%20%5Cldots%2C%20x_n%29%20%3D%20x%5E*%20&plus;%20%5Clog%28e%5E%7Bx_1%20-%20x%5E%7B*%7D%7D%20&plus;%20%5Cldots%20&plus;%20e%5E%7Bx_n%20-%20x%5E%7B*%7D%7D%29)
+
+# Additional Metrics
+Scoring multi-modal prediction models is a highly complex task, and while we chose the metric described above due to its elegance and support for multi-modality,
+we encourage participants to also employ other metrics for assessing their models.
+Examples of such other metrics, commonly used in literature, are *Average Displacement Error* (ADE) and *Final Displacement Error* (FDE) (compare 
+[our dataset paper](https://arxiv.org/pdf/2006.14480.pdf) or [SophieGAN] (https://arxiv.org/pdf/1806.01482.pdf)):
+They calculate the average displacement (L2 distance between prediction and ground truth averaged over all timesteps) (ADE) and
+final displacement (L2 distance between prediction and ground truth, evaluated only at the last timestep) (FDE).
+As we consider multiple predictions, we offer [implementations for both these metrics](https://github.com/lyft/l5kit/blob/os/add_competition_documentation/l5kit/l5kit/evaluation/metrics.py) either averaging over all hypotheses 
+or using the best hypothesis (oracle variant) - thus ignoring generated confidence scores.
