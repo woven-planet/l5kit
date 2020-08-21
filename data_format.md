@@ -94,7 +94,7 @@ Some other zarr benefits are:
 * The metadata (e.g. dtype, chunk size, compression type) is stored inside the zarr dataset too. If one day you decide to change your chunk size, you can still read the older datasets without changing any code.
 
 ## 2020 Lyft Competition Dataset format
-The 2020 Lyft competition dataset is stored in three structured arrays: `scenes`, `frames` and `agents`.
+The 2020 Lyft competition dataset is stored in four structured arrays: `scenes`, `frames`, `agents` and `tl_faces`.
 
 ### Scenes
 A scene is identified by the host (i.e. which car was used to collect it) and a start and end time. It consists of multiple frames (= discretized measurements), in the scene datatype we store the start and end index in the `frames` array described below that correspond to this scene.
@@ -109,12 +109,13 @@ SCENE_DTYPE = [
 ```
 
 ### Frames
-A frame consists of information about the ego vehicle (e.g. where it was at that time), a timestamp, and a reference to the agents in that frame. Because there may be multiple agents observed we store the start and the end index.
+A frame consists of information about the ego vehicle (e.g. where it was at that time), a timestamp, and a reference to the agents and traffic light faces in that frame. Because there may be multiple agents/faces observed we store the start and the end index.
 
 ```python
 FRAME_DTYPE = [
     ("timestamp", np.int64),
     ("agent_index_interval", np.int64, (2,)),
+    ("traffic_light_faces_index_interval", np.int64, (2,)),
     ("ego_translation", np.float64, (3,)),
     ("ego_rotation", np.float64, (3, 3)),
 ]
@@ -133,3 +134,59 @@ AGENT_DTYPE = [
     ("label_probabilities", np.float32, (len(LABELS),)),
 ]
 ```
+
+### Traffic Light Faces
+Note: we refer to traffic light bulbs (e.g. the red light bulb of a specific traffic light) as `faces` in L5Kit.
+
+Our semantic map holds static information about the world only. This means it has a list of all traffic lights, but not information about how their status changes through time.
+This dynamic information is instead stored in this array.
+Each array's element has a unique id to link it to the semantic map, a status (if `>0` then the face is active) and a reference to its parent traffic light.
+
+```python
+TL_FACE_DTYPE = [
+    ("face_id", "<U16"),
+    ("traffic_light_id", "<U16"),
+    ("traffic_light_face_status", np.float32, (len(TL_FACE_LABELS,))),
+]
+```
+
+## Working with the zarr format
+
+### The ChunkedDataset
+The `ChunkedDataset` (`l5kit.data.zarr_dataset`) is the first interface between raw data on the disk and python accessible information.
+This layer is very thin, and it just provides the four arrays mapped from the disk. When one of these array is indexed (or sliced):
+- `zarr` identifies the chunk(s) to be loaded;
+- the chunk is decompressed on the fly;
+- a numpy array copy is returned; 
+
+The `ChunkedDataset` also provides a LRUcache; but it works on [compressed chunks only](https://github.com/zarr-developers/zarr-python/issues/278).
+
+### Performance-aware slicing 
+
+A very common operation with the `ChunkedDataset` is slicing one array to retrieve some values.
+Let's say we want to retrieve the first 10k agents' centroids and store them in memory.
+
+A first implementation would look like:
+```python
+from l5kit.data import ChunkedDataset
+
+dt = ChunkedDataset("<path>").open()
+els= []
+for idx in range(10_00):
+    centroid = dt.agents[idx]["centroid"]
+    els.append(centroid)
+```
+
+However, in this implementation **we are decompressing the same chunk (or two) 10_000 times!**
+
+If we rewrite it as:
+```python
+from l5kit.data import ChunkedDataset
+
+dt = ChunkedDataset("<path>").open()
+els = dt.agents[slice(10_000)]["centroid"]  # note this is the same as dt.agents[:10_000]
+```
+
+We reduce the decompression numbers by **a factor of 10K**.
+
+**TL;DR**: when working with `zarr` you should always aim to minimise the number of accesses to the compressed data.

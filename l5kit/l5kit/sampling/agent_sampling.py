@@ -80,7 +80,7 @@ to train models that can recover from slight divergence from training set data
     future_frames["agent_index_interval"] -= min_agents_index  # sync interval with the agents array
     history_agents = filter_agents_by_frames(history_frames, agents)
     future_agents = filter_agents_by_frames(future_frames, agents)
-
+    print(len(agents))
     try:
         min_tl_index = history_frames[-1]["traffic_light_faces_index_interval"][0]  # -1 is the farthest in the past
         max_tl_index = history_frames[0]["traffic_light_faces_index_interval"][1]
