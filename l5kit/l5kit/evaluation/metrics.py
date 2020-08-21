@@ -142,7 +142,7 @@ def time_displace(gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, ava
 
 
 def average_displacement_error_oracle(
-    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
+    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the oracle average displacement error (ADE), which is the average displacement over all timesteps
@@ -172,7 +172,7 @@ def average_displacement_error_oracle(
 
 
 def average_displacement_error_mean(
-    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
+    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the mean average displacement error (ADE), which is the average displacement over all timesteps
@@ -202,7 +202,7 @@ def average_displacement_error_mean(
 
 
 def final_displacement_error_oracle(
-    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
+    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the final displacement error (FDE), which is the displacement in the last timestep
@@ -231,8 +231,8 @@ def final_displacement_error_oracle(
     return error
 
 
-def final_displacement_error_average(
-    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
+def final_displacement_error_mean(
+    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
     Returns the final displacement error (FDE), which is the displacement in the last timestep

@@ -3,8 +3,10 @@ import pytest
 
 from l5kit.evaluation.metrics import (
     _assert_shapes,
-    average_displacement_error,
-    final_displacement_error,
+    average_displacement_error_mean,
+    average_displacement_error_oracle,
+    final_displacement_error_mean,
+    final_displacement_error_oracle,
     neg_multi_log_likelihood,
     prob_true_mode,
     rmse,
@@ -135,14 +137,14 @@ def test_ade_fde_known_results() -> None:
     # Confidences do not matter here.
     confs = np.asarray((0, 0))
 
-    assert np.allclose(average_displacement_error(gt, pred, confs, avail, "mean"), 1)
-    assert np.allclose(average_displacement_error(gt, pred, confs, avail, "oracle"), 0)
-    assert np.allclose(final_displacement_error(gt, pred, confs, avail, "mean"), 1.5)
-    assert np.allclose(final_displacement_error(gt, pred, confs, avail, "oracle"), 0)
+    assert np.allclose(average_displacement_error_mean(gt, pred, confs, avail), 1)
+    assert np.allclose(average_displacement_error_oracle(gt, pred, confs, avail), 0)
+    assert np.allclose(final_displacement_error_mean(gt, pred, confs, avail), 1.5)
+    assert np.allclose(final_displacement_error_oracle(gt, pred, confs, avail), 0)
 
     gt = np.full((future_len, num_coords), 0.5)
 
-    assert np.allclose(average_displacement_error(gt, pred, confs, avail, "mean"), 1.0)
-    assert np.allclose(average_displacement_error(gt, pred, confs, avail, "oracle"), 0.5)
-    assert np.allclose(final_displacement_error(gt, pred, confs, avail, "mean"), 1.5)
-    assert np.allclose(final_displacement_error(gt, pred, confs, avail, "oracle"), 0.5)
+    assert np.allclose(average_displacement_error_mean(gt, pred, confs, avail), 1.0)
+    assert np.allclose(average_displacement_error_oracle(gt, pred, confs, avail), 0.5)
+    assert np.allclose(final_displacement_error_mean(gt, pred, confs, avail), 1.5)
+    assert np.allclose(final_displacement_error_oracle(gt, pred, confs, avail), 0.5)
