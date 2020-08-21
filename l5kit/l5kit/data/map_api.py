@@ -12,7 +12,7 @@ ENCODING = "utf-8"
 
 
 class MapAPI:
-    def __init__(self, protobuf_map_path: str, pose_to_ecef: np.ndarray):
+    def __init__(self, protobuf_map_path: str, world_to_ecef: np.ndarray):
         """
         Interface to the raw protobuf map file with the following features:
         - access to element using ID is O(1);
@@ -21,10 +21,10 @@ class MapAPI:
 
         Args:
             protobuf_map_path (str): path to the protobuf file
-            pose_to_ecef (np.ndarray): transformation matrix from world coordinates to ECEF (dataset dependent)
+            world_to_ecef (np.ndarray): transformation matrix from world coordinates to ECEF (dataset dependent)
         """
         self.protobuf_map_path = protobuf_map_path
-        self.ecef_to_pose = np.linalg.inv(pose_to_ecef)
+        self.ecef_to_world = np.linalg.inv(world_to_ecef)
 
         with open(protobuf_map_path, "rb") as infile:
             mf = MapFragment()
@@ -83,7 +83,7 @@ class MapAPI:
         z = np.cumsum(np.asarray(dz) / 100)
         frame_lat, frame_lng = self._undo_e7(frame.origin.lat_e7), self._undo_e7(frame.origin.lng_e7)
         xyz = np.stack(pm.enu2ecef(x, y, z, frame_lat, frame_lng, 0), axis=-1)
-        xyz = transform_points(xyz, self.ecef_to_pose)
+        xyz = transform_points(xyz, self.ecef_to_world)
         return xyz
 
     @staticmethod

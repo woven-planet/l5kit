@@ -20,7 +20,7 @@ class SatelliteRasterizer(Rasterizer):
         pixel_size: np.ndarray,
         ego_center: np.ndarray,
         map_im: np.ndarray,
-        map_to_sat: np.ndarray,
+        world_to_aerial: np.ndarray,
         interpolation: int = cv2.INTER_LINEAR,
     ):
         """
@@ -30,15 +30,17 @@ class SatelliteRasterizer(Rasterizer):
             pixel_size (np.ndarray): Dimensions of one pixel in the real world
             ego_center (np.ndarray): Center of ego in the image, [0.5,0.5] would be in the image center.
             map_im (np.ndarray): Satellite image to crop from.
-            map_to_sat (np.ndarray): Transform to go from map coordinates to satellite image pixel coordinates.
+            world_to_aerial (np.ndarray): Transform to go from map coordinates to satellite image pixel coordinates.
         """
         self.raster_size = raster_size
         self.pixel_size = pixel_size
         self.ego_center = ego_center
         self.map_im = map_im
-        self.map_to_sat = map_to_sat
+        self.world_to_aerial = world_to_aerial
         self.interpolation = interpolation
-        self.map_pixel_scale = (1 / np.linalg.norm(map_to_sat[0, 0:3]) + 1 / np.linalg.norm(map_to_sat[1, 0:3])) / 2
+        self.map_pixel_scale = (
+            1 / np.linalg.norm(world_to_aerial[0, 0:3]) + 1 / np.linalg.norm(world_to_aerial[1, 0:3])
+        ) / 2
 
     def rasterize(
         self,
@@ -69,7 +71,7 @@ class SatelliteRasterizer(Rasterizer):
         # Transform it to satellite coordinates (consider also z here)
         center_pixel = np.asarray(self.raster_size) * (0.5, 0.5)
         world_translation = transform_point(center_pixel, np.linalg.inv(world_to_image_space))
-        sat_translation = transform_point(np.append(world_translation, ego_translation[2]), self.map_to_sat)
+        sat_translation = transform_point(np.append(world_translation, ego_translation[2]), self.world_to_aerial)
 
         # Note 1: there is a negation here, unknown why this is necessary.
         # My best guess is because Y is flipped, maybe we can do this more elegantly.
