@@ -146,7 +146,7 @@ def average_displacement_error_oracle(
 ) -> np.ndarray:
     """
     Returns the oracle average displacement error (ADE), which is the average displacement over all timesteps
-    - while ignoring confidences, meaning only the best hypotheses is considered.
+    - while ignoring confidences, only the best hypotheses is considered.
 
     Args:
         gt (np.ndarray): array of shape (time)x(2D coords)
@@ -176,7 +176,7 @@ def average_displacement_error_mean(
 ) -> np.ndarray:
     """
     Returns the mean average displacement error (ADE), which is the average displacement over all timesteps
-    - while ignoring confidences, meaning the error is averaged over all hypotheses.
+    - while ignoring confidences, the error is averaged over all hypotheses.
 
     Args:
         gt (np.ndarray): array of shape (time)x(2D coords)
@@ -205,8 +205,8 @@ def final_displacement_error_oracle(
     gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
-    Returns the final displacement error (FDE), which is the displacement in the last timestep
-    - while ignoring confidences, meaning only the best hypotheses is considered.
+    Returns the oracle final displacement error (FDE), which is the displacement in the last timestep
+    - while ignoring confidences, only the best hypotheses is considered.
 
     Args:
         gt (np.ndarray): array of shape (time)x(2D coords)
@@ -235,8 +235,8 @@ def final_displacement_error_mean(
     gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
-    Returns the final displacement error (FDE), which is the displacement in the last timestep
-    - while ignoring confidences, meaning the error is averaged over all hypotheses.
+    Returns the mean final displacement error (FDE), which is the displacement in the last timestep
+    - while ignoring confidences, the error is averaged over all hypotheses.
 
     Args:
         gt (np.ndarray): array of shape (time)x(2D coords)
