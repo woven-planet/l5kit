@@ -168,16 +168,18 @@ do <strong>not</strong> use them in the main project.</p>
 <div class="section" id="aerial-map">
 <h2><code class="docutils literal notranslate"><span class="pre">aerial_map.*</span></code><a class="headerlink" href="#aerial-map" title="Permalink to this headline">¶</a></h2>
 <p>A completely 1000x2000 black image (<code class="docutils literal notranslate"><span class="pre">.png</span></code>) which simulates the aerial map.</p>
-<p>The meta file (<code class="docutils literal notranslate"><span class="pre">aerial_map.json</span></code>) holds the <code class="docutils literal notranslate"><span class="pre">ecef_to_image</span></code> matrix, which <strong>is satellite image dependent</strong>.
-It transforms points from the satellite ref system to the image one (pixels coords in the <code class="docutils literal notranslate"><span class="pre">aerial_map.png</span></code>).
-This matrix is similar to the one shipped with the dataset satellite image but has a crucial difference:</p>
-<p><strong>M[0,3] and M[1,3] have been adapted to work with the low resolution image</strong>, so this matrix <strong>doesn’t</strong> work for the
-original satellite image.</p>
 </div>
 <div class="section" id="meta-json">
 <h2><code class="docutils literal notranslate"><span class="pre">meta.json</span></code><a class="headerlink" href="#meta-json" title="Permalink to this headline">¶</a></h2>
-<p>A meta file with the <code class="docutils literal notranslate"><span class="pre">pose_to_ecef</span></code> matrix, which <strong>is dataset dependent</strong>. This transforms points from
-the <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> reference system (metrics) into the satellite one.</p>
+<p>A meta file with:</p>
+<ul class="simple">
+<li><p>the <code class="docutils literal notranslate"><span class="pre">pose_to_ecef</span></code> matrix, which <strong>is dataset dependent</strong>. This transforms points from
+the <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> reference system (metrics) into the satellite one;</p></li>
+<li><p>the <code class="docutils literal notranslate"><span class="pre">ecef_to_aerial</span></code> matrix, which <strong>is dataset (and aerialmap ) dependent</strong>.
+It transforms points from ECEF to the image reference system (pixels coords in the <code class="docutils literal notranslate"><span class="pre">aerial_map.png</span></code>).
+This matrix is similar to the one shipped with the dataset satellite image but has a crucial difference:</p></li>
+</ul>
+<p><strong>NOTE: do no use this matrix in the main project as M[0,3] and M[1,3] have been adapted to work with the low resolution image</strong></p>
 </div>
 <div class="section" id="config-yaml">
 <h2><code class="docutils literal notranslate"><span class="pre">config.yaml</span></code><a class="headerlink" href="#config-yaml" title="Permalink to this headline">¶</a></h2>

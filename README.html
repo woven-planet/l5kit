@@ -87,7 +87,10 @@
 <li class="toctree-l1"><a class="reference internal" href="#examples">Examples</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#news">News</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#overview">Overview</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#datasets">1. Datasets</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#datasets">1. Datasets</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#download-the-datasets">Download the datasets</a></li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="#l5kit">2. L5Kit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#id1">3. Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#dataset-visualization">Dataset visualization</a></li>
@@ -97,11 +100,18 @@
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#installation">Installation</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#clone-the-repo">1. Clone the repo</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#download-the-datasets">2. Download the datasets</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#install-l5kit">3. Install L5Kit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#generate-l5kit-code-html-documentation-optional">4. Generate L5Kit code html documentation (optional)</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#run-example">5. Run example</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-as-a-user">Installing as a User</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#install-the-package-from-pypy-in-your-project-venv">1. Install the package from pypy (in your project venv)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#run-example">2. Run example</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#installing-as-a-developer">Installing as a Developer</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#clone-the-repo">1. Clone the repo</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#install-l5kit">3. Install L5Kit</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#generate-l5kit-code-html-documentation-optional">4. Generate L5Kit code html documentation (optional)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">5. Run example</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="#license">License</a></li>
@@ -221,6 +231,24 @@ It consists of the following components:</p>
 <li><p>A high-definition aerial map of the Palo Alto area. This image has 8cm per pixel resolution and is provided by <a class="reference external" href="https://www.nearmap.com/">NearMap</a>.</p></li>
 </ul>
 <p>To read more about the dataset and how it was generated, read the <a class="reference external" href="https://arxiv.org/abs/2006.14480">dataset whitepaper</a>.</p>
+<div class="section" id="download-the-datasets">
+<h3>Download the datasets<a class="headerlink" href="#download-the-datasets" title="Permalink to this headline">¶</a></h3>
+<p>Register at https://self-driving.lyft.com/level5/data/ and download the <a class="reference external" href="https://arxiv.org/abs/2006.14480">2020 Lyft prediction dataset</a>.
+Store all files in a single folder to match this structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prediction</span><span class="o">-</span><span class="n">dataset</span><span class="o">/</span>
+  <span class="o">+-</span> <span class="n">scenes</span><span class="o">/</span>
+        <span class="o">+-</span> <span class="n">sample</span><span class="o">.</span><span class="n">zarr</span>
+        <span class="o">+-</span> <span class="n">train</span><span class="o">.</span><span class="n">zarr</span>
+        <span class="o">+-</span> <span class="n">train_full</span><span class="o">.</span><span class="n">zarr</span>
+  <span class="o">+-</span> <span class="n">aerial_map</span><span class="o">/</span>
+        <span class="o">+-</span> <span class="n">aerial_map</span><span class="o">.</span><span class="n">png</span>
+  <span class="o">+-</span> <span class="n">semantic_map</span><span class="o">/</span>
+        <span class="o">+-</span> <span class="n">semantic_map</span><span class="o">.</span><span class="n">pb</span>
+  <span class="o">+-</span> <span class="n">meta</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+<p>You may find other files and folder downloaded (mainly from <code class="docutils literal notranslate"><span class="pre">aerial_map</span></code>), but they are not required by L5Kit</p>
+</div>
 </div>
 <div class="section" id="l5kit">
 <h2>2. L5Kit<a class="headerlink" href="#l5kit" title="Permalink to this headline">¶</a></h2>
@@ -250,26 +278,44 @@ It consists of the following components:</p>
 </div>
 <div class="section" id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="installing-as-a-user">
+<h2>Installing as a User<a class="headerlink" href="#installing-as-a-user" title="Permalink to this headline">¶</a></h2>
+<p>Follow this workflow if:</p>
+<ul class="simple">
+<li><p>you’re not interested in developing and/or contributing to L5Kit;</p></li>
+<li><p>you don’t need any features from a specific branch or latest master and you’re fine with the latest release;</p></li>
+</ul>
+<div class="section" id="install-the-package-from-pypy-in-your-project-venv">
+<h3>1. Install the package from pypy (in your project venv)<a class="headerlink" href="#install-the-package-from-pypy-in-your-project-venv" title="Permalink to this headline">¶</a></h3>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install l5kit
+</pre></div>
+</div>
+<p>You should now be able to import from L5Kit (e.g. <code class="docutils literal notranslate"><span class="pre">from</span> <span class="pre">l5kit.data</span> <span class="pre">import</span> <span class="pre">ChunkedDataset</span></code> should work)</p>
+</div>
+<div class="section" id="run-example">
+<h3>2. Run example<a class="headerlink" href="#run-example" title="Permalink to this headline">¶</a></h3>
+<p>Examples are not shipped with the package, but you can download the zip release from:
+<a class="reference external" href="https://github.com/lyft/l5kit/releases">L5Kit Releases</a></p>
+<p>Please download the zip matching your installed version (you can run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">freeze</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">l5kit</span></code> to get the right version)
+Unzip the files and grab the example folder in the root of the project.</p>
+</div>
+</div>
+<div class="section" id="installing-as-a-developer">
+<h2>Installing as a Developer<a class="headerlink" href="#installing-as-a-developer" title="Permalink to this headline">¶</a></h2>
+<p>Follow this workflow if:</p>
+<ul class="simple">
+<li><p>you want to test latest master or another branch;</p></li>
+<li><p>you want to contribute to L5Kit;</p></li>
+<li><p>you want to run our examples;</p></li>
+</ul>
 <div class="section" id="clone-the-repo">
-<h2>1. Clone the repo<a class="headerlink" href="#clone-the-repo" title="Permalink to this headline">¶</a></h2>
+<h3>1. Clone the repo<a class="headerlink" href="#clone-the-repo" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/lyft/l5kit.git ./
 </pre></div>
 </div>
 </div>
-<div class="section" id="download-the-datasets">
-<h2>2. Download the datasets<a class="headerlink" href="#download-the-datasets" title="Permalink to this headline">¶</a></h2>
-<p>Register at https://self-driving.lyft.com/level5/data/ and download the <a class="reference external" href="https://arxiv.org/abs/2006.14480">2020 Lyft prediction dataset</a>. Store all files in a single folder.
-The resulting directory structure should be:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prediction</span><span class="o">-</span><span class="n">dataset</span><span class="o">/</span>
-  <span class="o">+-</span> <span class="n">sample_scenes</span><span class="o">/</span>
-  <span class="o">+-</span> <span class="n">scenes</span><span class="o">/</span>
-  <span class="o">+-</span> <span class="n">aerial_map</span><span class="o">/</span>
-  <span class="o">+-</span> <span class="n">semantic_map</span><span class="o">/</span>
-</pre></div>
-</div>
-</div>
 <div class="section" id="install-l5kit">
-<h2>3. Install L5Kit<a class="headerlink" href="#install-l5kit" title="Permalink to this headline">¶</a></h2>
+<h3>3. Install L5Kit<a class="headerlink" href="#install-l5kit" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> l5kit
 pip install -r requirements.txt
 </pre></div>
@@ -281,16 +327,17 @@ pip install -r requirements.txt
 </ul>
 </div>
 <div class="section" id="generate-l5kit-code-html-documentation-optional">
-<h2>4. Generate L5Kit code html documentation (optional)<a class="headerlink" href="#generate-l5kit-code-html-documentation-optional" title="Permalink to this headline">¶</a></h2>
+<h3>4. Generate L5Kit code html documentation (optional)<a class="headerlink" href="#generate-l5kit-code-html-documentation-optional" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
 sphinx-build . docs
 </pre></div>
 </div>
 </div>
-<div class="section" id="run-example">
-<h2>5. Run example<a class="headerlink" href="#run-example" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="id2">
+<h3>5. Run example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jupyter notebook examples/visualisation/visualise_data.ipynb
 </pre></div>
+</div>
 </div>
 </div>
 </div>
