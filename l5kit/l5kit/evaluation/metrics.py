@@ -173,8 +173,7 @@ def _average_displacement_error(
     elif mode == "mean":
         error = np.mean(error, axis=0)  # average over hypotheses
     else:
-        print("Defaulting to mean calculation in _average_displacement_error().")
-        error = np.mean(error, axis=0)  # average over hypotheses
+        raise ValueError(f"mode: {mode} not valid")
 
     return error
 
@@ -249,8 +248,7 @@ def _final_displacement_error(
     elif mode == "mean":
         error = np.mean(error, axis=0)  # average over hypotheses
     else:
-        print("Defaulting to mean calculation in _final_displacement_error().")
-        error = np.mean(error, axis=0)  # average over hypotheses
+        raise ValueError(f"mode: {mode} not valid")
 
     return error
 
