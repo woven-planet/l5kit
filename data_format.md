@@ -120,7 +120,7 @@ A frame captures all information that was observed at a time. This includes
 - the timestamp, which the frame describes;
 - data about the ego vehicle itself such as rotation and position;
 - a reference to the other agents (vehicles, cyclists and pedestrians) that were captured by the ego's sensors;
-- a reference to all traffic light faces (red,yellow, green or undetermined) for all visible lanes.
+- a reference to all traffic light faces for all visible lanes.
 
 The properties for both agents and traffic light faces are stored in their two respective arrays. 
 The frame contains only pointers to these stored objects in terms of a start and an end index to these arrays (again, start in included while end excluded).
@@ -153,7 +153,8 @@ AGENT_DTYPE = [
 ```
 
 ### Traffic Light Faces
-Note: we refer to traffic light bulbs (e.g. the red light bulb of a specific traffic light) as `faces` in L5Kit. 
+Note: we refer to traffic light bulbs (e.g. the red light bulb of a specific traffic light) as `faces` in L5Kit.
+For the full list of available types for a bulb please consult our [protobuf map definition](https://github.com/lyft/l5kit/blob/20ab033c01610d711c3d36e1963ecec86e8b85b6/l5kit/l5kit/data/proto/road_network.proto#L615).
 
 Our semantic map holds static information about the world only. This means it has a list of all traffic lights, but not information about how their status changes over time.
 This dynamic information is instead stored in this array.
