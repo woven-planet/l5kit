@@ -51,9 +51,9 @@ Then, we rewrite this by substracting the maximum value x<sup>*</sup> from each 
 # Additional Metrics
 Scoring multi-modal prediction models is a highly complex task, and while we chose the metric described above due to its elegance and support for multi-modality,
 we encourage participants to also employ other metrics for assessing their models.
-Examples of such other metrics, commonly used in literature, are *Average Displacement Error* (ADE) and *Final Displacement Error* (FDE) (compare 
+Examples of such other metrics, commonly used in literature, are *Average Displacement Error* (ADE) and *Final Displacement Error* (FDE) (see 
 [our dataset paper](https://arxiv.org/pdf/2006.14480.pdf) or [SophieGAN] (https://arxiv.org/pdf/1806.01482.pdf)):
-These calculate the average displacement (L2 distance between prediction and ground truth averaged over all timesteps) (ADE) and
-final displacement (L2 distance between prediction and ground truth, evaluated only at the last timestep) (FDE).
+ADE is the average displacement error (L2 distance between prediction and ground truth averaged over all timesteps), while FDE 
+reports the final displacement error (L2 distance between prediction and ground truth, evaluated only at the last timestep).
 As we consider multiple predictions, we offer [implementations for both these metrics](https://github.com/lyft/l5kit/blob/os/add_competition_documentation/l5kit/l5kit/evaluation/metrics.py) either averaging over all hypotheses 
 or using the best hypothesis (oracle variant) - ignoring generated confidence scores in both cases.

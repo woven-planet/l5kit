@@ -165,7 +165,8 @@ def _average_displacement_error(
     gt = np.expand_dims(gt, 0)  # add modes
     avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
 
-    error = np.sum(((gt - pred) * avails) ** 2, axis=-1) ** 0.5  # reduce coords and use availability
+    error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
+    error = error ** 0.5  # calculate root of error (= L2 norm)
     error = np.mean(error, axis=-1)  # average over timesteps
 
     if mode == "oracle":
@@ -240,7 +241,8 @@ def _final_displacement_error(
     gt = np.expand_dims(gt, 0)  # add modes
     avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
 
-    error = np.sum(((gt - pred) * avails) ** 2, axis=-1) ** 0.5  # reduce coords and use availability
+    error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
+    error = error ** 0.5  # calculate root of error (= L2 norm)
     error = error[:, -1]  # use last timestep
 
     if mode == "oracle":
