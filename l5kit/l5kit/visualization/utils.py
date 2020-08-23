@@ -3,7 +3,7 @@ from typing import Tuple
 import cv2
 import numpy as np
 
-from l5kit.geometry import transform_points
+from l5kit.geometry import transform_point, transform_points
 
 PREDICTED_POINTS_COLOR = (0, 255, 255)
 TARGET_POINTS_COLOR = (255, 0, 255)
@@ -11,6 +11,7 @@ REFERENCE_TRAJECTORY_POINT_COLOR = (255, 255, 0)
 #  Arrows represent position + orientation.
 ARROW_LENGTH_IN_PIXELS = 2
 ARROW_THICKNESS_IN_PIXELS = 1
+ARROW_TIP_LENGTH_IN_PIXELS = 1.8
 
 
 def draw_arrowed_line(on_image: np.ndarray, position: np.ndarray, yaw: float, rgb_color: Tuple[int, int, int]) -> None:
@@ -25,11 +26,18 @@ def draw_arrowed_line(on_image: np.ndarray, position: np.ndarray, yaw: float, rg
     Returns: None
 
     """
-    position = np.array(position[:2])
-    start_pixel = np.int0(position)[:2]
-    end_pixel = np.int0(position + np.array([np.cos(yaw), -np.sin(yaw)]) * ARROW_LENGTH_IN_PIXELS)
+    start_pixel = np.array(position[:2])
+
+    rot = cv2.getRotationMatrix2D((0, 0), np.degrees(-yaw), 1.0)  # minus here because of cv2 rotations convention
+    end_pixel = start_pixel + transform_point(np.asarray([ARROW_LENGTH_IN_PIXELS, 0]), rot)
+
     cv2.arrowedLine(
-        on_image, tuple(start_pixel), tuple(end_pixel), rgb_color, thickness=ARROW_THICKNESS_IN_PIXELS, tipLength=0.4
+        on_image,
+        tuple(start_pixel.astype(np.int32)),
+        tuple(end_pixel.astype(np.int32)),
+        rgb_color,
+        thickness=ARROW_THICKNESS_IN_PIXELS,
+        tipLength=ARROW_TIP_LENGTH_IN_PIXELS,
     )
 
 

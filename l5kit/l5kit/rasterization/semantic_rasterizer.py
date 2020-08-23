@@ -63,15 +63,15 @@ class SemanticRasterizer(Rasterizer):
         pixel_size: np.ndarray,
         ego_center: np.ndarray,
         semantic_map_path: str,
-        pose_to_ecef: np.ndarray,
+        world_to_ecef: np.ndarray,
     ):
         self.raster_size = raster_size
         self.pixel_size = pixel_size
         self.ego_center = ego_center
 
-        self.pose_to_ecef = pose_to_ecef
+        self.world_to_ecef = world_to_ecef
 
-        self.proto_API = MapAPI(semantic_map_path, pose_to_ecef)
+        self.proto_API = MapAPI(semantic_map_path, world_to_ecef)
 
         self.bounds_info = self.get_bounds()
 
