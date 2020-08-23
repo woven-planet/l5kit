@@ -17,7 +17,9 @@ def _assert_shapes(ground_truth: np.ndarray, pred: np.ndarray, confidences: np.n
     assert len(pred.shape) == 3, f"expected 3D (MxTxC) array for pred, got {pred.shape}"
     num_modes, future_len, num_coords = pred.shape
 
-    assert ground_truth.shape == (future_len, num_coords), f"expected 2D (Time x Coords) array for gt, got {ground_truth.shape}"
+    assert ground_truth.shape == (future_len, num_coords), (
+        f"expected 2D (Time x Coords) array for gt, " f"got {ground_truth.shape}"
+    )
     assert confidences.shape == (num_modes,), f"expected 1D (Modes) array for gt, got {confidences.shape}"
     assert np.allclose(np.sum(confidences), 1), "confidences should sum to 1"
     assert avails.shape == (future_len,), f"expected 1D (Time) array for gt, got {avails.shape}"
@@ -86,7 +88,9 @@ def rmse(ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, av
     return np.sqrt(2 * nll / future_len)
 
 
-def prob_true_mode(ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> np.ndarray:
+def prob_true_mode(
+    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
+) -> np.ndarray:
     """
     Return the probability of the true mode
 
@@ -117,7 +121,9 @@ def prob_true_mode(ground_truth: np.ndarray, pred: np.ndarray, confidences: np.n
     return error
 
 
-def time_displace(ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> np.ndarray:
+def time_displace(
+    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
+) -> np.ndarray:
     """
     Return the displacement at timesteps T
 
