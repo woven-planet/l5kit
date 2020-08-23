@@ -1,12 +1,12 @@
 import numpy as np
 
 
-def _assert_shapes(truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> None:
+def _assert_shapes(ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> None:
     """
     Check the shapes of args required by metrics
 
     Args:
-        truth (np.ndarray): array of shape (timesteps)x(2D coords)
+        ground_truth (np.ndarray): array of shape (timesteps)x(2D coords)
         pred (np.ndarray): array of shape (modes)x(timesteps)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
         avails (np.ndarray): array of shape (timesteps) with the availability for each gt timesteps
@@ -17,19 +17,19 @@ def _assert_shapes(truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray,
     assert len(pred.shape) == 3, f"expected 3D (MxTxC) array for pred, got {pred.shape}"
     num_modes, future_len, num_coords = pred.shape
 
-    assert truth.shape == (future_len, num_coords), f"expected 2D (Time x Coords) array for gt, got {truth.shape}"
+    assert ground_truth.shape == (future_len, num_coords), f"expected 2D (Time x Coords) array for gt, got {ground_truth.shape}"
     assert confidences.shape == (num_modes,), f"expected 1D (Modes) array for gt, got {confidences.shape}"
     assert np.allclose(np.sum(confidences), 1), "confidences should sum to 1"
     assert avails.shape == (future_len,), f"expected 1D (Time) array for gt, got {avails.shape}"
     # assert all data are valid
     assert np.isfinite(pred).all(), "invalid value found in pred"
-    assert np.isfinite(truth).all(), "invalid value found in gt"
+    assert np.isfinite(ground_truth).all(), "invalid value found in gt"
     assert np.isfinite(confidences).all(), "invalid value found in confidences"
     assert np.isfinite(avails).all(), "invalid value found in avails"
 
 
 def neg_multi_log_likelihood(
-    truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
+    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
 ) -> np.ndarray:
     """
     Compute a negative log-likelihood for the multi-modal scenario.
@@ -42,7 +42,7 @@ def neg_multi_log_likelihood(
     https://github.com/lyft/l5kit/blob/master/competition.md.
 
     Args:
-        truth (np.ndarray): array of shape (timesteps)x(2D coords)
+        ground_truth (np.ndarray): array of shape (timesteps)x(2D coords)
         pred (np.ndarray): array of shape (modes)x(timesteps)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
         avails (np.ndarray): array of shape (timesteps) with the availability for each gt timesteps
@@ -50,12 +50,12 @@ def neg_multi_log_likelihood(
     Returns:
         np.ndarray: negative log-likelihood for this example, a single float number
     """
-    _assert_shapes(truth, pred, confidences, avails)
+    _assert_shapes(ground_truth, pred, confidences, avails)
 
-    truth = np.expand_dims(truth, 0)  # add modes
+    ground_truth = np.expand_dims(ground_truth, 0)  # add modes
     avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
 
-    error = np.sum(((truth - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
+    error = np.sum(((ground_truth - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
 
     with np.errstate(divide="ignore"):  # when confidence is 0 log goes to -inf, but we're fine with it
         error = np.log(confidences) - 0.5 * np.sum(error, axis=-1)  # reduce timesteps
@@ -66,12 +66,12 @@ def neg_multi_log_likelihood(
     return error
 
 
-def rmse(truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> np.ndarray:
+def rmse(ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> np.ndarray:
     """
     Return the root mean squared error, computed using the stable nll
 
     Args:
-        truth (np.ndarray): array of shape (timesteps)x(2D coords)
+        ground_truth (np.ndarray): array of shape (timesteps)x(2D coords)
         pred (np.ndarray): array of shape (modes)x(timesteps)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
         avails (np.ndarray): array of shape (timesteps) with the availability for each gt timesteps
@@ -80,18 +80,18 @@ def rmse(truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: n
         np.ndarray: negative log-likelihood for this example, a single float number
 
     """
-    nll = neg_multi_log_likelihood(truth, pred, confidences, avails)
+    nll = neg_multi_log_likelihood(ground_truth, pred, confidences, avails)
     _, future_len, _ = pred.shape
 
     return np.sqrt(2 * nll / future_len)
 
 
-def prob_true_mode(truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> np.ndarray:
+def prob_true_mode(ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> np.ndarray:
     """
     Return the probability of the true mode
 
     Args:
-        truth (np.ndarray): array of shape (timesteps)x(2D coords)
+        ground_truth (np.ndarray): array of shape (timesteps)x(2D coords)
         pred (np.ndarray): array of shape (modes)x(timesteps)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
         avails (np.ndarray): array of shape (timesteps) with the availability for each gt timesteps
@@ -100,12 +100,12 @@ def prob_true_mode(truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray,
         np.ndarray: a (modes) numpy array
 
     """
-    _assert_shapes(truth, pred, confidences, avails)
+    _assert_shapes(ground_truth, pred, confidences, avails)
 
-    truth = np.expand_dims(truth, 0)  # add modes
+    ground_truth = np.expand_dims(ground_truth, 0)  # add modes
     avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
 
-    error = np.sum(((truth - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
+    error = np.sum(((ground_truth - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
 
     with np.errstate(divide="ignore"):  # when confidence is 0 log goes to -inf, but we're fine with it
         error = np.log(confidences) - 0.5 * np.sum(error, axis=-1)  # reduce timesteps
@@ -117,12 +117,12 @@ def prob_true_mode(truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray,
     return error
 
 
-def time_displace(truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> np.ndarray:
+def time_displace(ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> np.ndarray:
     """
     Return the displacement at timesteps T
 
     Args:
-        truth (np.ndarray): array of shape (timesteps)x(2D coords)
+        ground_truth (np.ndarray): array of shape (timesteps)x(2D coords)
         pred (np.ndarray): array of shape (modes)x(timesteps)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
         avails (np.ndarray): array of shape (timesteps) with the availability for each gt timesteps
@@ -131,18 +131,18 @@ def time_displace(truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, 
         np.ndarray: a (timesteps) numpy array
 
     """
-    true_mode_error = prob_true_mode(truth, pred, confidences, avails)
+    true_mode_error = prob_true_mode(ground_truth, pred, confidences, avails)
     true_mode_error = true_mode_error[:, None]  # add timesteps axis
 
-    truth = np.expand_dims(truth, 0)  # add modes
+    ground_truth = np.expand_dims(ground_truth, 0)  # add modes
     avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
 
-    error = np.sum(((truth - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
+    error = np.sum(((ground_truth - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
     return np.sum(true_mode_error * np.sqrt(error), axis=0)  # reduce modes
 
 
 def _average_displacement_error(
-    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
+    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
 ) -> np.ndarray:
     """
     Returns the average displacement error (ADE), which is the average displacement over all timesteps.
@@ -151,7 +151,7 @@ def _average_displacement_error(
         - mean: average over all hypotheses
 
     Args:
-        gt (np.ndarray): array of shape (time)x(2D coords)
+        ground_truth (np.ndarray): array of shape (time)x(2D coords)
         pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
         avails (np.ndarray): array of shape (time) with the availability for each gt timestep
@@ -160,12 +160,12 @@ def _average_displacement_error(
     Returns:
         np.ndarray: average displacement error (ADE), a single float number
     """
-    _assert_shapes(gt, pred, confidences, avails)
+    _assert_shapes(ground_truth, pred, confidences, avails)
 
-    gt = np.expand_dims(gt, 0)  # add modes
+    ground_truth = np.expand_dims(ground_truth, 0)  # add modes
     avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
 
-    error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
+    error = np.sum(((ground_truth - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
     error = error ** 0.5  # calculate root of error (= L2 norm)
     error = np.mean(error, axis=-1)  # average over timesteps
 
@@ -180,13 +180,13 @@ def _average_displacement_error(
 
 
 def average_displacement_error_oracle(
-    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
+    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
     Calls _average_displacement_error() to get the oracle average displacement error.
 
     Args:
-        gt (np.ndarray): array of shape (time)x(2D coords)
+        ground_truth (np.ndarray): array of shape (time)x(2D coords)
         pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
         avails (np.ndarray): array of shape (time) with the availability for each gt timestep
@@ -195,17 +195,17 @@ def average_displacement_error_oracle(
         np.ndarray: oracle average displacement error (ADE), a single float number
     """
 
-    return _average_displacement_error(gt, pred, confidences, avails, "oracle")
+    return _average_displacement_error(ground_truth, pred, confidences, avails, "oracle")
 
 
 def average_displacement_error_mean(
-    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
+    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
     Calls _average_displacement_error() to get the mean average displacement error.
 
     Args:
-        gt (np.ndarray): array of shape (time)x(2D coords)
+        ground_truth (np.ndarray): array of shape (time)x(2D coords)
         pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
         avails (np.ndarray): array of shape (time) with the availability for each gt timestep
@@ -214,11 +214,11 @@ def average_displacement_error_mean(
         np.ndarray: mean average displacement error (ADE), a single float number
     """
 
-    return _average_displacement_error(gt, pred, confidences, avails, "mean")
+    return _average_displacement_error(ground_truth, pred, confidences, avails, "mean")
 
 
 def _final_displacement_error(
-    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
+    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
 ) -> np.ndarray:
     """
     Returns the final displacement error (FDE), which is the displacement calculated at the last timestep.
@@ -227,7 +227,7 @@ def _final_displacement_error(
         - mean: average over all hypotheses
 
     Args:
-        gt (np.ndarray): array of shape (time)x(2D coords)
+        ground_truth (np.ndarray): array of shape (time)x(2D coords)
         pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
         avails (np.ndarray): array of shape (time) with the availability for each gt timestep
@@ -236,12 +236,12 @@ def _final_displacement_error(
     Returns:
         np.ndarray: final displacement error (FDE), a single float number
     """
-    _assert_shapes(gt, pred, confidences, avails)
+    _assert_shapes(ground_truth, pred, confidences, avails)
 
-    gt = np.expand_dims(gt, 0)  # add modes
+    ground_truth = np.expand_dims(ground_truth, 0)  # add modes
     avails = avails[np.newaxis, :, np.newaxis]  # add modes and cords
 
-    error = np.sum(((gt - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
+    error = np.sum(((ground_truth - pred) * avails) ** 2, axis=-1)  # reduce coords and use availability
     error = error ** 0.5  # calculate root of error (= L2 norm)
     error = error[:, -1]  # use last timestep
 
@@ -256,13 +256,13 @@ def _final_displacement_error(
 
 
 def final_displacement_error_oracle(
-    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
+    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
     Calls _final_displacement_error() to get the oracle average displacement error.
 
     Args:
-        gt (np.ndarray): array of shape (time)x(2D coords)
+        ground_truth (np.ndarray): array of shape (time)x(2D coords)
         pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
         avails (np.ndarray): array of shape (time) with the availability for each gt timestep
@@ -271,17 +271,17 @@ def final_displacement_error_oracle(
         np.ndarray: oracle final displacement error (FDE), a single float number
     """
 
-    return _final_displacement_error(gt, pred, confidences, avails, "oracle")
+    return _final_displacement_error(ground_truth, pred, confidences, avails, "oracle")
 
 
 def final_displacement_error_mean(
-    gt: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
+    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
     Calls _final_displacement_error() to get the mean average displacement error.
 
     Args:
-        gt (np.ndarray): array of shape (time)x(2D coords)
+        ground_truth (np.ndarray): array of shape (time)x(2D coords)
         pred (np.ndarray): array of shape (modes)x(time)x(2D coords)
         confidences (np.ndarray): array of shape (modes) with a confidence for each mode in each sample
         avails (np.ndarray): array of shape (time) with the availability for each gt timestep
@@ -290,4 +290,4 @@ def final_displacement_error_mean(
         np.ndarray: mean final displacement error (FDE), a single float number
     """
 
-    return _final_displacement_error(gt, pred, confidences, avails, "mean")
+    return _final_displacement_error(ground_truth, pred, confidences, avails, "mean")

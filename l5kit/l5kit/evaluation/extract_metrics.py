@@ -46,7 +46,7 @@ def validate_dicts(ground_truth: dict, predicted: dict) -> bool:
 
 def compute_metrics_csv(ground_truth_path: str, inference_output_path: str, metrics: List[Callable]) -> dict:
     """
-    Compute a set of metrics between a ground truth and a predicted csv files
+    Compute a set of metrics between ground truth and prediction csv files
 
     Arguments:
         ground_truth_path (str): Path to the ground truth csv file.
