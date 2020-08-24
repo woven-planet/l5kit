@@ -6,12 +6,8 @@ from typing import List, Optional, Tuple
 import numpy as np
 from tqdm import tqdm
 
-from . import (
-    ChunkedDataset,
-    get_agents_slice_from_frames,
-    get_frames_slice_from_scenes,
-    get_tl_faces_slice_from_frames,
-)
+from .filter import get_agents_slice_from_frames, get_frames_slice_from_scenes, get_tl_faces_slice_from_frames
+from .zarr_dataset import ChunkedDataset
 
 GIGABYTE = 1 * 1024 * 1024 * 1024
 

@@ -19,7 +19,7 @@ class SemBoxRasterizer(Rasterizer):
         filter_agents_threshold: float,
         history_num_frames: int,
         semantic_map_path: str,
-        pose_to_ecef: np.ndarray,
+        world_to_ecef: np.ndarray,
     ):
         super(SemBoxRasterizer, self).__init__()
         self.raster_size = raster_size
@@ -29,7 +29,7 @@ class SemBoxRasterizer(Rasterizer):
         self.history_num_frames = history_num_frames
 
         self.box_rast = BoxRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold, history_num_frames)
-        self.sat_rast = SemanticRasterizer(raster_size, pixel_size, ego_center, semantic_map_path, pose_to_ecef)
+        self.sat_rast = SemanticRasterizer(raster_size, pixel_size, ego_center, semantic_map_path, world_to_ecef)
 
     def rasterize(
         self,

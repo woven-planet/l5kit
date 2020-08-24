@@ -37,6 +37,25 @@ It consists of the following components:
 
 To read more about the dataset and how it was generated, read the [dataset whitepaper](https://arxiv.org/abs/2006.14480).
 
+### Download the datasets
+Register at https://self-driving.lyft.com/level5/data/ and download the [2020 Lyft prediction dataset](https://arxiv.org/abs/2006.14480). 
+Store all files in a single folder to match this structure:
+```
+prediction-dataset/
+  +- scenes/
+        +- sample.zarr
+        +- train.zarr
+        +- train_full.zarr
+  +- aerial_map/
+        +- aerial_map.png
+  +- semantic_map/
+        +- semantic_map.pb
+  +- meta.json
+
+```
+You may find other files and folder downloaded (mainly from `aerial_map`), but they are not required by L5Kit
+
+
 ## 2. L5Kit
 L5Kit is a library which lets you:
 - Load driving scenes from zarr files
@@ -57,20 +76,35 @@ A tutorial on how to load and visualize samples from a dataset using L5Kit.
 An example of training a neural network to predict the future positions of cars nearby an AV. This example is a baseline solution for the Lyft 2020 Kaggle Motion Prediction Challenge.
 
 # Installation
+
+## Installing as a User
+Follow this workflow if:
+ - you're not interested in developing and/or contributing to L5Kit;
+ - you don't need any features from a specific branch or latest master and you're fine with the latest release;
+ 
+### 1. Install the package from pypy (in your project venv)
+```shell
+pip install l5kit
+```
+You should now be able to import from L5Kit (e.g. `from l5kit.data import ChunkedDataset` should work)
+
+### 2. Run example
+Examples are not shipped with the package, but you can download the zip release from:
+[L5Kit Releases](https://github.com/lyft/l5kit/releases)
+
+Please download the zip matching your installed version (you can run `pip freeze | grep l5kit` to get the right version)
+Unzip the files and grab the example folder in the root of the project.
+
+
+## Installing as a Developer
+Follow this workflow if:
+ - you want to test latest master or another branch;
+ - you want to contribute to L5Kit;
+ - you want to run our examples;
+
 ### 1. Clone the repo
 ```shell
 git clone https://github.com/lyft/l5kit.git ./
-```
-
-### 2. Download the datasets
-Register at https://self-driving.lyft.com/level5/data/ and download the [2020 Lyft prediction dataset](https://arxiv.org/abs/2006.14480). Store all files in a single folder.
-The resulting directory structure should be:
-```
-prediction-dataset/
-  +- sample_scenes/
-  +- scenes/
-  +- aerial_map/
-  +- semantic_map/
 ```
 
 ### 3. Install L5Kit

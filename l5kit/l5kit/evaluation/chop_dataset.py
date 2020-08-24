@@ -7,7 +7,8 @@ from zarr import convenience
 from l5kit.data import ChunkedDataset, get_agents_slice_from_frames
 from l5kit.data.zarr_utils import zarr_scenes_chop
 from l5kit.dataset.select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE, select_agents
-from l5kit.evaluation import export_zarr_to_csv
+
+from .extract_ground_truth import export_zarr_to_csv
 
 MIN_FUTURE_STEPS = 10
 
