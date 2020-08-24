@@ -20,6 +20,7 @@ You can use this framework to build systems which:
 * Study the improvement in performance of these systems as the amount of data increases.
 
 # News
+- 08-24-2020: L5Kit v1.0.6 and Dataset v1.1 (includes traffic light support) released! 
 - 06-25-2020: Docs and API available at https://lyft.github.io/l5kit/ (thanks Kevin Zhao!)
 
 # Overview
@@ -37,6 +38,9 @@ It consists of the following components:
 
 To read more about the dataset and how it was generated, read the [dataset whitepaper](https://arxiv.org/abs/2006.14480).
 
+**Note (08-24-20):** The new version of the dataset includes dynamic traffic light support. 
+Please update your L5Kit version to v1.0.6 to start using this functionality.
+
 ### Download the datasets
 Register at https://self-driving.lyft.com/level5/data/ and download the [2020 Lyft prediction dataset](https://arxiv.org/abs/2006.14480). 
 Store all files in a single folder to match this structure:
@@ -53,7 +57,7 @@ prediction-dataset/
   +- meta.json
 
 ```
-You may find other files and folder downloaded (mainly from `aerial_map`), but they are not required by L5Kit
+You may find other downloaded files and folders (mainly from `aerial_map`), but they are not currently required by L5Kit
 
 
 ## 2. L5Kit
@@ -95,12 +99,15 @@ Examples are not shipped with the package, but you can download the zip release 
 Please download the zip matching your installed version (you can run `pip freeze | grep l5kit` to get the right version)
 Unzip the files and grab the example folder in the root of the project.
 
+```shell
+jupyter notebook examples/visualisation/visualise_data.ipynb
+```
 
 ## Installing as a Developer
 Follow this workflow if:
  - you want to test latest master or another branch;
  - you want to contribute to L5Kit;
- - you want to run our examples;
+ - you want to test the examples using a non-release version of the code;
 
 ### 1. Clone the repo
 ```shell

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>ML Prediction, Planning and Simulation for Self-Driving &mdash; L5Kit 1.0.5 documentation</title>
+  <title>ML Prediction, Planning and Simulation for Self-Driving &mdash; L5Kit 1.0.6 documentation</title>
   
 
   
@@ -213,6 +213,7 @@
 <div class="section" id="news">
 <h1>News<a class="headerlink" href="#news" title="Permalink to this headline">¶</a></h1>
 <ul class="simple">
+<li><p>08-24-2020: L5Kit v1.0.6 and Dataset v1.1 (includes traffic light support) released!</p></li>
 <li><p>06-25-2020: Docs and API available at https://lyft.github.io/l5kit/ (thanks Kevin Zhao!)</p></li>
 </ul>
 </div>
@@ -234,6 +235,8 @@ It consists of the following components:</p>
 <li><p>A high-definition aerial map of the Palo Alto area. This image has 8cm per pixel resolution and is provided by <a class="reference external" href="https://www.nearmap.com/">NearMap</a>.</p></li>
 </ul>
 <p>To read more about the dataset and how it was generated, read the <a class="reference external" href="https://arxiv.org/abs/2006.14480">dataset whitepaper</a>.</p>
+<p><strong>Note (08-24-20):</strong> The new version of the dataset includes dynamic traffic light support.
+Please update your L5Kit version to v1.0.6 to start using this functionality.</p>
 <div class="section" id="download-the-datasets">
 <h3>Download the datasets<a class="headerlink" href="#download-the-datasets" title="Permalink to this headline">¶</a></h3>
 <p>Register at https://self-driving.lyft.com/level5/data/ and download the <a class="reference external" href="https://arxiv.org/abs/2006.14480">2020 Lyft prediction dataset</a>.
@@ -250,7 +253,7 @@ Store all files in a single folder to match this structure:</p>
   <span class="o">+-</span> <span class="n">meta</span><span class="o">.</span><span class="n">json</span>
 </pre></div>
 </div>
-<p>You may find other files and folder downloaded (mainly from <code class="docutils literal notranslate"><span class="pre">aerial_map</span></code>), but they are not required by L5Kit</p>
+<p>You may find other downloaded files and folders (mainly from <code class="docutils literal notranslate"><span class="pre">aerial_map</span></code>), but they are not currently required by L5Kit</p>
 </div>
 </div>
 <div class="section" id="l5kit">
@@ -301,6 +304,9 @@ Store all files in a single folder to match this structure:</p>
 <a class="reference external" href="https://github.com/lyft/l5kit/releases">L5Kit Releases</a></p>
 <p>Please download the zip matching your installed version (you can run <code class="docutils literal notranslate"><span class="pre">pip</span> <span class="pre">freeze</span> <span class="pre">|</span> <span class="pre">grep</span> <span class="pre">l5kit</span></code> to get the right version)
 Unzip the files and grab the example folder in the root of the project.</p>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jupyter notebook examples/visualisation/visualise_data.ipynb
+</pre></div>
+</div>
 </div>
 </div>
 <div class="section" id="installing-as-a-developer">
@@ -309,7 +315,7 @@ Unzip the files and grab the example folder in the root of the project.</p>
 <ul class="simple">
 <li><p>you want to test latest master or another branch;</p></li>
 <li><p>you want to contribute to L5Kit;</p></li>
-<li><p>you want to run our examples;</p></li>
+<li><p>you want to test the examples using a non-release version of the code;</p></li>
 </ul>
 <div class="section" id="clone-the-repo">
 <h3>1. Clone the repo<a class="headerlink" href="#clone-the-repo" title="Permalink to this headline">¶</a></h3>
