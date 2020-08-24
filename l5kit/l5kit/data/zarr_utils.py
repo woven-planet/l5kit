@@ -6,6 +6,7 @@ from typing import List, Optional, Tuple
 import numpy as np
 from tqdm import tqdm
 
+from .filter import get_agents_slice_from_frames, get_frames_slice_from_scenes, get_tl_faces_slice_from_frames
 from .zarr_dataset import ChunkedDataset
 
 GIGABYTE = 1 * 1024 * 1024 * 1024
@@ -99,13 +100,9 @@ def _append_zarr_subset(
     for idx_scene in range(scene_index_start, scene_index_end):
         # get slices from input zarr
         scenes = input_zarr.scenes[idx_scene : idx_scene + 1]
-        frames = input_zarr.frames[slice(*scenes[0]["frame_index_interval"])]
-        agents = input_zarr.agents[slice(frames[0]["agent_index_interval"][0], frames[-1]["agent_index_interval"][1])]
-        tl_faces = input_zarr.tl_faces[
-            slice(
-                frames[0]["traffic_light_faces_index_interval"][0], frames[-1]["traffic_light_faces_index_interval"][1]
-            )
-        ]
+        frames = input_zarr.frames[get_frames_slice_from_scenes(*scenes)]
+        agents = input_zarr.agents[get_agents_slice_from_frames(*frames[[0, -1]])]
+        tl_faces = input_zarr.tl_faces[get_tl_faces_slice_from_frames(*frames[[0, -1]])]
 
         # fix indices
         scenes["frame_index_interval"] += idx_start_frame
@@ -256,10 +253,8 @@ def zarr_scenes_chop(input_zarr: str, output_zarr: str, num_frames_to_copy: int)
         first_frame_idx = scene["frame_index_interval"][0]
 
         frames = input_dataset.frames[first_frame_idx : first_frame_idx + num_frames_to_copy]
-        agents = input_dataset.agents[frames[0]["agent_index_interval"][0] : frames[-1]["agent_index_interval"][1]]
-        tl_faces = input_dataset.tl_faces[
-            frames[0]["traffic_light_faces_index_interval"][0] : frames[-1]["traffic_light_faces_index_interval"][1]
-        ]
+        agents = input_dataset.agents[get_agents_slice_from_frames(*frames[[0, -1]])]
+        tl_faces = input_dataset.tl_faces[get_tl_faces_slice_from_frames(*frames[[0, -1]])]
 
         # reset interval relative to our output (subtract current history and add output history)
         scene["frame_index_interval"][0] = cur_frame_idx

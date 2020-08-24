@@ -70,25 +70,6 @@ def filter_agents_by_track_id(agents: np.ndarray, track_id: int) -> np.ndarray:
     return agents[np.nonzero(agents["track_id"] == track_id)[0]]
 
 
-def get_agent_by_track_id(agents_frame: np.ndarray, track_id: int) -> Optional[np.ndarray]:
-    """Return the agent object (np.ndarray) of a given track_id in a frame.
-    Return None if the agent is not among those in the frame.
-
-    Arguments:
-        agents_frame (np.ndarray): frame agents array
-        track_id (int): agent track id to select
-
-    Returns:
-        Optional[np.ndarray] -- Selected agent, or None if this agent is not present in given frame.
-    """
-
-    try:
-        agent = filter_agents_by_track_id(agents_frame, track_id)[0]
-        return agent
-    except IndexError:  # no agent for track_id in this frame
-        return None
-
-
 def filter_agents_by_frames(frames: np.ndarray, agents: np.ndarray) -> List[np.ndarray]:
     """
     Get a list of agents array, one array per frame. Note that "agent_index_interval" is used to filter agents,
@@ -103,7 +84,7 @@ def filter_agents_by_frames(frames: np.ndarray, agents: np.ndarray) -> List[np.n
     """
     if frames.shape == ():
         frames = frames[None]  # add and axis if a single frame is passed
-    return [agents[slice(*frame["agent_index_interval"])] for frame in frames]
+    return [agents[get_agents_slice_from_frames(frame)] for frame in frames]
 
 
 def filter_tl_faces_by_frames(frames: np.ndarray, tl_faces: np.ndarray) -> List[np.ndarray]:
@@ -118,7 +99,7 @@ def filter_tl_faces_by_frames(frames: np.ndarray, tl_faces: np.ndarray) -> List[
     Returns:
         List[np.ndarray] with the traffic light faces divided by frame
     """
-    return [tl_faces[slice(*frame["traffic_light_faces_index_interval"])] for frame in frames]
+    return [tl_faces[get_tl_faces_slice_from_frames(frame)] for frame in frames]
 
 
 def filter_tl_faces_by_status(tl_faces: np.ndarray, status: str) -> np.ndarray:
@@ -132,3 +113,57 @@ def filter_tl_faces_by_status(tl_faces: np.ndarray, status: str) -> np.ndarray:
         np.ndarray: traffic light faces array with only faces with that status
     """
     return tl_faces[tl_faces["traffic_light_face_status"][:, TL_FACE_LABEL_TO_INDEX[status]] > 0]
+
+
+def get_frames_slice_from_scenes(scene_a: np.ndarray, scene_b: Optional[np.ndarray] = None) -> slice:
+    """
+    Get a slice for indexing frames giving a start and end scene
+
+    Args:
+        scene_a (np.ndarray): the starting scene
+        scene_b (Optional[np.ndarray]): the ending scene. If None, then scene_a end will be used
+
+    Returns:
+        slice: a slice object starting from the first frame in scene_a to the last one in scene_b
+    """
+    frame_index_start = scene_a["frame_index_interval"][0]
+    if scene_b is None:
+        scene_b = scene_a
+    frame_index_end = scene_b["frame_index_interval"][1]
+    return slice(frame_index_start, frame_index_end)
+
+
+def get_agents_slice_from_frames(frame_a: np.ndarray, frame_b: Optional[np.ndarray] = None) -> slice:
+    """
+    Get a slice for indexing agents giving a start and end frame
+
+    Args:
+        frame_a (np.ndarray): the starting frame
+        frame_b (Optional[np.ndarray]): the ending frame. If None, then frame_a end will be used
+
+    Returns:
+        slice: a slice object starting from the first agent in frame_a to the last one in frame_b
+    """
+    agent_index_start = frame_a["agent_index_interval"][0]
+    if frame_b is None:
+        frame_b = frame_a
+    agent_index_end = frame_b["agent_index_interval"][1]
+    return slice(agent_index_start, agent_index_end)
+
+
+def get_tl_faces_slice_from_frames(frame_a: np.ndarray, frame_b: Optional[np.ndarray] = None) -> slice:
+    """
+    Get a slice for indexing traffic light faces giving a start and end frame
+
+    Args:
+        frame_a (np.ndarray): the starting frame
+        frame_b (Optional[np.ndarray]): the ending frame. If None, then frame_a end will be used
+
+    Returns:
+        slice: a slice object starting from the first tl_face in frame_a to the last one in frame_b
+    """
+    tl_faces_index_start = frame_a["traffic_light_faces_index_interval"][0]
+    if frame_b is None:
+        frame_b = frame_a
+    tl_faces_index_end = frame_b["traffic_light_faces_index_interval"][1]
+    return slice(tl_faces_index_start, tl_faces_index_end)

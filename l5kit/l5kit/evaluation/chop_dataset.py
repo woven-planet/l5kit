@@ -4,7 +4,7 @@ from pathlib import Path
 import numpy as np
 from zarr import convenience
 
-from l5kit.data import ChunkedDataset
+from l5kit.data import ChunkedDataset, get_agents_slice_from_frames
 from l5kit.data.zarr_utils import zarr_scenes_chop
 from l5kit.dataset.select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE, select_agents
 
@@ -71,9 +71,9 @@ def create_chopped_dataset(
         scene = zarr_dt.scenes[idx]
 
         frame_original = zarr_dt.frames[scene["frame_index_interval"][0] + num_frames_to_copy - 1]
-        slice_agents_original = slice(*frame_original["agent_index_interval"])
+        slice_agents_original = get_agents_slice_from_frames(frame_original)
         frame_chopped = zarr_chopped.frames[zarr_chopped.scenes[idx]["frame_index_interval"][-1] - 1]
-        slice_agents_chopped = slice(*frame_chopped["agent_index_interval"])
+        slice_agents_chopped = get_agents_slice_from_frames(frame_chopped)
 
         mask = agents_mask_origin[slice_agents_original][:, 1] >= min_frame_future
         agents_mask_orig_bool[slice_agents_original] = mask.copy()
