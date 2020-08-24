@@ -5,7 +5,7 @@ from typing import Optional
 import numpy as np
 from zarr import convenience
 
-from ..data import ChunkedDataset
+from ..data import ChunkedDataset, get_agents_slice_from_frames, get_frames_slice_from_scenes
 from ..kinematic import Perturbation
 from ..rasterization import Rasterizer
 from .ego import EgoDataset
@@ -135,13 +135,10 @@ class AgentDataset(EgoDataset):
         """
         scenes = self.dataset.scenes
         assert scene_idx < len(scenes), f"scene_idx {scene_idx} is over len {len(scenes)}"
-        frame_start = self.dataset.frames[scenes[scene_idx]["frame_index_interval"][0]]
-        frame_end = self.dataset.frames[scenes[scene_idx]["frame_index_interval"][1] - 1]
+        frame_slice = get_frames_slice_from_scenes(scenes[scene_idx])
+        agent_slice = get_agents_slice_from_frames(*self.dataset.frames[frame_slice][[0, -1]])
 
-        agents_start_index = frame_start["agent_index_interval"][0]
-        agents_end_index = frame_end["agent_index_interval"][1] - 1
-
-        mask_valid_indices = (self.agents_indices >= agents_start_index) * (self.agents_indices <= agents_end_index)
+        mask_valid_indices = (self.agents_indices >= agent_slice.start) * (self.agents_indices < agent_slice.stop)
         indices = np.nonzero(mask_valid_indices)[0]
         return indices
 
@@ -158,9 +155,8 @@ class AgentDataset(EgoDataset):
         frames = self.dataset.frames
         assert frame_idx < len(frames), f"frame_idx {frame_idx} is over len {len(frames)}"
 
-        agents_start_index = frames[frame_idx]["agent_index_interval"][0]
-        agents_end_index = frames[frame_idx]["agent_index_interval"][1] - 1
+        agent_slice = get_agents_slice_from_frames(frames[frame_idx])
 
-        mask_valid_indices = (self.agents_indices >= agents_start_index) * (self.agents_indices <= agents_end_index)
+        mask_valid_indices = (self.agents_indices >= agent_slice.start) * (self.agents_indices < agent_slice.stop)
         indices = np.nonzero(mask_valid_indices)[0]
         return indices

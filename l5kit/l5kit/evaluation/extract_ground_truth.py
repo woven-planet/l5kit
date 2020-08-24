@@ -7,7 +7,7 @@ from l5kit.data import ChunkedDataset
 from l5kit.dataset import AgentDataset
 from l5kit.rasterization import StubRasterizer
 
-from . import write_gt_csv
+from .csv_utils import write_gt_csv
 
 
 def export_zarr_to_csv(

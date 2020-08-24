@@ -2,8 +2,14 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 
-from ..data import TL_FACE_DTYPE, filter_agents_by_labels, filter_tl_faces_by_frames
-from ..data.filter import filter_agents_by_frames, get_agent_by_track_id
+from ..data import (
+    TL_FACE_DTYPE,
+    filter_agents_by_labels,
+    filter_tl_faces_by_frames,
+    get_agents_slice_from_frames,
+    get_tl_faces_slice_from_frames,
+)
+from ..data.filter import filter_agents_by_frames, filter_agents_by_track_id
 from ..geometry import rotation33_as_yaw, world_to_image_pixels_matrix
 from ..kinematic import Perturbation
 from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
@@ -73,22 +79,18 @@ to train models that can recover from slight divergence from training set data
     sorted_frames = np.concatenate((history_frames[::-1], future_frames))  # from past to future
 
     # get agents (past and future)
-    min_agents_index = sorted_frames[0]["agent_index_interval"][0]
-    max_agents_index = sorted_frames[-1]["agent_index_interval"][1]
-    agents = agents[min_agents_index:max_agents_index].copy()  # this is the minimum slice of agents we need
-    history_frames["agent_index_interval"] -= min_agents_index  # sync interval with the agents array
-    future_frames["agent_index_interval"] -= min_agents_index  # sync interval with the agents array
+    agent_slice = get_agents_slice_from_frames(sorted_frames[0], sorted_frames[-1])
+    agents = agents[agent_slice].copy()  # this is the minimum slice of agents we need
+    history_frames["agent_index_interval"] -= agent_slice.start  # sync interval with the agents array
+    future_frames["agent_index_interval"] -= agent_slice.start  # sync interval with the agents array
     history_agents = filter_agents_by_frames(history_frames, agents)
     future_agents = filter_agents_by_frames(future_frames, agents)
 
     try:
-        min_tl_index = history_frames[-1]["traffic_light_faces_index_interval"][0]  # -1 is the farthest in the past
-        max_tl_index = history_frames[0]["traffic_light_faces_index_interval"][1]
-        tl_faces = tl_faces[min_tl_index:max_tl_index].copy()  # only history traffic light faces
-        history_frames[
-            "traffic_light_faces_index_interval"
-        ] -= min_tl_index  # sync interval with the traffic light faces array
-        history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces)
+        tl_slice = get_tl_faces_slice_from_frames(history_frames[-1], history_frames[0])  # -1 is the farthest
+        # sync interval with the traffic light faces array
+        history_frames["traffic_light_faces_index_interval"] -= tl_slice.start
+        history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces[tl_slice].copy())
     except ValueError:
         history_tl_faces = [np.empty(0, dtype=TL_FACE_DTYPE) for _ in history_frames]
 
@@ -107,14 +109,14 @@ to train models that can recover from slight divergence from training set data
         agent_extent = np.asarray((EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, EGO_EXTENT_HEIGHT))
         selected_agent = None
     else:
-        # we must ensure the requested track is in the cur frame
-        # otherwise we can not center it in the frame
-        agent = get_agent_by_track_id(cur_agents, selected_track_id)
-        if agent is None:
-            raise ValueError(f" track_id {selected_track_id} not in frame")
-
-        if agent not in filter_agents_by_labels(cur_agents, filter_agents_threshold):
-            raise ValueError(f" track_id {selected_track_id} is in frame but under th {filter_agents_threshold}")
+        # this will raise IndexError if the agent is not in the frame or under agent-threshold
+        # this is a strict error, we cannot recover from this situation
+        try:
+            agent = filter_agents_by_track_id(
+                filter_agents_by_labels(cur_agents, filter_agents_threshold), selected_track_id
+            )[0]
+        except IndexError:
+            raise ValueError(f" track_id {selected_track_id} not in frame or below threshold")
         agent_centroid = agent["centroid"]
         agent_yaw = float(agent["yaw"])
         agent_extent = agent["extent"]
@@ -194,8 +196,9 @@ def _create_targets_for_deep_prediction(
             agent_yaw = rotation33_as_yaw(frame["ego_rotation"])
         else:
             # it's not guaranteed the target will be in every frame
-            agent = get_agent_by_track_id(agents, selected_track_id)
-            if agent is None:
+            try:
+                agent = filter_agents_by_track_id(agents, selected_track_id)[0]
+            except IndexError:
                 availability[i] = 0.0  # keep track of invalid futures/history
                 continue
 

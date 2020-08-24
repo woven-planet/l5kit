@@ -1,9 +1,9 @@
-from collections import OrderedDict
+from collections import OrderedDict, defaultdict
+from typing import Callable, List
 
 import numpy as np
 
-from . import read_gt_csv, read_pred_csv
-from .metrics import neg_multi_log_likelihood
+from .csv_utils import read_gt_csv, read_pred_csv
 
 
 def validate_dicts(ground_truth: dict, predicted: dict) -> bool:
@@ -44,12 +44,22 @@ def validate_dicts(ground_truth: dict, predicted: dict) -> bool:
     return valid
 
 
-def compute_error_csv(ground_truth_path: str, inference_output_path: str) -> np.ndarray:
+def compute_metrics_csv(ground_truth_path: str, inference_output_path: str, metrics: List[Callable]) -> dict:
     """
+    Compute a set of metrics between ground truth and prediction csv files
+
     Arguments:
         ground_truth_path (str): Path to the ground truth csv file.
         inference_output_path (str): Path to the csv file containing network output.
+        metrics (List[Callable]): a list of callable to be applied to the elements retrieved from the 2
+        csv files
+
+    Returns:
+        dict: keys are metrics name, values is the average metric computed over the elements
     """
+
+    assert len(metrics) > 0, "you must pass at least one metric to compute"
+
     ground_truth = OrderedDict()
     inference = OrderedDict()
 
@@ -61,7 +71,7 @@ def compute_error_csv(ground_truth_path: str, inference_output_path: str) -> np.
     if not validate_dicts(ground_truth, inference):
         raise ValueError("Error validating csv, see above for details.")
 
-    errors = []
+    metrics_dict = defaultdict(list)
 
     for key, ground_truth_value in ground_truth.items():
         gt_coord = ground_truth_value["coord"]
@@ -69,5 +79,8 @@ def compute_error_csv(ground_truth_path: str, inference_output_path: str) -> np.
 
         pred_coords = inference[key]["coords"]
         conf = inference[key]["conf"]
-        errors.append(neg_multi_log_likelihood(gt_coord, pred_coords, conf, avail))
-    return np.mean(errors)
+        for metric in metrics:
+            metrics_dict[metric.__name__].append(metric(gt_coord, pred_coords, conf, avail))
+
+    # compute average of each metric
+    return {metric_name: np.mean(values, axis=0) for metric_name, values in metrics_dict.items()}
