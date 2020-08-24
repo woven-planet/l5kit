@@ -1,0 +1,7 @@
+l5kit.evaluation.chop\_dataset module
+=====================================
+
+.. automodule:: l5kit.evaluation.chop_dataset
+   :members:
+   :undoc-members:
+   :show-inheritance:

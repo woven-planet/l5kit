@@ -92,6 +92,9 @@
 <li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
 <li class="toctree-l1"><a class="reference internal" href="data_format.html">Dataset Formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="competition.html">Competition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="competition.html#scoring">Scoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="competition.html#additional-metrics">Additional Metrics</a></li>
 </ul>
 
             
@@ -205,6 +208,10 @@
         <li><a href="API/l5kit.geometry.angle.html#l5kit.geometry.angle.angle_between_vectors">(in module l5kit.geometry.angle)</a>
 </li>
       </ul></li>
+      <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.average_displacement_error_mean">average_displacement_error_mean() (in module l5kit.evaluation.metrics)</a>
+</li>
+      <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.average_displacement_error_oracle">average_displacement_error_oracle() (in module l5kit.evaluation.metrics)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -237,10 +244,10 @@
         <li><a href="API/l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset">(class in l5kit.data.zarr_dataset)</a>
 </li>
       </ul></li>
-      <li><a href="API/l5kit.evaluation.html#l5kit.evaluation.compute_error_csv">compute_error_csv() (in module l5kit.evaluation)</a>
+      <li><a href="API/l5kit.evaluation.html#l5kit.evaluation.compute_metrics_csv">compute_metrics_csv() (in module l5kit.evaluation)</a>
 
       <ul>
-        <li><a href="API/l5kit.evaluation.extract_metric.html#l5kit.evaluation.extract_metric.compute_error_csv">(in module l5kit.evaluation.extract_metric)</a>
+        <li><a href="API/l5kit.evaluation.extract_metrics.html#l5kit.evaluation.extract_metrics.compute_metrics_csv">(in module l5kit.evaluation.extract_metrics)</a>
 </li>
       </ul></li>
       <li><a href="API/l5kit.geometry.html#l5kit.geometry.compute_yaw_around_north_from_direction">compute_yaw_around_north_from_direction() (in module l5kit.geometry)</a>
@@ -251,10 +258,10 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="API/l5kit.dataset.html#l5kit.dataset.create_chopped_dataset">create_chopped_dataset() (in module l5kit.dataset)</a>
+      <li><a href="API/l5kit.evaluation.html#l5kit.evaluation.create_chopped_dataset">create_chopped_dataset() (in module l5kit.evaluation)</a>
 
       <ul>
-        <li><a href="API/l5kit.dataset.chop_dataset.html#l5kit.dataset.chop_dataset.create_chopped_dataset">(in module l5kit.dataset.chop_dataset)</a>
+        <li><a href="API/l5kit.evaluation.chop_dataset.html#l5kit.evaluation.chop_dataset.create_chopped_dataset">(in module l5kit.evaluation.chop_dataset)</a>
 </li>
       </ul></li>
       <li><a href="API/l5kit.geometry.html#l5kit.geometry.crop_rectangle_from_image">crop_rectangle_from_image() (in module l5kit.geometry)</a>
@@ -349,14 +356,18 @@
         <li><a href="API/l5kit.data.filter.html#l5kit.data.filter.filter_tl_faces_by_frames">(in module l5kit.data.filter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.data.html#l5kit.data.filter_tl_faces_by_status">filter_tl_faces_by_status() (in module l5kit.data)</a>
 
       <ul>
         <li><a href="API/l5kit.data.filter.html#l5kit.data.filter.filter_tl_faces_by_status">(in module l5kit.data.filter)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.final_displacement_error_mean">final_displacement_error_mean() (in module l5kit.evaluation.metrics)</a>
+</li>
+      <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.final_displacement_error_oracle">final_displacement_error_oracle() (in module l5kit.evaluation.metrics)</a>
+</li>
       <li><a href="API/l5kit.kinematic.html#l5kit.kinematic.fit_ackerman_model_approximate">fit_ackerman_model_approximate() (in module l5kit.kinematic)</a>
 
       <ul>
@@ -671,13 +682,6 @@
 </li>
       </ul></li>
       <li>
-    l5kit.dataset.chop_dataset
-
-      <ul>
-        <li><a href="API/l5kit.dataset.chop_dataset.html#module-l5kit.dataset.chop_dataset">module</a>
-</li>
-      </ul></li>
-      <li>
     l5kit.dataset.ego
 
       <ul>
@@ -699,6 +703,13 @@
 </li>
       </ul></li>
       <li>
+    l5kit.evaluation.chop_dataset
+
+      <ul>
+        <li><a href="API/l5kit.evaluation.chop_dataset.html#module-l5kit.evaluation.chop_dataset">module</a>
+</li>
+      </ul></li>
+      <li>
     l5kit.evaluation.csv_utils
 
       <ul>
@@ -713,10 +724,10 @@
 </li>
       </ul></li>
       <li>
-    l5kit.evaluation.extract_metric
+    l5kit.evaluation.extract_metrics
 
       <ul>
-        <li><a href="API/l5kit.evaluation.extract_metric.html#module-l5kit.evaluation.extract_metric">module</a>
+        <li><a href="API/l5kit.evaluation.extract_metrics.html#module-l5kit.evaluation.extract_metrics">module</a>
 </li>
       </ul></li>
       <li>
@@ -996,19 +1007,19 @@
 </li>
         <li><a href="API/l5kit.dataset.agent.html#module-l5kit.dataset.agent">l5kit.dataset.agent</a>
 </li>
-        <li><a href="API/l5kit.dataset.chop_dataset.html#module-l5kit.dataset.chop_dataset">l5kit.dataset.chop_dataset</a>
-</li>
         <li><a href="API/l5kit.dataset.ego.html#module-l5kit.dataset.ego">l5kit.dataset.ego</a>
 </li>
         <li><a href="API/l5kit.dataset.select_agents.html#module-l5kit.dataset.select_agents">l5kit.dataset.select_agents</a>
 </li>
         <li><a href="API/l5kit.evaluation.html#module-l5kit.evaluation">l5kit.evaluation</a>
 </li>
+        <li><a href="API/l5kit.evaluation.chop_dataset.html#module-l5kit.evaluation.chop_dataset">l5kit.evaluation.chop_dataset</a>
+</li>
         <li><a href="API/l5kit.evaluation.csv_utils.html#module-l5kit.evaluation.csv_utils">l5kit.evaluation.csv_utils</a>
 </li>
         <li><a href="API/l5kit.evaluation.extract_ground_truth.html#module-l5kit.evaluation.extract_ground_truth">l5kit.evaluation.extract_ground_truth</a>
 </li>
-        <li><a href="API/l5kit.evaluation.extract_metric.html#module-l5kit.evaluation.extract_metric">l5kit.evaluation.extract_metric</a>
+        <li><a href="API/l5kit.evaluation.extract_metrics.html#module-l5kit.evaluation.extract_metrics">l5kit.evaluation.extract_metrics</a>
 </li>
         <li><a href="API/l5kit.evaluation.metrics.html#module-l5kit.evaluation.metrics">l5kit.evaluation.metrics</a>
 </li>
@@ -1127,6 +1138,8 @@
         <li><a href="API/l5kit.geometry.voxel.html#l5kit.geometry.voxel.points_within_bounds">(in module l5kit.geometry.voxel)</a>
 </li>
       </ul></li>
+      <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.prob_true_mode">prob_true_mode() (in module l5kit.evaluation.metrics)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1205,6 +1218,8 @@
         <li><a href="API/l5kit.data.html#l5kit.data.LocalDataManager.require">(l5kit.data.LocalDataManager method)</a>
 </li>
       </ul></li>
+      <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.rmse">rmse() (in module l5kit.evaluation.metrics)</a>
+</li>
       <li><a href="API/l5kit.geometry.html#l5kit.geometry.rotation33_as_yaw">rotation33_as_yaw() (in module l5kit.geometry)</a>
 
       <ul>
@@ -1267,6 +1282,8 @@
 <h2 id="T">T</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.time_displace">time_displace() (in module l5kit.evaluation.metrics)</a>
+</li>
       <li><a href="API/l5kit.rasterization.box_rasterizer.html#l5kit.rasterization.box_rasterizer.BoxRasterizer.to_rgb">to_rgb() (l5kit.rasterization.box_rasterizer.BoxRasterizer method)</a>
 
       <ul>
@@ -1339,7 +1356,7 @@
 <h2 id="V">V</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="API/l5kit.evaluation.extract_metric.html#l5kit.evaluation.extract_metric.validate_dicts">validate_dicts() (in module l5kit.evaluation.extract_metric)</a>
+      <li><a href="API/l5kit.evaluation.extract_metrics.html#l5kit.evaluation.extract_metrics.validate_dicts">validate_dicts() (in module l5kit.evaluation.extract_metrics)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>

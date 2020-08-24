@@ -37,7 +37,7 @@
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
     <link rel="next" title="l5kit.geometry package" href="l5kit.geometry.html" />
-    <link rel="prev" title="l5kit.evaluation.extract_metric module" href="l5kit.evaluation.extract_metric.html" /> 
+    <link rel="prev" title="l5kit.evaluation.extract_metrics module" href="l5kit.evaluation.extract_metrics.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -96,9 +96,10 @@
 <li class="toctree-l2"><a class="reference internal" href="l5kit.dataset.html">l5kit.dataset package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="l5kit.evaluation.html">l5kit.evaluation package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="l5kit.evaluation.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.chop_dataset.html">l5kit.evaluation.chop_dataset module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.csv_utils.html">l5kit.evaluation.csv_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.extract_ground_truth.html">l5kit.evaluation.extract_ground_truth module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.extract_metric.html">l5kit.evaluation.extract_metric module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.extract_metrics.html">l5kit.evaluation.extract_metrics module</a></li>
 <li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.evaluation.metrics module</a></li>
 </ul>
 </li>
@@ -113,6 +114,9 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset Formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html">Competition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html#scoring">Scoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html#additional-metrics">Additional Metrics</a></li>
 </ul>
 
             
@@ -185,24 +189,180 @@
   <div class="section" id="module-l5kit.evaluation.metrics">
 <span id="l5kit-evaluation-metrics-module"></span><h1>l5kit.evaluation.metrics module<a class="headerlink" href="#module-l5kit.evaluation.metrics" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="l5kit.evaluation.metrics.neg_multi_log_likelihood">
-<code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">neg_multi_log_likelihood</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">gt</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">confidences</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">avails</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.evaluation.metrics.neg_multi_log_likelihood" title="Permalink to this definition">¶</a></dt>
-<dd><p>Compute a negative log-likelihood for the multi-modal scenario.
-log-sum-exp trick is used here to avoid underflow and overflow, For more information about it see:
-<a class="reference external" href="https://en.wikipedia.org/wiki/LogSumExp#log-sum-exp_trick_for_log-domain_calculations">https://en.wikipedia.org/wiki/LogSumExp#log-sum-exp_trick_for_log-domain_calculations</a>
-<a class="reference external" href="https://timvieira.github.io/blog/post/2014/02/11/exp-normalize-trick/">https://timvieira.github.io/blog/post/2014/02/11/exp-normalize-trick/</a>
-<a class="reference external" href="https://leimao.github.io/blog/LogSumExp/">https://leimao.github.io/blog/LogSumExp/</a></p>
+<dt id="l5kit.evaluation.metrics.average_displacement_error_mean">
+<code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">average_displacement_error_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">confidences</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">avails</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.evaluation.metrics.average_displacement_error_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls _average_displacement_error() to get the mean average displacement error.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>gt</strong> (<em>np.ndarray</em>) – array of shape (time)x(2D coords)</p></li>
+<li><p><strong>ground_truth</strong> (<em>np.ndarray</em>) – array of shape (time)x(2D coords)</p></li>
 <li><p><strong>pred</strong> (<em>np.ndarray</em>) – array of shape (modes)x(time)x(2D coords)</p></li>
 <li><p><strong>confidences</strong> (<em>np.ndarray</em>) – array of shape (modes) with a confidence for each mode in each sample</p></li>
 <li><p><strong>avails</strong> (<em>np.ndarray</em>) – array of shape (time) with the availability for each gt timestep</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
+<dd class="field-even"><p>mean average displacement error (ADE), a single float number</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.evaluation.metrics.average_displacement_error_oracle">
+<code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">average_displacement_error_oracle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">confidences</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">avails</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.evaluation.metrics.average_displacement_error_oracle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls _average_displacement_error() to get the oracle average displacement error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ground_truth</strong> (<em>np.ndarray</em>) – array of shape (time)x(2D coords)</p></li>
+<li><p><strong>pred</strong> (<em>np.ndarray</em>) – array of shape (modes)x(time)x(2D coords)</p></li>
+<li><p><strong>confidences</strong> (<em>np.ndarray</em>) – array of shape (modes) with a confidence for each mode in each sample</p></li>
+<li><p><strong>avails</strong> (<em>np.ndarray</em>) – array of shape (time) with the availability for each gt timestep</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>oracle average displacement error (ADE), a single float number</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.evaluation.metrics.final_displacement_error_mean">
+<code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">final_displacement_error_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">confidences</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">avails</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.evaluation.metrics.final_displacement_error_mean" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls _final_displacement_error() to get the mean average displacement error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ground_truth</strong> (<em>np.ndarray</em>) – array of shape (time)x(2D coords)</p></li>
+<li><p><strong>pred</strong> (<em>np.ndarray</em>) – array of shape (modes)x(time)x(2D coords)</p></li>
+<li><p><strong>confidences</strong> (<em>np.ndarray</em>) – array of shape (modes) with a confidence for each mode in each sample</p></li>
+<li><p><strong>avails</strong> (<em>np.ndarray</em>) – array of shape (time) with the availability for each gt timestep</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>mean final displacement error (FDE), a single float number</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.evaluation.metrics.final_displacement_error_oracle">
+<code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">final_displacement_error_oracle</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">confidences</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">avails</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.evaluation.metrics.final_displacement_error_oracle" title="Permalink to this definition">¶</a></dt>
+<dd><p>Calls _final_displacement_error() to get the oracle average displacement error.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ground_truth</strong> (<em>np.ndarray</em>) – array of shape (time)x(2D coords)</p></li>
+<li><p><strong>pred</strong> (<em>np.ndarray</em>) – array of shape (modes)x(time)x(2D coords)</p></li>
+<li><p><strong>confidences</strong> (<em>np.ndarray</em>) – array of shape (modes) with a confidence for each mode in each sample</p></li>
+<li><p><strong>avails</strong> (<em>np.ndarray</em>) – array of shape (time) with the availability for each gt timestep</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>oracle final displacement error (FDE), a single float number</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.evaluation.metrics.neg_multi_log_likelihood">
+<code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">neg_multi_log_likelihood</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">confidences</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">avails</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.evaluation.metrics.neg_multi_log_likelihood" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a negative log-likelihood for the multi-modal scenario.
+log-sum-exp trick is used here to avoid underflow and overflow, For more information about it see:
+<a class="reference external" href="https://en.wikipedia.org/wiki/LogSumExp#log-sum-exp_trick_for_log-domain_calculations">https://en.wikipedia.org/wiki/LogSumExp#log-sum-exp_trick_for_log-domain_calculations</a>
+<a class="reference external" href="https://timvieira.github.io/blog/post/2014/02/11/exp-normalize-trick/">https://timvieira.github.io/blog/post/2014/02/11/exp-normalize-trick/</a>
+<a class="reference external" href="https://leimao.github.io/blog/LogSumExp/">https://leimao.github.io/blog/LogSumExp/</a></p>
+<p>For more details about used loss function and reformulation, please see
+<a class="reference external" href="https://github.com/lyft/l5kit/blob/master/competition.md">https://github.com/lyft/l5kit/blob/master/competition.md</a>.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ground_truth</strong> (<em>np.ndarray</em>) – array of shape (timesteps)x(2D coords)</p></li>
+<li><p><strong>pred</strong> (<em>np.ndarray</em>) – array of shape (modes)x(timesteps)x(2D coords)</p></li>
+<li><p><strong>confidences</strong> (<em>np.ndarray</em>) – array of shape (modes) with a confidence for each mode in each sample</p></li>
+<li><p><strong>avails</strong> (<em>np.ndarray</em>) – array of shape (timesteps) with the availability for each gt timesteps</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
 <dd class="field-even"><p>negative log-likelihood for this example, a single float number</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.evaluation.metrics.prob_true_mode">
+<code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">prob_true_mode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">confidences</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">avails</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.evaluation.metrics.prob_true_mode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the probability of the true mode</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ground_truth</strong> (<em>np.ndarray</em>) – array of shape (timesteps)x(2D coords)</p></li>
+<li><p><strong>pred</strong> (<em>np.ndarray</em>) – array of shape (modes)x(timesteps)x(2D coords)</p></li>
+<li><p><strong>confidences</strong> (<em>np.ndarray</em>) – array of shape (modes) with a confidence for each mode in each sample</p></li>
+<li><p><strong>avails</strong> (<em>np.ndarray</em>) – array of shape (timesteps) with the availability for each gt timesteps</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a (modes) numpy array</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.evaluation.metrics.rmse">
+<code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">rmse</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">confidences</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">avails</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.evaluation.metrics.rmse" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the root mean squared error, computed using the stable nll</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ground_truth</strong> (<em>np.ndarray</em>) – array of shape (timesteps)x(2D coords)</p></li>
+<li><p><strong>pred</strong> (<em>np.ndarray</em>) – array of shape (modes)x(timesteps)x(2D coords)</p></li>
+<li><p><strong>confidences</strong> (<em>np.ndarray</em>) – array of shape (modes) with a confidence for each mode in each sample</p></li>
+<li><p><strong>avails</strong> (<em>np.ndarray</em>) – array of shape (timesteps) with the availability for each gt timesteps</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>negative log-likelihood for this example, a single float number</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.evaluation.metrics.time_displace">
+<code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">time_displace</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">confidences</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">avails</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.evaluation.metrics.time_displace" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the displacement at timesteps T</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ground_truth</strong> (<em>np.ndarray</em>) – array of shape (timesteps)x(2D coords)</p></li>
+<li><p><strong>pred</strong> (<em>np.ndarray</em>) – array of shape (modes)x(timesteps)x(2D coords)</p></li>
+<li><p><strong>confidences</strong> (<em>np.ndarray</em>) – array of shape (modes) with a confidence for each mode in each sample</p></li>
+<li><p><strong>avails</strong> (<em>np.ndarray</em>) – array of shape (timesteps) with the availability for each gt timesteps</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a (timesteps) numpy array</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -223,7 +383,7 @@ log-sum-exp trick is used here to avoid underflow and overflow, For more informa
         <a href="l5kit.geometry.html" class="btn btn-neutral float-right" title="l5kit.geometry package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="l5kit.evaluation.extract_metric.html" class="btn btn-neutral float-left" title="l5kit.evaluation.extract_metric module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="l5kit.evaluation.extract_metrics.html" class="btn btn-neutral float-left" title="l5kit.evaluation.extract_metrics module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   

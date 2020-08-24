@@ -36,7 +36,7 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="l5kit.evaluation.csv_utils module" href="l5kit.evaluation.csv_utils.html" />
+    <link rel="next" title="l5kit.evaluation.chop_dataset module" href="l5kit.evaluation.chop_dataset.html" />
     <link rel="prev" title="l5kit.dataset.select_agents module" href="l5kit.dataset.select_agents.html" /> 
 </head>
 
@@ -96,9 +96,10 @@
 <li class="toctree-l2"><a class="reference internal" href="l5kit.dataset.html">l5kit.dataset package</a></li>
 <li class="toctree-l2 current"><a class="current reference internal" href="#">l5kit.evaluation package</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#submodules">Submodules</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.chop_dataset.html">l5kit.evaluation.chop_dataset module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.csv_utils.html">l5kit.evaluation.csv_utils module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.extract_ground_truth.html">l5kit.evaluation.extract_ground_truth module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.extract_metric.html">l5kit.evaluation.extract_metric module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.extract_metrics.html">l5kit.evaluation.extract_metrics module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.metrics.html">l5kit.evaluation.metrics module</a></li>
 </ul>
 </li>
@@ -113,6 +114,9 @@
 </li>
 <li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset Formats</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html">Competition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html#scoring">Scoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html#additional-metrics">Additional Metrics</a></li>
 </ul>
 
             
@@ -183,14 +187,56 @@
   <div class="section" id="module-l5kit.evaluation">
 <span id="l5kit-evaluation-package"></span><h1>l5kit.evaluation package<a class="headerlink" href="#module-l5kit.evaluation" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="l5kit.evaluation.compute_error_csv">
-<code class="sig-prename descclassname">l5kit.evaluation.</code><code class="sig-name descname">compute_error_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">inference_output_path</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.evaluation.compute_error_csv" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="field-list simple">
+<dt id="l5kit.evaluation.compute_metrics_csv">
+<code class="sig-prename descclassname">l5kit.evaluation.</code><code class="sig-name descname">compute_metrics_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">inference_output_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">metrics</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Callable<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#l5kit.evaluation.compute_metrics_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a set of metrics between ground truth and prediction csv files</p>
+<dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>ground_truth_path</strong> (<em>str</em>) – Path to the ground truth csv file.</p></li>
 <li><p><strong>inference_output_path</strong> (<em>str</em>) – Path to the csv file containing network output.</p></li>
+<li><p><strong>metrics</strong> (<em>List</em><em>[</em><em>Callable</em><em>]</em>) – a list of callable to be applied to the elements retrieved from the 2</p></li>
+<li><p><strong>files</strong> (<em>csv</em>) – </p></li>
 </ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>keys are metrics name, values is the average metric computed over the elements</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.evaluation.create_chopped_dataset">
+<code class="sig-prename descclassname">l5kit.evaluation.</code><code class="sig-name descname">create_chopped_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zarr_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">th_agent_prob</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">num_frames_to_copy</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">num_frames_gt</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">min_frame_future</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#l5kit.evaluation.create_chopped_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a chopped version of the zarr that can be used as a test set.
+This function was used to generate the test set for the competition so that the future GT is not in the data.</p>
+<dl>
+<dt>Store:</dt><dd><ul class="simple">
+<li><p>a dataset where each scene has been chopped at <cite>num_frames_to_copy</cite> frames;</p></li>
+<li><p>a mask for agents for those final frames based on the original mask and a threshold on the future_frames;</p></li>
+<li><p>the GT csv for those agents</p></li>
+</ul>
+<p>For the competition, only the first two (dataset and mask) will be available in the notebooks</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>zarr_path</strong> (<em>str</em>) – input zarr path to be chopped</p></li>
+<li><p><strong>th_agent_prob</strong> (<em>float</em>) – threshold over agents probabilities used in select_agents function</p></li>
+<li><p><strong>num_frames_to_copy</strong> (<em>int</em>) – number of frames to copy from the beginning of each scene, others will be discarded</p></li>
+<li><p><strong>min_frame_future</strong> (<em>int</em>) – minimum number of frames that must be available in the future for an agent</p></li>
+<li><p><strong>num_frames_gt</strong> (<em>int</em>) – number of future predictions to store in the GT file</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the parent folder of the new datam</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
 </dd>
 </dl>
 </dd></dl>
@@ -293,9 +339,10 @@ and confs should be set to None. In this case, a single mode with confidence 1 w
 <h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
 <div class="toctree-wrapper compound">
 <ul>
+<li class="toctree-l1"><a class="reference internal" href="l5kit.evaluation.chop_dataset.html">l5kit.evaluation.chop_dataset module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.evaluation.csv_utils.html">l5kit.evaluation.csv_utils module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.evaluation.extract_ground_truth.html">l5kit.evaluation.extract_ground_truth module</a></li>
-<li class="toctree-l1"><a class="reference internal" href="l5kit.evaluation.extract_metric.html">l5kit.evaluation.extract_metric module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="l5kit.evaluation.extract_metrics.html">l5kit.evaluation.extract_metrics module</a></li>
 <li class="toctree-l1"><a class="reference internal" href="l5kit.evaluation.metrics.html">l5kit.evaluation.metrics module</a></li>
 </ul>
 </div>
@@ -310,7 +357,7 @@ and confs should be set to None. In this case, a single mode with confidence 1 w
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="l5kit.evaluation.csv_utils.html" class="btn btn-neutral float-right" title="l5kit.evaluation.csv_utils module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="l5kit.evaluation.chop_dataset.html" class="btn btn-neutral float-right" title="l5kit.evaluation.chop_dataset module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
         <a href="l5kit.dataset.select_agents.html" class="btn btn-neutral float-left" title="l5kit.dataset.select_agents module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>

@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>l5kit.random.random_generator module &mdash; L5Kit 1.0.5 documentation</title>
+  <title>l5kit.evaluation.extract_metrics module &mdash; L5Kit 1.0.5 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="l5kit.sampling package" href="l5kit.sampling.html" />
-    <link rel="prev" title="l5kit.random package" href="l5kit.random.html" /> 
+    <link rel="next" title="l5kit.evaluation.metrics module" href="l5kit.evaluation.metrics.html" />
+    <link rel="prev" title="l5kit.evaluation.extract_ground_truth module" href="l5kit.evaluation.extract_ground_truth.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -94,16 +94,20 @@
 <li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="l5kit.data.html">l5kit.data package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="l5kit.dataset.html">l5kit.dataset package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.evaluation.html">l5kit.evaluation package</a></li>
+<li class="toctree-l2 current"><a class="reference internal" href="l5kit.evaluation.html">l5kit.evaluation package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="l5kit.evaluation.html#submodules">Submodules</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.chop_dataset.html">l5kit.evaluation.chop_dataset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.csv_utils.html">l5kit.evaluation.csv_utils module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.extract_ground_truth.html">l5kit.evaluation.extract_ground_truth module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.evaluation.extract_metrics module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.metrics.html">l5kit.evaluation.metrics module</a></li>
+</ul>
+</li>
+</ul>
+</li>
 <li class="toctree-l2"><a class="reference internal" href="l5kit.geometry.html">l5kit.geometry package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="l5kit.kinematic.html">l5kit.kinematic package</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="l5kit.random.html">l5kit.random package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="l5kit.random.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.random.random_generator module</a></li>
-</ul>
-</li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="l5kit.random.html">l5kit.random package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="l5kit.sampling.html">l5kit.sampling package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="l5kit.visualization.html">l5kit.visualization package</a></li>
 </ul>
@@ -161,15 +165,15 @@
         
           <li><a href="../api_reference.html">API Reference</a> &raquo;</li>
         
-          <li><a href="l5kit.random.html">l5kit.random package</a> &raquo;</li>
+          <li><a href="l5kit.evaluation.html">l5kit.evaluation package</a> &raquo;</li>
         
-      <li>l5kit.random.random_generator module</li>
+      <li>l5kit.evaluation.extract_metrics module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/API/l5kit.random.random_generator.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/API/l5kit.evaluation.extract_metrics.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -182,30 +186,48 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-l5kit.random.random_generator">
-<span id="l5kit-random-random-generator-module"></span><h1>l5kit.random.random_generator module<a class="headerlink" href="#module-l5kit.random.random_generator" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="l5kit.random.random_generator.GaussianRandomGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.random.random_generator.</code><code class="sig-name descname">GaussianRandomGenerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mean</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">std</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.random.random_generator.GaussianRandomGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>GaussianRandomGenerator generates values by sampling from a normal distribution with specified
-mean and standard deviation. Note that this gaussian can be multidimensional.</p>
+  <div class="section" id="module-l5kit.evaluation.extract_metrics">
+<span id="l5kit-evaluation-extract-metrics-module"></span><h1>l5kit.evaluation.extract_metrics module<a class="headerlink" href="#module-l5kit.evaluation.extract_metrics" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="l5kit.evaluation.extract_metrics.compute_metrics_csv">
+<code class="sig-prename descclassname">l5kit.evaluation.extract_metrics.</code><code class="sig-name descname">compute_metrics_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">inference_output_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">metrics</span><span class="p">:</span> <span class="n">List<span class="p">[</span>Callable<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#l5kit.evaluation.extract_metrics.compute_metrics_csv" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute a set of metrics between ground truth and prediction csv files</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ground_truth_path</strong> (<em>str</em>) – Path to the ground truth csv file.</p></li>
+<li><p><strong>inference_output_path</strong> (<em>str</em>) – Path to the csv file containing network output.</p></li>
+<li><p><strong>metrics</strong> (<em>List</em><em>[</em><em>Callable</em><em>]</em>) – a list of callable to be applied to the elements retrieved from the 2</p></li>
+<li><p><strong>files</strong> (<em>csv</em>) – </p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>keys are metrics name, values is the average metric computed over the elements</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
 </dd></dl>
 
-<dl class="py class">
-<dt id="l5kit.random.random_generator.LambdaRandomGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.random.random_generator.</code><code class="sig-name descname">LambdaRandomGenerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sampling_function</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">]</span><span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.random.random_generator.LambdaRandomGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>LambdaRandomGenerator generates values by calling the supplied function.
-Note that instead of this you could also just use this supplied function itself.</p>
-</dd></dl>
-
-<dl class="py class">
-<dt id="l5kit.random.random_generator.ReplayRandomGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.random.random_generator.</code><code class="sig-name descname">ReplayRandomGenerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.random.random_generator.ReplayRandomGenerator" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-<p>ReplayRandomGenerator generates values by sequentially returning the values in the supplied
-array. It does not loop or reset automatically.</p>
+<dl class="py function">
+<dt id="l5kit.evaluation.extract_metrics.validate_dicts">
+<code class="sig-prename descclassname">l5kit.evaluation.extract_metrics.</code><code class="sig-name descname">validate_dicts</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">predicted</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#l5kit.evaluation.extract_metrics.validate_dicts" title="Permalink to this definition">¶</a></dt>
+<dd><p>Validate GT and pred dictionaries by comparing keys</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ground_truth</strong> (<em>dict</em>) – mapping from (track_id + timestamp) to an element returned from our csv utils</p></li>
+<li><p><strong>predicted</strong> (<em>dict</em>) – mapping from (track_id + timestamp) to an element returned from our csv utils</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the 2 dicts match (same keys)</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(bool)</p>
+</dd>
+</dl>
 </dd></dl>
 
 </div>
@@ -218,10 +240,10 @@ array. It does not loop or reset automatically.</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="l5kit.sampling.html" class="btn btn-neutral float-right" title="l5kit.sampling package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="l5kit.evaluation.metrics.html" class="btn btn-neutral float-right" title="l5kit.evaluation.metrics module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="l5kit.random.html" class="btn btn-neutral float-left" title="l5kit.random package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="l5kit.evaluation.extract_ground_truth.html" class="btn btn-neutral float-left" title="l5kit.evaluation.extract_ground_truth module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
