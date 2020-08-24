@@ -102,6 +102,12 @@
 <li class="toctree-l3"><a class="reference internal" href="#scenes">Scenes</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#frames">Frames</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#agents">Agents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#traffic-light-faces">Traffic Light Faces</a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#working-with-the-zarr-format">Working with the zarr format</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#the-chunkeddataset">The ChunkedDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#performance-aware-slicing">Performance-aware slicing</a></li>
 </ul>
 </li>
 </ul>
@@ -197,7 +203,7 @@
 <span class="n">my_arr</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">245</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">255</span><span class="p">]</span>
 <span class="n">my_arr</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 
-<span class="nb">print</span><span class="p">(</span><span class="n">my_arr</span><span class="p">[</span><span class="s2">&quot;color&quot;</span><span class="p">])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">my_arr</span><span class="p">)</span>
 <span class="c1"># array([([  0, 218, 130],  True), ([245,  59, 255],  True),</span>
 <span class="c1">#        ([  0,   0,   0], False)],</span>
 <span class="c1">#       dtype=[(&#39;color&#39;, &#39;u1&#39;, (3,)), (&#39;label&#39;, &#39;?&#39;)])</span>
@@ -261,10 +267,15 @@
 </div>
 <div class="section" id="lyft-competition-dataset-format">
 <h2>2020 Lyft Competition Dataset format<a class="headerlink" href="#lyft-competition-dataset-format" title="Permalink to this headline">¶</a></h2>
-<p>The 2020 Lyft competition dataset is stored in three structured arrays: <code class="docutils literal notranslate"><span class="pre">scenes</span></code>, <code class="docutils literal notranslate"><span class="pre">frames</span></code> and <code class="docutils literal notranslate"><span class="pre">agents</span></code>.</p>
+<p>The 2020 Lyft competition dataset is stored in four structured arrays: <code class="docutils literal notranslate"><span class="pre">scenes</span></code>, <code class="docutils literal notranslate"><span class="pre">frames</span></code>, <code class="docutils literal notranslate"><span class="pre">agents</span></code> and <code class="docutils literal notranslate"><span class="pre">tl_faces</span></code>.</p>
+<p>Note: in the following all <code class="docutils literal notranslate"><span class="pre">_interval</span></code> fields assume that information is stored consecutively in the arrays.
+This means that if <code class="docutils literal notranslate"><span class="pre">frame_index_interval</span></code> for <code class="docutils literal notranslate"><span class="pre">scene_0</span></code> is <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">100)</span></code>, frames from <code class="docutils literal notranslate"><span class="pre">scene_1</span></code> will start from index 100 in the frames array.</p>
 <div class="section" id="scenes">
 <h3>Scenes<a class="headerlink" href="#scenes" title="Permalink to this headline">¶</a></h3>
-<p>A scene is identified by the host (i.e. which car was used to collect it) and a start and end time. It consists of multiple frames (= discretized measurements), in the scene datatype we store the start and end index in the <code class="docutils literal notranslate"><span class="pre">frames</span></code> array described below that correspond to this scene.</p>
+<p>A scene is identified by the host (i.e. which car was used to collect it) and a start and end time.
+It consists of multiple frames (=snapshots at discretized time intervals).
+The scene datatype stores references to its corresponding frames in terms of the start and end index within the frames array (described below).
+The frames in between these indices all correspond to the scene (including start index, excluding end index).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SCENE_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="s2">&quot;frame_index_interval&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
     <span class="p">(</span><span class="s2">&quot;host&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;U16&quot;</span><span class="p">),</span>  <span class="c1"># Unicode string up to 16 chars</span>
@@ -276,10 +287,19 @@
 </div>
 <div class="section" id="frames">
 <h3>Frames<a class="headerlink" href="#frames" title="Permalink to this headline">¶</a></h3>
-<p>A frame consists of information about the ego vehicle (e.g. where it was at that time), a timestamp, and a reference to the agents in that frame. Because there may be multiple agents observed we store the start and the end index.</p>
+<p>A frame captures all information that was observed at a time. This includes</p>
+<ul class="simple">
+<li><p>the timestamp, which the frame describes;</p></li>
+<li><p>data about the ego vehicle itself such as rotation and position;</p></li>
+<li><p>a reference to the other agents (vehicles, cyclists and pedestrians) that were captured by the ego’s sensors;</p></li>
+<li><p>a reference to all traffic light faces (see below) for all visible lanes.</p></li>
+</ul>
+<p>The properties for both agents and traffic light faces are stored in their two respective arrays.
+The frame contains only pointers to these stored objects given by a start and an end index in these arrays (again, start is included while end excluded).</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FRAME_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="s2">&quot;timestamp&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
     <span class="p">(</span><span class="s2">&quot;agent_index_interval&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
+    <span class="p">(</span><span class="s2">&quot;traffic_light_faces_index_interval&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
     <span class="p">(</span><span class="s2">&quot;ego_translation&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)),</span>
     <span class="p">(</span><span class="s2">&quot;ego_rotation&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span>
 <span class="p">]</span>
@@ -288,7 +308,10 @@
 </div>
 <div class="section" id="agents">
 <h3>Agents<a class="headerlink" href="#agents" title="Permalink to this headline">¶</a></h3>
-<p>An agent is an observation by the AV of some other detected object. They each have a probability for each defined class associated with them, the possible labels are defined <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/zarr_dataset.py">here</a>.</p>
+<p>An agent is an observation by the AV of some other detected object.
+Each entry describes the object in terms of its attributes such as position and velocity, gives the agent a tracking number to track it over multiple frames (but only within the same scene!) and its most probable label.
+The label is described as an array of probabilities over each defined class associated with them,
+the possible labels are defined <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/zarr_dataset.py">here</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AGENT_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="s2">&quot;centroid&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
     <span class="p">(</span><span class="s2">&quot;extent&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)),</span>
@@ -299,6 +322,60 @@
 <span class="p">]</span>
 </pre></div>
 </div>
+</div>
+<div class="section" id="traffic-light-faces">
+<h3>Traffic Light Faces<a class="headerlink" href="#traffic-light-faces" title="Permalink to this headline">¶</a></h3>
+<p>Note: we refer to traffic light bulbs (e.g. the red light bulb of a specific traffic light) as <code class="docutils literal notranslate"><span class="pre">faces</span></code> in L5Kit.
+For the full list of available types for a bulb please consult our <a class="reference external" href="https://github.com/lyft/l5kit/blob/20ab033c01610d711c3d36e1963ecec86e8b85b6/l5kit/l5kit/data/proto/road_network.proto#L615">protobuf map definition</a>.</p>
+<p>Our semantic map holds static information about the world only. This means it has a list of all traffic lights, but no information about how their status changes over time.
+This dynamic information is instead stored in this array.
+Each array’s element has a unique id to link it to the semantic map, a status (if status <code class="docutils literal notranslate"><span class="pre">&gt;0</span></code>, then the face is active - i.e., the corresponding light bulb is on, otherwise inactive / off ) and a reference to its parent traffic light.</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TL_FACE_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
+    <span class="p">(</span><span class="s2">&quot;face_id&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;U16&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;traffic_light_id&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;U16&quot;</span><span class="p">),</span>
+    <span class="p">(</span><span class="s2">&quot;traffic_light_face_status&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TL_FACE_LABELS</span><span class="p">,))),</span>
+<span class="p">]</span>
+</pre></div>
+</div>
+</div>
+</div>
+<div class="section" id="working-with-the-zarr-format">
+<h2>Working with the zarr format<a class="headerlink" href="#working-with-the-zarr-format" title="Permalink to this headline">¶</a></h2>
+<div class="section" id="the-chunkeddataset">
+<h3>The ChunkedDataset<a class="headerlink" href="#the-chunkeddataset" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">ChunkedDataset</span></code> (<code class="docutils literal notranslate"><span class="pre">l5kit.data.zarr_dataset</span></code>) is the first interface between raw data on the disk and Python accessible information.
+This layer is very thin, and it provides the four arrays mapped from the disk. When one of these array is indexed (or sliced):</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">zarr</span></code> identifies the chunk(s) to be loaded;</p></li>
+<li><p>the chunk is decompressed on the fly;</p></li>
+<li><p>a numpy array copy is returned;</p></li>
+</ul>
+<p>The <code class="docutils literal notranslate"><span class="pre">ChunkedDataset</span></code> also provides an LRUcache; but it works on <a class="reference external" href="https://github.com/zarr-developers/zarr-python/issues/278">compressed chunks only</a>.</p>
+</div>
+<div class="section" id="performance-aware-slicing">
+<h3>Performance-aware slicing<a class="headerlink" href="#performance-aware-slicing" title="Permalink to this headline">¶</a></h3>
+<p>A very common operation with the <code class="docutils literal notranslate"><span class="pre">ChunkedDataset</span></code> is slicing one array to retrieve some values.
+Let’s say we want to retrieve the first 10k agents’ centroids and store them in memory.</p>
+<p>A first implementation would look like this:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">l5kit.data</span> <span class="kn">import</span> <span class="n">ChunkedDataset</span>
+
+<span class="n">dt</span> <span class="o">=</span> <span class="n">ChunkedDataset</span><span class="p">(</span><span class="s2">&quot;&lt;path&gt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+<span class="n">centroids</span><span class="o">=</span> <span class="p">[]</span>
+<span class="k">for</span> <span class="n">idx</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10_000</span><span class="p">):</span>
+    <span class="n">centroid</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">agents</span><span class="p">[</span><span class="n">idx</span><span class="p">][</span><span class="s2">&quot;centroid&quot;</span><span class="p">]</span>
+    <span class="n">centroids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">centroid</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>However, in this implementation <strong>we are decompressing the same chunk (or two) 10_000 times!</strong></p>
+<p>If we rewrite it as</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">l5kit.data</span> <span class="kn">import</span> <span class="n">ChunkedDataset</span>
+
+<span class="n">dt</span> <span class="o">=</span> <span class="n">ChunkedDataset</span><span class="p">(</span><span class="s2">&quot;&lt;path&gt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+<span class="n">centroids</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">agents</span><span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="mi">10_000</span><span class="p">)][</span><span class="s2">&quot;centroid&quot;</span><span class="p">]</span>  <span class="c1"># note this is the same as dt.agents[:10_000]</span>
+</pre></div>
+</div>
+<p>we reduce the decompression numbers by <strong>a factor of 10K</strong>.</p>
+<p><strong>TL;DR</strong>: when working with <code class="docutils literal notranslate"><span class="pre">zarr</span></code> you should always aim to minimise the number of accesses to the compressed data.</p>
 </div>
 </div>
 </div>
