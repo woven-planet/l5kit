@@ -3,7 +3,7 @@ from typing import Callable, List
 
 import numpy as np
 
-from . import read_gt_csv, read_pred_csv
+from .csv_utils import read_gt_csv, read_pred_csv
 
 
 def validate_dicts(ground_truth: dict, predicted: dict) -> bool:
