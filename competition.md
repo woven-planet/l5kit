@@ -11,29 +11,29 @@ For scoring, we calculate the *negative log-likelihood* of the ground truth data
 Let us take a closer look at this.
 Assume, ground truth positions of a sample trajectory are
 
-![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20x_1%2C%20%5Cldots%2C%20x_N),
+![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20x_1%2C%20%5Cldots%2C%20x_T%2C%20y_1%2C%20%5Cldots%2C%20y_T),
 
 and we predict K hypotheses, represented by means
 
-![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20%5Cmu_1%5Ek%2C%20%5Cldots%2C%20%5Cmu_N%5Ek).
+![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20%5Cbar%7Bx%7D_1%5Ek%2C%20%5Cldots%2C%20%5Cbar%7Bx%7D_T%5Ek%2C%20%5Cbar%7By%7D_1%5Ek%2C%20%5Cldots%2C%20%5Cbar%7By%7D_T%5Ek).
 
 In addition, we predict confidences c of these K hypotheses.
 We assume the ground truth positions to be modelled by a mixture of multi-dimensional independent Normal distributions over time,
 yielding the likelihood
 
-![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20p%28x_1%2C%20%5Cldots%2C%20x_N%7Cc%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5Cmu_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%29)
+![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20p%28x_%7B1%2C%20%5Cldots%2C%20T%7D%2C%20y_%7B1%2C%20%5Cldots%2C%20T%7D%7Cc%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5Cbar%7Bx%7D_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5Cbar%7By%7D_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%29)
 
-![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20%3D%20%5Csum_k%20c%5Ek%20%5Cmathcal%7BN%7D%28x_1%2C%20%5Cldots%2C%20x_N%7C%5Cmu_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5CSigma%3D1%29)
+![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20%3D%20%5Csum_k%20c%5Ek%20%5Cmathcal%7BN%7D%28x_%7B1%2C%20%5Cldots%2C%20T%7D%7C%5Cbar%7Bx%7D_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7Bk%7D%2C%20%5CSigma%3D1%29%20%5Cmathcal%7BN%7D%28y_%7B1%2C%20%5Cldots%2C%20T%7D%7C%5Cbar%7By%7D_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7Bk%7D%2C%20%5CSigma%3D1%29)
 
-![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20%3D%20%5Csum_k%20c%5Ek%20%5Cprod_t%20%5Cmathcal%7BN%7D%28x_t%7C%5Cmu_t%5Ek%2C%20%5CSigma%3D1%29)
+![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20%3D%20%5Csum_k%20c%5Ek%20%5Cprod_t%20%5Cmathcal%7BN%7D%28x_t%7C%5Cbar%7Bx%7D_t%5Ek%2C%20%5Csigma%3D1%29%20%5Cmathcal%7BN%7D%28y_t%7C%5Cbar%7By%7D_t%5Ek%2C%20%5Csigma%3D1%29)
 
 yielding the loss
 
-![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20L%20%3D%20-%20%5Clog%20p%28x_1%2C%20%5Cldots%2C%20x_N%7Cc%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5Cmu_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%29)
+![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20L%20%3D%20-%20%5Clog%20p%28x_%7B1%2C%20%5Cldots%2C%20T%7D%2C%20y_%7B1%2C%20%5Cldots%2C%20T%7D%7Cc%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5Cbar%7Bx%7D_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5Cbar%7By%7D_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%29)
 
-![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20%3D%20-%20%5Clog%20%5Csum_k%20e%5E%7B%5Clog%28c%5Ek%29%20&plus;%20%5Csum_t%20%5Clog%20%5Cmathcal%7BN%7D%28x_t%7C%5Cmu_t%5Ek%2C%20%5CSigma%3D1%29%7D)
+![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20%3D%20-%20%5Clog%20%5Csum_k%20e%5E%7B%5Clog%28c%5Ek%29%20&plus;%20%5Csum_t%20%5Clog%20%5Cmathcal%7BN%7D%28x_t%7C%5Cbar%7Bx%7D_t%5Ek%2C%20%5Csigma%3D1%29%20%5Cmathcal%7BN%7D%28y_t%7C%5Cbar%7By%7D_t%5Ek%2C%20%5Csigma%3D1%29%7D)
 
-![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20%3D%20-%20%5Clog%20%5Csum_k%20e%5E%7B%5Clog%28c%5Ek%29%20-%5Cfrac%7B1%7D%7B2%7D%20%5Csum_t%20%28%5Cmu_t%5Ek%20-%20x_t%29%5E2%7D)
+![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20%3D%20-%20%5Clog%20%5Csum_k%20e%5E%7B%5Clog%28c%5Ek%29%20-%5Cfrac%7B1%7D%7B2%7D%20%5Csum_t%20%28%5Cbar%7Bx%7D_t%5Ek%20-%20x_t%29%5E2%20&plus;%20%28%5Cbar%7By%7D_t%5Ek%20-%20y_t%29%5E2%7D)
 
 You can find our implementation [here](https://github.com/lyft/l5kit/blob/20ab033c01610d711c3d36e1963ecec86e8b85b6/l5kit/l5kit/evaluation/metrics.py#L4), which uses *error* as placeholder for the exponent
 
