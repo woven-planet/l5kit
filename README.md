@@ -57,7 +57,7 @@ prediction-dataset/
   +- meta.json
 
 ```
-You may find other downloaded files and folder (mainly from `aerial_map`), but they are not currently required by L5Kit
+You may find other downloaded files and folders (mainly from `aerial_map`), but they are not currently required by L5Kit
 
 
 ## 2. L5Kit
