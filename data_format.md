@@ -25,7 +25,7 @@ my_arr[0]["label"] = True
 my_arr[1]["color"] = [245, 59, 255]
 my_arr[1]["label"] = True
 
-print(my_arr["color"])
+print(my_arr)
 # array([([  0, 218, 130],  True), ([245,  59, 255],  True),
 #        ([  0,   0,   0], False)],
 #       dtype=[('color', 'u1', (3,)), ('label', '?')])
@@ -97,13 +97,13 @@ Some other zarr benefits are:
 The 2020 Lyft competition dataset is stored in four structured arrays: `scenes`, `frames`, `agents` and `tl_faces`.
 
 Note: in the following all `_interval` fields assume that information is stored consecutively in the arrays.
-This means that if `frame_index_interval` for `scene_0` are `(0, 100)`, frames from `scene_1` will start from index 100 in the frames array.
+This means that if `frame_index_interval` for `scene_0` is `(0, 100)`, frames from `scene_1` will start from index 100 in the frames array.
 
 ### Scenes
 A scene is identified by the host (i.e. which car was used to collect it) and a start and end time. 
 It consists of multiple frames (=snapshots at discretized time intervals). 
 The scene datatype stores references to its corresponding frames in terms of the start and end index within the frames array (described below). 
-The frames in between these indices all correspond to the scene (Including start index, excluding end index).
+The frames in between these indices all correspond to the scene (including start index, excluding end index).
 
 ```python
 SCENE_DTYPE = [
@@ -120,10 +120,10 @@ A frame captures all information that was observed at a time. This includes
 - the timestamp, which the frame describes;
 - data about the ego vehicle itself such as rotation and position;
 - a reference to the other agents (vehicles, cyclists and pedestrians) that were captured by the ego's sensors;
-- a reference to all traffic light faces for all visible lanes.
+- a reference to all traffic light faces (see below) for all visible lanes.
 
 The properties for both agents and traffic light faces are stored in their two respective arrays. 
-The frame contains only pointers to these stored objects in terms of a start and an end index to these arrays (again, start in included while end excluded).
+The frame contains only pointers to these stored objects given by a start and an end index in these arrays (again, start is included while end excluded).
 
 ```python
 FRAME_DTYPE = [
@@ -156,9 +156,9 @@ AGENT_DTYPE = [
 Note: we refer to traffic light bulbs (e.g. the red light bulb of a specific traffic light) as `faces` in L5Kit.
 For the full list of available types for a bulb please consult our [protobuf map definition](https://github.com/lyft/l5kit/blob/20ab033c01610d711c3d36e1963ecec86e8b85b6/l5kit/l5kit/data/proto/road_network.proto#L615).
 
-Our semantic map holds static information about the world only. This means it has a list of all traffic lights, but not information about how their status changes over time.
+Our semantic map holds static information about the world only. This means it has a list of all traffic lights, but no information about how their status changes over time.
 This dynamic information is instead stored in this array.
-Each array's element has a unique id to link it to the semantic map, a status (if `>0` then the face is active) and a reference to its parent traffic light.
+Each array's element has a unique id to link it to the semantic map, a status (if status `>0`, then the face is active - i.e., the corresponding light bulb is on, otherwise inactive / off ) and a reference to its parent traffic light.
 
 ```python
 TL_FACE_DTYPE = [
@@ -171,13 +171,13 @@ TL_FACE_DTYPE = [
 ## Working with the zarr format
 
 ### The ChunkedDataset
-The `ChunkedDataset` (`l5kit.data.zarr_dataset`) is the first interface between raw data on the disk and python accessible information.
+The `ChunkedDataset` (`l5kit.data.zarr_dataset`) is the first interface between raw data on the disk and Python accessible information.
 This layer is very thin, and it provides the four arrays mapped from the disk. When one of these array is indexed (or sliced):
 - `zarr` identifies the chunk(s) to be loaded;
 - the chunk is decompressed on the fly;
 - a numpy array copy is returned; 
 
-The `ChunkedDataset` also provides a LRUcache; but it works on [compressed chunks only](https://github.com/zarr-developers/zarr-python/issues/278).
+The `ChunkedDataset` also provides an LRUcache; but it works on [compressed chunks only](https://github.com/zarr-developers/zarr-python/issues/278).
 
 ### Performance-aware slicing 
 
@@ -197,7 +197,7 @@ for idx in range(10_000):
 
 However, in this implementation **we are decompressing the same chunk (or two) 10_000 times!**
 
-If we rewrite it as:
+If we rewrite it as
 ```python
 from l5kit.data import ChunkedDataset
 
@@ -205,6 +205,6 @@ dt = ChunkedDataset("<path>").open()
 centroids = dt.agents[slice(10_000)]["centroid"]  # note this is the same as dt.agents[:10_000]
 ```
 
-We reduce the decompression numbers by **a factor of 10K**.
+we reduce the decompression numbers by **a factor of 10K**.
 
 **TL;DR**: when working with `zarr` you should always aim to minimise the number of accesses to the compressed data.
