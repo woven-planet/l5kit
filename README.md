@@ -38,7 +38,7 @@ It consists of the following components:
 
 To read more about the dataset and how it was generated, read the [dataset whitepaper](https://arxiv.org/abs/2006.14480).
 
-**Note (08-24-20):** The new version of the dataset includes dynamic traffic lights support. 
+**Note (08-24-20):** The new version of the dataset includes dynamic traffic light support. 
 Please update your L5Kit version to v1.0.6 to start using this functionality.
 
 ### Download the datasets
@@ -57,7 +57,7 @@ prediction-dataset/
   +- meta.json
 
 ```
-You may find other downloade files and folder (mainly from `aerial_map`), but they are not currently required by L5Kit
+You may find other downloaded files and folder (mainly from `aerial_map`), but they are not currently required by L5Kit
 
 
 ## 2. L5Kit
