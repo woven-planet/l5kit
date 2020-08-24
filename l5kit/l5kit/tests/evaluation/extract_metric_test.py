@@ -5,7 +5,8 @@ import pytest
 
 from l5kit.data import ChunkedDataset
 from l5kit.dataset import AgentDataset
-from l5kit.evaluation import compute_error_csv, write_gt_csv, write_pred_csv
+from l5kit.evaluation import compute_metrics_csv, write_gt_csv, write_pred_csv
+from l5kit.evaluation.metrics import neg_multi_log_likelihood
 from l5kit.rasterization import StubRasterizer
 
 
@@ -35,16 +36,18 @@ def test_compute_mse_error(tmp_path: Path, zarr_dataset: ChunkedDataset, cfg: di
     write_gt_csv(str(tmp_path / "gt1.csv"), timestamps, track_ids, gt_coords, gt_avails)
     write_pred_csv(str(tmp_path / "pred1.csv"), timestamps, track_ids, gt_coords, confs=None)
 
-    err = compute_error_csv(str(tmp_path / "gt1.csv"), str(tmp_path / "pred1.csv"))
-    assert np.all(err == 0.0)
+    metrics = compute_metrics_csv(str(tmp_path / "gt1.csv"), str(tmp_path / "pred1.csv"), [neg_multi_log_likelihood])
+    for metric_value in metrics.values():
+        assert np.all(metric_value == 0.0)
 
     # test different values error
     pred_coords = gt_coords.copy()
     pred_coords += np.random.randn(*pred_coords.shape)
     write_pred_csv(str(tmp_path / "pred3.csv"), timestamps, track_ids, pred_coords, confs=None)
 
-    err = compute_error_csv(str(tmp_path / "gt1.csv"), str(tmp_path / "pred3.csv"))
-    assert np.any(err > 0.0)
+    metrics = compute_metrics_csv(str(tmp_path / "gt1.csv"), str(tmp_path / "pred3.csv"), [neg_multi_log_likelihood])
+    for metric_value in metrics.values():
+        assert np.any(metric_value > 0.0)
 
     # test invalid conf by removing lines in gt1
     with open(str(tmp_path / "pred4.csv"), "w") as fp:
@@ -52,4 +55,4 @@ def test_compute_mse_error(tmp_path: Path, zarr_dataset: ChunkedDataset, cfg: di
         fp.writelines(lines[:-10])
 
     with pytest.raises(ValueError):
-        compute_error_csv(str(tmp_path / "gt1.csv"), str(tmp_path / "pred4.csv"))
+        compute_metrics_csv(str(tmp_path / "gt1.csv"), str(tmp_path / "pred4.csv"), [neg_multi_log_likelihood])

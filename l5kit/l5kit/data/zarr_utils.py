@@ -6,7 +6,7 @@ from typing import List, Optional, Tuple
 import numpy as np
 from tqdm import tqdm
 
-from . import ChunkedDataset
+from .zarr_dataset import ChunkedDataset
 
 GIGABYTE = 1 * 1024 * 1024 * 1024
 
