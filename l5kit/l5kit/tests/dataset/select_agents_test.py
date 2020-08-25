@@ -96,13 +96,18 @@ def test_get_valid_agents_yaw_change(dataset: ChunkedDataset) -> None:
     frames_range = np.asarray([0, len(dataset.frames)])
     # change centroid
     dataset.agents[10]["yaw"] = np.radians(50)
+    dataset.agents[20]["yaw"] = np.radians(29)  # under yaw threshold
 
     agents_mask, *_ = get_valid_agents_p(frames_range, dataset)
     agents_mask = agents_mask.astype(np.int)
 
     assert np.all(np.diff(agents_mask[:10, 0]) == 1)
     assert np.all(np.diff(agents_mask[:10, 1]) == -1)
+
     assert agents_mask[10, 0] == agents_mask[10, 1] == 0
+
+    assert np.all(np.diff(agents_mask[11:, 0]) == 1)
+    assert np.all(np.diff(agents_mask[11:, 1]) == -1)
 
 
 def test_get_valid_agents(dataset: ChunkedDataset) -> None:

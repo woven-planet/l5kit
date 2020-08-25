@@ -29,3 +29,19 @@ the y-axis direction vector (0, 1).
         float: angle to (0,1) vector in radians
     """
     return angle_between_vectors(direction_vector, np.array([0.0, 1.0]))
+
+
+def angular_distance(angle_a: float, angle_b: float) -> float:
+    """
+    Return the angular distance (angle_a - angle_b) between two angles in radians.
+    The results is always in the [-pi, pi] range
+
+    Args:
+        angle_a (float): first angle in radians
+        angle_b (float): second angle in radians
+
+    Returns:
+        angular distance in radians between two angles
+    """
+
+    return float((angle_a - angle_b + np.pi) % (2 * np.pi) - np.pi)

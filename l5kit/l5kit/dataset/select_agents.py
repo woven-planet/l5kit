@@ -17,6 +17,7 @@ from tqdm import tqdm
 
 from l5kit.data import ChunkedDataset
 from l5kit.data.filter import _get_label_filter  # TODO expose this without digging
+from l5kit.geometry import angular_distance
 
 multiprocessing.set_start_method("fork", force=True)  # this fix loop in python 3.8 on MacOS
 os.environ["BLOSC_NOLOCK"] = "1"  # this is required for multiprocessing
@@ -38,11 +39,9 @@ def in_angular_distance(yaw1: np.ndarray, yaw2: np.ndarray, th: float) -> bool:
     """
     Check if the absolute distance in degrees is under the given threshold
     """
-    yaw1_in_deg = np.degrees(yaw1)
-    yaw2_in_deg = np.degrees(yaw2)
-    assert -180 <= yaw1_in_deg <= 180 and -180 <= yaw2_in_deg <= 180  # ensures the next line gives correct results
-    abs_angular_distance = abs((yaw2_in_deg - yaw1_in_deg + 180) % 360 - 180)
-    return bool(abs_angular_distance < th)
+
+    abs_angular_distance_degrees = abs(angular_distance(float(yaw2), float(yaw1))) * 180 / np.pi
+    return bool(abs_angular_distance_degrees < th)
 
 
 def in_extent_ratio(extent1: np.ndarray, extent2: np.ndarray, th: float) -> bool:

@@ -1,4 +1,4 @@
-from .angle import angle_between_vectors, compute_yaw_around_north_from_direction
+from .angle import angle_between_vectors, angular_distance, compute_yaw_around_north_from_direction
 from .image import crop_rectangle_from_image
 from .transform import (
     ecef_to_geodetic,
@@ -31,4 +31,5 @@ __all__ = [
     "points_within_bounds",
     "voxel_coords_to_intensity_grid",
     "normalize_intensity",
+    "angular_distance",
 ]
