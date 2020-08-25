@@ -1,3 +1,4 @@
+import warnings
 from typing import Callable, Tuple
 
 import numpy as np
@@ -87,7 +88,9 @@ class AckermanPerturbation(Perturbation):
         self.perturb_prob = perturb_prob
         self.random_offset_generator = random_offset_generator
         if perturb_prob == 0:
-            print("Consider replacing this object with None if no perturbation is intended")
+            warnings.warn(
+                "Consider replacing this object with None if no perturbation is intended", RuntimeWarning, stacklevel=2
+            )
 
     def perturb(
         self, history_frames: np.ndarray, future_frames: np.ndarray, **kwargs: dict
@@ -98,7 +101,7 @@ class AckermanPerturbation(Perturbation):
         lateral_offset_distance, yaw_offset_angle = self.random_offset_generator()
 
         if np.abs(lateral_offset_distance) < NUMERICAL_THRESHOLD:
-            print("ack not applied because of low lateral_distance")
+            warnings.warn("ack not applied because of low lateral_distance", RuntimeWarning, stacklevel=2)
             return history_frames.copy(), future_frames.copy()
 
         num_history_frames = len(history_frames)

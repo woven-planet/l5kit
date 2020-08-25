@@ -1,4 +1,5 @@
 import bisect
+import warnings
 from pathlib import Path
 from typing import Optional
 
@@ -37,11 +38,17 @@ class AgentDataset(EgoDataset):
             agents_mask = past_mask * future_mask
 
             if min_frame_history != MIN_FRAME_HISTORY:
-                print(f"warning, you're running with custom min_frame_history of {min_frame_history}")
+                warnings.warn(
+                    f"you're running with custom min_frame_history of {min_frame_history}",
+                    RuntimeWarning,
+                    stacklevel=2,
+                )
             if min_frame_future != MIN_FRAME_FUTURE:
-                print(f"warning, you're running with custom min_frame_future of {min_frame_future}")
+                warnings.warn(
+                    f"you're running with custom min_frame_future of {min_frame_future}", RuntimeWarning, stacklevel=2
+                )
         else:
-            print("warning, you're running with a custom agents_mask")
+            warnings.warn("you're running with a custom agents_mask", RuntimeWarning, stacklevel=2)
 
         # store the valid agents indexes
         self.agents_indices = np.nonzero(agents_mask)[0]
@@ -59,12 +66,15 @@ class AgentDataset(EgoDataset):
 
         agents_mask_path = Path(self.dataset.path) / f"agents_mask/{agent_prob}"
         if not agents_mask_path.exists():  # don't check in root but check for the path
-            print(
+            warnings.warn(
                 f"cannot find the right config in {self.dataset.path},\n"
                 f"your cfg has loaded filter_agents_threshold={agent_prob};\n"
                 "but that value doesn't have a match among the agents_mask in the zarr\n"
-                "Mask will now be generated for that parameter."
+                "Mask will now be generated for that parameter.",
+                RuntimeWarning,
+                stacklevel=2,
             )
+
             select_agents(
                 self.dataset,
                 agent_prob,
