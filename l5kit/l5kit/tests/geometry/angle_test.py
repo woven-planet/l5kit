@@ -28,3 +28,8 @@ def test_angular_distance() -> None:
     # test > np.pi cases
     assert -120.0 == pytest.approx(degrees(angular_distance(radians(150.0 + 360), radians(-90 - 360))), 1e-3)
     assert 120.0 == pytest.approx(degrees(angular_distance(radians(-90 - 360), radians(150 + 360))), 1e-3)
+
+    assert -20 == pytest.approx(degrees(angular_distance(radians(170.0), radians(-170 - 3 * 360))), 1e-3)
+    assert -20 == pytest.approx(degrees(angular_distance(radians(170.0), radians(-170 + 3 * 360))), 1e-3)
+    assert -20 == pytest.approx(degrees(angular_distance(radians(170.0 + 5 * 360), radians(-170))), 1e-3)
+    assert -20 == pytest.approx(degrees(angular_distance(radians(170.0 - 5 * 360), radians(-170))), 1e-3)
