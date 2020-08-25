@@ -31,18 +31,17 @@ the y-axis direction vector (0, 1).
     return angle_between_vectors(direction_vector, np.array([0.0, 1.0]))
 
 
-def angular_distance(yaw_a: float, yaw_b: float) -> float:
+def angular_distance(angle_a: float, angle_b: float) -> float:
     """
     Return the angular distance (yaw_a - yaw_b) between two yaws expressed in radians.
     The results is always in the [-pi, pi] range
 
     Args:
-        yaw_a (float): first yaw in radians
-        yaw_b (float): second yaw in radians
+        angle_a (float): first angle in radians
+        angle_b (float): second angle in radians
 
     Returns:
         angular distance in radians between the two yaws
     """
-    assert -np.pi <= yaw_a <= np.pi and -np.pi <= yaw_b <= np.pi
 
-    return float((yaw_a - yaw_b + np.pi) % (2 * np.pi) - np.pi)
+    return float((angle_a - angle_b + np.pi) % (2 * np.pi) - np.pi)

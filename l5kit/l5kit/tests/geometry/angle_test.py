@@ -1,41 +1,30 @@
 from math import degrees, radians
 
-import numpy as np
 import pytest
 
 from l5kit.geometry import angular_distance
 
 
 def test_angular_distance() -> None:
-    # input yaw should be in -pi,pi
-    with pytest.raises(AssertionError):
-        angular_distance(np.pi + 0.1, 0)
-    with pytest.raises(AssertionError):
-        angular_distance(0, np.pi + 0.1)
-    with pytest.raises(AssertionError):
-        angular_distance(-(np.pi + 0.1), 0)
-    with pytest.raises(AssertionError):
-        angular_distance(0, -(np.pi + 0.1))
-
     # test easy cases
-    assert pytest.approx(degrees(angular_distance(radians(30.0), 0)), 30.0, 1e-3)
-    assert pytest.approx(degrees(angular_distance(0, radians(30.0))), -30.0, 1e-3)
+    assert 30.0 == pytest.approx(degrees(angular_distance(radians(30.0), 0)), 1e-3)
+    assert -30.0 == pytest.approx(degrees(angular_distance(0, radians(30.0))), 1e-3)
 
-    assert pytest.approx(degrees(angular_distance(radians(90), 0)), 90.0, 1e-3)
-    assert pytest.approx(degrees(angular_distance(0, radians(90.0))), -90.0, 1e-3)
-
-    # test limits
-    assert pytest.approx(degrees(angular_distance(radians(180.0), 0)), 180.0, 1e-3)
-    assert pytest.approx(degrees(angular_distance(0, radians(180.0))), -180.0, 1e-3)
-    assert pytest.approx(degrees(angular_distance(radians(-180.0), 0)), -180.0, 1e-3)
-    assert pytest.approx(degrees(angular_distance(0, radians(-180.0))), 180.0, 1e-3)
+    assert 90.0 == pytest.approx(degrees(angular_distance(radians(90), 0)), 1e-3)
+    assert -90.0 == pytest.approx(degrees(angular_distance(0, radians(90.0))), 1e-3)
 
     # test overflowing cases
-    assert pytest.approx(degrees(angular_distance(radians(180.0), radians(-180))), 0.0, 1e-3)
-    assert pytest.approx(degrees(angular_distance(radians(180.0), radians(-180))), 0.0, 1e-3)
+    assert 0.0 == pytest.approx(degrees(angular_distance(radians(180.0), radians(-180))), 1e-3)
+    assert 0.0 == pytest.approx(degrees(angular_distance(radians(180.0), radians(-180))), 1e-3)
 
-    assert pytest.approx(degrees(angular_distance(radians(170.0), radians(-170))), 20.0, 1e-3)
-    assert pytest.approx(degrees(angular_distance(radians(-170.0), radians(170))), -20.0, 1e-3)
+    # note this may seem counter-intuitive, but 170 - (-20) is in fact -170
+    assert -20 == pytest.approx(degrees(angular_distance(radians(170.0), radians(-170))), 1e-3)
+    # in the same way, -170 - 20 yields 170
+    assert 20 == pytest.approx(degrees(angular_distance(radians(-170.0), radians(170))), 1e-3)
 
-    assert pytest.approx(degrees(angular_distance(radians(150.0), radians(-90))), 120.0, 1e-3)
-    assert pytest.approx(degrees(angular_distance(radians(-90.0), radians(150))), -120.0, 1e-3)
+    assert -120.0 == pytest.approx(degrees(angular_distance(radians(150.0), radians(-90))), 1e-3)
+    assert 120.0 == pytest.approx(degrees(angular_distance(radians(-90.0), radians(150))), 1e-3)
+
+    # test > np.pi cases
+    assert -120.0 == pytest.approx(degrees(angular_distance(radians(150.0 + 360), radians(-90 - 360))), 1e-3)
+    assert 120.0 == pytest.approx(degrees(angular_distance(radians(-90 - 360), radians(150 + 360))), 1e-3)
