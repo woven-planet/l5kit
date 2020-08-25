@@ -1,9 +1,10 @@
 from collections import OrderedDict, defaultdict
-from typing import Callable, List
+from typing import List
 
 import numpy as np
 
 from .csv_utils import read_gt_csv, read_pred_csv
+from .metrics import metric_signature
 
 
 def validate_dicts(ground_truth: dict, predicted: dict) -> bool:
@@ -44,7 +45,7 @@ def validate_dicts(ground_truth: dict, predicted: dict) -> bool:
     return valid
 
 
-def compute_metrics_csv(ground_truth_path: str, inference_output_path: str, metrics: List[Callable]) -> dict:
+def compute_metrics_csv(ground_truth_path: str, inference_output_path: str, metrics: List[metric_signature]) -> dict:
     """
     Compute a set of metrics between ground truth and prediction csv files
 
