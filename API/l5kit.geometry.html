@@ -206,6 +206,24 @@
 </dd></dl>
 
 <dl class="py function">
+<dt id="l5kit.geometry.angular_distance">
+<code class="sig-prename descclassname">l5kit.geometry.</code><code class="sig-name descname">angular_distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">angle_a</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">angle_b</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#l5kit.geometry.angular_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the angular distance (angle_a - angle_b) between two angles in radians.
+The results is always in the [-pi, pi] range</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>angle_a</strong> (<em>float</em>) – first angle in radians</p></li>
+<li><p><strong>angle_b</strong> (<em>float</em>) – second angle in radians</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>angular distance in radians between two angles</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="l5kit.geometry.compute_yaw_around_north_from_direction">
 <code class="sig-prename descclassname">l5kit.geometry.</code><code class="sig-name descname">compute_yaw_around_north_from_direction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">direction_vector</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#l5kit.geometry.compute_yaw_around_north_from_direction" title="Permalink to this definition">¶</a></dt>
 <dd><p>compute_yaw_from_direction computes the yaw as angle between a 2D input direction vector and
