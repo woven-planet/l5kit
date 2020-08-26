@@ -1,0 +1,39 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = ">=5.4.3"
+mypy = ">=0.782"
+pytest-cov = ">=2.10.0"
+flake8 = ">=3.8.3"
+isort = ">=5.0.4"
+sphinx = ">=3.1.1"
+sphinx-rtd-theme = ">=0.5.0"
+recommonmark = ">=0.6.0"
+pre-commit = ">=2.5.1"
+black = "==19.10b0"
+
+[packages]
+zarr = "*"
+numpy = "*"
+opencv-contrib-python-headless = "*"
+pymap3d = "*"
+scipy = "*"
+tqdm = "*"
+transforms3d = "*"
+pyyaml = "*"
+matplotlib = "*"
+imageio = "*"
+notebook = "*"
+ptable = "*"
+ipywidgets = "*"
+protobuf = ">=3.12.2"
+torch = ">=1.5.0,<1.6.0"
+
+[requires]
+python_version = "3.6"
+
+[pipenv]
+allow_prereleases = true
