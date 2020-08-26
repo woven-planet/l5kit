@@ -27,8 +27,8 @@ jobs:
     - name: Build docs
       working-directory: .
       run: |
-        sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
-        sphinx-build . docs_built
+        pipenv run sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
+        pipenv run sphinx-build . docs_built
 
     - name: Deploy docs
       uses: JamesIves/github-pages-deploy-action@releases/v3
