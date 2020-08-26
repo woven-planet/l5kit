@@ -31,6 +31,7 @@ ptable = "*"
 ipywidgets = "*"
 protobuf = ">=3.12.2"
 torch = ">=1.5.0,<1.6.0"
+torchvision = ">=0.6.0,<0.7.0"
 
 [requires]
 python_version = "3.6"
