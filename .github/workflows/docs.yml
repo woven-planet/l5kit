@@ -23,6 +23,7 @@ jobs:
         pip install --upgrade pip
         pip install pipenv
         pipenv install --dev --system
+        pip install .
     - name: Build docs
       working-directory: .
       run: |
