@@ -14,6 +14,7 @@ sphinx-rtd-theme = ">=0.5.0"
 recommonmark = ">=0.6.0"
 pre-commit = ">=2.5.1"
 black = "==19.10b0"
+importlib-metadata = "*"  # required for python 3.8
 
 [packages]
 zarr = "*"
