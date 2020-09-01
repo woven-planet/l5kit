@@ -32,7 +32,9 @@ def test_transform_single_point() -> None:
     tf = world_to_image_pixels_matrix(shape, pixel_size, offset)
     output_point = transform_point(point, tf)
 
-    np.testing.assert_array_equal(output_point, expected_point)
+    assert np.allclose(output_point, expected_point)
+    assert np.allclose(output_point, transform_points(point, tf))
+    assert np.allclose(output_point, transform_points_transposed(point.T, tf).T)
 
 
 def test_transform_points_transpose_equivalence() -> None:
@@ -60,10 +62,10 @@ def test_transform_points_transpose_equivalence() -> None:
 def test_wrong_input_shape() -> None:
     tf = np.eye(4)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         points = np.zeros((3, 10))
         transform_points(points, tf)
 
-    with pytest.raises(ValueError):
+    with pytest.raises(AssertionError):
         points = np.zeros((10, 3))
         transform_points_transposed(points, tf)

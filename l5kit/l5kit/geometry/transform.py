@@ -1,3 +1,4 @@
+import warnings
 from typing import Optional, Sequence, Tuple, Union, cast
 
 import numpy as np
@@ -105,14 +106,24 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     Transform points using transformation matrix.
 
     Args:
-        points (np.ndarray): Input points (Nx2), (Nx3) or (Nx4).
+        points (np.ndarray): Input points (Nx2) or (Nx3).
         transf_matrix (np.ndarray): 3x3 or 4x4 transformation matrix for 2D and 3D input respectively
 
     Returns:
         np.ndarray: array of shape (N,2) for 2D input points, or (N,3) points for 3D input points
     """
-    # TODO: Surely we can do this without transposing.
-    return transform_points_transposed(points.transpose(1, 0), transf_matrix).transpose(1, 0)
+    to_squeeze = False
+    if len(points.shape) == 1:
+        points = points[np.newaxis, :]
+        to_squeeze = True
+
+    assert len(points.shape) == 2 and points.shape[1] in [2, 3], f"points must be 2D or 3D, got {points.shape}"
+    assert transf_matrix.shape[0] == transf_matrix.shape[1] == points.shape[1] + 1, "matrix should be (points+1)D"
+
+    points_transformed = np.hstack((points, np.ones((len(points), 1)))) @ transf_matrix.T
+    points_transformed = points_transformed[:, :-1]  # remove newly added axis to keep original shape
+
+    return np.squeeze(points_transformed) if to_squeeze else points_transformed
 
 
 def transform_points_transposed(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
@@ -120,17 +131,24 @@ def transform_points_transposed(points: np.ndarray, transf_matrix: np.ndarray) -
     Transform points using transformation matrix.
 
     Args:
-        points (np.ndarray): Input points (2xN), (3xN) or (4xN).
+        points (np.ndarray): Input points (2xN) or (3xN).
         transf_matrix (np.ndarray): 3x3 or 4x4 transformation matrix for 2D and 3D input respectively
 
     Returns:
         np.ndarray: array of shape (2,N) for 2D input points, or (3,N) points for 3D input points
     """
-    num_dims = transf_matrix.shape[0] - 1
-    if points.shape[0] not in [2, 3, 4]:
-        raise ValueError("Points input should be (2, N), (3,N) or (4,N) shape, received {}".format(points.shape))
+    to_squeeze = False
+    if len(points.shape) == 1:
+        points = points[:, np.newaxis]
+        to_squeeze = True
 
-    return transf_matrix.dot(np.vstack((points[:num_dims, :], np.ones(points.shape[1]))))[:num_dims, :]
+    assert len(points.shape) == 2 and points.shape[0] in [2, 3], f"points must be 2D or 3D, got {points.shape}"
+    assert transf_matrix.shape[0] == transf_matrix.shape[1] == points.shape[0] + 1, "matrix should be (points+1)D"
+
+    points_transformed = transf_matrix @ np.vstack((points, np.ones(points.shape[1])))
+    points_transformed = points_transformed[:-1, :]  # remove newly added axis to keep original shape
+
+    return np.squeeze(points_transformed) if to_squeeze else points_transformed
 
 
 def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
@@ -143,6 +161,11 @@ def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: vector of same shape as input point
     """
+    warnings.warn(
+        "this function will be deprecated, use `transforms_points` or `transform_points_transposed`",
+        PendingDeprecationWarning,
+        stacklevel=2,
+    )
     point_ext = np.hstack((point, np.ones(1)))
     return np.matmul(transf_matrix, point_ext)[: point.shape[0]]
 
