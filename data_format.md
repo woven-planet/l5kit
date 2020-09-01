@@ -139,7 +139,7 @@ FRAME_DTYPE = [
 An agent is an observation by the AV of some other detected object. 
 Each entry describes the object in terms of its attributes such as position and velocity, gives the agent a tracking number to track it over multiple frames (but only within the same scene!) and its most probable label. 
 The label is described as an array of probabilities over each defined class associated with them, 
-the possible labels are defined [here](https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/zarr_dataset.py).
+the possible labels are defined [here](https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/labels.py).
 
 ```python
 AGENT_DTYPE = [
