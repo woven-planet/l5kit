@@ -1,4 +1,3 @@
-import warnings
 from typing import Optional, Sequence, Tuple, Union, cast
 
 import numpy as np
@@ -144,9 +143,6 @@ def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: vector of same shape as input point
     """
-    warnings.warn(
-        "This function will be deprecated and replaced by `transform_points`", PendingDeprecationWarning, stacklevel=2,
-    )
     point_ext = np.hstack((point, np.ones(1)))
     return np.matmul(transf_matrix, point_ext)[: point.shape[0]]
 
