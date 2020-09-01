@@ -23,7 +23,7 @@ jobs:
         pip install --upgrade pip
         pip install pipenv
         pipenv sync -d --python $(which python)
-        pip install .
+        pipenv run pip install .
     - name: Build docs
       working-directory: l5kit
       run: | # .. here because pipenv only works from l5kit folder
