@@ -112,8 +112,6 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     Returns:
         np.ndarray: array of shape (N,2) for 2D input points, or (N,3) points for 3D input points
     """
-    if len(points.shape) == 1:
-        points = points[np.newaxis, :]
     # TODO: Surely we can do this without transposing.
     return transform_points_transposed(points.transpose(1, 0), transf_matrix).transpose(1, 0)
 
@@ -147,9 +145,7 @@ def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
         np.ndarray: vector of same shape as input point
     """
     warnings.warn(
-        "This function is deprecated and can be replaced by the more general transform_points",
-        DeprecationWarning,
-        stacklevel=2,
+        "This function will be deprecated and replaced by `transform_points`", PendingDeprecationWarning, stacklevel=2,
     )
     point_ext = np.hstack((point, np.ones(1)))
     return np.matmul(transf_matrix, point_ext)[: point.shape[0]]
