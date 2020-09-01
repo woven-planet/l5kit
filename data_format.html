@@ -311,7 +311,7 @@ The frame contains only pointers to these stored objects given by a start and an
 <p>An agent is an observation by the AV of some other detected object.
 Each entry describes the object in terms of its attributes such as position and velocity, gives the agent a tracking number to track it over multiple frames (but only within the same scene!) and its most probable label.
 The label is described as an array of probabilities over each defined class associated with them,
-the possible labels are defined <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/zarr_dataset.py">here</a>.</p>
+the possible labels are defined <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/labels.py">here</a>.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AGENT_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="s2">&quot;centroid&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
     <span class="p">(</span><span class="s2">&quot;extent&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)),</span>
