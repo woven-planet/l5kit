@@ -208,3 +208,55 @@ centroids = dt.agents[slice(10_000)]["centroid"]  # note this is the same as dt.
 we reduce the decompression numbers by **a factor of 10K**.
 
 **TL;DR**: when working with `zarr` you should always aim to minimise the number of accesses to the compressed data.
+
+## Dataset Abstraction Classes
+
+As shown above, working with the raw `zarr` dataset has its own perils. To that end, we provide two structures
+which form an additional abstraction layer over the raw `zarr` dataset. These two python classes allow to rasterise
+and get information about the past and future state of the AV or another agent. 
+
+**Note:** the following 2 classes inherit from Pytorch Dataset and as such are tied to work with it.
+
+**Note:** the following 2 classes assume the world to be rasterised as BEV (Bird-Eye-View), this is a common choice for 
+CNN-based approaches. Still, this can be disabled by using `stub_debug` as `map_type`.
+
+
+### EgoDataset
+The `EgoDataset` retrieves information about the status of the AV in the current frame and the frames before it (if history is enabled).
+It can be iterated over the frame annotations to return a dict with the following fields:
+
+```
+"image": the BEV raster as a multi-channel tensor;
+"target_positions": the coordinates (as offset wrt the current position) of the AV in the future. Unit is metres;
+"target_yaws": the yaws (as angular offset wrt the current position) of the AV in the future. Unit is radians;
+"target_availabilities": a 1D array. Each item can be either 1 (future step is valid) or 0 (future step is not valid). Invalid steps may occur at the end or start of a scene;
+"history_positions": same as target_positions but for the frames in the past;
+"history_yaws": same as target_yaws but for the frames in the past;
+"history_availabilities": same as target_availabilities but for the frames in the past;
+"world_to_image": a 3x3 matrix mapping from world to the image reference system; 
+"track_id": a scene-unique identifier id for the agent, or -1 for the AV;
+"timestamp": the timestamp of the current frame;
+"centroid": the centroid of the AV in the current frame in the world reference system. Unit is metres;
+"yaw": the angle of yaw of the AV in the current frame. Unit is radians;
+"extent": the extent of the AV (in XYZ) in the world reference system. Unit is metres;
+```
+
+A first example of usage would be:
+```python
+from l5kit.rasterization import build_rasterizer
+from l5kit.configs import load_config_data
+from l5kit.data import LocalDataManager, ChunkedDataset
+from l5kit.dataset import AgentDataset
+
+
+zarr_dt = ChunkedDataset("<path>")
+zarr_dt.open()
+
+# additional information is required for rasterisation
+cfg = load_config_data("<path>")
+rast = build_rasterizer(cfg, LocalDataManager("/tmp/l5kit_data"))
+
+dataset = AgentDataset(cfg, zarr_dt, rast)
+for data in dataset:  # this iterates over frames under the hood
+    print(data["target_positions"])
+```
