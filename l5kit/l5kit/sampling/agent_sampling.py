@@ -3,7 +3,6 @@ from typing import List, Optional, Tuple
 import numpy as np
 
 from ..data import (
-    TL_FACE_DTYPE,
     filter_agents_by_labels,
     filter_tl_faces_by_frames,
     get_agents_slice_from_frames,
@@ -86,13 +85,10 @@ to train models that can recover from slight divergence from training set data
     history_agents = filter_agents_by_frames(history_frames, agents)
     future_agents = filter_agents_by_frames(future_frames, agents)
 
-    try:
-        tl_slice = get_tl_faces_slice_from_frames(history_frames[-1], history_frames[0])  # -1 is the farthest
-        # sync interval with the traffic light faces array
-        history_frames["traffic_light_faces_index_interval"] -= tl_slice.start
-        history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces[tl_slice].copy())
-    except ValueError:
-        history_tl_faces = [np.empty(0, dtype=TL_FACE_DTYPE) for _ in history_frames]
+    tl_slice = get_tl_faces_slice_from_frames(history_frames[-1], history_frames[0])  # -1 is the farthest
+    # sync interval with the traffic light faces array
+    history_frames["traffic_light_faces_index_interval"] -= tl_slice.start
+    history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces[tl_slice].copy())
 
     if perturbation is not None:
         history_frames, future_frames = perturbation.perturb(

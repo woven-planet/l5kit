@@ -137,11 +137,7 @@ opened.
         self.frames = self.root[FRAME_ARRAY_KEY]
         self.agents = self.root[AGENT_ARRAY_KEY]
         self.scenes = self.root[SCENE_ARRAY_KEY]
-        try:
-            self.tl_faces = self.root[TL_FACE_ARRAY_KEY]
-        except KeyError:
-            print(f"{TL_FACE_ARRAY_KEY} not found in {self.path}! Traffic lights will be disabled")
-            self.tl_faces = np.empty((0,), dtype=TL_FACE_DTYPE)
+        self.tl_faces = self.root[TL_FACE_ARRAY_KEY]
         return self
 
     def __str__(self) -> str:
@@ -150,6 +146,7 @@ opened.
             "Num Scenes",
             "Num Frames",
             "Num Agents",
+            "Num TR lights",
             "Total Time (hr)",
             "Avg Frames per Scene",
             "Avg Agents per Frame",
@@ -168,6 +165,7 @@ opened.
             len(self.scenes),
             len(self.frames),
             len(self.agents),
+            len(self.tl_faces),
             len(self.frames) / max(frequency, 1) / 3600,
             len(self.frames) / max(len(self.scenes), 1),
             len(self.agents) / max(len(self.frames), 1),
