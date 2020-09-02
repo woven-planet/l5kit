@@ -241,12 +241,12 @@ It can be iterated over the frame annotations to return a dict with the followin
 "extent": the extent of the AV (in XYZ) in the world reference system. Unit is metres;
 ```
 
-A first example of usage would be:
+An example of usage would be:
 ```python
 from l5kit.rasterization import build_rasterizer
 from l5kit.configs import load_config_data
 from l5kit.data import LocalDataManager, ChunkedDataset
-from l5kit.dataset import AgentDataset
+from l5kit.dataset import EgoDataset
 
 
 zarr_dt = ChunkedDataset("<path>")
@@ -256,7 +256,48 @@ zarr_dt.open()
 cfg = load_config_data("<path>")
 rast = build_rasterizer(cfg, LocalDataManager("/tmp/l5kit_data"))
 
-dataset = AgentDataset(cfg, zarr_dt, rast)
+dataset = EgoDataset(cfg, zarr_dt, rast)
 for data in dataset:  # this iterates over frames under the hood
     print(data["target_positions"])
+    print(data["history_positions"])
 ```
+
+### AgentDataset
+The `AgentDataset` iterates over agents (i.e. every other dynamic entity in the scene) instead of the AV. Because the returned dict
+is exactly the same as the `EgoDataset`, the two classes are almost interchangeable. 
+
+However, one fundamental difference exists:
+The `AgentDataset` is seeded with an `agents_mask` which defines which agents should be iterated. 
+This is used in multiple contexts:
+- to exclude unreliable agents during training (e.g. agents underneath a certain detection threshold);
+- to select a subset of agents (e.g. during evaluation for the competition)
+If the mask is not passed as an argument to the `AgentDataset`, a new one will be computed and **cached** based on the current value of `filter_agents_threshold`
+
+
+An example of using a custom `agents_mask` would be:
+```python
+from l5kit.rasterization import build_rasterizer
+from l5kit.configs import load_config_data
+from l5kit.data import LocalDataManager, ChunkedDataset
+from l5kit.dataset import AgentDataset
+import numpy as np
+
+
+zarr_dt = ChunkedDataset("<path>")
+zarr_dt.open()
+
+# additional information is required for rasterisation
+cfg = load_config_data("<path>")
+rast = build_rasterizer(cfg, LocalDataManager("/tmp/l5kit_data"))
+
+# create a mask where an agent every 100th is set to True
+agents_mask = np.zeros(len(zarr_dt.agents), dtype=np.bool)
+agents_mask[np.arange(0, len(agents_mask), 100)] = True
+
+
+dataset = AgentDataset(cfg, zarr_dt, rast, agents_mask=agents_mask)
+for data in dataset:  # this iterates over valid agents under the hood
+    print(data["target_positions"])
+    print(data["history_positions"])
+```
+
