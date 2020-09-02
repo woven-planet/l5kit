@@ -152,11 +152,12 @@ class AgentDataset(EgoDataset):
         Returns:
             np.ndarray: indices that can be used for indexing with __getitem__
         """
-        frames = self.dataset.frames
-        assert frame_idx < len(frames), f"frame_idx {frame_idx} is over len {len(frames)}"
+        assert frame_idx < len(self.dataset.frames), f"frame_idx {frame_idx} is over len {len(self.dataset.frames)}"
 
-        agent_slice = get_agents_slice_from_frames(frames[frame_idx])
+        # avoid accessing zarr here as we already have the information in `cumulative_sizes_agents`
+        agent_end = self.cumulative_sizes_agents[frame_idx]
+        agent_start = self.cumulative_sizes_agents[frame_idx - 1] if frame_idx > 0 else 0
 
-        mask_valid_indices = (self.agents_indices >= agent_slice.start) * (self.agents_indices < agent_slice.stop)
+        mask_valid_indices = (self.agents_indices >= agent_start) * (self.agents_indices < agent_end)
         indices = np.nonzero(mask_valid_indices)[0]
         return indices
