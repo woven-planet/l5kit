@@ -1,3 +1,4 @@
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -80,9 +81,15 @@ class ChunkedDataset:
 
         # Note: we still support only zarr. However, some functions build a new dataset so we cannot raise error.
         if ".zarr" not in self.path:
-            print("zarr dataset path should end with .zarr (for now). Open will fail for this dataset!")
+            warnings.warn(
+                "zarr dataset path should end with .zarr (for now). Open will fail for this dataset!",
+                RuntimeWarning,
+                stacklevel=2,
+            )
         if not Path(self.path).exists():
-            print("zarr dataset path doesn't exist. Open will fail for this dataset!")
+            warnings.warn(
+                "zarr dataset path doesn't exist. Open will fail for this dataset!", RuntimeWarning, stacklevel=2
+            )
 
     def initialize(
         self, mode: str = "w", num_scenes: int = 0, num_frames: int = 0, num_agents: int = 0, num_tl_faces: int = 0
@@ -140,7 +147,11 @@ opened.
         try:
             self.tl_faces = self.root[TL_FACE_ARRAY_KEY]
         except KeyError:
-            print(f"{TL_FACE_ARRAY_KEY} not found in {self.path}! Traffic lights will be disabled")
+            warnings.warn(
+                f"{TL_FACE_ARRAY_KEY} not found in {self.path}! Traffic lights will be disabled",
+                RuntimeWarning,
+                stacklevel=2,
+            )
             self.tl_faces = np.empty((0,), dtype=TL_FACE_DTYPE)
         return self
 
@@ -161,7 +172,11 @@ opened.
             times = self.frames[1:50]["timestamp"] - self.frames[0:49]["timestamp"]
             frequency = np.mean(1 / (times / 1e9))  # from nano to sec
         else:
-            print(f"warning, not enough frames({len(self.frames)}) to read the frequency, 10 will be set")
+            warnings.warn(
+                f"not enough frames({len(self.frames)}) to read the frequency, 10 will be set",
+                RuntimeWarning,
+                stacklevel=2,
+            )
             frequency = 10
 
         values = [

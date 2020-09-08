@@ -1,4 +1,5 @@
 import json
+import warnings
 from typing import Tuple, cast
 
 import cv2
@@ -57,10 +58,13 @@ def get_hardcoded_world_to_ecef() -> np.ndarray:  # TODO remove when new dataset
     Returns:
         np.ndarray: 4x4 matrix
     """
-    print(
+    warnings.warn(
         "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
-        "This will be deprecated in future releases"
+        "This will be deprecated in future releases",
+        PendingDeprecationWarning,
+        stacklevel=3,
     )
+
     world_to_ecef = np.asarray(
         [
             [8.46617444e-01, 3.23463078e-01, -4.22623402e-01, -2.69876744e06],
@@ -80,10 +84,13 @@ def get_hardcoded_ecef_to_aerial() -> np.ndarray:  # TODO remove when new datase
     Returns:
         np.ndarray: 4x4 matrix
     """
-    print(
+    warnings.warn(
         "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
-        "This will be deprecated in future releases"
+        "This will be deprecated in future releases",
+        PendingDeprecationWarning,
+        stacklevel=3,
     )
+
     ecef_to_aerial = np.asarray(
         [
             [-0.717416495, -1.14606296, -1.62854453, -572869.824],

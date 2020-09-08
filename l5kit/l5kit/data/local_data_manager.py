@@ -54,5 +54,4 @@ class LocalDataManager(DataManager):
         if local_path.exists():
             return local_path_str
         else:
-            print(f"{key} is not present in local data folder {self.root_folder}")
-            raise FileNotFoundError(f"{key} not found")
+            raise FileNotFoundError(f"{key} is not present in local data folder {self.root_folder}")
