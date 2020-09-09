@@ -132,7 +132,9 @@ class MapAPI:
             lane.geo_frame,
         )
 
-        return {"xyz_left": xyz_left, "xyz_right": xyz_right}
+        xyz = np.vstack((xyz_left, np.flip(xyz_right, 0)))
+
+        return {"xyz_left": xyz_left, "xyz_right": xyz_right, "xyz": xyz}
 
     @staticmethod
     @no_type_check

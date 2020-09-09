@@ -176,12 +176,10 @@ class SemanticRasterizer(Rasterizer):
 
             # get image coords
             lane_coords = self.proto_API.get_lane_coords(self.bounds_info["lanes"]["ids"][idx])
-            xy_left = cv2_subpixel(transform_points(lane_coords["xyz_left"][:, :2], world_to_image_space))
-            xy_right = cv2_subpixel(transform_points(lane_coords["xyz_right"][:, :2], world_to_image_space))
-            lanes_area = np.vstack((xy_left, np.flip(xy_right, 0)))  # start->end left then end->start right
+            lanes_xy = cv2_subpixel(transform_points(lane_coords["xyz"][:, :2], world_to_image_space))
 
             # Note(lberg): this called on all polygons skips some of them, don't know why
-            cv2.fillPoly(img, [lanes_area], (17, 17, 31), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
+            cv2.fillPoly(img, [lanes_xy], (17, 17, 31), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
 
             lane_type = "default"  # no traffic light face is controlling this lane
             lane_tl_ids = set([MapAPI.id_as_str(la_tc) for la_tc in lane.traffic_controls])
@@ -193,7 +191,7 @@ class SemanticRasterizer(Rasterizer):
                 elif self.proto_API.is_traffic_face_colour(tl_id, "yellow"):
                     lane_type = "yellow"
 
-            lanes_lines[lane_type].extend([xy_left, xy_right])
+            lanes_lines[lane_type].extend([lanes_xy])
 
         cv2.polylines(img, lanes_lines["default"], False, (255, 217, 82), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
         cv2.polylines(img, lanes_lines["green"], False, (0, 255, 0), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
