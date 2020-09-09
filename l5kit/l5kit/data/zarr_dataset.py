@@ -169,7 +169,7 @@ opened.
         ]
         if len(self.frames) > 1:
             # read a small chunk of frames to speed things up
-            times = self.frames[1:50]["timestamp"] - self.frames[0:49]["timestamp"]
+            times = np.diff(self.frames[:50]["timestamp"])
             frequency = np.mean(1 / (times / 1e9))  # from nano to sec
         else:
             warnings.warn(
