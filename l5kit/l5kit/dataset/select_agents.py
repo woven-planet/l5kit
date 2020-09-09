@@ -43,7 +43,7 @@ def in_angular_distance(yaw1: np.ndarray, yaw2: np.ndarray, th: float) -> bool:
     Check if the absolute distance in degrees is under the given threshold
     """
 
-    abs_angular_distance_degrees = abs(angular_distance(float(yaw2), float(yaw1))) * 180 / np.pi
+    abs_angular_distance_degrees = abs(angular_distance(yaw2, yaw1)) * 180 / np.pi
     return bool(abs_angular_distance_degrees < th)
 
 

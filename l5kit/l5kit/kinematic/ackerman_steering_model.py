@@ -3,6 +3,8 @@ from typing import Tuple
 import numpy as np
 from scipy import optimize
 
+from l5kit.geometry import angular_distance
+
 
 def fit_ackerman_model_approximate(
     gx: np.ndarray,
@@ -71,7 +73,7 @@ Returns:
                 v - gv,
                 np.append(x1 + np.cos(r1) * v1 - x2, 0),
                 np.append(y1 + np.sin(r1) * v1 - y2, 0),
-                np.append(r1 - r2, 0),
+                np.append(angular_distance(r1, r2), 0),
                 np.append(v1 - v2, 0),
             ]
         )
