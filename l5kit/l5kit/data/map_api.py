@@ -110,7 +110,7 @@ class MapAPI:
             element_id (str): lane element id
 
         Returns:
-            dict: a dict with the two boundaries coordinates as (Nx3) XYZ arrays
+            dict: a dict with the boundaries coordinates as (3xN) XYZ arrays
         """
         element = self[element_id]
         assert self.is_lane(element)
@@ -164,7 +164,7 @@ class MapAPI:
             element_id (str): crosswalk element id
 
         Returns:
-            dict: a dict with the polygon coordinates as an (Nx3) XYZ array
+            dict: a dict with the polygon coordinates as an (3xN) XYZ array
         """
         element = self[element_id]
         assert self.is_crosswalk(element)
