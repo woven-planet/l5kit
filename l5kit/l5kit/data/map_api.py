@@ -134,7 +134,7 @@ class MapAPI:
 
         xyz = np.vstack((xyz_left, np.flip(xyz_right, 0)))
 
-        return {"xyz_left": xyz_left, "xyz_right": xyz_right, "xyz": xyz}
+        return {"xyz_left": xyz_left, "xyz_right": xyz_right, "xyz": xyz.T}
 
     @staticmethod
     @no_type_check
@@ -176,7 +176,7 @@ class MapAPI:
             traffic_element.geo_frame,
         )
 
-        return {"xyz": xyz}
+        return {"xyz": xyz.T}
 
     def is_traffic_face_colour(self, element_id: str, colour: str) -> bool:
         """

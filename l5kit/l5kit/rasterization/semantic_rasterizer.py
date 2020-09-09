@@ -6,7 +6,7 @@ import numpy as np
 
 from ..data.filter import filter_tl_faces_by_status
 from ..data.map_api import MapAPI
-from ..geometry import rotation33_as_yaw, transform_point, transform_points, world_to_image_pixels_matrix
+from ..geometry import rotation33_as_yaw, transform_point, world_to_image_pixels_matrix
 from .rasterizer import Rasterizer
 
 # sub-pixel drawing precision constants
@@ -105,10 +105,10 @@ class SemanticRasterizer(Rasterizer):
 
             if self.proto_API.is_crosswalk(element):
                 crosswalk = self.proto_API.get_crosswalk_coords(element_id)
-                x_min = np.min(crosswalk["xyz"][:, 0])
-                y_min = np.min(crosswalk["xyz"][:, 1])
-                x_max = np.max(crosswalk["xyz"][:, 0])
-                y_max = np.max(crosswalk["xyz"][:, 1])
+                x_min = np.min(crosswalk["xyz"][0, :])
+                y_min = np.min(crosswalk["xyz"][1, :])
+                x_max = np.max(crosswalk["xyz"][0, :])
+                y_max = np.max(crosswalk["xyz"][1, :])
 
                 crosswalks_bounds = np.append(
                     crosswalks_bounds, np.asarray([[[x_min, y_min], [x_max, y_max]]]), axis=0,
@@ -176,7 +176,7 @@ class SemanticRasterizer(Rasterizer):
 
             # get image coords
             lane_coords = self.proto_API.get_lane_coords(self.bounds_info["lanes"]["ids"][idx])
-            lanes_xy = cv2_subpixel(transform_points(lane_coords["xyz"][:, :2], world_to_image_space))
+            lanes_xy = cv2_subpixel(world_to_image_space.dot(lane_coords["xyz"]).T[:, :2])
 
             # Note(lberg): this called on all polygons skips some of them, don't know why
             cv2.fillPoly(img, [lanes_xy], (17, 17, 31), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
@@ -203,7 +203,7 @@ class SemanticRasterizer(Rasterizer):
         for idx in elements_within_bounds(center_world, self.bounds_info["crosswalks"]["bounds"], raster_radius):
             crosswalk = self.proto_API.get_crosswalk_coords(self.bounds_info["crosswalks"]["ids"][idx])
 
-            xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], world_to_image_space))
+            xy_cross = cv2_subpixel(world_to_image_space.dot(crosswalk["xyz"]).T[:, :2])
             crosswalks.append(xy_cross)
 
         cv2.polylines(img, crosswalks, True, (255, 117, 69), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
