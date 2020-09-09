@@ -209,18 +209,18 @@
 
 <dl class="py function">
 <dt id="l5kit.geometry.angle.angular_distance">
-<code class="sig-prename descclassname">l5kit.geometry.angle.</code><code class="sig-name descname">angular_distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">angle_a</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">angle_b</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#l5kit.geometry.angle.angular_distance" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return the angular distance (angle_a - angle_b) between two angles in radians.
-The results is always in the [-pi, pi] range</p>
+<code class="sig-prename descclassname">l5kit.geometry.angle.</code><code class="sig-name descname">angular_distance</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">angle_a</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>float<span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">angle_b</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>float<span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Union<span class="p">[</span>float<span class="p">, </span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.geometry.angle.angular_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that takes two arrays of angles in radian and compute the angular distance, wrap the angular
+distance such that they are always in the [-pi, pi) range.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>angle_a</strong> (<em>float</em>) – first angle in radians</p></li>
-<li><p><strong>angle_b</strong> (<em>float</em>) – second angle in radians</p></li>
+<li><p><strong>angle_a</strong> (<em>np.ndarray</em><em>, </em><em>float</em>) – first array of angles in radians</p></li>
+<li><p><strong>angle_b</strong> (<em>np.ndarray</em><em>, </em><em>float</em>) – second array of angles in radians</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>angular distance in radians between two angles</p>
+<dd class="field-even"><p>angular distance in radians between two arrays of angles</p>
 </dd>
 </dl>
 </dd></dl>
