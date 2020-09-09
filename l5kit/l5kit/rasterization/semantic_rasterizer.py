@@ -95,10 +95,10 @@ class SemanticRasterizer(Rasterizer):
 
             if self.proto_API.is_lane(element):
                 lane = self.proto_API.get_lane_coords(element_id)
-                x_min = min(np.min(lane["xyz_left"][:, 0]), np.min(lane["xyz_right"][:, 0]))
-                y_min = min(np.min(lane["xyz_left"][:, 1]), np.min(lane["xyz_right"][:, 1]))
-                x_max = max(np.max(lane["xyz_left"][:, 0]), np.max(lane["xyz_right"][:, 0]))
-                y_max = max(np.max(lane["xyz_left"][:, 1]), np.max(lane["xyz_right"][:, 1]))
+                x_min = np.min(lane["xyz"][0, :])
+                y_min = np.min(lane["xyz"][1, :])
+                x_max = np.max(lane["xyz"][0, :])
+                y_max = np.max(lane["xyz"][1, :])
 
                 lanes_bounds = np.append(lanes_bounds, np.asarray([[[x_min, y_min], [x_max, y_max]]]), axis=0)
                 lanes_ids.append(element_id)
