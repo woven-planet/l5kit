@@ -99,10 +99,10 @@ def _append_zarr_subset(
 
     for idx_scene in range(scene_index_start, scene_index_end):
         # get slices from input zarr
-        scenes = input_zarr.scenes[idx_scene : idx_scene + 1]
-        frames = input_zarr.frames[get_frames_slice_from_scenes(*scenes)]
-        agents = input_zarr.agents[get_agents_slice_from_frames(*frames[[0, -1]])]
-        tl_faces = input_zarr.tl_faces[get_tl_faces_slice_from_frames(*frames[[0, -1]])]
+        scenes = input_zarr.scenes[idx_scene : idx_scene + 1].copy()
+        frames = input_zarr.frames[get_frames_slice_from_scenes(*scenes)].copy()
+        agents = input_zarr.agents[get_agents_slice_from_frames(*frames[[0, -1]])].copy()
+        tl_faces = input_zarr.tl_faces[get_tl_faces_slice_from_frames(*frames[[0, -1]])].copy()
 
         # fix indices
         scenes["frame_index_interval"] += idx_start_frame
