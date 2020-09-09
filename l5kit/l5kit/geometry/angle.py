@@ -1,4 +1,4 @@
-from typing import cast
+from typing import Union, cast
 
 import numpy as np
 
@@ -31,7 +31,7 @@ the y-axis direction vector (0, 1).
     return angle_between_vectors(direction_vector, np.array([0.0, 1.0]))
 
 
-def angular_distance(angle_a: np.ndarray, angle_b: np.ndarray) -> np.ndarray:
+def angular_distance(angle_a: Union[float, np.ndarray], angle_b: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
     """ A function that takes two arrays of angles in radian and compute the angular distance, wrap the angular
     distance such that they are always in the [-pi, pi) range.
 
