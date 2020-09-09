@@ -116,22 +116,32 @@ class AgentDataset(EgoDataset):
 
     def get_scene_dataset(self, scene_index: int) -> "AgentDataset":
         """
-        Differs from parent only in the return type.
+        Differs from EgoDataset in the return type and the additional mask filtering only.
         Instead of doing everything from scratch, we rely on super call and fix the agents_mask
         """
 
         new_dataset = super(AgentDataset, self).get_scene_dataset(scene_index).dataset
 
-        # filter agents_bool values
-        frame_interval = self.dataset.scenes[scene_index]["frame_index_interval"]
-        # ASSUMPTION: all agents_index are consecutive
-        start_index = self.dataset.frames[frame_interval[0]]["agent_index_interval"][0]
-        end_index = self.dataset.frames[frame_interval[1] - 1]["agent_index_interval"][1]
-        agents_mask = self.agents_mask[start_index:end_index].copy()
+        # filter agents_mask using original dataset
+        frames = self.dataset.frames[get_frames_slice_from_scenes(self.dataset.scenes[scene_index])]
+        agents_interval = get_agents_slice_from_frames(*frames[[0, -1]])
+        agents_mask = self.agents_mask[agents_interval].copy()
 
-        return AgentDataset(
-            self.cfg, new_dataset, self.rasterizer, self.perturbation, agents_mask  # overwrite the loaded one
-        )
+        return AgentDataset(self.cfg, new_dataset, self.rasterizer, self.perturbation, agents_mask)
+
+    def get_frame_dataset(self, frame_index: int) -> "AgentDataset":
+        """
+        Differs from EgoDataset in the return type and additional mask filtering only.
+        Instead of doing everything from scratch, we rely on super call and fix the agents_mask
+        """
+        new_dataset = super(AgentDataset, self).get_frame_dataset(frame_index).dataset
+
+        # filter agents_mask values
+
+        agents_interval = get_agents_slice_from_frames(self.dataset.frames[frame_index])
+        agents_mask = self.agents_mask[agents_interval].copy()
+
+        return AgentDataset(self.cfg, new_dataset, self.rasterizer, self.perturbation, agents_mask)
 
     def get_scene_indices(self, scene_idx: int) -> np.ndarray:
         """

@@ -155,6 +155,7 @@ None if not desired
         """
         Returns another EgoDataset dataset where the underlying data can be modified.
         This is possible because, even if it supports the same interface, this dataset is np.ndarray based.
+        In this case, returns a new EgoDataset for a given scene only.
 
         Args:
             scene_index (int): the scene index of the new dataset
@@ -176,6 +177,45 @@ None if not desired
         frames["agent_index_interval"] -= agent_slice.start
         frames["traffic_light_faces_index_interval"] -= tl_slice.start
         scenes["frame_index_interval"] -= frame_slice.start
+
+        dataset = ChunkedDataset("")
+        dataset.agents = agents
+        dataset.tl_faces = tl_faces
+        dataset.frames = frames
+        dataset.scenes = scenes
+
+        return EgoDataset(self.cfg, dataset, self.rasterizer, self.perturbation)
+
+    def get_frame_dataset(self, frame_index: int) -> "EgoDataset":
+        """
+        Returns another EgoDataset dataset where the underlying data can be modified.
+        This is possible because, even if it supports the same interface, this dataset is np.ndarray based.
+        In this case, returns a new EgoDataset for a given frame only.
+
+        Args:
+            frame_index (int): the frame index of the new dataset
+
+        Returns:
+            EgoDataset: A valid EgoDataset dataset with a copy of the data
+
+        """
+        # copy everything to avoid references
+        scene_index = bisect.bisect_right(self.cumulative_sizes, frame_index)
+        scenes = self.dataset.scenes[scene_index : scene_index + 1].copy()
+
+        frame_slice = slice(frame_index, frame_index + 1)
+        frames = self.dataset.frames[frame_slice].copy()
+
+        agent_slice = get_agents_slice_from_frames(*frames[[0, -1]])
+        agents = self.dataset.agents[agent_slice].copy()
+
+        tl_slice = get_tl_faces_slice_from_frames(*frames[[0, -1]])
+        tl_faces = self.dataset.tl_faces[tl_slice].copy()
+
+        frames["agent_index_interval"] -= agent_slice.start
+        frames["traffic_light_faces_index_interval"] -= tl_slice.start
+        scenes["frame_index_interval"] = (0, 1)
+        # TODO we should also update start_time and end_time probably
 
         dataset = ChunkedDataset("")
         dataset.agents = agents
