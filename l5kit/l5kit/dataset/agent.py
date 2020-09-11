@@ -155,8 +155,8 @@ class AgentDataset(EgoDataset):
         assert frame_idx < len(self.dataset.frames), f"frame_idx {frame_idx} is over len {len(self.dataset.frames)}"
 
         # avoid accessing zarr here as we already have the information in `cumulative_sizes_agents`
-        agent_end = self.cumulative_sizes_agents[frame_idx]
         agent_start = self.cumulative_sizes_agents[frame_idx - 1] if frame_idx > 0 else 0
+        agent_end = self.cumulative_sizes_agents[frame_idx]
 
         mask_valid_indices = (self.agents_indices >= agent_start) * (self.agents_indices < agent_end)
         indices = np.nonzero(mask_valid_indices)[0]
