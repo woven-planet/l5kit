@@ -215,9 +215,10 @@ As shown above, working with the raw `zarr` dataset has its own perils. To that 
 which form an additional abstraction layer over the raw `zarr` dataset. These two python classes allow to rasterise
 and get information about the past and future state of the AV or another agent. 
 
-**Note:** the following 2 classes inherit from Pytorch Dataset and as such are tied to work with it.
+**Notes:** 
+- the following 2 classes inherit from Pytorch Dataset and as such are tied to work with it.
 
-**Note:** the following 2 classes assume the world to be rasterised as BEV (Bird-Eye-View), this is a common choice for 
+- the following 2 classes assume the world to be rasterised as BEV (Bird-Eye-View), which is a common choice for 
 CNN-based approaches. Still, this can be disabled by using `stub_debug` as `map_type`.
 
 
@@ -241,7 +242,7 @@ It can be iterated over the frame annotations to return a dict with the followin
 "extent": the extent of the AV (in XYZ) in the world reference system. Unit is metres;
 ```
 
-An example of usage would be:
+A sample usage would be:
 ```python
 from l5kit.rasterization import build_rasterizer
 from l5kit.configs import load_config_data
@@ -267,11 +268,12 @@ The `AgentDataset` iterates over agents (i.e. every other dynamic entity in the 
 is exactly the same as the `EgoDataset`, the two classes are almost interchangeable. 
 
 However, one fundamental difference exists:
-The `AgentDataset` is seeded with an `agents_mask` which defines which agents should be iterated. 
+The `AgentDataset` is seeded with an `agents_mask` which defines which agents should be iterated over. 
 This is used in multiple contexts:
 - to exclude unreliable agents during training (e.g. agents underneath a certain detection threshold);
 - to select a subset of agents (e.g. during evaluation for the competition)
-If the mask is not passed as an argument to the `AgentDataset`, a new one will be computed and **cached** based on the current value of `filter_agents_threshold`
+
+If the mask is not passed as an argument to the `AgentDataset`, a new one will be computed and **cached** based on the current value of `filter_agents_threshold`.
 
 
 An example of using a custom `agents_mask` would be:
