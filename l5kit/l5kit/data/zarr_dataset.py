@@ -147,8 +147,10 @@ opened.
         try:
             self.tl_faces = self.root[TL_FACE_ARRAY_KEY]
         except KeyError:
+            # the real issue here is that frame doesn't have traffic_light_faces_index_interval
             warnings.warn(
-                f"{TL_FACE_ARRAY_KEY} not found in {self.path}! Traffic lights will be disabled",
+                f"{TL_FACE_ARRAY_KEY} not found in {self.path}! "
+                f"You won't be able to use this zarr into an Ego/AgentDataset",
                 RuntimeWarning,
                 stacklevel=2,
             )
@@ -161,6 +163,7 @@ opened.
             "Num Scenes",
             "Num Frames",
             "Num Agents",
+            "Num TR lights",
             "Total Time (hr)",
             "Avg Frames per Scene",
             "Avg Agents per Frame",
@@ -183,6 +186,7 @@ opened.
             len(self.scenes),
             len(self.frames),
             len(self.agents),
+            len(self.tl_faces),
             len(self.frames) / max(frequency, 1) / 3600,
             len(self.frames) / max(len(self.scenes), 1),
             len(self.agents) / max(len(self.frames), 1),

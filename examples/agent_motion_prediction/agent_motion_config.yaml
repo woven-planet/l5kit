@@ -40,6 +40,9 @@ raster_params:
   # one of the classes we care about (cars, bikes, peds, etc.), >=1.0 filter all other agents.
   filter_agents_threshold: 0.5
 
+  # whether to completely disable traffic light faces in the semantic rasterizer
+  disable_traffic_light_faces: False
+
 ###################
 ## Data loader options
 train_data_loader:

@@ -1,4 +1,5 @@
 import bisect
+import warnings
 from functools import partial
 from typing import Optional, Tuple, cast
 
@@ -79,7 +80,18 @@ None if not desired
 
         """
         frames = self.dataset.frames[get_frames_slice_from_scenes(self.dataset.scenes[scene_index])]
-        data = self.sample_function(state_index, frames, self.dataset.agents, self.dataset.tl_faces, track_id)
+
+        tl_faces = self.dataset.tl_faces
+        try:
+            if self.cfg["raster_params"]["disable_traffic_light_faces"]:
+                tl_faces = np.empty(0, dtype=self.dataset.tl_faces.dtype)  # completely disable traffic light faces
+        except KeyError:
+            warnings.warn(
+                "disable_traffic_light_faces not found in config, this will raise an error in the future",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+        data = self.sample_function(state_index, frames, self.dataset.agents, tl_faces, track_id)
         # 0,1,C -> C,0,1
         image = data["image"].transpose(2, 0, 1)
 

@@ -38,6 +38,7 @@ def export_zarr_to_csv(
             "pixel_size": np.asarray((0.25, 0.25)),
             "raster_size": (100, 100),
             "filter_agents_threshold": filter_agents_threshold,
+            "disable_traffic_light_faces": True,
             "ego_center": np.asarray((0.5, 0.5)),
         },
         "model_params": {
