@@ -1,3 +1,4 @@
+import warnings
 from pathlib import Path
 
 import numpy as np
@@ -80,9 +81,15 @@ class ChunkedDataset:
 
         # Note: we still support only zarr. However, some functions build a new dataset so we cannot raise error.
         if ".zarr" not in self.path:
-            print("zarr dataset path should end with .zarr (for now). Open will fail for this dataset!")
+            warnings.warn(
+                "zarr dataset path should end with .zarr (for now). Open will fail for this dataset!",
+                RuntimeWarning,
+                stacklevel=2,
+            )
         if not Path(self.path).exists():
-            print("zarr dataset path doesn't exist. Open will fail for this dataset!")
+            warnings.warn(
+                "zarr dataset path doesn't exist. Open will fail for this dataset!", RuntimeWarning, stacklevel=2
+            )
 
     def initialize(
         self, mode: str = "w", num_scenes: int = 0, num_frames: int = 0, num_agents: int = 0, num_tl_faces: int = 0
@@ -137,7 +144,17 @@ opened.
         self.frames = self.root[FRAME_ARRAY_KEY]
         self.agents = self.root[AGENT_ARRAY_KEY]
         self.scenes = self.root[SCENE_ARRAY_KEY]
-        self.tl_faces = self.root[TL_FACE_ARRAY_KEY]
+        try:
+            self.tl_faces = self.root[TL_FACE_ARRAY_KEY]
+        except KeyError:
+            # the real issue here is that frame doesn't have traffic_light_faces_index_interval
+            warnings.warn(
+                f"{TL_FACE_ARRAY_KEY} not found in {self.path}! "
+                f"You won't be able to use this zarr into an Ego/AgentDataset",
+                RuntimeWarning,
+                stacklevel=2,
+            )
+            self.tl_faces = np.empty((0,), dtype=TL_FACE_DTYPE)
         return self
 
     def __str__(self) -> str:
@@ -155,10 +172,14 @@ opened.
         ]
         if len(self.frames) > 1:
             # read a small chunk of frames to speed things up
-            times = self.frames[1:50]["timestamp"] - self.frames[0:49]["timestamp"]
+            times = np.diff(self.frames[:50]["timestamp"])
             frequency = np.mean(1 / (times / 1e9))  # from nano to sec
         else:
-            print(f"warning, not enough frames({len(self.frames)}) to read the frequency, 10 will be set")
+            warnings.warn(
+                f"not enough frames({len(self.frames)}) to read the frequency, 10 will be set",
+                RuntimeWarning,
+                stacklevel=2,
+            )
             frequency = 10
 
         values = [

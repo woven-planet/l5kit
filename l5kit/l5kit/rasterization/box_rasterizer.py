@@ -49,9 +49,9 @@ def draw_boxes(
         np.ndarray: the image with agents rendered. RGB if color RGB, otherwise GRAY
     """
     if isinstance(color, int):
-        im = np.zeros(raster_size, dtype=np.uint8)
+        im = np.zeros((raster_size[1], raster_size[0]), dtype=np.uint8)
     else:
-        im = np.zeros(raster_size + (3,), dtype=np.uint8)
+        im = np.zeros((raster_size[1], raster_size[0], 3), dtype=np.uint8)
 
     box_world_coords = np.zeros((len(agents), 4, 2))
     corners_base_coords = np.asarray([[-1, -1], [-1, 1], [1, 1], [1, -1]])
@@ -123,8 +123,9 @@ class BoxRasterizer(Rasterizer):
         )
 
         # this ensures we always end up with fixed size arrays, +1 is because current time is also in the history
-        agents_images = np.zeros((*self.raster_size, self.history_num_frames + 1), dtype=np.uint8)
-        ego_images = np.zeros((*self.raster_size, self.history_num_frames + 1), dtype=np.uint8)
+        out_shape = (self.raster_size[1], self.raster_size[0], self.history_num_frames + 1)
+        agents_images = np.zeros(out_shape, dtype=np.uint8)
+        ego_images = np.zeros(out_shape, dtype=np.uint8)
 
         for i, (frame, agents) in enumerate(zip(history_frames, history_agents)):
             agents = filter_agents_by_labels(agents, self.filter_agents_threshold)
@@ -166,14 +167,14 @@ class BoxRasterizer(Rasterizer):
         in_im = np.transpose(in_im, (2, 0, 1))
 
         # this is similar to the draw history code
-        out_im_agent = np.zeros(self.raster_size + (3,), dtype=np.float32)
+        out_im_agent = np.zeros((self.raster_size[1], self.raster_size[0], 3), dtype=np.float32)
         agent_chs = in_im[:hist_frames][::-1]  # reverse to start from the furthest one
         agent_color = (0, 0, 1) if "agent_color" not in kwargs else kwargs["agent_color"]
         for ch in agent_chs:
             out_im_agent *= 0.85  # magic fading constant for the past
             out_im_agent[ch > 0] = agent_color
 
-        out_im_ego = np.zeros((*self.raster_size, 3), dtype=np.float32)
+        out_im_ego = np.zeros((self.raster_size[1], self.raster_size[0], 3), dtype=np.float32)
         ego_chs = in_im[hist_frames:][::-1]
         ego_color = (0, 1, 0) if "ego_color" not in kwargs else kwargs["ego_color"]
         for ch in ego_chs:
