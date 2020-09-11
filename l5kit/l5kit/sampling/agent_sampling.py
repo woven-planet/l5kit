@@ -190,14 +190,14 @@ def _create_targets_for_deep_prediction(
     yaws_offset = np.zeros((num_frames, 1), dtype=np.float32)
     availability = np.zeros((num_frames,), dtype=np.float32)
 
-    for i, (frame, agents) in enumerate(zip(frames, agents)):
+    for i, (frame, frame_agents) in enumerate(zip(frames, agents)):
         if selected_track_id is None:
             agent_centroid = frame["ego_translation"][:2]
             agent_yaw = rotation33_as_yaw(frame["ego_rotation"])
         else:
             # it's not guaranteed the target will be in every frame
             try:
-                agent = filter_agents_by_track_id(agents, selected_track_id)[0]
+                agent = filter_agents_by_track_id(frame_agents, selected_track_id)[0]
             except IndexError:
                 availability[i] = 0.0  # keep track of invalid futures/history
                 continue
