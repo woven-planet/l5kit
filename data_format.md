@@ -216,15 +216,14 @@ which form an additional abstraction layer over the raw `zarr` dataset. These tw
 and get information about the past and future state of the AV or another agent. 
 
 **Notes:** 
-- the following 2 classes inherit from Pytorch Dataset and as such are tied to work with it.
-
+- the following 2 classes inherit from Pytorch Dataset and as such are tied to work with it;
 - the following 2 classes assume the world to be rasterised as BEV (Bird-Eye-View), which is a common choice for 
 CNN-based approaches. Still, this can be disabled by using `stub_debug` as `map_type`.
 
 
 ### EgoDataset
 The `EgoDataset` retrieves information about the status of the AV in the current frame and the frames before it (if history is enabled).
-It can be iterated over the frame annotations to return a dict with the following fields:
+When iterated, it yields a dict with the following information:
 
 | Field Name               | Description                                                                                                                                          |
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
