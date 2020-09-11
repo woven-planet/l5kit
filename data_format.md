@@ -226,21 +226,22 @@ CNN-based approaches. Still, this can be disabled by using `stub_debug` as `map_
 The `EgoDataset` retrieves information about the status of the AV in the current frame and the frames before it (if history is enabled).
 It can be iterated over the frame annotations to return a dict with the following fields:
 
-```
-"image": the BEV raster as a multi-channel tensor;
-"target_positions": the coordinates (as offset wrt the current position) of the AV in the future. Unit is metres;
-"target_yaws": the yaws (as angular offset wrt the current position) of the AV in the future. Unit is radians;
-"target_availabilities": a 1D array. Each item can be either 1 (future step is valid) or 0 (future step is not valid). Invalid steps may occur at the end or start of a scene;
-"history_positions": same as target_positions but for the frames in the past;
-"history_yaws": same as target_yaws but for the frames in the past;
-"history_availabilities": same as target_availabilities but for the frames in the past;
-"world_to_image": a 3x3 matrix mapping from world to the image reference system; 
-"track_id": a scene-unique identifier id for the agent, or -1 for the AV;
-"timestamp": the timestamp of the current frame;
-"centroid": the centroid of the AV in the current frame in the world reference system. Unit is metres;
-"yaw": the angle of yaw of the AV in the current frame. Unit is radians;
-"extent": the extent of the AV (in XYZ) in the world reference system. Unit is metres;
-```
+| Field Name               | Description                                                                                                                                          |
+|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `image`                  | The BEV raster as a multi-channel tensor                                                                                                             |
+| `target_positions`       | The coordinates (as offset wrt the current position) of the AV in the future. Unit is metres                                                         |
+| `target_yaws`            | The yaws (as angular offset wrt the current position) of the AV in the future. Unit is radians                                                       |
+| `target_availabilities`  | A 1D array. Each item can be either 1 (future step is valid) or 0 (future step is not valid). Invalid steps may occur at the end or start of a scene |
+| `history_positions`      | Same as target_positions but for the frames in the past                                                                                              |
+| `history_yaws`           | Same as target_yaws but for the frames in the past                                                                                                   |
+| `history_availabilities` | Same as target_availabilities but for the frames in the past                                                                                         |
+| `world_to_image`         | A 3x3 matrix mapping from world to the image reference system                                                                                        |
+| `track_id`               | A scene-unique identifier id for the agent, or -1 for the AV                                                                                         |
+| `timestamp`              | The timestamp of the current frame                                                                                                                   |
+| `centroid`               | The centroid of the AV in the current frame in the world reference system. Unit is metres                                                            |
+| `yaw`                    | The angle of yaw of the AV in the current frame. Unit is radians                                                                                     |
+| `extent`                 | The extent of the AV (in XYZ) in the world reference system. Unit is metres   
+
 
 A sample usage would be:
 ```python
