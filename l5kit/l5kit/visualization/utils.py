@@ -5,7 +5,7 @@ import numpy as np
 
 from l5kit.geometry import transform_point, transform_points
 
-PREDICTED_POINTS_COLOR = (0, 255, 255)
+PREDICTED_POINTS_COLOR = (0, 255, 0)
 TARGET_POINTS_COLOR = (255, 0, 255)
 REFERENCE_TRAJECTORY_POINT_COLOR = (255, 255, 0)
 #  Arrows represent position + orientation.
@@ -55,10 +55,9 @@ def draw_trajectory(
     Returns: None
 
     """
-    for pos, yaw in zip(positions, yaws):
-        pred_waypoint = pos[:2]
-        pred_yaw = float(yaw[0])
-        draw_arrowed_line(on_image, pred_waypoint, pred_yaw, rgb_color)
+    for pos in positions:
+        cv2.circle(on_image, tuple(np.floor(pos).astype(np.int32)), 1, rgb_color, -1, 4)
+        # draw_arrowed_line(on_image, pred_waypoint, pred_yaw, rgb_color)
 
 
 def draw_reference_trajectory(on_image: np.ndarray, world_to_pixel: np.ndarray, positions: np.ndarray) -> None:
