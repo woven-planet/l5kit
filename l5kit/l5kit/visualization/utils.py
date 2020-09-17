@@ -58,7 +58,8 @@ def draw_trajectory(
     for pos, yaw in zip(positions, yaws):
         pred_waypoint = pos[:2]
         pred_yaw = float(yaw[0])
-        draw_arrowed_line(on_image, pred_waypoint, pred_yaw, rgb_color)
+        cv2.circle(on_image, tuple(pred_waypoint.astype(np.int)), radius=3, color=rgb_color, thickness=-1)
+        #draw_arrowed_line(on_image, pred_waypoint, pred_yaw, rgb_color)
 
 
 def draw_reference_trajectory(on_image: np.ndarray, world_to_pixel: np.ndarray, positions: np.ndarray) -> None:
