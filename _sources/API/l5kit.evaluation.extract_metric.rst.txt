@@ -1,7 +1,0 @@
-l5kit.evaluation.extract\_metric module
-=======================================
-
-.. automodule:: l5kit.evaluation.extract_metric
-   :members:
-   :undoc-members:
-   :show-inheritance:
