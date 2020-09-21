@@ -9,7 +9,7 @@ from ..data import (
     get_tl_faces_slice_from_frames,
 )
 from ..data.filter import filter_agents_by_frames, filter_agents_by_track_id
-from ..geometry import angular_distance, rotation33_as_yaw, world_to_image_pixels_matrix
+from ..geometry import angular_distance, raster_from_world, rotation33_as_yaw
 from ..kinematic import Perturbation
 from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
 from .slicing import get_future_slice, get_history_slice
@@ -124,12 +124,12 @@ to train models that can recover from slight divergence from training set data
         else rasterizer.rasterize(history_frames, history_agents, history_tl_faces, selected_agent)
     )
 
-    world_to_image_space = world_to_image_pixels_matrix(
+    world_to_image_space = raster_from_world(
         raster_size,
         pixel_size,
         ego_translation_m=agent_centroid,
         ego_yaw_rad=agent_yaw,
-        ego_center_in_image_ratio=ego_center,
+        ego_center_in_raster_ratio=ego_center,
     )
 
     future_coords_offset, future_yaws_offset, future_availability = _create_targets_for_deep_prediction(

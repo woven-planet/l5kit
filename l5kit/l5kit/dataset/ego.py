@@ -13,7 +13,7 @@ from ..data import (
     get_tl_faces_slice_from_frames,
 )
 from ..kinematic import Perturbation
-from ..rasterization import Rasterizer
+from ..rasterization import Rasterizer, RenderContext
 from ..sampling import generate_agent_sample
 
 
@@ -43,11 +43,14 @@ None if not desired
         self.cumulative_sizes = self.dataset.scenes["frame_index_interval"][:, 1]
 
         # build a partial so we don't have to access cfg each time
+        render_context = RenderContext(
+            raster_size_px=np.array(cfg["raster_size"]),
+            pixel_size_m=np.array(cfg["pixel_size"]),
+            center_in_raster_ratio=np.array(cfg["ego_center"]),
+        )
         self.sample_function = partial(
             generate_agent_sample,
-            raster_size=cast(Tuple[int, int], tuple(cfg["raster_params"]["raster_size"])),
-            pixel_size=np.array(cfg["raster_params"]["pixel_size"]),
-            ego_center=np.array(cfg["raster_params"]["ego_center"]),
+            render_context=render_context,
             history_num_frames=cfg["model_params"]["history_num_frames"],
             history_step_size=cfg["model_params"]["history_step_size"],
             future_num_frames=cfg["model_params"]["future_num_frames"],

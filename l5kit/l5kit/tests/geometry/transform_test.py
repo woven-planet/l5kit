@@ -2,7 +2,8 @@ import numpy as np
 import pytest
 import transforms3d
 
-from l5kit.geometry import transform_point, transform_points, transform_points_transposed, world_to_image_pixels_matrix
+from l5kit.geometry import transform_point, transform_points, transform_points_transposed
+from l5kit.rasterization.render_context import RenderContext
 
 
 def test_transform_to_image_space_2d() -> None:
@@ -11,10 +12,16 @@ def test_transform_to_image_space_2d() -> None:
     pixel_size = np.asarray((1.0, 0.5))
     offset = np.asarray((0, -2))
 
+    render_context = RenderContext(
+        raster_size_px=image_shape,
+        pixel_size_m=pixel_size,
+        center_in_raster_ratio=offset,
+    )
+
     input_points = np.array([[0, 0], [10, 10], [-10, -10]])
     expected_output_points = np.array([[100, 104], [110, 124], [90, 84]])
 
-    tf = world_to_image_pixels_matrix(image_shape, pixel_size, offset)
+    tf = render_context.raster_from_local
     output_points = transform_points(input_points, tf)
 
     np.testing.assert_array_equal(output_points, expected_output_points)
@@ -29,7 +36,7 @@ def test_transform_single_point() -> None:
     point = np.array([10, 10])
     expected_point = np.array([110, 124])
 
-    tf = world_to_image_pixels_matrix(shape, pixel_size, offset)
+    tf = raster_from_world(shape, pixel_size, offset)
     output_point = transform_point(point, tf)
 
     np.testing.assert_array_equal(output_point, expected_point)

@@ -6,8 +6,9 @@ import numpy as np
 
 from ..data.filter import filter_tl_faces_by_status
 from ..data.map_api import MapAPI
-from ..geometry import rotation33_as_yaw, transform_point, transform_points, world_to_image_pixels_matrix
+from ..geometry import rotation33_as_yaw, transform_point, transform_points
 from .rasterizer import Rasterizer
+from .render_context import RenderContext
 
 # sub-pixel drawing precision constants
 CV2_SHIFT = 8  # how many bits to shift in drawing
@@ -59,6 +60,7 @@ class SemanticRasterizer(Rasterizer):
 
     def __init__(
         self,
+        render_context: RenderContext,
         raster_size: Tuple[int, int],
         pixel_size: np.ndarray,
         ego_center: np.ndarray,
@@ -130,31 +132,36 @@ class SemanticRasterizer(Rasterizer):
         # TODO TR_FACES
 
         if agent is None:
-            ego_translation = history_frames[0]["ego_translation"]
-            ego_yaw = rotation33_as_yaw(history_frames[0]["ego_rotation"])
+            ego_translation_m = history_frames[0]["ego_translation"]
+            ego_yaw_rad = rotation33_as_yaw(history_frames[0]["ego_rotation"])
         else:
-            ego_translation = np.append(agent["centroid"], history_frames[0]["ego_translation"][-1])
-            ego_yaw = agent["yaw"]
+            ego_translation_m = np.append(agent["centroid"], history_frames[0]["ego_translation"][-1])
+            ego_yaw_rad = agent["yaw"]
 
-        world_to_image_space = world_to_image_pixels_matrix(
-            self.raster_size, self.pixel_size, ego_translation, ego_yaw, self.ego_center,
-        )
+        # Compute ego pose from its position and heading
+        ego_pose = np.array([[np.cos(ego_yaw_rad), -np.sin(ego_yaw_rad), ego_translation_m[0]],
+                             [np.sin(ego_yaw_rad), np.cos(ego_yaw_rad), ego_translation_m[1]],
+                             [0, 0, 1]])
+
+        ego_from_global = np.linalg.inv(ego_pose)
+        raster_from_global = self.render_context.raster_from_local @ ego_from_global
+        global_from_raster = np.linalg.inv(raster_from_global)
 
         # get XY of center pixel in world coordinates
-        center_pixel = np.asarray(self.raster_size) * (0.5, 0.5)
-        center_world = transform_point(center_pixel, np.linalg.inv(world_to_image_space))
+        raster_center_px = np.asarray(self.raster_size) * (0.5, 0.5)
+        raster_center_in_global = transform_point(raster_center_px, global_from_raster)
 
-        sem_im = self.render_semantic_map(center_world, world_to_image_space, history_tl_faces[0])
+        sem_im = self.render_semantic_map(raster_center_in_global, raster_from_global, history_tl_faces[0])
         return sem_im.astype(np.float32) / 255
 
     def render_semantic_map(
-        self, center_world: np.ndarray, world_to_image_space: np.ndarray, tl_faces: np.ndarray
+        self, raster_center_in_global: np.ndarray, raster_from_global: np.ndarray, tl_faces: np.ndarray
     ) -> np.ndarray:
         """Renders the semantic map at given x,y coordinates.
 
         Args:
-            center_world (np.ndarray): XY of the image center in world ref system
-            world_to_image_space (np.ndarray):
+            raster_center_in_global (np.ndarray): XY of the image center in world ref system
+            raster_from_global (np.ndarray):
         Returns:
             np.ndarray: RGB raster
 
@@ -171,13 +178,13 @@ class SemanticRasterizer(Rasterizer):
         # plot lanes
         lanes_lines = defaultdict(list)
 
-        for idx in elements_within_bounds(center_world, self.bounds_info["lanes"]["bounds"], raster_radius):
+        for idx in elements_within_bounds(raster_center_in_global, self.bounds_info["lanes"]["bounds"], raster_radius):
             lane = self.proto_API[self.bounds_info["lanes"]["ids"][idx]].element.lane
 
             # get image coords
             lane_coords = self.proto_API.get_lane_coords(self.bounds_info["lanes"]["ids"][idx])
-            xy_left = cv2_subpixel(transform_points(lane_coords["xyz_left"][:, :2], world_to_image_space))
-            xy_right = cv2_subpixel(transform_points(lane_coords["xyz_right"][:, :2], world_to_image_space))
+            xy_left = cv2_subpixel(transform_points(lane_coords["xyz_left"][:, :2], raster_from_global))
+            xy_right = cv2_subpixel(transform_points(lane_coords["xyz_right"][:, :2], raster_from_global))
             lanes_area = np.vstack((xy_left, np.flip(xy_right, 0)))  # start->end left then end->start right
 
             # Note(lberg): this called on all polygons skips some of them, don't know why
@@ -202,10 +209,10 @@ class SemanticRasterizer(Rasterizer):
 
         # plot crosswalks
         crosswalks = []
-        for idx in elements_within_bounds(center_world, self.bounds_info["crosswalks"]["bounds"], raster_radius):
+        for idx in elements_within_bounds(raster_center_in_global, self.bounds_info["crosswalks"]["bounds"], raster_radius):
             crosswalk = self.proto_API.get_crosswalk_coords(self.bounds_info["crosswalks"]["ids"][idx])
 
-            xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], world_to_image_space))
+            xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], raster_from_global))
             crosswalks.append(xy_cross)
 
         cv2.polylines(img, crosswalks, True, (255, 117, 69), lineType=cv2.LINE_AA, shift=CV2_SHIFT)

@@ -4,6 +4,7 @@ import numpy as np
 
 from .box_rasterizer import BoxRasterizer
 from .rasterizer import Rasterizer
+from .render_context import RenderContext
 from .semantic_rasterizer import SemanticRasterizer
 
 
@@ -13,6 +14,7 @@ class SemBoxRasterizer(Rasterizer):
 
     def __init__(
         self,
+        render_context: RenderContext,
         raster_size: Tuple[int, int],
         pixel_size: np.ndarray,
         ego_center: np.ndarray,
@@ -22,13 +24,16 @@ class SemBoxRasterizer(Rasterizer):
         world_to_ecef: np.ndarray,
     ):
         super(SemBoxRasterizer, self).__init__()
+        self.render_context = (render_context,)
         self.raster_size = raster_size
         self.pixel_size = pixel_size
         self.ego_center = ego_center
         self.filter_agents_threshold = filter_agents_threshold
         self.history_num_frames = history_num_frames
 
-        self.box_rast = BoxRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold, history_num_frames)
+        self.box_rast = BoxRasterizer(
+            render_context, raster_size, pixel_size, ego_center, filter_agents_threshold, history_num_frames
+        )
         self.sat_rast = SemanticRasterizer(raster_size, pixel_size, ego_center, semantic_map_path, world_to_ecef)
 
     def rasterize(

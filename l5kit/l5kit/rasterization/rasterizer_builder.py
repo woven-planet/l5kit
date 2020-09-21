@@ -8,6 +8,7 @@ import numpy as np
 from ..data import DataManager
 from .box_rasterizer import BoxRasterizer
 from .rasterizer import Rasterizer
+from .render_context import RenderContext
 from .sat_box_rasterizer import SatBoxRasterizer
 from .satellite_rasterizer import SatelliteRasterizer
 from .sem_box_rasterizer import SemBoxRasterizer
@@ -122,6 +123,12 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
     map_type = raster_cfg["map_type"]
     dataset_meta_key = raster_cfg["dataset_meta_key"]
 
+    render_context = RenderContext(
+        raster_size_px=np.array(raster_cfg["raster_size"]),
+        pixel_size_m=np.array(raster_cfg["pixel_size"]),
+        center_in_raster_ratio=np.array(raster_cfg["ego_center"]),
+    )
+
     raster_size: Tuple[int, int] = cast(Tuple[int, int], tuple(raster_cfg["raster_size"]))
     pixel_size = np.array(raster_cfg["pixel_size"])
     ego_center = np.array(raster_cfg["ego_center"])
@@ -143,6 +150,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         world_to_aerial = np.matmul(ecef_to_aerial, world_to_ecef)
         if map_type == "py_satellite":
             return SatBoxRasterizer(
+                render_context,
                 raster_size,
                 pixel_size,
                 ego_center,
@@ -163,6 +171,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
             world_to_ecef = get_hardcoded_world_to_ecef()
         if map_type == "py_semantic":
             return SemBoxRasterizer(
+                render_context,
                 raster_size,
                 pixel_size,
                 ego_center,

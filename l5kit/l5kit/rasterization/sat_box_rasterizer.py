@@ -5,6 +5,7 @@ import numpy as np
 
 from .box_rasterizer import BoxRasterizer
 from .rasterizer import Rasterizer
+from .render_context import RenderContext
 from .satellite_rasterizer import SatelliteRasterizer
 
 
@@ -14,6 +15,7 @@ class SatBoxRasterizer(Rasterizer):
 
     def __init__(
         self,
+        render_context: RenderContext,
         raster_size: Tuple[int, int],
         pixel_size: np.ndarray,
         ego_center: np.ndarray,
@@ -34,9 +36,11 @@ class SatBoxRasterizer(Rasterizer):
         self.world_to_aerial = world_to_aerial
         self.interpolation = interpolation
 
-        self.box_rast = BoxRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold, history_num_frames)
+        self.box_rast = BoxRasterizer(
+            render_context, raster_size, filter_agents_threshold, history_num_frames
+        )
         self.sat_rast = SatelliteRasterizer(
-            raster_size, pixel_size, ego_center, map_im, world_to_aerial, interpolation
+            render_context, raster_size, pixel_size, map_im, world_to_aerial, interpolation
         )
 
     def rasterize(

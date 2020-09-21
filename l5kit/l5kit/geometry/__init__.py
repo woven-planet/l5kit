@@ -9,7 +9,6 @@ from .transform import (
     transform_point,
     transform_points,
     transform_points_transposed,
-    world_to_image_pixels_matrix,
     yaw_as_rotation33,
 )
 from .voxel import normalize_intensity, points_within_bounds, voxel_coords_to_intensity_grid
@@ -20,7 +19,6 @@ __all__ = [
     "crop_rectangle_from_image",
     "rotation33_as_yaw",
     "yaw_as_rotation33",
-    "world_to_image_pixels_matrix",
     "flip_y_axis",
     "transform_points",
     "transform_points_transposed",
