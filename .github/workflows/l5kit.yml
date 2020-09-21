@@ -23,7 +23,7 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install pipenv
-        pipenv sync -d --python $(which python)
+        pipenv sync -d
     - name: Lint project
       working-directory: l5kit
       run: |

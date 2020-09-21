@@ -22,11 +22,11 @@ jobs:
       run: |
         pip install --upgrade pip
         pip install pipenv
-        pipenv sync -d --python $(which python)
+        pipenv sync -d
         pipenv run pip install .
     - name: Build docs
       working-directory: l5kit
-      run: | # .. here because pipenv only works from l5kit folder
+      run: |
         pipenv run sphinx-apidoc --module-first --separate -o ../API/ l5kit l5kit/tests*
         pipenv run sphinx-build .. ../docs_built
 
