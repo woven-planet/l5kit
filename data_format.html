@@ -110,6 +110,11 @@
 <li class="toctree-l3"><a class="reference internal" href="#performance-aware-slicing">Performance-aware slicing</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#dataset-abstraction-classes">Dataset Abstraction Classes</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#egodataset">EgoDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#agentdataset">AgentDataset</a></li>
+</ul>
+</li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
@@ -376,6 +381,97 @@ Let’s say we want to retrieve the first 10k agents’ centroids and store them
 </div>
 <p>we reduce the decompression numbers by <strong>a factor of 10K</strong>.</p>
 <p><strong>TL;DR</strong>: when working with <code class="docutils literal notranslate"><span class="pre">zarr</span></code> you should always aim to minimise the number of accesses to the compressed data.</p>
+</div>
+</div>
+<div class="section" id="dataset-abstraction-classes">
+<h2>Dataset Abstraction Classes<a class="headerlink" href="#dataset-abstraction-classes" title="Permalink to this headline">¶</a></h2>
+<p>As shown above, working with the raw <code class="docutils literal notranslate"><span class="pre">zarr</span></code> dataset has its own perils. To that end, we provide two structures
+which form an additional abstraction layer over the raw <code class="docutils literal notranslate"><span class="pre">zarr</span></code> dataset. These two Python classes allow to rasterise
+and get information about the past and future state of the AV or another agent.</p>
+<p><strong>Notes:</strong></p>
+<ul class="simple">
+<li><p>the following 2 classes inherit from Pytorch Dataset and as such are tied to work with it;</p></li>
+<li><p>the following 2 classes assume the world to be rasterised as BEV (Bird-Eye-View), which is a common choice for
+CNN-based approaches. Still, this can be disabled by using <code class="docutils literal notranslate"><span class="pre">stub_debug</span></code> as <code class="docutils literal notranslate"><span class="pre">map_type</span></code>.</p></li>
+</ul>
+<div class="section" id="egodataset">
+<h3>EgoDataset<a class="headerlink" href="#egodataset" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">EgoDataset</span></code> retrieves information about the status of the AV in the current frame and the frames before it (if history is enabled).
+When iterated, it yields a dict with the following information:</p>
+<p>| Field Name               | Description                                                                                                                                          |
+|————————–|——————————————————————————————————————————————————|
+| <code class="docutils literal notranslate"><span class="pre">image</span></code>                  | The BEV raster as a multi-channel tensor                                                                                                             |
+| <code class="docutils literal notranslate"><span class="pre">target_positions</span></code>       | The coordinates (as offset wrt the current position) of the AV in the future. Unit is metres                                                         |
+| <code class="docutils literal notranslate"><span class="pre">target_yaws</span></code>            | The yaws (as angular offset wrt the current position) of the AV in the future. Unit is radians                                                       |
+| <code class="docutils literal notranslate"><span class="pre">target_availabilities</span></code>  | A 1D array. Each item can be either 1 (future step is valid) or 0 (future step is not valid). Invalid steps may occur at the end or start of a scene |
+| <code class="docutils literal notranslate"><span class="pre">history_positions</span></code>      | Same as target_positions but for the frames in the past                                                                                              |
+| <code class="docutils literal notranslate"><span class="pre">history_yaws</span></code>           | Same as target_yaws but for the frames in the past                                                                                                   |
+| <code class="docutils literal notranslate"><span class="pre">history_availabilities</span></code> | Same as target_availabilities but for the frames in the past                                                                                         |
+| <code class="docutils literal notranslate"><span class="pre">world_to_image</span></code>         | A 3x3 matrix mapping from world to the image reference system                                                                                        |
+| <code class="docutils literal notranslate"><span class="pre">track_id</span></code>               | A scene-unique identifier id for the agent, or -1 for the AV                                                                                         |
+| <code class="docutils literal notranslate"><span class="pre">timestamp</span></code>              | The timestamp of the current frame                                                                                                                   |
+| <code class="docutils literal notranslate"><span class="pre">centroid</span></code>               | The centroid of the AV in the current frame in the world reference system. Unit is metres                                                            |
+| <code class="docutils literal notranslate"><span class="pre">yaw</span></code>                    | The angle of yaw of the AV in the current frame. Unit is radians                                                                                     |
+| <code class="docutils literal notranslate"><span class="pre">extent</span></code>                 | The extent of the AV (in XYZ) in the world reference system. Unit is metres</p>
+<p>A sample usage would be:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">l5kit.rasterization</span> <span class="kn">import</span> <span class="n">build_rasterizer</span>
+<span class="kn">from</span> <span class="nn">l5kit.configs</span> <span class="kn">import</span> <span class="n">load_config_data</span>
+<span class="kn">from</span> <span class="nn">l5kit.data</span> <span class="kn">import</span> <span class="n">LocalDataManager</span><span class="p">,</span> <span class="n">ChunkedDataset</span>
+<span class="kn">from</span> <span class="nn">l5kit.dataset</span> <span class="kn">import</span> <span class="n">EgoDataset</span>
+
+
+<span class="n">zarr_dt</span> <span class="o">=</span> <span class="n">ChunkedDataset</span><span class="p">(</span><span class="s2">&quot;&lt;path&gt;&quot;</span><span class="p">)</span>
+<span class="n">zarr_dt</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+<span class="c1"># additional information is required for rasterisation</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">load_config_data</span><span class="p">(</span><span class="s2">&quot;&lt;path&gt;&quot;</span><span class="p">)</span>
+<span class="n">rast</span> <span class="o">=</span> <span class="n">build_rasterizer</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">LocalDataManager</span><span class="p">(</span><span class="s2">&quot;/tmp/l5kit_data&quot;</span><span class="p">))</span>
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">EgoDataset</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">zarr_dt</span><span class="p">,</span> <span class="n">rast</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>  <span class="c1"># this iterates over frames under the hood</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target_positions&quot;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;history_positions&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<div class="section" id="agentdataset">
+<h3>AgentDataset<a class="headerlink" href="#agentdataset" title="Permalink to this headline">¶</a></h3>
+<p>The <code class="docutils literal notranslate"><span class="pre">AgentDataset</span></code> iterates over agents (i.e. every other dynamic entity in the scene) instead of the AV. Because the returned dict
+is exactly the same as the <code class="docutils literal notranslate"><span class="pre">EgoDataset</span></code>, the two classes are almost interchangeable.</p>
+<p>However, one fundamental difference exists:
+The <code class="docutils literal notranslate"><span class="pre">AgentDataset</span></code> is seeded with an <code class="docutils literal notranslate"><span class="pre">agents_mask</span></code> which defines which agents should be iterated over.
+This is used in multiple contexts:</p>
+<ul class="simple">
+<li><p>to exclude unreliable agents during training (e.g. agents underneath a certain detection threshold);</p></li>
+<li><p>to select a subset of agents (e.g. during evaluation for the competition)</p></li>
+</ul>
+<p>If the mask is not passed as an argument to the <code class="docutils literal notranslate"><span class="pre">AgentDataset</span></code>, a new one will be computed and <strong>cached</strong> based on the current value of <code class="docutils literal notranslate"><span class="pre">filter_agents_threshold</span></code>.</p>
+<p>An example of using a custom <code class="docutils literal notranslate"><span class="pre">agents_mask</span></code> would be:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">l5kit.rasterization</span> <span class="kn">import</span> <span class="n">build_rasterizer</span>
+<span class="kn">from</span> <span class="nn">l5kit.configs</span> <span class="kn">import</span> <span class="n">load_config_data</span>
+<span class="kn">from</span> <span class="nn">l5kit.data</span> <span class="kn">import</span> <span class="n">LocalDataManager</span><span class="p">,</span> <span class="n">ChunkedDataset</span>
+<span class="kn">from</span> <span class="nn">l5kit.dataset</span> <span class="kn">import</span> <span class="n">AgentDataset</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+
+
+<span class="n">zarr_dt</span> <span class="o">=</span> <span class="n">ChunkedDataset</span><span class="p">(</span><span class="s2">&quot;&lt;path&gt;&quot;</span><span class="p">)</span>
+<span class="n">zarr_dt</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
+
+<span class="c1"># additional information is required for rasterisation</span>
+<span class="n">cfg</span> <span class="o">=</span> <span class="n">load_config_data</span><span class="p">(</span><span class="s2">&quot;&lt;path&gt;&quot;</span><span class="p">)</span>
+<span class="n">rast</span> <span class="o">=</span> <span class="n">build_rasterizer</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">LocalDataManager</span><span class="p">(</span><span class="s2">&quot;/tmp/l5kit_data&quot;</span><span class="p">))</span>
+
+<span class="c1"># create a mask where an agent every 100th is set to True</span>
+<span class="n">agents_mask</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">zarr_dt</span><span class="o">.</span><span class="n">agents</span><span class="p">),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)</span>
+<span class="n">agents_mask</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="nb">len</span><span class="p">(</span><span class="n">agents_mask</span><span class="p">),</span> <span class="mi">100</span><span class="p">)]</span> <span class="o">=</span> <span class="kc">True</span>
+
+
+<span class="n">dataset</span> <span class="o">=</span> <span class="n">AgentDataset</span><span class="p">(</span><span class="n">cfg</span><span class="p">,</span> <span class="n">zarr_dt</span><span class="p">,</span> <span class="n">rast</span><span class="p">,</span> <span class="n">agents_mask</span><span class="o">=</span><span class="n">agents_mask</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">data</span> <span class="ow">in</span> <span class="n">dataset</span><span class="p">:</span>  <span class="c1"># this iterates over valid agents under the hood</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target_positions&quot;</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;history_positions&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
 </div>
 </div>
 </div>
