@@ -23,7 +23,6 @@ jobs:
         pip install --upgrade pip
         pip install pipenv
         pipenv sync -d
-        pipenv run pip install .
     - name: Build docs
       working-directory: l5kit
       run: |

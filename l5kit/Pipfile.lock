@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "445175af62050d0a50eb615177c165880237efbca658f20d530b40d19ecab368"
+            "sha256": "ca1166b1f18ae5fd456f347def479c4afc3bfaa5e65b86695976fc9fdbe786cb"
         },
         "pipfile-spec": 6,
         "requires": {},
@@ -281,6 +281,10 @@
             ],
             "markers": "python_version >= '3.6'",
             "version": "==1.2.0"
+        },
+        "l5kit": {
+            "editable": true,
+            "path": "."
         },
         "markupsafe": {
             "hashes": [
