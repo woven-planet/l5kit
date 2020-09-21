@@ -1,4 +1,4 @@
-name: L5Kit-tests
+name: L5Kit-tests-lock
 
 on:
   push:
