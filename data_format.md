@@ -212,7 +212,7 @@ we reduce the decompression numbers by **a factor of 10K**.
 ## Dataset Abstraction Classes
 
 As shown above, working with the raw `zarr` dataset has its own perils. To that end, we provide two structures
-which form an additional abstraction layer over the raw `zarr` dataset. These two python classes allow to rasterise
+which form an additional abstraction layer over the raw `zarr` dataset. These two Python classes allow to rasterise
 and get information about the past and future state of the AV or another agent. 
 
 **Notes:** 
