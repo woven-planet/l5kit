@@ -17,6 +17,7 @@ black = "==19.10b0"
 importlib-metadata = "*"  # required for python 3.8
 
 [packages]
+l5kit = {editable = true, path = "."}
 zarr = "*"
 numpy = "*"
 opencv-contrib-python-headless = "*"
@@ -33,4 +34,3 @@ ipywidgets = "*"
 protobuf = ">=3.12.2"
 torch = ">=1.5.0,<1.6.0"
 torchvision = ">=0.6.0,<0.7.0"
-l5kit = {editable = true, path = "."}
