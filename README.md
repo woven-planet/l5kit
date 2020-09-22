@@ -122,7 +122,7 @@ We support deterministic build through [pipenv](https://pipenv-fork.readthedocs.
 Once you've installed pipenv (or made it available in your env) run: 
 ```shell
 cd l5kit
-pipenv sync -d
+pipenv sync --dev
 ```
 This will install all dependencies (`-d` includes dev-packages too) from the lock file.
 
