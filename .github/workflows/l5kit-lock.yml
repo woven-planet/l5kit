@@ -13,30 +13,30 @@ jobs:
         python-version: [3.7, 3.8]
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python ${{ matrix.python-version }}
-      uses: actions/setup-python@v1
-      with:
-        python-version: ${{ matrix.python-version }}
-    - name: Install dependencies
-      working-directory: l5kit
-      run: |
-        pip install --upgrade pip
-        pip install pipenv
-        pipenv sync -d
-    - name: Lint project
-      working-directory: l5kit
-      run: |
-        pipenv run ./run_tests.sh lint
-    - name: Import sorting project
-      working-directory: l5kit
-      run: |
-        pipenv run ./run_tests.sh isort
-    - name: Run tests
-      working-directory: l5kit
-      run: |
-        pipenv run ./run_tests.sh tests
-    - name: Check types with mypy
-      working-directory: l5kit
-      run: |
-        pipenv run ./run_tests.sh types
+      - uses: actions/checkout@v2
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v1
+        with:
+          python-version: ${{ matrix.python-version }}
+      - name: Install dependencies
+        working-directory: l5kit
+        run: |
+          pip install --upgrade pip
+          pip install pipenv
+          pipenv sync -d
+      - name: Lint project
+        working-directory: l5kit
+        run: |
+          pipenv run ./run_tests.sh lint
+      - name: Import sorting project
+        working-directory: l5kit
+        run: |
+          pipenv run ./run_tests.sh isort
+      - name: Run tests
+        working-directory: l5kit
+        run: |
+          pipenv run ./run_tests.sh tests
+      - name: Check types with mypy
+        working-directory: l5kit
+        run: |
+          pipenv run ./run_tests.sh types
