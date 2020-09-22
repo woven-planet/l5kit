@@ -124,7 +124,7 @@ Once you've installed pipenv (or made it available in your env) run:
 cd l5kit
 pipenv sync --dev
 ```
-This will install all dependencies (`-d` includes dev-packages too) from the lock file.
+This will install all dependencies (`--dev` includes dev-packages too) from the lock file.
 
 #### 3.1 Latest Build
 If you don't care about determinist builds or you're having troubles with packages resolution (Windows, Python<3.7, etc..),
