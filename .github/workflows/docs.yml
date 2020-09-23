@@ -22,7 +22,7 @@ jobs:
         run: |
           pip install --upgrade pip
           pip install pipenv
-          pipenv sync -d
+          pipenv sync --dev
       - name: Build docs
         working-directory: l5kit
         run: |
