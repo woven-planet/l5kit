@@ -41,7 +41,7 @@ def test_same_displacement(
     cfg["raster_params"]["pixel_size"] = np.asarray(pixel_size)
     cfg["raster_params"]["ego_center"] = np.asarray(ego_center)
 
-    context = RenderContext(np.asarray(raster_size), np.asarray(pixel_size), np.asarray(ego_center))
-    dataset = EgoDataset(cfg, zarr_dataset, StubRasterizer(context, 0.5,),)
+    render_context = RenderContext(np.asarray(raster_size), np.asarray(pixel_size), np.asarray(ego_center))
+    dataset = EgoDataset(cfg, zarr_dataset, StubRasterizer(render_context, 0.5,),)
     data = dataset[0]
     assert np.allclose(data["target_positions"], base_displacement)

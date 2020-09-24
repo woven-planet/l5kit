@@ -11,8 +11,8 @@ from l5kit.rasterization import RenderContext, StubRasterizer
 
 
 def test_compute_mse_error(tmp_path: Path, zarr_dataset: ChunkedDataset, cfg: dict) -> None:
-    context = RenderContext(np.asarray((10, 10)), np.asarray((0.25, 0.25)), np.asarray((0.5, 0.5)))
-    rast = StubRasterizer(context, 0.5)
+    render_context = RenderContext(np.asarray((10, 10)), np.asarray((0.25, 0.25)), np.asarray((0.5, 0.5)))
+    rast = StubRasterizer(render_context, 0.5)
     dataset = AgentDataset(cfg, zarr_dataset, rast)
 
     gt_coords = []
