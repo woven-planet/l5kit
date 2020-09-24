@@ -128,7 +128,7 @@ to train models that can recover from slight divergence from training set data
                            [0, 0, 1]])
 
     agent_from_world = np.linalg.inv(agent_pose)
-    raster_from_world = render_context.raster_from_local @ agent_from_world
+    raster_from_world = render_context.raster_from_world(agent_centroid_m, agent_yaw_rad)
 
     future_coords_offset, future_yaws_offset, future_availability = _create_targets_for_deep_prediction(
         future_num_frames, future_frames, selected_track_id, future_agents, agent_from_world, agent_yaw_rad

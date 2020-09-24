@@ -102,19 +102,13 @@ class BoxRasterizer(Rasterizer):
         # all frames are drawn relative to this one"
         frame = history_frames[0]
         if agent is None:
-            # Compute ego pose from its position and heading
+            ego_translation_m = history_frames[0]["ego_translation"]
             ego_yaw_rad = rotation33_as_yaw(frame["ego_rotation"])
-            ego_pose = np.array([[np.cos(ego_yaw_rad), -np.sin(ego_yaw_rad), frame["ego_translation"][0]],
-                                 [np.sin(ego_yaw_rad), np.cos(ego_yaw_rad), frame["ego_translation"][1]],
-                                 [0, 0, 1]])
         else:
-            # Compute ego pose from its position and heading
-            ego_pose = np.array([[np.cos(agent["yaw"]), -np.sin(agent["yaw"]), agent["centroid"][0]],
-                                 [np.sin(agent["yaw"]), np.cos(agent["yaw"]), agent["centroid"][1]],
-                                 [0, 0, 1]])
+            ego_translation_m = np.append(agent["centroid"], history_frames[0]["ego_translation"][-1])
+            ego_yaw_rad = agent["yaw"]
 
-        ego_from_world = np.linalg.inv(ego_pose)
-        raster_from_world = self.render_context.raster_from_local @ ego_from_world
+        raster_from_world = self.render_context.raster_from_world(ego_translation_m, ego_yaw_rad)
 
         # this ensures we always end up with fixed size arrays, +1 is because current time is also in the history
         out_shape = (self.raster_size[1], self.raster_size[0], self.history_num_frames + 1)

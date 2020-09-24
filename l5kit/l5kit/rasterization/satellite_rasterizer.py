@@ -61,13 +61,7 @@ class SatelliteRasterizer(Rasterizer):
             # Note 2: it looks like we are assuming that yaw in ecef == yaw in sat image
             ego_yaw_rad = agent["yaw"]
 
-        # Compute ego pose from its position and heading
-        ego_pose = np.array([[np.cos(ego_yaw_rad), -np.sin(ego_yaw_rad), ego_translation_m[0]],
-                             [np.sin(ego_yaw_rad), np.cos(ego_yaw_rad), ego_translation_m[1]],
-                             [0, 0, 1]])
-
-        ego_from_world = np.linalg.inv(ego_pose)
-        raster_from_world = self.render_context.raster_from_local @ ego_from_world
+        raster_from_world = self.render_context.raster_from_world(ego_translation_m, ego_yaw_rad)
         world_from_raster = np.linalg.inv(raster_from_world)
 
         # Transform raster center to satellite coordinates (consider also z here)

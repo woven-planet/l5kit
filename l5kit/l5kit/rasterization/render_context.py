@@ -26,8 +26,23 @@ class RenderContext:
                                            [0, scaling[1], center_in_raster_px[1]],
                                            [0, 0, 1]])
 
-    def raster_from_local(self) -> np.ndarray:
+    def raster_from_world(self, position_m: np.ndarray, angle_rad: float) -> np.ndarray:
         """
-        Return the transform to raster pixels from the render context pose in meters.
+        Return a matrix to convert a pose in world coordinates into raster coordinates
+
+        Args:
+            render_context (RenderContext): the context for rasterisation
+            ego_translation_m (np.ndarray): XY translation in world coordinates
+            ego_yaw_rad (float): yaw angle
+
+        Returns:
+            (np.ndarray): a transformation matrix from world coordinates to raster coordinates
         """
-        return self.raster_from_local
+        # Compute pose from its position and heading
+        pose_in_world = np.array([[np.cos(angle_rad), -np.sin(angle_rad), position_m[0]],
+                                  [np.sin(angle_rad), np.cos(angle_rad), position_m[1]],
+                                  [0, 0, 1]])
+
+        pose_from_world = np.linalg.inv(pose_in_world)
+        raster_from_world = self.raster_from_local @ pose_from_world
+        return raster_from_world
