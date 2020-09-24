@@ -143,6 +143,7 @@ to train models that can recover from slight divergence from training set data
         "history_yaws": history_yaws_offset,
         "history_availabilities": history_availability,
         "world_to_image": raster_from_world,  # TODO deprecate
+        "raster_from_agent": raster_from_world @ np.linalg.inv(agent_from_world),
         "raster_from_world": raster_from_world,
         "agent_from_world": agent_from_world,
         "centroid": agent_centroid_m,

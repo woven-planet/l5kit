@@ -118,6 +118,7 @@ None if not desired
             "history_availabilities": data["history_availabilities"],
             "world_to_image": data["raster_from_world"],  # TODO deprecate
             "raster_from_world": data["raster_from_world"],
+            "raster_from_agent": data["raster_from_agent"],
             "agent_from_world": data["agent_from_world"],
             "track_id": track_id,
             "timestamp": timestamp,
