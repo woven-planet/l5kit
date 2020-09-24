@@ -47,12 +47,13 @@ def test_same_displacement(
     assert np.allclose(data["target_positions"], base_displacement)
 
 
-def test_coordinates_straight_road(zarr_dataset: ChunkedDataset, cfg: dict):
+def test_coordinates_straight_road(zarr_dataset: ChunkedDataset, cfg: dict) -> None:
     # on a straight road `target_positions` should increase on x only
-
-    render_context = RenderContext(np.asarray(cfg["raster_params"]["raster_size"]),
-                                   np.asarray(cfg["raster_params"]["pixel_size"]),
-                                   np.asarray(cfg["raster_params"]["ego_center"]))
+    render_context = RenderContext(
+        np.asarray(cfg["raster_params"]["raster_size"]),
+        np.asarray(cfg["raster_params"]["pixel_size"]),
+        np.asarray(cfg["raster_params"]["ego_center"]),
+    )
     dataset = EgoDataset(cfg, zarr_dataset, StubRasterizer(render_context, 0.5,),)
 
     # get first prediction and first 50 centroids
