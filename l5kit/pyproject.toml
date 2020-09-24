@@ -9,3 +9,6 @@ force_grid_wrap = 0
 use_parentheses = true
 line_length = 119
 skip='l5kit\/data\/proto'
+
+[tool.pytest.ini_options]
+xfail_strict=true

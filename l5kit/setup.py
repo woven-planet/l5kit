@@ -16,7 +16,7 @@ setup(
         "matplotlib",
         "numpy",
         "opencv-contrib-python-headless",
-        "protobuf==3.12.2",
+        "protobuf>=3.12.2",
         "pymap3d",
         "scipy",
         "setuptools",
@@ -31,14 +31,13 @@ setup(
         "ipywidgets"
     ],
     extras_require={
-        "dev": ["pytest==5.4.3", "mypy==0.782", "setuptools", "twine", "wheel", "pytest-cov==2.10.0", "flake8==3.8.3",
-                "black==19.10b0", "isort==5.0.4", "Sphinx==3.1.1", "sphinx-rtd-theme==0.5.0", "recommonmark==0.6.0",
-                "pre-commit==2.5.1"]
+        "dev": ["pytest", "mypy", "setuptools", "twine", "wheel", "pytest-cov", "flake8",
+                "black==19.10b0", "isort", "Sphinx", "sphinx-rtd-theme", "recommonmark",
+                "pre-commit"]
     },
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     classifiers=[
         "Development Status :: 3 - Alpha",
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
     ],

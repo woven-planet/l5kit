@@ -8,21 +8,21 @@ jobs:
   build-deploy-wheel:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
-    - name: Build wheel
-      working-directory: l5kit
-      run: |
-        python -m pip install --upgrade pip
-        python -m pip install wheel
-        python setup.py sdist bdist_wheel
-    - name: Publish to PyPI
-      if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')  # publish only on annotate commits
-      uses: pypa/gh-action-pypi-publish@v1.2.2
-      with:
-        user: __token__
-        password: ${{ secrets.pypi_password }}
-        packages_dir: l5kit/dist/
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Build wheel
+        working-directory: l5kit
+        run: |
+          python -m pip install --upgrade pip
+          python -m pip install wheel
+          python setup.py sdist bdist_wheel
+      - name: Publish to PyPI
+        if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags')  # publish only on annotate commits
+        uses: pypa/gh-action-pypi-publish@v1.2.2
+        with:
+          user: __token__
+          password: ${{ secrets.pypi_password }}
+          packages_dir: l5kit/dist/
