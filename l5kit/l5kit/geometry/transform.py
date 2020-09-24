@@ -33,55 +33,6 @@ def yaw_as_rotation33(yaw: float) -> np.ndarray:
     return transforms3d.euler.euler2mat(0, 0, yaw)
 
 
-def world_to_image_pixels_matrix(
-    image_shape: Tuple[int, int],
-    pixel_size_m: np.ndarray,
-    ego_translation_m: np.ndarray,
-    ego_yaw_rad: Optional[float] = None,
-    ego_center_in_image_ratio: Optional[np.ndarray] = None,
-) -> np.ndarray:
-    """
-    Constructs a transformation matrix from world coordinates to image pixels.
-    Note: we're ignoring Z coord, with the assumption that it won't change dramatically.
-    This means last row of the matrix will be [0,0,1] and we will transform 2D points in fact (X,Y)
-
-        Args:
-        image_shape (Tuple[int, int]): the size of the image
-        pixel_size_m (np.ndarray): how many meters a pixel cover in the two directions
-        ego_translation_m (np.ndarray): translation of the ego in meters in world-coordinates
-        ego_yaw_rad (Optional[float]):if defined, rotation is applied so that ego will always face to the right
-         in the resulting image coordinates
-        ego_center_in_image_ratio (Optional[np.ndarray]): enables to position the ego in different places
-         in the resulting image. The [0.5, 0.5] value puts it in the center
-
-    Returns:
-        np.ndarray: 3x3 transformation matrix
-    """
-
-    # Translate world to ego by applying the negative ego translation.
-    world_to_ego_in_2d = np.eye(3, dtype=np.float32)
-    world_to_ego_in_2d[0:2, 2] = -ego_translation_m[0:2]
-
-    if ego_yaw_rad is not None:
-        # Rotate counter-clockwise by negative yaw to align world such that ego faces right.
-        world_to_ego_in_2d = yaw_as_rotation33(-ego_yaw_rad) @ world_to_ego_in_2d
-
-    # Scale the meters to pixels.
-    world_to_image_scale = np.eye(3)
-    world_to_image_scale[0, 0] = 1.0 / pixel_size_m[0]
-    world_to_image_scale[1, 1] = 1.0 / pixel_size_m[1]
-
-    # Move so that it is aligned to the defined image center.
-    if ego_center_in_image_ratio is None:
-        ego_center_in_image_ratio = np.array([0.5, 0.5])
-    ego_center_in_pixels = ego_center_in_image_ratio * image_shape
-    image_to_ego_center = np.eye(3)
-    image_to_ego_center[0:2, 2] = ego_center_in_pixels
-
-    # Construct the whole transform and return it.
-    return image_to_ego_center @ world_to_image_scale @ world_to_ego_in_2d
-
-
 def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
     """
     Return a new matrix that also performs a flip on the y axis.
