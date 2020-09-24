@@ -160,7 +160,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
                 world_to_aerial,
             )
         else:
-            return SatelliteRasterizer(raster_size, pixel_size, ego_center, sat_image, world_to_aerial)
+            return SatelliteRasterizer(render_context, raster_size, pixel_size, sat_image, world_to_aerial)
 
     elif map_type in ["py_semantic", "semantic_debug"]:
         semantic_map_filepath = data_manager.require(raster_cfg["semantic_map_key"])
@@ -184,7 +184,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
             return SemanticRasterizer(raster_size, pixel_size, ego_center, semantic_map_filepath, world_to_ecef,)
 
     elif map_type == "box_debug":
-        return BoxRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold, history_num_frames)
+        return BoxRasterizer(render_context, raster_size, filter_agents_threshold, history_num_frames)
     elif map_type == "stub_debug":
         return StubRasterizer(raster_size, pixel_size, ego_center, filter_agents_threshold)
     else:
