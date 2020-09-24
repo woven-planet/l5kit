@@ -1,2 +1,0 @@
-# This installs deps from ./setup.py, and the package itself in edit mode.
--e .[dev]

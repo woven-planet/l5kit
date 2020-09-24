@@ -115,10 +115,25 @@ git clone https://github.com/lyft/l5kit.git ./
 ```
 
 ### 3. Install L5Kit
+
+#### 3.1 Deterministic Build (Suggested)
+We support deterministic build through [pipenv](https://pipenv-fork.readthedocs.io/en/latest/).
+
+Once you've installed pipenv (or made it available in your env) run: 
 ```shell
 cd l5kit
-pip install -r requirements.txt
+pipenv sync --dev
 ```
+This will install all dependencies (`--dev` includes dev-packages too) from the lock file.
+
+#### 3.1 Latest Build
+If you don't care about determinist builds or you're having troubles with packages resolution (Windows, Python<3.7, etc..),
+you can install directly from the `setup.py` by running:
+```shell
+cd l5kit
+pip install -e .[dev]
+```
+
 If you run into trouble installing L5Kit on Windows, you may need to
 - install Pytorch and torchvision manually first (select the correct version required by your system, i.e. GPU or CPU-only), then run L5Kit install (remove the packages [torch](https://github.com/lyft/l5kit/blob/59f36f348682aac5fc488c6d39dd58f8c27b1ec6/l5kit/setup.py#L23) and [torchvision](https://github.com/lyft/l5kit/blob/59f36f348682aac5fc488c6d39dd58f8c27b1ec6/l5kit/setup.py#L24) from ```setup.py```)
 - install [Microsoft C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/).
