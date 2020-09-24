@@ -12,7 +12,7 @@ def test_transform_to_image_space_2d() -> None:
     pixel_size = np.asarray((1.0, 0.5))
     offset = np.asarray((0, -2))
 
-    render_context = RenderContext(raster_size_px=image_shape, pixel_size_m=pixel_size, center_in_raster_ratio=offset,)
+    render_context = RenderContext(raster_size_px=image_shape, pixel_size_m=pixel_size, center_in_raster_ratio=offset)
 
     input_points = np.array([[0, 0], [10, 10], [-10, -10]])
     expected_output_points = np.array([[100, 104], [110, 124], [90, 84]])
@@ -24,7 +24,6 @@ def test_transform_to_image_space_2d() -> None:
 
 
 def test_transform_single_point() -> None:
-
     image_shape = np.asarray((200, 200))
     pixel_size = np.asarray((1.0, 0.5))
     offset = np.asarray((0, -2))

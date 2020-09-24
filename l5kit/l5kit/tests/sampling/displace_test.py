@@ -28,7 +28,7 @@ def base_displacement(zarr_dataset: ChunkedDataset, cfg: dict) -> np.ndarray:
 # all these params should not have any effect on the displacement (as it is in world coordinates)
 @pytest.mark.parametrize("raster_size", [(100, 100), (100, 50), (200, 200), (50, 50)])
 @pytest.mark.parametrize("ego_center", [(0.25, 0.25), (0.75, 0.75), (0.5, 0.5)])
-@pytest.mark.parametrize("pixel_size", [(0.25, 0.25), (0.25, 0.5)])
+@pytest.mark.parametrize("pixel_size", [(0.25, 0.25), (0.5, 0.5)])
 def test_same_displacement(
     cfg: dict,
     zarr_dataset: ChunkedDataset,

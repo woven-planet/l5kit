@@ -42,12 +42,13 @@ None if not desired
 
         self.cumulative_sizes = self.dataset.scenes["frame_index_interval"][:, 1]
 
-        # build a partial so we don't have to access cfg each time
         render_context = RenderContext(
-            raster_size_px=np.array(cfg["raster_size"]),
-            pixel_size_m=np.array(cfg["pixel_size"]),
-            center_in_raster_ratio=np.array(cfg["ego_center"]),
+            raster_size_px=np.array(cfg["raster_params"]["raster_size"]),
+            pixel_size_m=np.array(cfg["raster_params"]["pixel_size"]),
+            center_in_raster_ratio=np.array(cfg["raster_params"]["ego_center"]),
         )
+
+        # build a partial so we don't have to access cfg each time
         self.sample_function = partial(
             generate_agent_sample,
             render_context=render_context,

@@ -9,7 +9,7 @@ from ..data import (
     get_tl_faces_slice_from_frames,
 )
 from ..data.filter import filter_agents_by_frames, filter_agents_by_track_id
-from ..geometry import agent_pose, angular_distance, rotation33_as_yaw, transform_points
+from ..geometry import agent_pose, angular_distance, rotation33_as_yaw, transform_point
 from ..kinematic import Perturbation
 from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer, RenderContext
 from .slicing import get_future_slice, get_history_slice
@@ -195,7 +195,7 @@ def _create_targets_for_deep_prediction(
                 availability[i] = 0.0  # keep track of invalid futures/history
                 continue
 
-        coords_offset[i] = transform_points(agent_centroid, agent_from_world)
+        coords_offset[i] = transform_point(agent_centroid, agent_from_world)
         yaws_offset[i] = angular_distance(agent_yaw, current_agent_yaw)
         availability[i] = 1.0
     return coords_offset, yaws_offset, availability
