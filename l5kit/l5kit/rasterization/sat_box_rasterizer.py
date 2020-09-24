@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import cv2
 import numpy as np
@@ -16,9 +16,6 @@ class SatBoxRasterizer(Rasterizer):
     def __init__(
         self,
         render_context: RenderContext,
-        raster_size: Tuple[int, int],
-        pixel_size: np.ndarray,
-        ego_center: np.ndarray,
         filter_agents_threshold: float,
         history_num_frames: int,
         map_im: np.ndarray,
@@ -26,9 +23,10 @@ class SatBoxRasterizer(Rasterizer):
         interpolation: int = cv2.INTER_LINEAR,
     ):
         super(SatBoxRasterizer, self).__init__()
-        self.raster_size = raster_size
-        self.pixel_size = pixel_size
-        self.ego_center = ego_center
+        self.render_context = render_context
+        self.raster_size = render_context.raster_size_px
+        self.pixel_size = render_context.pixel_size_m
+        self.ego_center = render_context.center_in_raster_ratio
         self.filter_agents_threshold = filter_agents_threshold
         self.history_num_frames = history_num_frames
 
@@ -36,10 +34,8 @@ class SatBoxRasterizer(Rasterizer):
         self.world_to_aerial = world_to_aerial
         self.interpolation = interpolation
 
-        self.box_rast = BoxRasterizer(render_context, raster_size, filter_agents_threshold, history_num_frames)
-        self.sat_rast = SatelliteRasterizer(
-            render_context, raster_size, pixel_size, map_im, world_to_aerial, interpolation
-        )
+        self.box_rast = BoxRasterizer(render_context, filter_agents_threshold, history_num_frames)
+        self.sat_rast = SatelliteRasterizer(render_context, map_im, world_to_aerial, interpolation)
 
     def rasterize(
         self,

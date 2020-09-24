@@ -7,11 +7,12 @@ from l5kit.data import ChunkedDataset
 from l5kit.dataset import AgentDataset
 from l5kit.evaluation import compute_metrics_csv, write_gt_csv, write_pred_csv
 from l5kit.evaluation.metrics import neg_multi_log_likelihood
-from l5kit.rasterization import StubRasterizer
+from l5kit.rasterization import RenderContext, StubRasterizer
 
 
 def test_compute_mse_error(tmp_path: Path, zarr_dataset: ChunkedDataset, cfg: dict) -> None:
-    rast = StubRasterizer((10, 10), np.asarray((0.25, 0.25)), np.asarray((0.5, 0.5)), 0.5)
+    context = RenderContext(np.asarray((10, 10)), np.asarray((0.25, 0.25)), np.asarray((0.5, 0.5)))
+    rast = StubRasterizer(context, 0.5)
     dataset = AgentDataset(cfg, zarr_dataset, rast)
 
     gt_coords = []

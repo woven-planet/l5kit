@@ -73,22 +73,18 @@ def draw_boxes(
 
 class BoxRasterizer(Rasterizer):
     def __init__(
-        self,
-        render_context: RenderContext,
-        raster_size: Tuple[int, int],
-        filter_agents_threshold: float,
-        history_num_frames: int,
+        self, render_context: RenderContext, filter_agents_threshold: float, history_num_frames: int,
     ):
         """
 
-        Arguments:
-            raster_size (Tuple[int, int]): Desired output raster size
+        Args:
+            render_context (RenderContext): Render context
             filter_agents_threshold (float): Value between 0 and 1 used to filter uncertain agent detections
             history_num_frames (int): Number of frames to rasterise in the past
         """
         super(BoxRasterizer, self).__init__()
         self.render_context = render_context
-        self.raster_size = raster_size
+        self.raster_size = render_context.raster_size_px
         self.filter_agents_threshold = filter_agents_threshold
         self.history_num_frames = history_num_frames
 

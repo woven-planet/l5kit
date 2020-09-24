@@ -4,7 +4,7 @@ import pytest
 from l5kit.data import ChunkedDataset
 from l5kit.dataset import EgoDataset
 from l5kit.geometry import agent_pose, rotation33_as_yaw
-from l5kit.rasterization import StubRasterizer
+from l5kit.rasterization import RenderContext, StubRasterizer
 from l5kit.sampling.agent_sampling import _create_targets_for_deep_prediction
 
 
@@ -38,18 +38,10 @@ def test_same_displacement(
     pixel_size: tuple,
 ) -> None:
     cfg["raster_params"]["raster_size"] = raster_size
-    cfg["raster_params"]["ego_center"] = np.asarray(ego_center)
     cfg["raster_params"]["pixel_size"] = np.asarray(pixel_size)
+    cfg["raster_params"]["ego_center"] = np.asarray(ego_center)
 
-    dataset = EgoDataset(
-        cfg,
-        zarr_dataset,
-        StubRasterizer(
-            cfg["raster_params"]["raster_size"],
-            cfg["raster_params"]["pixel_size"],
-            cfg["raster_params"]["ego_center"],
-            0.5,
-        ),
-    )
+    context = RenderContext(np.asarray(raster_size), np.asarray(pixel_size), np.asarray(ego_center))
+    dataset = EgoDataset(cfg, zarr_dataset, StubRasterizer(context, 0.5,),)
     data = dataset[0]
     assert np.allclose(data["target_positions"], base_displacement)

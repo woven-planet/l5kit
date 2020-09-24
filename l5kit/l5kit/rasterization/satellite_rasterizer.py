@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import cv2
 import numpy as np
@@ -18,8 +18,6 @@ class SatelliteRasterizer(Rasterizer):
     def __init__(
         self,
         render_context: RenderContext,
-        raster_size: Tuple[int, int],
-        pixel_size: np.ndarray,
         map_im: np.ndarray,
         world_to_aerial: np.ndarray,
         interpolation: int = cv2.INTER_LINEAR,
@@ -27,15 +25,13 @@ class SatelliteRasterizer(Rasterizer):
         """
 
         Arguments:
-            raster_size (Tuple[int, int]): Desired output image size
-            pixel_size (np.ndarray): Dimensions of one pixel in the real world
-            ego_center (np.ndarray): Center of ego in the image, [0.5,0.5] would be in the image center.
+            render_context (RenderContext): Render Context
             map_im (np.ndarray): Satellite image to crop from.
             world_to_aerial (np.ndarray): Transform to go from map coordinates to satellite image pixel coordinates.
         """
         self.render_context = render_context
-        self.raster_size = raster_size
-        self.pixel_size = pixel_size
+        self.raster_size = render_context.raster_size_px
+        self.pixel_size = render_context.pixel_size_m
         self.map_im = map_im
         self.world_to_aerial = world_to_aerial
         self.interpolation = interpolation

@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import cv2
 import numpy as np
@@ -59,18 +59,12 @@ class SemanticRasterizer(Rasterizer):
     """
 
     def __init__(
-        self,
-        render_context: RenderContext,
-        raster_size: Tuple[int, int],
-        pixel_size: np.ndarray,
-        ego_center: np.ndarray,
-        semantic_map_path: str,
-        world_to_ecef: np.ndarray,
+        self, render_context: RenderContext, semantic_map_path: str, world_to_ecef: np.ndarray,
     ):
         self.render_context = render_context
-        self.raster_size = raster_size
-        self.pixel_size = pixel_size
-        self.ego_center = ego_center
+        self.raster_size = render_context.raster_size_px
+        self.pixel_size = render_context.pixel_size_m
+        self.ego_center = render_context.center_in_raster_ratio
 
         self.world_to_ecef = world_to_ecef
 

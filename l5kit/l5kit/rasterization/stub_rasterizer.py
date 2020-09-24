@@ -1,8 +1,9 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import numpy as np
 
 from .rasterizer import Rasterizer
+from .render_context import RenderContext
 
 
 class StubRasterizer(Rasterizer):
@@ -11,24 +12,18 @@ class StubRasterizer(Rasterizer):
     """
 
     def __init__(
-        self,
-        raster_size: Tuple[int, int],
-        pixel_size: np.ndarray,
-        ego_center: np.ndarray,
-        filter_agents_threshold: float,
+        self, render_context: RenderContext, filter_agents_threshold: float,
     ):
         """
 
-        Arguments:
-            raster_size {Tuple[int, int]} -- Desired output image size
-            pixel_size {np.ndarray} -- Dimensions of one pixel in the real world
-            ego_center {np.ndarray} -- Center of ego in the image, [0.5,0.5] would be in the image center.
-            filter_agents_threshold {float} -- Value between 0 and 1 used to filter uncertain agent detections
+        Args:
+            render_context (RenderContext): Render Context
+            filter_agents_threshold (float): Value between 0 and 1 used to filter uncertain agent detections
         """
         super(StubRasterizer, self).__init__()
-        self.raster_size = raster_size
-        self.pixel_size = pixel_size
-        self.ego_center = ego_center
+        self.raster_size = render_context.raster_size_px
+        self.pixel_size = render_context.pixel_size_m
+        self.ego_center = render_context.center_in_raster_ratio
         self.filter_agents_threshold = filter_agents_threshold
 
     def rasterize(

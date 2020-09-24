@@ -5,7 +5,7 @@ from tqdm import tqdm
 
 from l5kit.data import ChunkedDataset
 from l5kit.dataset import AgentDataset
-from l5kit.rasterization import StubRasterizer
+from l5kit.rasterization import RenderContext, StubRasterizer
 
 from .csv_utils import write_gt_csv
 
@@ -49,12 +49,12 @@ def export_zarr_to_csv(
         },
     }
 
-    rasterizer = StubRasterizer(
-        raster_size=cfg["raster_params"]["raster_size"],
-        pixel_size=cfg["raster_params"]["pixel_size"],
-        ego_center=cfg["raster_params"]["ego_center"],
-        filter_agents_threshold=filter_agents_threshold,
+    context = RenderContext(
+        np.asarray(cfg["raster_params"]["raster_size"]),
+        cfg["raster_params"]["pixel_size"],
+        cfg["raster_params"]["ego_center"],
     )
+    rasterizer = StubRasterizer(context, filter_agents_threshold=filter_agents_threshold,)
     dataset = AgentDataset(cfg=cfg, zarr_dataset=zarr_dataset, rasterizer=rasterizer, agents_mask=agents_mask)
 
     future_coords_offsets = []
