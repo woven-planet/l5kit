@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from l5kit.data import AGENT_DTYPE, FRAME_DTYPE, ChunkedDataset
-from l5kit.rasterization import StubRasterizer, RenderContext
+from l5kit.rasterization import RenderContext, StubRasterizer
 from l5kit.sampling import generate_agent_sample
 
 
