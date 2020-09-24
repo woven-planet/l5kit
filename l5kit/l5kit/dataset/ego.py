@@ -115,7 +115,9 @@ None if not desired
             "history_positions": history_positions,
             "history_yaws": history_yaws,
             "history_availabilities": data["history_availabilities"],
-            "world_to_image": data["world_to_image"],
+            "world_to_image": data["raster_from_world"],  # TODO deprecate
+            "raster_from_world": data["raster_from_world"],
+            "agent_from_world": data["agent_from_world"],
             "track_id": track_id,
             "timestamp": timestamp,
             "centroid": data["centroid"],

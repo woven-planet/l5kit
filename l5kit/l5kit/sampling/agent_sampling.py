@@ -147,7 +147,9 @@ to train models that can recover from slight divergence from training set data
         "history_positions": history_coords_offset,
         "history_yaws": history_yaws_offset,
         "history_availabilities": history_availability,
-        "world_to_image": raster_from_world,
+        "world_to_image": raster_from_world,  # TODO deprecate
+        "raster_from_world": raster_from_world,
+        "agent_from_world": agent_from_world,
         "centroid": agent_centroid_m,
         "yaw": agent_yaw_rad,
         "extent": agent_extent_m,
@@ -159,7 +161,7 @@ def _create_targets_for_deep_prediction(
     frames: np.ndarray,
     selected_track_id: Optional[int],
     agents: List[np.ndarray],
-    current_agent_from_world: np.ndarray,
+    agent_from_world: np.ndarray,
     current_agent_yaw: float,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
@@ -172,8 +174,8 @@ def _create_targets_for_deep_prediction(
         frames (np.ndarray): available frames. This may be less than num_frames
         selected_track_id (Optional[int]): agent track_id or AV (None)
         agents (List[np.ndarray]): list of agents arrays (same len of frames)
-        agent_current_centroid (np.ndarray): centroid of the agent at timestep 0
-        agent_current_yaw (float): angle of the agent at timestep 0
+        agent_from_world (np.ndarray): local from world matrix
+        current_agent_yaw (float): angle of the agent at timestep 0
 
     Returns:
         Tuple[np.ndarray, np.ndarray, np.ndarray]: position offsets, angle offsets, availabilities
@@ -192,14 +194,13 @@ def _create_targets_for_deep_prediction(
             # it's not guaranteed the target will be in every frame
             try:
                 agent = filter_agents_by_track_id(frame_agents, selected_track_id)[0]
+                agent_centroid = agent["centroid"]
+                agent_yaw = agent["yaw"]
             except IndexError:
                 availability[i] = 0.0  # keep track of invalid futures/history
                 continue
 
-            agent_centroid = agent["centroid"]
-            agent_yaw = agent["yaw"]
-
-        coords_offset[i] = transform_points(agent_centroid, current_agent_from_world)
+        coords_offset[i] = transform_points(agent_centroid, agent_from_world)
         yaws_offset[i] = angular_distance(agent_yaw, current_agent_yaw)
         availability[i] = 1.0
     return coords_offset, yaws_offset, availability
