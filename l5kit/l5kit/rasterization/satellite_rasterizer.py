@@ -66,21 +66,21 @@ class SatelliteRasterizer(Rasterizer):
                              [np.sin(ego_yaw_rad), np.cos(ego_yaw_rad), ego_translation_m[1]],
                              [0, 0, 1]])
 
-        ego_from_global = np.linalg.inv(ego_pose)
-        raster_from_global = self.render_context.raster_from_local @ ego_from_global
-        global_from_raster = np.linalg.inv(raster_from_global)
+        ego_from_world = np.linalg.inv(ego_pose)
+        raster_from_world = self.render_context.raster_from_local @ ego_from_world
+        world_from_raster = np.linalg.inv(raster_from_world)
 
         # Transform raster center to satellite coordinates (consider also z here)
-        raster_center_px = np.asarray(self.raster_size) * (0.5, 0.5)
-        raster_center_in_global = transform_point(raster_center_px, global_from_raster)
-        raster_center_in_sat = transform_point(np.append(raster_center_in_global, ego_translation_m[2]), self.world_to_aerial)
+        center_in_raster_px = np.asarray(self.raster_size) * (0.5, 0.5)
+        center_in_world_m = transform_point(center_in_raster_px, world_from_raster)
+        center_in_aerial_px = transform_point(np.append(center_in_world_m, ego_translation_m[2]), self.world_to_aerial)
 
         # Note 1: there is a negation here, unknown why this is necessary.
         # My best guess is because Y is flipped, maybe we can do this more elegantly.
         sat_im = get_sat_image_crop_scaled(
             self.map_im,
             self.raster_size,
-            raster_center_in_sat,
+            center_in_aerial_px,
             yaw=-ego_yaw_rad,
             pixel_size=self.pixel_size,
             sat_pixel_scale=self.map_pixel_scale,

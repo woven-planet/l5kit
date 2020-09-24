@@ -31,7 +31,7 @@ def get_ego_as_agent(frame: np.ndarray) -> np.ndarray:  # TODO this can be usefu
 
 def draw_boxes(
     raster_size: Tuple[int, int],
-    raster_from_global: np.ndarray,
+    raster_from_world: np.ndarray,
     agents: np.ndarray,
     color: Union[int, Tuple[int, int, int]],
 ) -> np.ndarray:
@@ -63,11 +63,11 @@ def draw_boxes(
         r_m = yaw_as_rotation33(agent["yaw"])
         box_world_coords[idx] = transform_points(corners, r_m) + agent["centroid"][:2]
 
-    box_image_coords = transform_points(box_world_coords.reshape((-1, 2)), raster_from_global)
+    box_raster_coords = transform_points(box_world_coords.reshape((-1, 2)), raster_from_world)
 
     # fillPoly wants polys in a sequence with points inside as (x,y)
-    box_image_coords = box_image_coords.reshape((-1, 4, 2)).astype(np.int64)
-    cv2.fillPoly(im, box_image_coords, color=color)
+    box_raster_coords = box_raster_coords.reshape((-1, 4, 2)).astype(np.int64)
+    cv2.fillPoly(im, box_raster_coords, color=color)
     return im
 
 
@@ -113,8 +113,8 @@ class BoxRasterizer(Rasterizer):
                                  [np.sin(agent["yaw"]), np.cos(agent["yaw"]), agent["centroid"][1]],
                                  [0, 0, 1]])
 
-        ego_from_global = np.linalg.inv(ego_pose)
-        raster_from_global = self.render_context.raster_from_local @ ego_from_global
+        ego_from_world = np.linalg.inv(ego_pose)
+        raster_from_world = self.render_context.raster_from_local @ ego_from_world
 
         # this ensures we always end up with fixed size arrays, +1 is because current time is also in the history
         out_shape = (self.raster_size[1], self.raster_size[0], self.history_num_frames + 1)
@@ -127,17 +127,17 @@ class BoxRasterizer(Rasterizer):
             av_agent = get_ego_as_agent(frame).astype(agents.dtype)
 
             if agent is None:
-                agents_image = draw_boxes(self.raster_size, raster_from_global, agents, 255)
-                ego_image = draw_boxes(self.raster_size, raster_from_global, av_agent, 255)
+                agents_image = draw_boxes(self.raster_size, raster_from_world, agents, 255)
+                ego_image = draw_boxes(self.raster_size, raster_from_world, av_agent, 255)
             else:
                 agent_ego = filter_agents_by_track_id(agents, agent["track_id"])
                 if len(agent_ego) == 0:  # agent not in this history frame
-                    agents_image = draw_boxes(self.raster_size, raster_from_global, np.append(agents, av_agent), 255)
+                    agents_image = draw_boxes(self.raster_size, raster_from_world, np.append(agents, av_agent), 255)
                     ego_image = np.zeros_like(agents_image)
                 else:  # add av to agents and remove the agent from agents
                     agents = agents[agents != agent_ego[0]]
-                    agents_image = draw_boxes(self.raster_size, raster_from_global, np.append(agents, av_agent), 255)
-                    ego_image = draw_boxes(self.raster_size, raster_from_global, agent_ego, 255)
+                    agents_image = draw_boxes(self.raster_size, raster_from_world, np.append(agents, av_agent), 255)
+                    ego_image = draw_boxes(self.raster_size, raster_from_world, agent_ego, 255)
 
             agents_images[..., i] = agents_image
             ego_images[..., i] = ego_image

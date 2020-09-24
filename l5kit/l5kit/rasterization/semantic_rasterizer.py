@@ -143,25 +143,25 @@ class SemanticRasterizer(Rasterizer):
                              [np.sin(ego_yaw_rad), np.cos(ego_yaw_rad), ego_translation_m[1]],
                              [0, 0, 1]])
 
-        ego_from_global = np.linalg.inv(ego_pose)
-        raster_from_global = self.render_context.raster_from_local @ ego_from_global
-        global_from_raster = np.linalg.inv(raster_from_global)
+        ego_from_world = np.linalg.inv(ego_pose)
+        raster_from_world = self.render_context.raster_from_local @ ego_from_world
+        world_from_raster = np.linalg.inv(raster_from_world)
 
         # get XY of center pixel in world coordinates
-        raster_center_px = np.asarray(self.raster_size) * (0.5, 0.5)
-        raster_center_in_global = transform_point(raster_center_px, global_from_raster)
+        center_in_raster_px = np.asarray(self.raster_size) * (0.5, 0.5)
+        center_in_world_m = transform_point(center_in_raster_px, world_from_raster)
 
-        sem_im = self.render_semantic_map(raster_center_in_global, raster_from_global, history_tl_faces[0])
+        sem_im = self.render_semantic_map(center_in_world_m, raster_from_world, history_tl_faces[0])
         return sem_im.astype(np.float32) / 255
 
     def render_semantic_map(
-        self, raster_center_in_global: np.ndarray, raster_from_global: np.ndarray, tl_faces: np.ndarray
+        self, center_in_world: np.ndarray, raster_from_world: np.ndarray, tl_faces: np.ndarray
     ) -> np.ndarray:
         """Renders the semantic map at given x,y coordinates.
 
         Args:
             raster_center_in_global (np.ndarray): XY of the image center in world ref system
-            raster_from_global (np.ndarray):
+            raster_from_world (np.ndarray):
         Returns:
             np.ndarray: RGB raster
 
@@ -178,13 +178,13 @@ class SemanticRasterizer(Rasterizer):
         # plot lanes
         lanes_lines = defaultdict(list)
 
-        for idx in elements_within_bounds(raster_center_in_global, self.bounds_info["lanes"]["bounds"], raster_radius):
+        for idx in elements_within_bounds(center_in_world, self.bounds_info["lanes"]["bounds"], raster_radius):
             lane = self.proto_API[self.bounds_info["lanes"]["ids"][idx]].element.lane
 
             # get image coords
             lane_coords = self.proto_API.get_lane_coords(self.bounds_info["lanes"]["ids"][idx])
-            xy_left = cv2_subpixel(transform_points(lane_coords["xyz_left"][:, :2], raster_from_global))
-            xy_right = cv2_subpixel(transform_points(lane_coords["xyz_right"][:, :2], raster_from_global))
+            xy_left = cv2_subpixel(transform_points(lane_coords["xyz_left"][:, :2], raster_from_world))
+            xy_right = cv2_subpixel(transform_points(lane_coords["xyz_right"][:, :2], raster_from_world))
             lanes_area = np.vstack((xy_left, np.flip(xy_right, 0)))  # start->end left then end->start right
 
             # Note(lberg): this called on all polygons skips some of them, don't know why
@@ -209,10 +209,10 @@ class SemanticRasterizer(Rasterizer):
 
         # plot crosswalks
         crosswalks = []
-        for idx in elements_within_bounds(raster_center_in_global, self.bounds_info["crosswalks"]["bounds"], raster_radius):
+        for idx in elements_within_bounds(center_in_world, self.bounds_info["crosswalks"]["bounds"], raster_radius):
             crosswalk = self.proto_API.get_crosswalk_coords(self.bounds_info["crosswalks"]["ids"][idx])
 
-            xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], raster_from_global))
+            xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], raster_from_world))
             crosswalks.append(xy_cross)
 
         cv2.polylines(img, crosswalks, True, (255, 117, 69), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
