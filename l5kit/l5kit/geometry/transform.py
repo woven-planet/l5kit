@@ -5,6 +5,27 @@ import pymap3d as pm
 import transforms3d
 
 
+def agent_pose(agent_centroid_m: np.ndarray, agent_yaw_rad: float) -> np.ndarray:
+    """
+    Return the agent pose as a 3x3 matrix. This corresponds to world_from_agent matrix.
+
+    Args:
+        agent_centroid_m (np.ndarry): 2D coordinates of the agent
+        agent_yaw_rad (float): yaw of the agent
+
+    Returns:
+        (np.ndarray): 3x3 world_from_agent matrix
+    """
+    # Compute agent pose from its position and heading
+    return np.array(
+        [
+            [np.cos(agent_yaw_rad), -np.sin(agent_yaw_rad), agent_centroid_m[0]],
+            [np.sin(agent_yaw_rad), np.cos(agent_yaw_rad), agent_centroid_m[1]],
+            [0, 0, 1],
+        ]
+    )
+
+
 def rotation33_as_yaw(rotation: np.ndarray) -> float:
     """Compute the yaw component of given 3x3 rotation matrix.
 

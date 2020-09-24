@@ -181,7 +181,9 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
                 world_to_ecef,
             )
         else:
-            return SemanticRasterizer(raster_size, pixel_size, ego_center, semantic_map_filepath, world_to_ecef,)
+            return SemanticRasterizer(
+                render_context, raster_size, pixel_size, ego_center, semantic_map_filepath, world_to_ecef
+            )
 
     elif map_type == "box_debug":
         return BoxRasterizer(render_context, raster_size, filter_agents_threshold, history_num_frames)

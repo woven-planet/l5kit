@@ -31,10 +31,10 @@ class SemBoxRasterizer(Rasterizer):
         self.filter_agents_threshold = filter_agents_threshold
         self.history_num_frames = history_num_frames
 
-        self.box_rast = BoxRasterizer(
-            render_context, raster_size, pixel_size, ego_center, filter_agents_threshold, history_num_frames
+        self.box_rast = BoxRasterizer(render_context, raster_size, filter_agents_threshold, history_num_frames)
+        self.sat_rast = SemanticRasterizer(
+            render_context, raster_size, pixel_size, ego_center, semantic_map_path, world_to_ecef
         )
-        self.sat_rast = SemanticRasterizer(raster_size, pixel_size, ego_center, semantic_map_path, world_to_ecef)
 
     def rasterize(
         self,

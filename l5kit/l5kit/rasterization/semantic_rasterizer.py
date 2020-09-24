@@ -67,6 +67,7 @@ class SemanticRasterizer(Rasterizer):
         semantic_map_path: str,
         world_to_ecef: np.ndarray,
     ):
+        self.render_context = render_context
         self.raster_size = raster_size
         self.pixel_size = pixel_size
         self.ego_center = ego_center

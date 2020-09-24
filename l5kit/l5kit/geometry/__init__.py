@@ -1,6 +1,7 @@
 from .angle import angle_between_vectors, angular_distance, compute_yaw_around_north_from_direction
 from .image import crop_rectangle_from_image
 from .transform import (
+    agent_pose,
     ecef_to_geodetic,
     flip_y_axis,
     geodetic_to_ecef,
@@ -30,4 +31,5 @@ __all__ = [
     "voxel_coords_to_intensity_grid",
     "normalize_intensity",
     "angular_distance",
+    "agent_pose",
 ]
