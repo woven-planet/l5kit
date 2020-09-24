@@ -1,7 +1,7 @@
 import bisect
 import warnings
 from functools import partial
-from typing import Optional, Tuple, cast
+from typing import Optional
 
 import numpy as np
 from torch.utils.data import Dataset

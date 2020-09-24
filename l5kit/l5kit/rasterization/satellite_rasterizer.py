@@ -5,8 +5,8 @@ import numpy as np
 
 from ..geometry import rotation33_as_yaw, transform_point
 from .rasterizer import Rasterizer
-from .satellite_image import get_sat_image_crop_scaled
 from .render_context import RenderContext
+from .satellite_image import get_sat_image_crop_scaled
 
 
 class SatelliteRasterizer(Rasterizer):

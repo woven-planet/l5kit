@@ -8,15 +8,11 @@ from l5kit.rasterization.render_context import RenderContext
 
 def test_transform_to_image_space_2d() -> None:
 
-    image_shape = (200, 200)
+    image_shape = np.asarray((200, 200))
     pixel_size = np.asarray((1.0, 0.5))
     offset = np.asarray((0, -2))
 
-    render_context = RenderContext(
-        raster_size_px=image_shape,
-        pixel_size_m=pixel_size,
-        center_in_raster_ratio=offset,
-    )
+    render_context = RenderContext(raster_size_px=image_shape, pixel_size_m=pixel_size, center_in_raster_ratio=offset,)
 
     input_points = np.array([[0, 0], [10, 10], [-10, -10]])
     expected_output_points = np.array([[100, 104], [110, 124], [90, 84]])
@@ -29,14 +25,16 @@ def test_transform_to_image_space_2d() -> None:
 
 def test_transform_single_point() -> None:
 
-    shape = (200, 200)
+    image_shape = np.asarray((200, 200))
     pixel_size = np.asarray((1.0, 0.5))
     offset = np.asarray((0, -2))
+
+    render_context = RenderContext(raster_size_px=image_shape, pixel_size_m=pixel_size, center_in_raster_ratio=offset,)
 
     point = np.array([10, 10])
     expected_point = np.array([110, 124])
 
-    tf = raster_from_world(shape, pixel_size, offset)
+    tf = render_context.raster_from_local
     output_point = transform_point(point, tf)
 
     np.testing.assert_array_equal(output_point, expected_point)

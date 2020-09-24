@@ -123,9 +123,13 @@ to train models that can recover from slight divergence from training set data
     )
 
     # Compute agent pose from its position and heading
-    agent_pose = np.array([[np.cos(agent_yaw_rad), -np.sin(agent_yaw_rad), agent_centroid_m[0]],
-                           [np.sin(agent_yaw_rad), np.cos(agent_yaw_rad), agent_centroid_m[1]],
-                           [0, 0, 1]])
+    agent_pose = np.array(
+        [
+            [np.cos(agent_yaw_rad), -np.sin(agent_yaw_rad), agent_centroid_m[0]],
+            [np.sin(agent_yaw_rad), np.cos(agent_yaw_rad), agent_centroid_m[1]],
+            [0, 0, 1],
+        ]
+    )
 
     agent_from_world = np.linalg.inv(agent_pose)
     raster_from_world = render_context.raster_from_world(agent_centroid_m, agent_yaw_rad)

@@ -36,9 +36,7 @@ class SatBoxRasterizer(Rasterizer):
         self.world_to_aerial = world_to_aerial
         self.interpolation = interpolation
 
-        self.box_rast = BoxRasterizer(
-            render_context, raster_size, filter_agents_threshold, history_num_frames
-        )
+        self.box_rast = BoxRasterizer(render_context, raster_size, filter_agents_threshold, history_num_frames)
         self.sat_rast = SatelliteRasterizer(
             render_context, raster_size, pixel_size, map_im, world_to_aerial, interpolation
         )
