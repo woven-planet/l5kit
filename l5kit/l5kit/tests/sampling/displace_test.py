@@ -18,7 +18,7 @@ def base_displacement(zarr_dataset: ChunkedDataset, cfg: dict) -> np.ndarray:
         selected_track_id=None,
         agents=[np.empty(0) for _ in range(future_num_frames)],
         agent_current_centroid=ref_frame["ego_translation"][:2],
-        agent_current_yaw=rotation33_as_yaw(ref_frame["ego_rotation"]),
+        current_agent_yaw=rotation33_as_yaw(ref_frame["ego_rotation"]),
     )
     return future_coords_offset
 
