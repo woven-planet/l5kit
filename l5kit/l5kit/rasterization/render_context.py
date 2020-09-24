@@ -6,7 +6,10 @@ class RenderContext:
         self, raster_size_px: np.ndarray, pixel_size_m: np.ndarray, center_in_raster_ratio: np.ndarray,
     ) -> None:
         """
-        Arguments:
+        This class stores render context information (raster size, pixel size, raster center / principle point) and
+        it computes a transformation matrix (raster_from_local) to transform a local pose to the raster center
+
+        Args:
             raster_size_px (Tuple[int, int]): Raster size in pixels
             pixel_size_m (np.ndarray): Size of one pixel in the real world, meter per pixel
             center_in_raster_ratio (np.ndarray): Where to center the local pose in the raster. [0.5,0.5] would be in
@@ -32,13 +35,13 @@ class RenderContext:
 
         Args:
             render_context (RenderContext): the context for rasterisation
-            ego_translation_m (np.ndarray): XY translation in world coordinates
-            ego_yaw_rad (float): yaw angle
+            position_m (np.ndarray): XY position in world coordinates
+            angle_rad (float): rotation angle in world coordinates
 
         Returns:
             (np.ndarray): a transformation matrix from world coordinates to raster coordinates
         """
-        # Compute pose from its position and heading
+        # Compute pose from its position and rotation
         pose_in_world = np.array([[np.cos(angle_rad), -np.sin(angle_rad), position_m[0]],
                                   [np.sin(angle_rad), np.cos(angle_rad), position_m[1]],
                                   [0, 0, 1]])
