@@ -1,4 +1,4 @@
-from typing import Tuple
+from typing import Optional, Tuple
 
 import cv2
 import numpy as np
@@ -12,6 +12,8 @@ REFERENCE_TRAJECTORY_POINT_COLOR = (255, 255, 0)
 ARROW_LENGTH_IN_PIXELS = 2
 ARROW_THICKNESS_IN_PIXELS = 1
 ARROW_TIP_LENGTH_IN_PIXELS = 1.8
+# Circles represent position only
+CIRCLE_RADIUS = 2
 
 
 def draw_arrowed_line(on_image: np.ndarray, position: np.ndarray, yaw: float, rgb_color: Tuple[int, int, int]) -> None:
@@ -42,23 +44,29 @@ def draw_arrowed_line(on_image: np.ndarray, position: np.ndarray, yaw: float, rg
 
 
 def draw_trajectory(
-    on_image: np.ndarray, positions: np.ndarray, yaws: np.ndarray, rgb_color: Tuple[int, int, int],
+    on_image: np.ndarray, positions: np.ndarray, rgb_color: Tuple[int, int, int], yaws: Optional[np.ndarray] = None
 ) -> None:
     """
     Draw a trajectory on oriented arrow onto an RGB image
     Args:
         on_image (np.ndarray): the RGB image to draw onto
-        positions (np.ndarray): pixel coordinates in the image space (not displacements)
-        yaws (np.ndarray): yaws in radians
+        positions (np.ndarray): pixel coordinates in the image space (not displacements) (Nx2)
         rgb_color (Tuple[int, int, int]): the trajectory RGB color
+        yaws (Optional[np.ndarray]): yaws in radians (N) or None to disable yaw visualisation
 
     Returns: None
 
     """
-    for pos, yaw in zip(positions, yaws):
-        pred_waypoint = pos[:2]
-        pred_yaw = float(yaw[0])
-        draw_arrowed_line(on_image, pred_waypoint, pred_yaw, rgb_color)
+    if yaws is not None:
+        assert len(yaws) == len(positions)
+        for pos, yaw in zip(positions, yaws):
+            pred_waypoint = pos[:2]
+            pred_yaw = float(yaw[0])
+            draw_arrowed_line(on_image, pred_waypoint, pred_yaw, rgb_color)
+    else:
+        for pos in positions:
+            pred_waypoint = pos[:2]
+            cv2.circle(on_image, tuple(pred_waypoint.astype(np.int)), CIRCLE_RADIUS, rgb_color, -1)
 
 
 def draw_reference_trajectory(on_image: np.ndarray, world_to_pixel: np.ndarray, positions: np.ndarray) -> None:
