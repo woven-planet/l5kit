@@ -5,6 +5,7 @@ from tqdm import tqdm
 
 from l5kit.data import ChunkedDataset
 from l5kit.dataset import AgentDataset
+from l5kit.geometry import transform_points
 from l5kit.rasterization import RenderContext, StubRasterizer
 
 from .csv_utils import write_gt_csv
@@ -64,7 +65,10 @@ def export_zarr_to_csv(
     agent_ids = []
 
     for el in tqdm(dataset, desc="extracting GT"):  # type: ignore
-        future_coords_offsets.append(el["target_positions"])
+        # convert agent coordinates to world offsets
+        offsets = transform_points(el["target_positions"], el["world_from_agent"]) - el["centroid"][:2]
+        future_coords_offsets.append(offsets)
+
         timestamps.append(el["timestamp"])
         agent_ids.append(el["track_id"])
         target_availabilities.append(el["target_availabilities"])
