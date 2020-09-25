@@ -126,11 +126,12 @@ def transform_points_transposed(points: np.ndarray, transf_matrix: np.ndarray) -
     Returns:
         np.ndarray: array of shape (2,N) for 2D input points, or (3,N) points for 3D input points
     """
-    num_dims = transf_matrix.shape[0] - 1
-    if points.shape[0] not in [2, 3, 4]:
-        raise ValueError("Points input should be (2, N), (3,N) or (4,N) shape, received {}".format(points.shape))
+    assert len(points) == len(transf_matrix) - 1, "write assert"
+    if points.shape[0] not in [2, 3]:
+        raise ValueError("Points input should be (2, N) or (3,N) shape, received {}".format(points.shape))
 
-    return transf_matrix.dot(np.vstack((points[:num_dims, :], np.ones(points.shape[1]))))[:num_dims, :]
+    num_dims = len(points)
+    return transf_matrix[:num_dims, :num_dims] @ points + transf_matrix[:num_dims, -1:]
 
 
 def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
