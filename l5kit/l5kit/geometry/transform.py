@@ -118,17 +118,20 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
 def transform_points_transposed(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     """
     Transform points using transformation matrix.
+    Note this function assumes len(points) == len(matrix) -1, which means that the last row on the matrix
+    does not influence the final result.
+    For 2D points only the first 2x3 part of the matrix will be used.
 
     Args:
-        points (np.ndarray): Input points (2xN), (3xN) or (4xN).
+        points (np.ndarray): Input points (2xN) or (3xN).
         transf_matrix (np.ndarray): 3x3 or 4x4 transformation matrix for 2D and 3D input respectively
 
     Returns:
         np.ndarray: array of shape (2,N) for 2D input points, or (3,N) points for 3D input points
     """
-    assert len(points) == len(transf_matrix) - 1, "write assert"
     if points.shape[0] not in [2, 3]:
         raise ValueError("Points input should be (2, N) or (3,N) shape, received {}".format(points.shape))
+    assert len(points) == len(transf_matrix) - 1, "write assert"
 
     num_dims = len(points)
     return transf_matrix[:num_dims, :num_dims] @ points + transf_matrix[:num_dims, -1:]
