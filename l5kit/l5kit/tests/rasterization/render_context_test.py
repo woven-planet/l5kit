@@ -5,13 +5,13 @@ from l5kit.rasterization.render_context import RenderContext
 
 
 def test_transform_to_image_space_2d() -> None:
-    image_shape = np.asarray((200, 200))
+    image_shape_px = np.asarray((200, 200))
     center_in_raster_ratio = np.asarray((0.5, 0.5))
-    pixel_size = np.asarray((1.0, 1.0))
+    pixel_size_m = np.asarray((1.0, 1.0))
     center_world = np.asarray((0, -2))
 
     render_context = RenderContext(
-        raster_size_px=image_shape, pixel_size_m=pixel_size, center_in_raster_ratio=center_in_raster_ratio
+        raster_size_px=image_shape_px, pixel_size_m=pixel_size_m, center_in_raster_ratio=center_in_raster_ratio
     )
 
     input_points = np.array([[0, 0], [10, 10], [-10, -10]])
