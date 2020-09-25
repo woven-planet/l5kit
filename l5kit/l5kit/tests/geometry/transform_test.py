@@ -3,23 +3,25 @@ import pytest
 import transforms3d
 
 from l5kit.geometry import transform_point, transform_points, transform_points_transposed
-from l5kit.rasterization.render_context import RenderContext
+
+
+def test_transform_points() -> None:
+    tf = np.asarray([[1.0, 0, 100], [0, 0.5, 50], [0, 0, 1]])
+
+    points = np.array([[0, 10], [10, 0], [10, 10]])
+    expected_point = np.array([[100, 55], [110, 50], [110, 55]])
+
+    output_points = transform_points(points, tf)
+
+    np.testing.assert_array_equal(output_points, expected_point)
 
 
 def test_transform_single_point() -> None:
-    image_shape = np.asarray((200, 200))
-    center_in_raster_ratio = np.asarray((0.5, 0.5))
-    pixel_size = np.asarray((1.0, 1.0))
-    center_world = np.asarray((-5, -5))
-
-    render_context = RenderContext(
-        raster_size_px=image_shape, pixel_size_m=pixel_size, center_in_raster_ratio=center_in_raster_ratio
-    )
+    tf = np.asarray([[1.0, 0, 100], [0, 0.5, 50], [0, 0, 1]])
 
     point = np.array([0, 10])
-    expected_point = np.array([105, 115])
+    expected_point = np.array([100, 55])
 
-    tf = render_context.raster_from_world(center_world, 0.0)
     output_point = transform_point(point, tf)
 
     np.testing.assert_array_equal(output_point, expected_point)
