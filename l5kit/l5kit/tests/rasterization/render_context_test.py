@@ -4,7 +4,7 @@ from l5kit.geometry import transform_points
 from l5kit.rasterization.render_context import RenderContext
 
 
-def test_transform_to_image_space_2d() -> None:
+def test_transform_points_to_raster() -> None:
     image_shape_px = np.asarray((200, 200))
     center_in_raster_ratio = np.asarray((0.5, 0.5))
     pixel_size_m = np.asarray((1.0, 1.0))
