@@ -122,7 +122,8 @@ to train models that can recover from slight divergence from training set data
         else rasterizer.rasterize(history_frames, history_agents, history_tl_faces, selected_agent)
     )
 
-    agent_from_world = np.linalg.inv(agent_pose(agent_centroid_m, agent_yaw_rad))
+    world_from_agent = agent_pose(agent_centroid_m, agent_yaw_rad)
+    agent_from_world = np.linalg.inv(world_from_agent)
     raster_from_world = render_context.raster_from_world(agent_centroid_m, agent_yaw_rad)
 
     future_coords_offset, future_yaws_offset, future_availability = _create_targets_for_deep_prediction(
@@ -143,9 +144,10 @@ to train models that can recover from slight divergence from training set data
         "history_yaws": history_yaws_offset,
         "history_availabilities": history_availability,
         "world_to_image": raster_from_world,  # TODO deprecate
-        "raster_from_agent": raster_from_world @ np.linalg.inv(agent_from_world),
+        "raster_from_agent": raster_from_world @ world_from_agent,
         "raster_from_world": raster_from_world,
         "agent_from_world": agent_from_world,
+        "world_from_agent": world_from_agent,
         "centroid": agent_centroid_m,
         "yaw": agent_yaw_rad,
         "extent": agent_extent_m,

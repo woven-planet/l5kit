@@ -120,6 +120,7 @@ None if not desired
             "raster_from_world": data["raster_from_world"],
             "raster_from_agent": data["raster_from_agent"],
             "agent_from_world": data["agent_from_world"],
+            "world_from_agent": data["world_from_agent"],
             "track_id": track_id,
             "timestamp": timestamp,
             "centroid": data["centroid"],
