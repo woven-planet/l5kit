@@ -13,7 +13,7 @@ ARROW_LENGTH_IN_PIXELS = 2
 ARROW_THICKNESS_IN_PIXELS = 1
 ARROW_TIP_LENGTH_IN_PIXELS = 1.8
 # Circles represent position only
-CIRCLE_RADIUS = 2
+CIRCLE_RADIUS = 1
 
 
 def draw_arrowed_line(on_image: np.ndarray, position: np.ndarray, yaw: float, rgb_color: Tuple[int, int, int]) -> None:
