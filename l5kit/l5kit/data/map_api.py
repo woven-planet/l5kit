@@ -110,7 +110,7 @@ class MapAPI:
             element_id (str): lane element id
 
         Returns:
-            dict: a dict with the two boundaries coordinates as (Nx3) XYZ arrays
+            dict: a dict with the boundaries coordinates as (3xN) XYZ arrays
         """
         element = self[element_id]
         assert self.is_lane(element)
@@ -132,7 +132,10 @@ class MapAPI:
             lane.geo_frame,
         )
 
-        return {"xyz_left": xyz_left, "xyz_right": xyz_right}
+        xyz = np.vstack((xyz_left, np.flip(xyz_right, 0)))
+        xyz[:, -1] = 1.0
+
+        return {"xyz": xyz.T}
 
     @staticmethod
     @no_type_check
@@ -161,7 +164,7 @@ class MapAPI:
             element_id (str): crosswalk element id
 
         Returns:
-            dict: a dict with the polygon coordinates as an (Nx3) XYZ array
+            dict: a dict with the polygon coordinates as an (3xN) XYZ array
         """
         element = self[element_id]
         assert self.is_crosswalk(element)
@@ -174,7 +177,8 @@ class MapAPI:
             traffic_element.geo_frame,
         )
 
-        return {"xyz": xyz}
+        xyz[:, -1] = 1.0
+        return {"xyz": xyz.T}
 
     def is_traffic_face_colour(self, element_id: str, colour: str) -> bool:
         """
