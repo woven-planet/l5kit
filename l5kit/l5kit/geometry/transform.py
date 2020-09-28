@@ -103,6 +103,9 @@ def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
 def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     """
     Transform points using transformation matrix.
+    Note this function assumes points.shape[1] == matrix.shape[1] - 1, which means that the last row on the matrix
+    does not influence the final result.
+    For 2D points only the first 2x3 part of the matrix will be used.
 
     Args:
         points (np.ndarray): Input points (Nx2) or (Nx3).
@@ -111,8 +114,18 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     Returns:
         np.ndarray: array of shape (N,2) for 2D input points, or (N,3) points for 3D input points
     """
-    # TODO: Surely we can do this without transposing.
-    return transform_points_transposed(points.transpose(1, 0), transf_matrix).transpose(1, 0)
+    assert len(points.shape) == len(transf_matrix.shape) == 2
+    assert transf_matrix.shape[0] == transf_matrix.shape[1]
+
+    if points.shape[1] not in [2, 3]:
+        raise ValueError("Points input should be (2, N) or (3,N) shape, received {}".format(points.shape))
+
+    assert points.shape[1] == transf_matrix.shape[1] - 1, "points dim should be one less than matrix dim"
+
+    num_dims = len(transf_matrix) - 1
+    transf_matrix = transf_matrix.T
+
+    return points @ transf_matrix[:num_dims, :num_dims] + transf_matrix[-1, :num_dims]
 
 
 def transform_points_transposed(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
