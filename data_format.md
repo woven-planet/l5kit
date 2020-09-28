@@ -228,8 +228,8 @@ When iterated, it yields a dict with the following information:
 | Field Name               | Description                                                                                                                                          |
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `image`                  | The BEV raster as a multi-channel tensor                                                                                                             |
-| `target_positions`       | The coordinates (as offset wrt the current position) of the AV in the future. Unit is metres                                                         |
-| `target_yaws`            | The yaws (as angular offset wrt the current position) of the AV in the future. Unit is radians                                                       |
+| `target_positions`       | The coordinates (in **agent** space) of the AV in the future. Unit is metres                                                         |
+| `target_yaws`            | The yaws (in **agent** space) of the AV in the future. Unit is radians                                                       |
 | `target_availabilities`  | A 1D array. Each item can be either 1 (future step is valid) or 0 (future step is not valid). Invalid steps may occur at the end or start of a scene |
 | `history_positions`      | Same as target_positions but for the frames in the past                                                                                              |
 | `history_yaws`           | Same as target_yaws but for the frames in the past                                                                                                   |
