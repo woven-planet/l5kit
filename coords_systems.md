@@ -28,14 +28,14 @@ The origin of the **world** coordinate system is located at [[37°25'45.6"N, 122
 
 ## Agent Coordinate System
 A common feature of the BEV's rasterisation is that the agent of interest is always aligned in the same direction.
-In L5Kit this direction is left (i.e. the hood of the agent of interest always points to the left side of the image).
+In L5Kit this direction is right (i.e. the hood of the agent of interest always points to the right side of the image).
 
 This metric space is referred to as **agent** and has the following features:
-- The agent's positions is at (0, 0);
+- The agent's position is at (0, 0);
 - The agent's yaw is 0.
 
 If you're using one of our high-level dataset objects (either `EgoDataset` or `AgentDataset`) to generate samples, you can 
-access the agent-from-world matrix using the `agent_from_world` key on the returned dict.
+access the agent-from-world matrix using the `agent_from_world` key of the returned dict.
 
 **Note:** This space is aligned with the input raster except for an intrinsic transformation (i.e. metres to pixels), 
 which makes this space suitable as a target during training.
