@@ -234,7 +234,10 @@ When iterated, it yields a dict with the following information:
 | `history_positions`      | Same as target_positions but for the frames in the past                                                                                              |
 | `history_yaws`           | Same as target_yaws but for the frames in the past                                                                                                   |
 | `history_availabilities` | Same as target_availabilities but for the frames in the past                                                                                         |
-| `world_to_image`         | A 3x3 matrix mapping from world to the image reference system                                                                                        |
+| `raster_from_world`      | A 3x3 matrix mapping from world to the image reference system                                                                                        |
+| `raster_from_agent`      | A 3x3 matrix mapping from agent to the image reference system                                                                                        |
+| `agent_from_world`       | A 3x3 matrix mapping from world to the agent reference system                                                                                        |
+| `world_from_agent`       | A 3x3 matrix mapping from agent to the world reference system                                                                                        |
 | `track_id`               | A scene-unique identifier id for the agent, or -1 for the AV                                                                                         |
 | `timestamp`              | The timestamp of the current frame                                                                                                                   |
 | `centroid`               | The centroid of the AV in the current frame in the world reference system. Unit is metres                                                            |
