@@ -1,8 +1,8 @@
 from .gif import write_gif
 from .utils import (
     PREDICTED_POINTS_COLOR,
-    TARGET_POINTS_COLOR,
     REFERENCE_TRAJ_COLOR,
+    TARGET_POINTS_COLOR,
     draw_reference_trajectory,
     draw_trajectory,
 )
