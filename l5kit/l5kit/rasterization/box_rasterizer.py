@@ -9,6 +9,7 @@ from ..data.filter import filter_agents_by_labels, filter_agents_by_track_id
 from ..geometry import rotation33_as_yaw, transform_points, world_to_image_pixels_matrix
 from ..geometry.transform import yaw_as_rotation33
 from .rasterizer import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
+from .semantic_rasterizer import CV2_SHIFT, cv2_subpixel
 
 
 def get_ego_as_agent(frame: np.ndarray) -> np.ndarray:  # TODO this can be useful to have around
@@ -65,8 +66,8 @@ def draw_boxes(
     box_image_coords = transform_points(box_world_coords.reshape((-1, 2)), world_to_image_space)
 
     # fillPoly wants polys in a sequence with points inside as (x,y)
-    box_image_coords = box_image_coords.reshape((-1, 4, 2)).astype(np.int64)
-    cv2.fillPoly(im, box_image_coords, color=color)
+    box_image_coords = cv2_subpixel(box_image_coords.reshape((-1, 4, 2)))
+    cv2.fillPoly(im, box_image_coords, color=color, shift=CV2_SHIFT)
     return im
 
 
