@@ -147,7 +147,7 @@ class SemanticRasterizer(Rasterizer):
         """Renders the semantic map at given x,y coordinates.
 
         Args:
-            raster_center_in_global (np.ndarray): XY of the image center in world ref system
+            center_in_world (np.ndarray): XY of the image center in world ref system
             raster_from_world (np.ndarray):
         Returns:
             np.ndarray: RGB raster
