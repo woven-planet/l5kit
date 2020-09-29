@@ -62,11 +62,11 @@ One application of this is drawing trajectories on the image:
 data = dataset[0]  # this comes from either EgoDataset or AgentDataset
 
 im = dataset.rasterizer.to_rgb(data["image"].transpose(1, 2, 0))  # convert raster into rgb
-# transform points to world space
-positions_world = transform_points(data["target_positions"], data["world_from_agent"])
-# transform from world meters into image pixels
-positions_pixels = transform_points(positions_world, data["raster_from_world"])
-draw_trajectory(im, positions_pixels, data["target_yaws"], TARGET_POINTS_COLOR)
+# transform points from agent local coordinate to world coordinate
+positions_in_world = transform_points(data["target_positions"], data["world_from_agent"])
+# transform from world coordinates onto raster
+positions_in_raster = transform_points(positions_in_world, data["raster_from_world"])
+draw_trajectory(im, positions_in_raster, TARGET_POINTS_COLOR, yaws=data["target_yaws"])
 ```
 
 ## Satellite Coordinate System
