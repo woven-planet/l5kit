@@ -7,7 +7,9 @@ class RenderContext:
     ) -> None:
         """
         This class stores render context information (raster size, pixel size, raster center / principle point) and
-        it computes a transformation matrix (raster_from_local) to transform a local pose to the raster center
+        it computes a transformation matrix (raster_from_local) to transform a local coordinates into raster ones.
+        (0,0) in local will end up in the center of the raster (specified by combining `raster_size_px` and
+        `center_in_raster_ratio`).
 
         Args:
             raster_size_px (Tuple[int, int]): Raster size in pixels
