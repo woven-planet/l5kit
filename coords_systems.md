@@ -37,7 +37,7 @@ This metric space is referred to as **agent** and has the following features:
 If you're using one of our high-level dataset objects (either `EgoDataset` or `AgentDataset`) to generate samples, you can 
 access the agent-from-world matrix using the `agent_from_world` key of the returned dict.
 
-**Note:** This space is aligned with the input raster except for an intrinsic transformation (i.e. metres to pixels), 
+**Note:** This space is aligned with the input raster except for an intrinsic transformation (i.e. meters to pixels), 
 which makes this space suitable as a target during training.
   
 

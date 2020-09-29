@@ -228,7 +228,7 @@ When iterated, it yields a dict with the following information:
 | Field Name               | Description                                                                                                                                          |
 |--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
 | `image`                  | The BEV raster as a multi-channel tensor                                                                                                             |
-| `target_positions`       | The coordinates (in **agent** reference system) of the AV in the future. Unit is metres                                                         |
+| `target_positions`       | The coordinates (in **agent** reference system) of the AV in the future. Unit is meters                                                         |
 | `target_yaws`            | The yaws (in **agent** reference system) of the AV in the future. Unit is radians                                                       |
 | `target_availabilities`  | A 1D array. Each item can be either 1 (future step is valid) or 0 (future step is not valid). Invalid steps may occur at the end or start of a scene |
 | `history_positions`      | Same as target_positions but for the frames in the past                                                                                              |
@@ -240,9 +240,9 @@ When iterated, it yields a dict with the following information:
 | `world_from_agent`       | A 3x3 matrix mapping from agent to the world reference system                                                                                        |
 | `track_id`               | A scene-unique identifier id for the agent, or -1 for the AV                                                                                         |
 | `timestamp`              | The timestamp of the current frame                                                                                                                   |
-| `centroid`               | The centroid of the AV in the current frame in **world** reference system. Unit is metres                                                            |
+| `centroid`               | The centroid of the AV in the current frame in **world** reference system. Unit is meters                                                            |
 | `yaw`                    | The angle of yaw of the AV in the current frame in **world** reference system. Unit is radians                                                                                     |
-| `extent`                 | The extent of the AV (in XYZ) in the world reference system. Unit is metres   
+| `extent`                 | The extent of the AV (in XYZ) in the world reference system. Unit is meters   
 
 
 A sample usage would be:
