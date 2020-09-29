@@ -124,8 +124,6 @@ class SemanticRasterizer(Rasterizer):
         history_tl_faces: List[np.ndarray],
         agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
-        # TODO TR_FACES
-
         if agent is None:
             ego_translation_m = history_frames[0]["ego_translation"]
             ego_yaw_rad = rotation33_as_yaw(history_frames[0]["ego_rotation"])
