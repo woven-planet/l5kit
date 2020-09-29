@@ -17,7 +17,7 @@ class StubRasterizer(Rasterizer):
         """
 
         Args:
-            render_context (RenderContext): Render Context
+            render_context (RenderContext): The render context used to convert coordinates into raster space
             filter_agents_threshold (float): Value between 0 and 1 used to filter uncertain agent detections
         """
         super(StubRasterizer, self).__init__()
