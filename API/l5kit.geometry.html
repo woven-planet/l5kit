@@ -224,6 +224,26 @@ distance such that they are always in the [-pi, pi) range.</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="l5kit.geometry.compute_agent_pose">
+<code class="sig-prename descclassname">l5kit.geometry.</code><code class="sig-name descname">compute_agent_pose</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">agent_centroid_m</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">agent_yaw_rad</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.geometry.compute_agent_pose" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the agent pose as a 3x3 matrix. This corresponds to world_from_agent matrix.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agent_centroid_m</strong> (<em>np.ndarry</em>) – 2D coordinates of the agent</p></li>
+<li><p><strong>agent_yaw_rad</strong> (<em>float</em>) – yaw of the agent</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>3x3 world_from_agent matrix</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>(np.ndarray)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="l5kit.geometry.compute_yaw_around_north_from_direction">
 <code class="sig-prename descclassname">l5kit.geometry.</code><code class="sig-name descname">compute_yaw_around_north_from_direction</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">direction_vector</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#l5kit.geometry.compute_yaw_around_north_from_direction" title="Permalink to this definition">¶</a></dt>
 <dd><p>compute_yaw_from_direction computes the yaw as angle between a 2D input direction vector and
@@ -302,26 +322,6 @@ coordinates. If no altitude is given, altitude 0 is assumed.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>3D ECEF coordinate</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="l5kit.geometry.get_transformation_matrix">
-<code class="sig-prename descclassname">l5kit.geometry.</code><code class="sig-name descname">get_transformation_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">translation</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">rotation</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.geometry.get_transformation_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a 3D transformation matrix from translation vector and quaternion rotation</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>translation</strong> (<em>np.ndarray</em>) – 3D translation vector</p></li>
-<li><p><strong>rotation</strong> (<em>np.ndarray</em>) – 4 quaternion values</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>4x4 transformation matrix</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>np.ndarray</p>
@@ -441,36 +441,6 @@ For 2D points only the first 2x3 part of the matrix will be used.</p>
 </dd>
 <dt class="field-odd">Returns</dt>
 <dd class="field-odd"><p>np.ndarray – Array with given shape, the value of each cell is the amount of coords for that point.</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="l5kit.geometry.world_to_image_pixels_matrix">
-<code class="sig-prename descclassname">l5kit.geometry.</code><code class="sig-name descname">world_to_image_pixels_matrix</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">image_shape</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">pixel_size_m</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ego_translation_m</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ego_yaw_rad</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>float<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">ego_center_in_image_ratio</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.geometry.world_to_image_pixels_matrix" title="Permalink to this definition">¶</a></dt>
-<dd><p>Constructs a transformation matrix from world coordinates to image pixels.
-Note: we’re ignoring Z coord, with the assumption that it won’t change dramatically.
-This means last row of the matrix will be [0,0,1] and we will transform 2D points in fact (X,Y)</p>
-<blockquote>
-<div><p>Args:
-image_shape (Tuple[int, int]): the size of the image
-pixel_size_m (np.ndarray): how many meters a pixel cover in the two directions
-ego_translation_m (np.ndarray): translation of the ego in meters in world-coordinates
-ego_yaw_rad (Optional[float]):if defined, rotation is applied so that ego will always face to the right</p>
-<blockquote>
-<div><p>in the resulting image coordinates</p>
-</div></blockquote>
-<dl class="simple">
-<dt>ego_center_in_image_ratio (Optional[np.ndarray]): enables to position the ego in different places</dt><dd><p>in the resulting image. The [0.5, 0.5] value puts it in the center</p>
-</dd>
-</dl>
-</div></blockquote>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>3x3 transformation matrix</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>

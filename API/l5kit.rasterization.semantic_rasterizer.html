@@ -164,7 +164,7 @@
 <span id="l5kit-rasterization-semantic-rasterizer-module"></span><h1>l5kit.rasterization.semantic_rasterizer module<a class="headerlink" href="#module-l5kit.rasterization.semantic_rasterizer" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="l5kit.rasterization.semantic_rasterizer.SemanticRasterizer">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.rasterization.semantic_rasterizer.</code><code class="sig-name descname">SemanticRasterizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raster_size</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">pixel_size</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ego_center</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">semantic_map_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">world_to_ecef</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.rasterization.semantic_rasterizer.SemanticRasterizer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.rasterization.semantic_rasterizer.</code><code class="sig-name descname">SemanticRasterizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">render_context</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.rasterization.render_context.html#l5kit.rasterization.render_context.RenderContext" title="l5kit.rasterization.render_context.RenderContext">l5kit.rasterization.render_context.RenderContext</a></span></em>, <em class="sig-param"><span class="n">semantic_map_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">world_to_ecef</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.rasterization.semantic_rasterizer.SemanticRasterizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.rasterization.rasterizer.Rasterizer</span></code></a></p>
 <p>Rasteriser for the vectorised semantic map (generally loaded from json files).</p>
 <dl class="py method">
@@ -189,13 +189,13 @@ Coords are computed by the MapAPI and, as such, are in the world ref system.</p>
 
 <dl class="py method">
 <dt id="l5kit.rasterization.semantic_rasterizer.SemanticRasterizer.render_semantic_map">
-<code class="sig-name descname">render_semantic_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">center_world</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">world_to_image_space</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">tl_faces</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.semantic_rasterizer.SemanticRasterizer.render_semantic_map" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">render_semantic_map</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">center_in_world</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">raster_from_world</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">tl_faces</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.semantic_rasterizer.SemanticRasterizer.render_semantic_map" title="Permalink to this definition">¶</a></dt>
 <dd><p>Renders the semantic map at given x,y coordinates.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>center_world</strong> (<em>np.ndarray</em>) – XY of the image center in world ref system</p></li>
-<li><p><strong>world_to_image_space</strong> (<em>np.ndarray</em>) – </p></li>
+<li><p><strong>center_in_world</strong> (<em>np.ndarray</em>) – XY of the image center in world ref system</p></li>
+<li><p><strong>raster_from_world</strong> (<em>np.ndarray</em>) – </p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

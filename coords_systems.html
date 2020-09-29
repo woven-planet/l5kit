@@ -191,12 +191,26 @@ is expressed via a single <a class="reference external" href="https://en.wikiped
 </ul>
 <p>The origin of the <strong>world</strong> coordinate system is located at <a class="reference external" href="https://www.google.com/maps/place/37%C2%B025%2745.6%22N+122%C2%B009%2715.7%22W/&#64;37.4293427,-122.1565407">[37°25’45.6”N, 122°09’15.7”W]</a> in Palo Alto (California, USA).</p>
 </div>
+<div class="section" id="agent-coordinate-system">
+<h2>Agent Coordinate System<a class="headerlink" href="#agent-coordinate-system" title="Permalink to this headline">¶</a></h2>
+<p>A common feature of the BEV’s rasterisation is that the agent of interest is always aligned in the same direction.
+In L5Kit this direction is right (i.e. the hood of the agent of interest always points to the right side of the image).</p>
+<p>This metric space is referred to as <strong>agent</strong> and has the following features:</p>
+<ul class="simple">
+<li><p>The agent’s position is at (0, 0);</p></li>
+<li><p>The agent’s yaw is 0.</p></li>
+</ul>
+<p>If you’re using one of our high-level dataset objects (either <code class="docutils literal notranslate"><span class="pre">EgoDataset</span></code> or <code class="docutils literal notranslate"><span class="pre">AgentDataset</span></code>) to generate samples, you can
+access the agent-from-world matrix using the <code class="docutils literal notranslate"><span class="pre">agent_from_world</span></code> key of the returned dict.</p>
+<p><strong>Note:</strong> This space is aligned with the input raster except for an intrinsic transformation (i.e. meters to pixels),
+which makes this space suitable as a target during training.</p>
+</div>
 <div class="section" id="image-coordinate-system">
 <h2>Image Coordinate System<a class="headerlink" href="#image-coordinate-system" title="Permalink to this headline">¶</a></h2>
 <p>Once rasterisation is complete, the final multi-channel image will be in the image space. This is a 2D space where (0,0)
 is located in the top-left corner.</p>
 <p>If you’re using one of our high-level dataset objects (either <code class="docutils literal notranslate"><span class="pre">EgoDataset</span></code> or <code class="docutils literal notranslate"><span class="pre">AgentDataset</span></code>) to generate samples, you can
-access the world-to-image matrix using the <code class="docutils literal notranslate"><span class="pre">world_to_image</span></code> key on the returned dict. When building this matrix, several steps are combined:</p>
+access the raster-from-world matrix using the <code class="docutils literal notranslate"><span class="pre">raster_from_world</span></code> key on the returned dict. When building this matrix, several steps are combined:</p>
 <ul class="simple">
 <li><p>Translate world to ego by applying the negative <code class="docutils literal notranslate"><span class="pre">ego_translation</span></code>;</p></li>
 <li><p>Rotate counter-clockwise by negative <code class="docutils literal notranslate"><span class="pre">ego_yaw</span></code> to align world such that ego faces right in the image;</p></li>
@@ -209,10 +223,11 @@ access the world-to-image matrix using the <code class="docutils literal notrans
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># this comes from either EgoDataset or AgentDataset</span>
 
 <span class="n">im</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">rasterizer</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># convert raster into rgb</span>
-
-<span class="c1"># transform from world meters into image pixels</span>
-<span class="n">positions_pixels</span> <span class="o">=</span> <span class="n">transform_points</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target_positions&quot;</span><span class="p">]</span> <span class="o">+</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;centroid&quot;</span><span class="p">][:</span><span class="mi">2</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;world_to_image&quot;</span><span class="p">])</span>
-<span class="n">draw_trajectory</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">positions_pixels</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;target_yaws&quot;</span><span class="p">],</span> <span class="n">TARGET_POINTS_COLOR</span><span class="p">)</span>
+<span class="c1"># transform points from agent local coordinate to world coordinate</span>
+<span class="n">positions_in_world</span> <span class="o">=</span> <span class="n">transform_points</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target_positions&quot;</span><span class="p">],</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;world_from_agent&quot;</span><span class="p">])</span>
+<span class="c1"># transform from world coordinates onto raster</span>
+<span class="n">positions_in_raster</span> <span class="o">=</span> <span class="n">transform_points</span><span class="p">(</span><span class="n">positions_in_world</span><span class="p">,</span> <span class="n">data</span><span class="p">[</span><span class="s2">&quot;raster_from_world&quot;</span><span class="p">])</span>
+<span class="n">draw_trajectory</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">positions_in_raster</span><span class="p">,</span> <span class="n">TARGET_POINTS_COLOR</span><span class="p">,</span> <span class="n">yaws</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target_yaws&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
 </div>

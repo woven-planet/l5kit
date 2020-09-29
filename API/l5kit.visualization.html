@@ -199,7 +199,7 @@
 
 <dl class="py function">
 <dt id="l5kit.visualization.draw_trajectory">
-<code class="sig-prename descclassname">l5kit.visualization.</code><code class="sig-name descname">draw_trajectory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">on_image</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">positions</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">rgb_color</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">yaws</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.visualization.draw_trajectory" title="Permalink to this definition">¶</a></dt>
+<code class="sig-prename descclassname">l5kit.visualization.</code><code class="sig-name descname">draw_trajectory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">on_image</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">positions</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">rgb_color</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">radius</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em>, <em class="sig-param"><span class="n">yaws</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.visualization.draw_trajectory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draw a trajectory on oriented arrow onto an RGB image
 :param on_image: the RGB image to draw onto
 :type on_image: np.ndarray
@@ -207,6 +207,8 @@
 :type positions: np.ndarray
 :param rgb_color: the trajectory RGB color
 :type rgb_color: Tuple[int, int, int]
+:param radius: radius of the circle
+:type radius: int
 :param yaws: yaws in radians (N) or None to disable yaw visualisation
 :type yaws: Optional[np.ndarray]</p>
 <p>Returns: None</p>

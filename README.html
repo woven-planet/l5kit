@@ -323,9 +323,11 @@ Unzip the files and grab the example folder in the root of the project.</p>
 </ul>
 <div class="section" id="clone-the-repo">
 <h3>1. Clone the repo<a class="headerlink" href="#clone-the-repo" title="Permalink to this headline">¶</a></h3>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/lyft/l5kit.git ./
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>git clone https://github.com/lyft/l5kit.git
+<span class="nb">cd</span> l5kit/l5kit
 </pre></div>
 </div>
+<p>Please note the double <code class="docutils literal notranslate"><span class="pre">l5kit</span></code> in the path, as we need to <code class="docutils literal notranslate"><span class="pre">cd</span></code> where <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> file is.</p>
 </div>
 <div class="section" id="install-l5kit">
 <h3>3. Install L5Kit<a class="headerlink" href="#install-l5kit" title="Permalink to this headline">¶</a></h3>
@@ -333,8 +335,7 @@ Unzip the files and grab the example folder in the root of the project.</p>
 <h4>3.1 Deterministic Build (Suggested)<a class="headerlink" href="#deterministic-build-suggested" title="Permalink to this headline">¶</a></h4>
 <p>We support deterministic build through <a class="reference external" href="https://pipenv-fork.readthedocs.io/en/latest/">pipenv</a>.</p>
 <p>Once you’ve installed pipenv (or made it available in your env) run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> l5kit
-pipenv sync --dev
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pipenv sync --dev
 </pre></div>
 </div>
 <p>This will install all dependencies (<code class="docutils literal notranslate"><span class="pre">--dev</span></code> includes dev-packages too) from the lock file.</p>
@@ -343,8 +344,7 @@ pipenv sync --dev
 <h4>3.1 Latest Build<a class="headerlink" href="#latest-build" title="Permalink to this headline">¶</a></h4>
 <p>If you don’t care about determinist builds or you’re having troubles with packages resolution (Windows, Python&lt;3.7, etc..),
 you can install directly from the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code> by running:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="nb">cd</span> l5kit
-pip install -e .<span class="o">[</span>dev<span class="o">]</span>
+<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install -e .<span class="o">[</span>dev<span class="o">]</span>
 </pre></div>
 </div>
 <p>If you run into trouble installing L5Kit on Windows, you may need to</p>
