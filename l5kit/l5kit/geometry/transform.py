@@ -103,34 +103,29 @@ def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
 def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     """
     Transform points using transformation matrix.
+    Note this function assumes points.shape[1] == matrix.shape[1] - 1, which means that the last row on the matrix
+    does not influence the final result.
+    For 2D points only the first 2x3 part of the matrix will be used.
 
     Args:
-        points (np.ndarray): Input points (Nx2), (Nx3) or (Nx4).
+        points (np.ndarray): Input points (Nx2) or (Nx3).
         transf_matrix (np.ndarray): 3x3 or 4x4 transformation matrix for 2D and 3D input respectively
 
     Returns:
         np.ndarray: array of shape (N,2) for 2D input points, or (N,3) points for 3D input points
     """
-    # TODO: Surely we can do this without transposing.
-    return transform_points_transposed(points.transpose(1, 0), transf_matrix).transpose(1, 0)
+    assert len(points.shape) == len(transf_matrix.shape) == 2
+    assert transf_matrix.shape[0] == transf_matrix.shape[1]
 
+    if points.shape[1] not in [2, 3]:
+        raise AssertionError("Points input should be (2, N) or (3,N) shape, received {}".format(points.shape))
 
-def transform_points_transposed(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
-    """
-    Transform points using transformation matrix.
+    assert points.shape[1] == transf_matrix.shape[1] - 1, "points dim should be one less than matrix dim"
 
-    Args:
-        points (np.ndarray): Input points (2xN), (3xN) or (4xN).
-        transf_matrix (np.ndarray): 3x3 or 4x4 transformation matrix for 2D and 3D input respectively
+    num_dims = len(transf_matrix) - 1
+    transf_matrix = transf_matrix.T
 
-    Returns:
-        np.ndarray: array of shape (2,N) for 2D input points, or (3,N) points for 3D input points
-    """
-    num_dims = transf_matrix.shape[0] - 1
-    if points.shape[0] not in [2, 3, 4]:
-        raise ValueError("Points input should be (2, N), (3,N) or (4,N) shape, received {}".format(points.shape))
-
-    return transf_matrix.dot(np.vstack((points[:num_dims, :], np.ones(points.shape[1]))))[:num_dims, :]
+    return points @ transf_matrix[:num_dims, :num_dims] + transf_matrix[-1, :num_dims]
 
 
 def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:

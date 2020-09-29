@@ -8,7 +8,6 @@ from .transform import (
     rotation33_as_yaw,
     transform_point,
     transform_points,
-    transform_points_transposed,
     world_to_image_pixels_matrix,
     yaw_as_rotation33,
 )
@@ -23,7 +22,6 @@ __all__ = [
     "world_to_image_pixels_matrix",
     "flip_y_axis",
     "transform_points",
-    "transform_points_transposed",
     "transform_point",
     "get_transformation_matrix",
     "ecef_to_geodetic",
