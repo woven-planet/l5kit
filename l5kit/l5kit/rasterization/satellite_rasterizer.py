@@ -47,14 +47,13 @@ class SatelliteRasterizer(Rasterizer):
         agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
 
+        # Note 1: it looks like we are assuming that yaw in ecef == yaw in sat image
         if agent is None:
             ego_translation_m = history_frames[0]["ego_translation"]
-            # Note 2: it looks like we are assuming that yaw in ecef == yaw in sat image
             ego_yaw_rad = rotation33_as_yaw(history_frames[0]["ego_rotation"])
 
         else:
             ego_translation_m = np.append(agent["centroid"], history_frames[0]["ego_translation"][-1])
-            # Note 2: it looks like we are assuming that yaw in ecef == yaw in sat image
             ego_yaw_rad = agent["yaw"]
 
         raster_from_world = self.render_context.raster_from_world(ego_translation_m, ego_yaw_rad)
@@ -65,7 +64,7 @@ class SatelliteRasterizer(Rasterizer):
         center_in_world_m = transform_point(center_in_raster_px, world_from_raster)
         center_in_aerial_px = transform_point(np.append(center_in_world_m, ego_translation_m[2]), self.world_to_aerial)
 
-        # Note 1: there is a negation here, unknown why this is necessary.
+        # Note 2: there is a negation here, unknown why this is necessary.
         # My best guess is because Y is flipped, maybe we can do this more elegantly.
         sat_im = get_sat_image_crop_scaled(
             self.map_im,
