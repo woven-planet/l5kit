@@ -5,7 +5,7 @@ import pymap3d as pm
 import transforms3d
 
 
-def agent_pose(agent_centroid_m: np.ndarray, agent_yaw_rad: float) -> np.ndarray:
+def compute_agent_pose(agent_centroid_m: np.ndarray, agent_yaw_rad: float) -> np.ndarray:
     """
     Return the agent pose as a 3x3 matrix. This corresponds to world_from_agent matrix.
 
@@ -112,22 +112,6 @@ def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     """
     point_ext = np.hstack((point, np.ones(1)))
     return np.matmul(transf_matrix, point_ext)[: point.shape[0]]
-
-
-def get_transformation_matrix(translation: np.ndarray, rotation: np.ndarray) -> np.ndarray:
-    """
-    Get a 3D transformation matrix from translation vector and quaternion rotation
-
-    Args:
-        translation (np.ndarray): 3D translation vector
-        rotation (np.ndarray): 4 quaternion values
-
-    Returns:
-        np.ndarray: 4x4 transformation matrix
-    """
-    rot_mat = transforms3d.quaternions.quat2mat(rotation)
-    tr = transforms3d.affines.compose(translation, rot_mat, np.ones(3))
-    return tr
 
 
 def ecef_to_geodetic(point: Union[np.ndarray, Sequence[float]]) -> np.ndarray:

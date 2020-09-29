@@ -3,7 +3,7 @@ import pytest
 
 from l5kit.data import ChunkedDataset
 from l5kit.dataset import EgoDataset
-from l5kit.geometry import agent_pose, rotation33_as_yaw, transform_points
+from l5kit.geometry import compute_agent_pose, rotation33_as_yaw, transform_points
 from l5kit.rasterization import RenderContext, StubRasterizer
 from l5kit.sampling.agent_sampling import _create_targets_for_deep_prediction
 
@@ -12,7 +12,9 @@ from l5kit.sampling.agent_sampling import _create_targets_for_deep_prediction
 def base_displacement(zarr_dataset: ChunkedDataset, cfg: dict) -> np.ndarray:
     future_num_frames = cfg["model_params"]["future_num_frames"]
     ref_frame = zarr_dataset.frames[0]
-    world_from_agent = agent_pose(ref_frame["ego_translation"][:2], rotation33_as_yaw((ref_frame["ego_rotation"])))
+    world_from_agent = compute_agent_pose(
+        ref_frame["ego_translation"][:2], rotation33_as_yaw((ref_frame["ego_rotation"]))
+    )
 
     future_coords_offset, *_ = _create_targets_for_deep_prediction(
         num_frames=future_num_frames,
