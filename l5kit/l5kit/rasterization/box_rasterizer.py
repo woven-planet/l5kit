@@ -67,7 +67,7 @@ def draw_boxes(
 
     # fillPoly wants polys in a sequence with points inside as (x,y)
     box_image_coords = cv2_subpixel(box_image_coords.reshape((-1, 4, 2)))
-    cv2.fillPoly(im, box_image_coords, color=color, shift=CV2_SHIFT)
+    cv2.fillPoly(im, box_image_coords, color=color, lineType=cv2.LINE_AA, shift=CV2_SHIFT)
     return im
 
 
