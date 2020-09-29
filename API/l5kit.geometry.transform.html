@@ -297,36 +297,19 @@ coordinates. If no altitude is given, altitude 0 is assumed.</p>
 <dl class="py function">
 <dt id="l5kit.geometry.transform.transform_points">
 <code class="sig-prename descclassname">l5kit.geometry.transform.</code><code class="sig-name descname">transform_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">transf_matrix</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.geometry.transform.transform_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transform points using transformation matrix.</p>
+<dd><p>Transform points using transformation matrix.
+Note this function assumes points.shape[1] == matrix.shape[1] - 1, which means that the last row on the matrix
+does not influence the final result.
+For 2D points only the first 2x3 part of the matrix will be used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>np.ndarray</em>) – Input points (Nx2), (Nx3) or (Nx4).</p></li>
+<li><p><strong>points</strong> (<em>np.ndarray</em>) – Input points (Nx2) or (Nx3).</p></li>
 <li><p><strong>transf_matrix</strong> (<em>np.ndarray</em>) – 3x3 or 4x4 transformation matrix for 2D and 3D input respectively</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>array of shape (N,2) for 2D input points, or (N,3) points for 3D input points</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt id="l5kit.geometry.transform.transform_points_transposed">
-<code class="sig-prename descclassname">l5kit.geometry.transform.</code><code class="sig-name descname">transform_points_transposed</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">transf_matrix</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.geometry.transform.transform_points_transposed" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transform points using transformation matrix.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>np.ndarray</em>) – Input points (2xN), (3xN) or (4xN).</p></li>
-<li><p><strong>transf_matrix</strong> (<em>np.ndarray</em>) – 3x3 or 4x4 transformation matrix for 2D and 3D input respectively</p></li>
-</ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>array of shape (2,N) for 2D input points, or (3,N) points for 3D input points</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>np.ndarray</p>
