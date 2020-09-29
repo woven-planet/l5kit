@@ -111,8 +111,11 @@ Follow this workflow if:
 
 ### 1. Clone the repo
 ```shell
-git clone https://github.com/lyft/l5kit.git ./
+git clone https://github.com/lyft/l5kit.git
+cd l5kit/l5kit
 ```
+
+Please note the double `l5kit` in the path, as we need to `cd` where `setup.py` file is.
 
 ### 3. Install L5Kit
 
@@ -121,7 +124,6 @@ We support deterministic build through [pipenv](https://pipenv-fork.readthedocs.
 
 Once you've installed pipenv (or made it available in your env) run: 
 ```shell
-cd l5kit
 pipenv sync --dev
 ```
 This will install all dependencies (`--dev` includes dev-packages too) from the lock file.
@@ -130,7 +132,6 @@ This will install all dependencies (`--dev` includes dev-packages too) from the 
 If you don't care about determinist builds or you're having troubles with packages resolution (Windows, Python<3.7, etc..),
 you can install directly from the `setup.py` by running:
 ```shell
-cd l5kit
 pip install -e .[dev]
 ```
 

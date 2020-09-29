@@ -9,9 +9,9 @@ from ..data import (
     get_tl_faces_slice_from_frames,
 )
 from ..data.filter import filter_agents_by_frames, filter_agents_by_track_id
-from ..geometry import angular_distance, rotation33_as_yaw, world_to_image_pixels_matrix
+from ..geometry import angular_distance, compute_agent_pose, rotation33_as_yaw, transform_point
 from ..kinematic import Perturbation
-from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
+from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer, RenderContext
 from .slicing import get_future_slice, get_history_slice
 
 
@@ -21,9 +21,7 @@ def generate_agent_sample(
     agents: np.ndarray,
     tl_faces: np.ndarray,
     selected_track_id: Optional[int],
-    raster_size: Tuple[int, int],
-    pixel_size: np.ndarray,
-    ego_center: np.ndarray,
+    render_context: RenderContext,
     history_num_frames: int,
     history_step_size: int,
     future_num_frames: int,
@@ -100,9 +98,9 @@ to train models that can recover from slight divergence from training set data
     cur_agents = history_agents[0]
 
     if selected_track_id is None:
-        agent_centroid = cur_frame["ego_translation"][:2]
-        agent_yaw = rotation33_as_yaw(cur_frame["ego_rotation"])
-        agent_extent = np.asarray((EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, EGO_EXTENT_HEIGHT))
+        agent_centroid_m = cur_frame["ego_translation"][:2]
+        agent_yaw_rad = rotation33_as_yaw(cur_frame["ego_rotation"])
+        agent_extent_m = np.asarray((EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, EGO_EXTENT_HEIGHT))
         selected_agent = None
     else:
         # this will raise IndexError if the agent is not in the frame or under agent-threshold
@@ -113,9 +111,9 @@ to train models that can recover from slight divergence from training set data
             )[0]
         except IndexError:
             raise ValueError(f" track_id {selected_track_id} not in frame or below threshold")
-        agent_centroid = agent["centroid"]
-        agent_yaw = float(agent["yaw"])
-        agent_extent = agent["extent"]
+        agent_centroid_m = agent["centroid"]
+        agent_yaw_rad = float(agent["yaw"])
+        agent_extent_m = agent["extent"]
         selected_agent = agent
 
     input_im = (
@@ -124,21 +122,17 @@ to train models that can recover from slight divergence from training set data
         else rasterizer.rasterize(history_frames, history_agents, history_tl_faces, selected_agent)
     )
 
-    world_to_image_space = world_to_image_pixels_matrix(
-        raster_size,
-        pixel_size,
-        ego_translation_m=agent_centroid,
-        ego_yaw_rad=agent_yaw,
-        ego_center_in_image_ratio=ego_center,
-    )
+    world_from_agent = compute_agent_pose(agent_centroid_m, agent_yaw_rad)
+    agent_from_world = np.linalg.inv(world_from_agent)
+    raster_from_world = render_context.raster_from_world(agent_centroid_m, agent_yaw_rad)
 
     future_coords_offset, future_yaws_offset, future_availability = _create_targets_for_deep_prediction(
-        future_num_frames, future_frames, selected_track_id, future_agents, agent_centroid[:2], agent_yaw,
+        future_num_frames, future_frames, selected_track_id, future_agents, agent_from_world, agent_yaw_rad
     )
 
     # history_num_frames + 1 because it also includes the current frame
     history_coords_offset, history_yaws_offset, history_availability = _create_targets_for_deep_prediction(
-        history_num_frames + 1, history_frames, selected_track_id, history_agents, agent_centroid[:2], agent_yaw,
+        history_num_frames + 1, history_frames, selected_track_id, history_agents, agent_from_world, agent_yaw_rad
     )
 
     return {
@@ -149,10 +143,14 @@ to train models that can recover from slight divergence from training set data
         "history_positions": history_coords_offset,
         "history_yaws": history_yaws_offset,
         "history_availabilities": history_availability,
-        "world_to_image": world_to_image_space,
-        "centroid": agent_centroid,
-        "yaw": agent_yaw,
-        "extent": agent_extent,
+        "world_to_image": raster_from_world,  # TODO deprecate
+        "raster_from_agent": raster_from_world @ world_from_agent,
+        "raster_from_world": raster_from_world,
+        "agent_from_world": agent_from_world,
+        "world_from_agent": world_from_agent,
+        "centroid": agent_centroid_m,
+        "yaw": agent_yaw_rad,
+        "extent": agent_extent_m,
     }
 
 
@@ -161,8 +159,8 @@ def _create_targets_for_deep_prediction(
     frames: np.ndarray,
     selected_track_id: Optional[int],
     agents: List[np.ndarray],
-    agent_current_centroid: np.ndarray,
-    agent_current_yaw: float,
+    agent_from_world: np.ndarray,
+    current_agent_yaw: float,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
     """
     Internal function that creates the targets and availability masks for deep prediction-type models.
@@ -174,8 +172,8 @@ def _create_targets_for_deep_prediction(
         frames (np.ndarray): available frames. This may be less than num_frames
         selected_track_id (Optional[int]): agent track_id or AV (None)
         agents (List[np.ndarray]): list of agents arrays (same len of frames)
-        agent_current_centroid (np.ndarray): centroid of the agent at timestep 0
-        agent_current_yaw (float): angle of the agent at timestep 0
+        agent_from_world (np.ndarray): local from world matrix
+        current_agent_yaw (float): angle of the agent at timestep 0
 
     Returns:
         Tuple[np.ndarray, np.ndarray, np.ndarray]: position offsets, angle offsets, availabilities
@@ -194,14 +192,13 @@ def _create_targets_for_deep_prediction(
             # it's not guaranteed the target will be in every frame
             try:
                 agent = filter_agents_by_track_id(frame_agents, selected_track_id)[0]
+                agent_centroid = agent["centroid"]
+                agent_yaw = agent["yaw"]
             except IndexError:
                 availability[i] = 0.0  # keep track of invalid futures/history
                 continue
 
-            agent_centroid = agent["centroid"]
-            agent_yaw = agent["yaw"]
-
-        coords_offset[i] = agent_centroid - agent_current_centroid
-        yaws_offset[i] = angular_distance(agent_yaw, agent_current_yaw)
+        coords_offset[i] = transform_point(agent_centroid, agent_from_world)
+        yaws_offset[i] = angular_distance(agent_yaw, current_agent_yaw)
         availability[i] = 1.0
     return coords_offset, yaws_offset, availability

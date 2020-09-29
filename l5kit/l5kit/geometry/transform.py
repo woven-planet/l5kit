@@ -1,8 +1,29 @@
-from typing import Optional, Sequence, Tuple, Union, cast
+from typing import Sequence, Union, cast
 
 import numpy as np
 import pymap3d as pm
 import transforms3d
+
+
+def compute_agent_pose(agent_centroid_m: np.ndarray, agent_yaw_rad: float) -> np.ndarray:
+    """
+    Return the agent pose as a 3x3 matrix. This corresponds to world_from_agent matrix.
+
+    Args:
+        agent_centroid_m (np.ndarry): 2D coordinates of the agent
+        agent_yaw_rad (float): yaw of the agent
+
+    Returns:
+        (np.ndarray): 3x3 world_from_agent matrix
+    """
+    # Compute agent pose from its position and heading
+    return np.array(
+        [
+            [np.cos(agent_yaw_rad), -np.sin(agent_yaw_rad), agent_centroid_m[0]],
+            [np.sin(agent_yaw_rad), np.cos(agent_yaw_rad), agent_centroid_m[1]],
+            [0, 0, 1],
+        ]
+    )
 
 
 def rotation33_as_yaw(rotation: np.ndarray) -> float:
@@ -31,55 +52,6 @@ def yaw_as_rotation33(yaw: float) -> np.ndarray:
         np.ndarray: 3x3 rotation matrix
     """
     return transforms3d.euler.euler2mat(0, 0, yaw)
-
-
-def world_to_image_pixels_matrix(
-    image_shape: Tuple[int, int],
-    pixel_size_m: np.ndarray,
-    ego_translation_m: np.ndarray,
-    ego_yaw_rad: Optional[float] = None,
-    ego_center_in_image_ratio: Optional[np.ndarray] = None,
-) -> np.ndarray:
-    """
-    Constructs a transformation matrix from world coordinates to image pixels.
-    Note: we're ignoring Z coord, with the assumption that it won't change dramatically.
-    This means last row of the matrix will be [0,0,1] and we will transform 2D points in fact (X,Y)
-
-        Args:
-        image_shape (Tuple[int, int]): the size of the image
-        pixel_size_m (np.ndarray): how many meters a pixel cover in the two directions
-        ego_translation_m (np.ndarray): translation of the ego in meters in world-coordinates
-        ego_yaw_rad (Optional[float]):if defined, rotation is applied so that ego will always face to the right
-         in the resulting image coordinates
-        ego_center_in_image_ratio (Optional[np.ndarray]): enables to position the ego in different places
-         in the resulting image. The [0.5, 0.5] value puts it in the center
-
-    Returns:
-        np.ndarray: 3x3 transformation matrix
-    """
-
-    # Translate world to ego by applying the negative ego translation.
-    world_to_ego_in_2d = np.eye(3, dtype=np.float32)
-    world_to_ego_in_2d[0:2, 2] = -ego_translation_m[0:2]
-
-    if ego_yaw_rad is not None:
-        # Rotate counter-clockwise by negative yaw to align world such that ego faces right.
-        world_to_ego_in_2d = yaw_as_rotation33(-ego_yaw_rad) @ world_to_ego_in_2d
-
-    # Scale the meters to pixels.
-    world_to_image_scale = np.eye(3)
-    world_to_image_scale[0, 0] = 1.0 / pixel_size_m[0]
-    world_to_image_scale[1, 1] = 1.0 / pixel_size_m[1]
-
-    # Move so that it is aligned to the defined image center.
-    if ego_center_in_image_ratio is None:
-        ego_center_in_image_ratio = np.array([0.5, 0.5])
-    ego_center_in_pixels = ego_center_in_image_ratio * image_shape
-    image_to_ego_center = np.eye(3)
-    image_to_ego_center[0:2, 2] = ego_center_in_pixels
-
-    # Construct the whole transform and return it.
-    return image_to_ego_center @ world_to_image_scale @ world_to_ego_in_2d
 
 
 def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
@@ -118,7 +90,7 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     assert transf_matrix.shape[0] == transf_matrix.shape[1]
 
     if points.shape[1] not in [2, 3]:
-        raise AssertionError("Points input should be (2, N) or (3,N) shape, received {}".format(points.shape))
+        raise AssertionError("Points input should be (N, 2) or (N,3) shape, received {}".format(points.shape))
 
     assert points.shape[1] == transf_matrix.shape[1] - 1, "points dim should be one less than matrix dim"
 
@@ -140,22 +112,6 @@ def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     """
     point_ext = np.hstack((point, np.ones(1)))
     return np.matmul(transf_matrix, point_ext)[: point.shape[0]]
-
-
-def get_transformation_matrix(translation: np.ndarray, rotation: np.ndarray) -> np.ndarray:
-    """
-    Get a 3D transformation matrix from translation vector and quaternion rotation
-
-    Args:
-        translation (np.ndarray): 3D translation vector
-        rotation (np.ndarray): 4 quaternion values
-
-    Returns:
-        np.ndarray: 4x4 transformation matrix
-    """
-    rot_mat = transforms3d.quaternions.quat2mat(rotation)
-    tr = transforms3d.affines.compose(translation, rot_mat, np.ones(3))
-    return tr
 
 
 def ecef_to_geodetic(point: Union[np.ndarray, Sequence[float]]) -> np.ndarray:

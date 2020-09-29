@@ -1,7 +1,7 @@
 import bisect
 import warnings
 from functools import partial
-from typing import Optional, Tuple, cast
+from typing import Optional
 
 import numpy as np
 from torch.utils.data import Dataset
@@ -13,7 +13,7 @@ from ..data import (
     get_tl_faces_slice_from_frames,
 )
 from ..kinematic import Perturbation
-from ..rasterization import Rasterizer
+from ..rasterization import Rasterizer, RenderContext
 from ..sampling import generate_agent_sample
 
 
@@ -42,12 +42,16 @@ None if not desired
 
         self.cumulative_sizes = self.dataset.scenes["frame_index_interval"][:, 1]
 
+        render_context = RenderContext(
+            raster_size_px=np.array(cfg["raster_params"]["raster_size"]),
+            pixel_size_m=np.array(cfg["raster_params"]["pixel_size"]),
+            center_in_raster_ratio=np.array(cfg["raster_params"]["ego_center"]),
+        )
+
         # build a partial so we don't have to access cfg each time
         self.sample_function = partial(
             generate_agent_sample,
-            raster_size=cast(Tuple[int, int], tuple(cfg["raster_params"]["raster_size"])),
-            pixel_size=np.array(cfg["raster_params"]["pixel_size"]),
-            ego_center=np.array(cfg["raster_params"]["ego_center"]),
+            render_context=render_context,
             history_num_frames=cfg["model_params"]["history_num_frames"],
             history_step_size=cfg["model_params"]["history_step_size"],
             future_num_frames=cfg["model_params"]["future_num_frames"],
@@ -112,7 +116,11 @@ None if not desired
             "history_positions": history_positions,
             "history_yaws": history_yaws,
             "history_availabilities": data["history_availabilities"],
-            "world_to_image": data["world_to_image"],
+            "world_to_image": data["raster_from_world"],  # TODO deprecate
+            "raster_from_world": data["raster_from_world"],
+            "raster_from_agent": data["raster_from_agent"],
+            "agent_from_world": data["agent_from_world"],
+            "world_from_agent": data["world_from_agent"],
             "track_id": track_id,
             "timestamp": timestamp,
             "centroid": data["centroid"],

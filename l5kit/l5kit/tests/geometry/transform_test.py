@@ -2,34 +2,26 @@ import numpy as np
 import pytest
 import transforms3d
 
-from l5kit.geometry import transform_point, transform_points, world_to_image_pixels_matrix
+from l5kit.geometry import transform_point, transform_points
 
 
-def test_transform_to_image_space_2d() -> None:
+def test_transform_points() -> None:
+    tf = np.asarray([[1.0, 0, 100], [0, 0.5, 50], [0, 0, 1]])
 
-    image_shape = (200, 200)
-    pixel_size = np.asarray((1.0, 0.5))
-    offset = np.asarray((0, -2))
+    points = np.array([[0, 10], [10, 0], [10, 10]])
+    expected_point = np.array([[100, 55], [110, 50], [110, 55]])
 
-    input_points = np.array([[0, 0], [10, 10], [-10, -10]])
-    expected_output_points = np.array([[100, 104], [110, 124], [90, 84]])
+    output_points = transform_points(points, tf)
 
-    tf = world_to_image_pixels_matrix(image_shape, pixel_size, offset)
-    output_points = transform_points(input_points, tf)
-
-    np.testing.assert_array_equal(output_points, expected_output_points)
+    np.testing.assert_array_equal(output_points, expected_point)
 
 
 def test_transform_single_point() -> None:
+    tf = np.asarray([[1.0, 0, 100], [0, 0.5, 50], [0, 0, 1]])
 
-    shape = (200, 200)
-    pixel_size = np.asarray((1.0, 0.5))
-    offset = np.asarray((0, -2))
+    point = np.array([0, 10])
+    expected_point = np.array([100, 55])
 
-    point = np.array([10, 10])
-    expected_point = np.array([110, 124])
-
-    tf = world_to_image_pixels_matrix(shape, pixel_size, offset)
     output_point = transform_point(point, tf)
 
     np.testing.assert_array_equal(output_point, expected_point)
