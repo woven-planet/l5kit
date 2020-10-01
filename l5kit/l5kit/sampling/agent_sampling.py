@@ -89,8 +89,8 @@ to train models that can recover from slight divergence from training set data
     history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces[tl_slice].copy())
 
     if perturbation is not None:
-        history_frames, future_frames = perturbation.perturb(
-            history_frames=history_frames, future_frames=future_frames
+        history_frames, future_frames[:12] = perturbation.perturb(
+            history_frames=history_frames, future_frames=future_frames[:12]
         )
 
     # State you want to predict the future of.
