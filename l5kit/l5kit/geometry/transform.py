@@ -72,11 +72,48 @@ def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
     return tm
 
 
+def transform_points_batch(points_batch: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
+    """
+    Transform a batch of points using the transformation matrix. This is the batched version of transform_points.
+    Note this function assumes points.shape[2] == matrix.shape[1] - 1, which means that the last row on the matrix
+    does not influence the final result.
+    For 2D points only the first 2x3 part of the matrix will be used.
+
+    Args:
+        points_batch (np.ndarray): Input points (BxNx2) or (BxNx3), where B is batch size, N is number of points in the
+                                    trajectory.
+        transf_matrix (np.ndarray): 3x3 or 4x4 transformation matrix for 2D and 3D input respectively.
+
+    Returns:
+        np.ndarray: array of shape (N,2) for 2D input points, or (N,3) points for 3D input points
+    """
+    assert len(points_batch.shape) == 3, f"points_batch ({points_batch.shape}) must be in the shape of BxNx2 or BxNx3"
+    assert len(points_batch.shape[1:]) == len(transf_matrix.shape) == 2, (
+        f"dimension mismatch, both points ({points_batch.shape[1:]}) and "
+        f"transf_matrix ({transf_matrix.shape}) needs to be a 2D numpy ndarray."
+    )
+    assert (
+        transf_matrix.shape[0] == transf_matrix.shape[1]
+    ), f"transf_matrix ({transf_matrix.shape}) should be a transformation matrix."
+
+    if points_batch.shape[2] not in [2, 3]:
+        raise AssertionError(
+            "Points input should be (N, 2) or (N,3) shape, received {}".format(points_batch.shape[1:])
+        )
+
+    assert points_batch.shape[2] == transf_matrix.shape[1] - 1, "points dim should be one less than matrix dim"
+
+    num_dims = len(transf_matrix) - 1
+    transf_matrix = transf_matrix.T
+
+    return points_batch @ transf_matrix[:num_dims, :num_dims] + transf_matrix[-1, :num_dims]
+
+
 def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     """
-    Transform points using transformation matrix.
-    Note this function assumes points.shape[1] == matrix.shape[1] - 1, which means that the last row on the matrix
-    does not influence the final result.
+    Transform points using transformation matrix. For a batched version, see transform_points_batch.
+    Note this function assumes points.shape[1] == matrix.shape[1] - 1, which means that the last
+    row on the matrix does not influence the final result.
     For 2D points only the first 2x3 part of the matrix will be used.
 
     Args:
@@ -86,18 +123,10 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     Returns:
         np.ndarray: array of shape (N,2) for 2D input points, or (N,3) points for 3D input points
     """
-    assert len(points.shape) == len(transf_matrix.shape) == 2
-    assert transf_matrix.shape[0] == transf_matrix.shape[1]
-
-    if points.shape[1] not in [2, 3]:
-        raise AssertionError("Points input should be (N, 2) or (N,3) shape, received {}".format(points.shape))
-
-    assert points.shape[1] == transf_matrix.shape[1] - 1, "points dim should be one less than matrix dim"
-
-    num_dims = len(transf_matrix) - 1
-    transf_matrix = transf_matrix.T
-
-    return points @ transf_matrix[:num_dims, :num_dims] + transf_matrix[-1, :num_dims]
+    points_batch = points[np.newaxis, :]
+    result = transform_points_batch(points_batch=points_batch, transf_matrix=transf_matrix)
+    assert result.shape[0] == 1, f"returned result ({result.shape}) should have shape[0] == 1"
+    return result[0, :]
 
 
 def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:

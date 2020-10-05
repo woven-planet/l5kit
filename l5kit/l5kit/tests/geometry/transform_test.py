@@ -2,7 +2,20 @@ import numpy as np
 import pytest
 import transforms3d
 
-from l5kit.geometry import transform_point, transform_points
+from l5kit.geometry import transform_point, transform_points, transform_points_batch
+
+
+def test_transform_points_batch() -> None:
+    tf = np.asarray([[1, 0, 100], [0, 0.5, 50], [0, 0, 1]])
+    points_batch = np.array([[[0, 10], [10, 0], [10, 10]], [[0, 5], [5, 0], [5, 5]], [[0, 20], [20, 0], [20, 20]]])
+
+    expected_points = np.array(
+        [[[100, 55], [110, 50], [110, 55]], [[100, 52.5], [105, 50], [105, 52.5]], [[100, 60], [120, 50], [120, 60]]]
+    )
+
+    output_points = transform_points_batch(points_batch, tf)
+
+    np.testing.assert_array_equal(output_points, expected_points)
 
 
 def test_transform_points() -> None:
