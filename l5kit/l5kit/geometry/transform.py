@@ -6,8 +6,7 @@ import transforms3d
 
 
 def compute_agent_pose(agent_centroid_m: np.ndarray, agent_yaw_rad: float) -> np.ndarray:
-    """
-    Return the agent pose as a 3x3 matrix. This corresponds to world_from_agent matrix.
+    """Return the agent pose as a 3x3 matrix. This corresponds to world_from_agent matrix.
 
     Args:
         agent_centroid_m (np.ndarry): 2D coordinates of the agent
@@ -55,8 +54,7 @@ def yaw_as_rotation33(yaw: float) -> np.ndarray:
 
 
 def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
-    """
-    Return a new matrix that also performs a flip on the y axis.
+    """Return a new matrix that also performs a flip on the y axis.
 
     Args:
         tm: the original 3x3 matrix
@@ -73,10 +71,9 @@ def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
 
 
 def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
-    """
-    Transform points using transformation matrix.
-    Note this function assumes points.shape[1] == matrix.shape[1] - 1, which means that the last row on the matrix
-    does not influence the final result.
+    """Transform points using transformation matrix.
+    Note this function assumes points.shape[1] == matrix.shape[1] - 1, which means that the last
+    row in the matrix does not influence the final result.
     For 2D points only the first 2x3 part of the matrix will be used.
 
     Args:
@@ -86,11 +83,16 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     Returns:
         np.ndarray: array of shape (N,2) for 2D input points, or (N,3) points for 3D input points
     """
-    assert len(points.shape) == len(transf_matrix.shape) == 2
-    assert transf_matrix.shape[0] == transf_matrix.shape[1]
+    assert len(points.shape) == len(transf_matrix.shape) == 2, (
+        f"dimensions mismatch, both points ({points.shape}) and "
+        f"transf_matrix ({transf_matrix.shape}) needs to be 2D numpy ndarrays."
+    )
+    assert (
+        transf_matrix.shape[0] == transf_matrix.shape[1]
+    ), f"transf_matrix ({transf_matrix.shape}) should be a square matrix."
 
     if points.shape[1] not in [2, 3]:
-        raise AssertionError("Points input should be (N, 2) or (N,3) shape, received {}".format(points.shape))
+        raise AssertionError("Points input should be (N, 2) or (N, 3) shape, received {}".format(points.shape))
 
     assert points.shape[1] == transf_matrix.shape[1] - 1, "points dim should be one less than matrix dim"
 
@@ -101,7 +103,7 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
 
 
 def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
-    """ Transform a single vector using transformation matrix.
+    """Transform a single vector using transformation matrix.
 
     Args:
         point (np.ndarray): vector of shape (N)
