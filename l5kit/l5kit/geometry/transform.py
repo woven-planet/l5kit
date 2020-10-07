@@ -73,7 +73,7 @@ def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
 def transform_points_batch(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     """Transform a batch of sequence of points using a batch of transformation matrices.
     Each sequence is transformed using its own matrix
-    Note this function assumes points.shape[-1] == matrix.shape[11] - 1, which means that last
+    Note this function assumes points.shape[-1] == matrix.shape[-1] - 1, which means that last
     rows in the matrices do not influence the final results.
     For 2D points only the first 2x3 parts of the matrices will be used.
 
