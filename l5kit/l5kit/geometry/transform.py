@@ -70,6 +70,39 @@ def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
     return tm
 
 
+def transform_points_batch(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
+    """Transform a batch of sequence of points using a batch of transformation matrices.
+    Each sequence is transformed using its own matrix
+    Note this function assumes points.shape[-1] == matrix.shape[11] - 1, which means that last
+    rows in the matrices do not influence the final results.
+    For 2D points only the first 2x3 parts of the matrices will be used.
+
+    Args:
+        points (np.ndarray): Input points (BxNx2) or (BxNx3).
+        transf_matrix (np.ndarray): (Bx3x3) or (Bx4x4) transformation matrix for 2D and 3D input respectively
+
+    Returns:
+        np.ndarray: array of shape (B,N,2) for 2D input points, or (B,N,3) points for 3D input points
+    """
+    assert len(points) == len(transf_matrix), "batch size should be the same for points and matrices"
+    assert len(points.shape) == len(transf_matrix.shape) == 3, (
+        f"dimensions mismatch, both points ({points.shape}) and "
+        f"transf_matrix ({transf_matrix.shape}) needs to be 3D numpy ndarrays."
+    )
+    assert (
+        transf_matrix.shape[1] == transf_matrix.shape[2]
+    ), f"transf_matrix ({transf_matrix.shape}) should be a square matrix."
+
+    if points.shape[-1] not in [2, 3]:
+        raise AssertionError("Points input should be (B, N, 2) or (B, N, 3) shape, received {}".format(points.shape))
+
+    assert points.shape[-1] == transf_matrix.shape[-1] - 1, "points dim should be one less than matrix dim"
+
+    num_dims = transf_matrix.shape[-1] - 1
+    transf_matrix = np.transpose(transf_matrix, (0, 2, 1))
+    return points @ transf_matrix[:, :num_dims, :num_dims] + transf_matrix[:, -1:, :num_dims]
+
+
 def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     """Transform points using transformation matrix.
     Note this function assumes points.shape[1] == matrix.shape[1] - 1, which means that the last

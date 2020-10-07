@@ -8,6 +8,7 @@ from .transform import (
     rotation33_as_yaw,
     transform_point,
     transform_points,
+    transform_points_batch,
     yaw_as_rotation33,
 )
 from .voxel import normalize_intensity, points_within_bounds, voxel_coords_to_intensity_grid
@@ -28,4 +29,5 @@ __all__ = [
     "normalize_intensity",
     "angular_distance",
     "compute_agent_pose",
+    "transform_points_batch",
 ]

@@ -2,7 +2,22 @@ import numpy as np
 import pytest
 import transforms3d
 
-from l5kit.geometry import transform_point, transform_points
+from l5kit.geometry import transform_point, transform_points, transform_points_batch
+
+
+def test_transform_batch_points() -> None:
+    # transform batch and singular elements one by one, results should match
+    # note: we use random here as the validity of transform is checked below
+
+    tfs = np.random.randn(16, 3, 3)
+    batch_points = np.random.randn(16, 50, 2)
+    output_points = transform_points_batch(batch_points, tfs)
+
+    expected_points = []
+    for points, tf in zip(batch_points, tfs):
+        expected_points.append(transform_points(points, tf))
+    expected_points = np.stack(expected_points)
+    assert np.allclose(output_points, expected_points, atol=1e-5)
 
 
 def test_transform_points() -> None:
