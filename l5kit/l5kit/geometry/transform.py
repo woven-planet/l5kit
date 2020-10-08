@@ -84,7 +84,10 @@ def transform_points_batch(points: np.ndarray, transf_matrix: np.ndarray) -> np.
     Returns:
         np.ndarray: array of shape (B,N,2) for 2D input points, or (B,N,3) points for 3D input points
     """
-    assert len(points) == len(transf_matrix), "batch size should be the same for points and matrices"
+    assert len(points) == len(transf_matrix), (
+        f"batch size should be the same for points and matrices, "
+        f"got points: {len(points)} and matrices: {len(transf_matrix)}"
+    )
     assert len(points.shape) == len(transf_matrix.shape) == 3, (
         f"dimensions mismatch, both points ({points.shape}) and "
         f"transf_matrix ({transf_matrix.shape}) needs to be 3D numpy ndarrays."
