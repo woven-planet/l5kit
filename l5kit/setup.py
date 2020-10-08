@@ -28,12 +28,24 @@ setup(
         "pyyaml",
         "notebook",
         "ptable",
-        "ipywidgets"
+        "ipywidgets",
     ],
     extras_require={
-        "dev": ["pytest", "mypy", "setuptools", "twine", "wheel", "pytest-cov", "flake8",
-                "black==19.10b0", "isort", "Sphinx", "sphinx-rtd-theme", "recommonmark",
-                "pre-commit"]
+        "dev": [
+            "pytest",
+            "mypy",
+            "setuptools",
+            "twine",
+            "wheel",
+            "pytest-cov",
+            "flake8",
+            "black==19.10b0",
+            "isort",
+            "Sphinx",
+            "sphinx-rtd-theme",
+            "recommonmark",
+            "pre-commit",
+        ]
     },
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     classifiers=[

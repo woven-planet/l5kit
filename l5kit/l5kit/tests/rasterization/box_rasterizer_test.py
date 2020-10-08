@@ -1,3 +1,5 @@
+from typing import Any, Tuple
+
 import numpy as np
 import pytest
 
@@ -87,3 +89,27 @@ def test_out_shape(hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
 
     out = rasterizer.rasterize(hist_data[0][: hist_length + 1], hist_data[1][: hist_length + 1], [])
     assert out.shape == (224, 224, (hist_length + 1) * 2)
+
+
+@pytest.mark.parametrize("lengths", [(5, 5), (3, 3), (5, 0), (0, 0)])
+def test_out_shape_override(hist_data: tuple, dmg: LocalDataManager, cfg: dict, lengths: Tuple[int, int]) -> None:
+    hist_length, real_length = lengths
+    cfg["raster_params"]["map_type"] = "box_debug"
+    cfg["raster_params"]["history_num_frames_to_rasterize"] = real_length
+    cfg["model_params"]["history_num_frames"] = hist_length
+    rasterizer = build_rasterizer(cfg, dmg)
+    out = rasterizer.rasterize(hist_data[0][: hist_length + 1], hist_data[1][: hist_length + 1], [])
+    assert out.shape == (224, 224, (real_length + 1) * 2)
+
+
+@pytest.mark.parametrize("lengths", [(5, 6), (5, -1), (5, "1")])
+def test_out_shape_override_err_config(
+    hist_data: tuple, dmg: LocalDataManager, cfg: dict, lengths: Tuple[int, Any]
+) -> None:
+    hist_length, real_length = lengths
+    cfg["raster_params"]["map_type"] = "box_debug"
+    cfg["raster_params"]["history_num_frames_to_rasterize"] = real_length
+    cfg["model_params"]["history_num_frames"] = hist_length
+
+    with pytest.raises(AssertionError):
+        build_rasterizer(cfg, dmg)

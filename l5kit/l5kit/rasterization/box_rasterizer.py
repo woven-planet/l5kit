@@ -1,3 +1,4 @@
+from itertools import islice
 from typing import List, Optional, Tuple, Union
 
 import cv2
@@ -112,7 +113,7 @@ class BoxRasterizer(Rasterizer):
         agents_images = np.zeros(out_shape, dtype=np.uint8)
         ego_images = np.zeros(out_shape, dtype=np.uint8)
 
-        for i, (frame, agents) in enumerate(zip(history_frames, history_agents)):
+        for i, (frame, agents) in enumerate(islice(zip(history_frames, history_agents), out_shape[2])):
             agents = filter_agents_by_labels(agents, self.filter_agents_threshold)
             # note the cast is for legacy support of dataset before April 2020
             av_agent = get_ego_as_agent(frame).astype(agents.dtype)

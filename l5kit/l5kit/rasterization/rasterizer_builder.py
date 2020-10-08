@@ -131,6 +131,19 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
     filter_agents_threshold = raster_cfg["filter_agents_threshold"]
     history_num_frames = cfg["model_params"]["history_num_frames"]
 
+    if "history_num_frames_to_rasterize" in raster_cfg:
+        _override_val = raster_cfg["history_num_frames_to_rasterize"]
+        assert 0 <= _override_val <= history_num_frames, (
+            f".raster_params.history_num_frames_to_rasterize ({_override_val}) should be in"
+            " the range of [0, history_num_frames]"
+        )
+        print(
+            "You have overridden history_num_frames in the rasterizer,",
+            f"which means you will have {history_num_frames} frames of raw data but only",
+            f"{_override_val} rasterized as images",
+        )
+        history_num_frames = _override_val
+
     if map_type in ["py_satellite", "satellite_debug"]:
         sat_image = _load_satellite_map(raster_cfg["satellite_map_key"], data_manager)
 

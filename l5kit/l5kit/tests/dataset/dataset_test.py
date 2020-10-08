@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Callable
 
 import numpy as np
@@ -13,7 +14,17 @@ def check_sample(cfg: dict, dataset: Dataset) -> None:
     iterator = iter(dataset)  # type: ignore
     for i in range(10):
         el = next(iterator)
+        if "box_debug" in cfg["raster_params"]["map_type"]:
+            assert el["image"].shape[0] == 2
+        elif "debug" in cfg["raster_params"]["map_type"]:
+            assert el["image"].shape[0] == 3
+        elif "history_num_frames_to_rasterize" in cfg["raster_params"]:
+            assert el["image"].shape[0] == 3 + 2 + 2 * cfg["raster_params"]["history_num_frames_to_rasterize"]
+        else:
+            assert el["image"].shape[0] == 3 + 2 + 2 * cfg["model_params"]["history_num_frames"]
+
         assert el["image"].shape[1:] == tuple(cfg["raster_params"]["raster_size"])
+        assert len(el["history_positions"]) == cfg["model_params"]["history_num_frames"] + 1
         assert len(el["target_positions"]) == cfg["model_params"]["future_num_frames"]
         assert len(el["target_yaws"]) == cfg["model_params"]["future_num_frames"]
         assert len(el["target_availabilities"]) == cfg["model_params"]["future_num_frames"]
@@ -31,6 +42,24 @@ def check_torch_loading(dataset: Dataset) -> None:
 def test_dataset_rasterizer(
     rast_name: str, dataset_cls: Callable, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
 ) -> None:
+    cfg = deepcopy(cfg)
+    cfg["raster_params"]["map_type"] = rast_name
+    rasterizer = build_rasterizer(cfg, dmg)
+
+    dataset = dataset_cls(cfg=cfg, zarr_dataset=zarr_dataset, rasterizer=rasterizer, perturbation=None)
+    check_sample(cfg, dataset)
+    check_torch_loading(dataset)
+
+
+@pytest.mark.parametrize("rast_name", ["py_satellite", "py_semantic", "box_debug", "satellite_debug"])
+@pytest.mark.parametrize("dataset_cls", [EgoDataset, AgentDataset])
+def test_dataset_rasterizer_with_override(
+    rast_name: str, dataset_cls: Callable, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
+) -> None:
+    cfg = deepcopy(cfg)
+    cfg["raster_params"]["map_type"] = rast_name
+    cfg["model_params"]["history_num_frames"] = 1
+    cfg["raster_params"]["history_num_frames_to_rasterize"] = 0
     rasterizer = build_rasterizer(cfg, dmg)
 
     dataset = dataset_cls(cfg=cfg, zarr_dataset=zarr_dataset, rasterizer=rasterizer, perturbation=None)

@@ -43,6 +43,10 @@ raster_params:
   # whether to completely disable traffic light faces in the semantic rasterizer
   disable_traffic_light_faces: False
 
+  # if you want a larger number of history frames but would not want to rasterize them all
+  # this will override .model_params.history_num_frames
+  # history_num_frames_to_rasterize: 0
+
 ###################
 ## Data loader options
 train_data_loader:
