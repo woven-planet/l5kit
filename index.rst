@@ -9,5 +9,6 @@ L5Kit is a Python library with functionality for the development and training of
    README.md
    api_reference.md
    data_format.md
+   coords_systems.md
    how_to_contribute.md
    competition.md
