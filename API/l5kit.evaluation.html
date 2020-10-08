@@ -316,7 +316,7 @@ This function was used to generate the test set for the competition so that the 
 <dl class="py function">
 <dt id="l5kit.evaluation.write_pred_csv">
 <code class="sig-prename descclassname">l5kit.evaluation.</code><code class="sig-name descname">write_pred_csv</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">csv_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">timestamps</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">track_ids</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">coords</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">confs</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.evaluation.write_pred_csv" title="Permalink to this definition">¶</a></dt>
-<dd><p>Encode the ground truth into a csv file. Coords can have an additional axis for multi-mode.
+<dd><p>Encode the predictions into a csv file. Coords can have an additional axis for multi-mode.
 We handle up to MAX_MODES modes.
 For the uni-modal case (i.e. all predictions have just a single mode), coords should not have the additional axis
 and confs should be set to None. In this case, a single mode with confidence 1 will be written.</p>
