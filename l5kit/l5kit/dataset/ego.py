@@ -25,15 +25,14 @@ class EgoDataset(Dataset):
         rasterizer: Rasterizer,
         perturbation: Optional[Perturbation] = None,
     ):
-        """
-        Get a PyTorch dataset object that can be used to train DNN
+        """Get a PyTorch dataset object that can be used to train DNN
 
         Args:
             cfg (dict): configuration file
             zarr_dataset (ChunkedDataset): the raw zarr dataset
             rasterizer (Rasterizer): an object that support rasterisation around an agent (AV or not)
             perturbation (Optional[Perturbation]): an object that takes care of applying trajectory perturbations.
-None if not desired
+        None if not desired
         """
         self.perturbation = perturbation
         self.cfg = cfg

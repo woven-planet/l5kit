@@ -73,9 +73,7 @@ def draw_boxes(
 
 
 class BoxRasterizer(Rasterizer):
-    def __init__(
-        self, render_context: RenderContext, filter_agents_threshold: float, history_num_frames: int,
-    ):
+    def __init__(self, render_context: RenderContext, filter_agents_threshold: float, history_num_frames: int):
         """
 
         Args:

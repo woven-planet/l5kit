@@ -243,6 +243,4 @@ if __name__ == "__main__":
         zarr_dataset = ChunkedDataset(path=input_folder)
         zarr_dataset.open()
 
-        select_agents(
-            zarr_dataset, args.th_agent_prob, args.th_yaw_degree, args.th_extent_ratio, args.th_distance_av,
-        )
+        select_agents(zarr_dataset, args.th_agent_prob, args.th_yaw_degree, args.th_extent_ratio, args.th_distance_av)

@@ -9,8 +9,7 @@ from .semantic_rasterizer import SemanticRasterizer
 
 
 class SemBoxRasterizer(Rasterizer):
-    """Combine a Semantic Map and a Box Rasterizers into a single class
-    """
+    """Combine a Semantic Map and a Box Rasterizers into a single class"""
 
     def __init__(
         self,

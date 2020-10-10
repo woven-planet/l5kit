@@ -19,7 +19,7 @@ def points_within_bounds(coords: np.ndarray, shape: Union[Collection[int], np.nd
 def voxel_coords_to_intensity_grid(
     voxel_coords: np.ndarray, shape: tuple, dtype: np.dtype = np.float32, drop_out_of_bounds: bool = True
 ) -> np.ndarray:
-    """ Puts coords into a grid: for each grid cell the number of points is written there.
+    """Puts coords into a grid: for each grid cell the number of points is written there.
 
     Arguments:
         voxel_coords (np.ndarray): input array with coords (N,3) in intensity grid

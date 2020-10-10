@@ -20,19 +20,19 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:
 
 def compute_yaw_around_north_from_direction(direction_vector: np.ndarray) -> float:
     """compute_yaw_from_direction computes the yaw as angle between a 2D input direction vector and
-the y-axis direction vector (0, 1).
+    the y-axis direction vector (0, 1).
 
-    Args:
-        direction_vector (np.ndarray): Vector of shape (2,)
+        Args:
+            direction_vector (np.ndarray): Vector of shape (2,)
 
-    Returns:
-        float: angle to (0,1) vector in radians
+        Returns:
+            float: angle to (0,1) vector in radians
     """
     return angle_between_vectors(direction_vector, np.array([0.0, 1.0]))
 
 
 def angular_distance(angle_a: Union[float, np.ndarray], angle_b: Union[float, np.ndarray]) -> Union[float, np.ndarray]:
-    """ A function that takes two arrays of angles in radian and compute the angular distance, wrap the angular
+    """A function that takes two arrays of angles in radian and compute the angular distance, wrap the angular
     distance such that they are always in the [-pi, pi) range.
 
     Args:

@@ -20,7 +20,7 @@ def get_partial(
         center_in_raster_ratio=np.array(cfg["raster_params"]["ego_center"]),
     )
 
-    rasterizer = StubRasterizer(render_context, rast_params["filter_agents_threshold"],)
+    rasterizer = StubRasterizer(render_context, rast_params["filter_agents_threshold"])
     return functools.partial(
         generate_agent_sample,
         render_context=render_context,

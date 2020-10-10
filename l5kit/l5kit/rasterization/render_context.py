@@ -3,7 +3,7 @@ import numpy as np
 
 class RenderContext:
     def __init__(
-        self, raster_size_px: np.ndarray, pixel_size_m: np.ndarray, center_in_raster_ratio: np.ndarray,
+        self, raster_size_px: np.ndarray, pixel_size_m: np.ndarray, center_in_raster_ratio: np.ndarray
     ) -> None:
         """
         This class stores render context information (raster size, pixel size, raster center / principle point) and

@@ -47,7 +47,7 @@ AGENT_DTYPE = [
 TL_FACE_DTYPE = [
     ("face_id", "<U16"),
     ("traffic_light_id", "<U16"),
-    ("traffic_light_face_status", np.float32, (len(TL_FACE_LABELS,))),
+    ("traffic_light_face_status", np.float32, (len(TL_FACE_LABELS),)),
 ]
 
 
@@ -133,7 +133,7 @@ class ChunkedDataset:
 
         Raises:
             Exception: When any of the expected arrays (frames, agents, scenes) is missing or the store couldn't be
-opened.
+        opened.
         """
         if cached:
             self.root = zarr.open_group(

@@ -1,5 +1,6 @@
 [tool.black]
 line-length = 119
+target-version = ['py37', 'py38']
 exclude = '/l5kit\/data\/proto\/*/'
 
 [tool.isort]

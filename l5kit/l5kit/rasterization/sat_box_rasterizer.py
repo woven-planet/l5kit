@@ -10,8 +10,7 @@ from .satellite_rasterizer import SatelliteRasterizer
 
 
 class SatBoxRasterizer(Rasterizer):
-    """Combine a Satellite and a Box Rasterizers into a single class
-    """
+    """Combine a Satellite and a Box Rasterizers into a single class"""
 
     def __init__(
         self,

@@ -55,8 +55,8 @@ def generate_agent_sample(
         filter_agents_threshold (float): Value between 0 and 1 to use as cutoff value for agent filtering
         based on their probability of being a relevant agent
         rasterizer (Optional[Rasterizer]): Rasterizer of some sort that draws a map image
-        perturbation (Optional[Perturbation]): Object that perturbs the input and targets, used
-to train models that can recover from slight divergence from training set data
+        perturbation (Optional[Perturbation]): Object that perturbs the input and targets, used to train
+                models that can recover from slight divergence from training set data
 
     Raises:
         ValueError: A ValueError is returned if the specified ``selected_track_id`` is not present in the scene

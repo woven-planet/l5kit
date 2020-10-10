@@ -10,7 +10,7 @@ def test_fit_ackerman_steering() -> None:
     w = np.ones(len(test_trajectory))
 
     x, y, r, v = fit_ackerman_model_approximate(
-        test_trajectory[:, 0], test_trajectory[:, 1], test_velocity[:, 0], test_velocity[:, 1], w, w, w, w, w, w, w, w,
+        test_trajectory[:, 0], test_trajectory[:, 1], test_velocity[:, 0], test_velocity[:, 1], w, w, w, w, w, w, w, w
     )
 
     N = len(test_trajectory)

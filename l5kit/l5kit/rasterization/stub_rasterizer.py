@@ -7,13 +7,9 @@ from .render_context import RenderContext
 
 
 class StubRasterizer(Rasterizer):
-    """This rasterizer doesn't actually do anything, it returns an all-black image. Useful for testing.
+    """This rasterizer doesn't actually do anything, it returns an all-black image. Useful for testing."""
 
-    """
-
-    def __init__(
-        self, render_context: RenderContext, filter_agents_threshold: float,
-    ):
+    def __init__(self, render_context: RenderContext, filter_agents_threshold: float):
         """
 
         Args:

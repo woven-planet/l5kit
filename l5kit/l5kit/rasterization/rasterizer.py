@@ -10,8 +10,7 @@ EGO_EXTENT_HEIGHT = 1.8  # Height includes sensor
 
 
 class Rasterizer(ABC):
-    """Base class for something that takes a single state of the world, and outputs a (multi-channel) image.
-    """
+    """Base class for something that takes a single state of the world, and outputs a (multi-channel) image."""
 
     def __init__(self) -> None:
         pass  # TODO are we sure we don't want at least the pixel information here?

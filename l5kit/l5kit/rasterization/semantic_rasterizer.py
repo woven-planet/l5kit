@@ -58,9 +58,7 @@ class SemanticRasterizer(Rasterizer):
     Rasteriser for the vectorised semantic map (generally loaded from json files).
     """
 
-    def __init__(
-        self, render_context: RenderContext, semantic_map_path: str, world_to_ecef: np.ndarray,
-    ):
+    def __init__(self, render_context: RenderContext, semantic_map_path: str, world_to_ecef: np.ndarray):
         self.render_context = render_context
         self.raster_size = render_context.raster_size_px
         self.pixel_size = render_context.pixel_size_m
@@ -108,7 +106,9 @@ class SemanticRasterizer(Rasterizer):
                 y_max = np.max(crosswalk["xyz"][:, 1])
 
                 crosswalks_bounds = np.append(
-                    crosswalks_bounds, np.asarray([[[x_min, y_min], [x_max, y_max]]]), axis=0,
+                    crosswalks_bounds,
+                    np.asarray([[[x_min, y_min], [x_max, y_max]]]),
+                    axis=0,
                 )
                 crosswalks_ids.append(element_id)
 

@@ -191,7 +191,7 @@ def _average_displacement_error(
 
 
 def average_displacement_error_oracle(
-    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
+    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
 ) -> np.ndarray:
     """
     Calls _average_displacement_error() to get the oracle average displacement error.
@@ -210,7 +210,7 @@ def average_displacement_error_oracle(
 
 
 def average_displacement_error_mean(
-    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
+    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
 ) -> np.ndarray:
     """
     Calls _average_displacement_error() to get the mean average displacement error.
@@ -267,7 +267,7 @@ def _final_displacement_error(
 
 
 def final_displacement_error_oracle(
-    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
+    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
 ) -> np.ndarray:
     """
     Calls _final_displacement_error() to get the oracle average displacement error.
@@ -286,7 +286,7 @@ def final_displacement_error_oracle(
 
 
 def final_displacement_error_mean(
-    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
+    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
 ) -> np.ndarray:
     """
     Calls _final_displacement_error() to get the mean average displacement error.

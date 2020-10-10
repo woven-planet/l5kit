@@ -146,7 +146,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         world_to_aerial = np.matmul(ecef_to_aerial, world_to_ecef)
         if map_type == "py_satellite":
             return SatBoxRasterizer(
-                render_context, filter_agents_threshold, history_num_frames, sat_image, world_to_aerial,
+                render_context, filter_agents_threshold, history_num_frames, sat_image, world_to_aerial
             )
         else:
             return SatelliteRasterizer(render_context, sat_image, world_to_aerial)
@@ -160,7 +160,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
             world_to_ecef = get_hardcoded_world_to_ecef()
         if map_type == "py_semantic":
             return SemBoxRasterizer(
-                render_context, filter_agents_threshold, history_num_frames, semantic_map_filepath, world_to_ecef,
+                render_context, filter_agents_threshold, history_num_frames, semantic_map_filepath, world_to_ecef
             )
         else:
             return SemanticRasterizer(render_context, semantic_map_filepath, world_to_ecef)

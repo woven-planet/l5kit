@@ -5,8 +5,8 @@ from .zarr_dataset import SCENE_DTYPE
 
 def get_combined_scenes(scenes: np.ndarray) -> np.ndarray:
     """Takes as input an np.ndarray or zarr array with scenes, and combines scenes that follow up
-eachother perfectly (i.e. from a single recording by the same host). Returns an np.ndarray
-of combined scenes.
+    eachother perfectly (i.e. from a single recording by the same host). Returns an np.ndarray
+    of combined scenes.
 
     Arguments:
         scenes (np.ndarray): scenes
