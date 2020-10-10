@@ -79,8 +79,9 @@ None if not desired
             state_index (int): a relative frame index in the scene
             track_id (Optional[int]): the agent to rasterize or None for the AV
         Returns:
-            dict: the rasterised image, the target trajectory (position and yaw) along with their availability,
-            the 2D matrix to center that agent, the agent track (-1 if ego) and the timestamp
+            dict: the rasterised image in (Cx0x1) if the rast is not None, the target trajectory
+            (position and yaw) along with their availability, the 2D matrix to center that agent,
+            the agent track (-1 if ego) and the timestamp
 
         """
         frames = self.dataset.frames[get_frames_slice_from_scenes(self.dataset.scenes[scene_index])]
