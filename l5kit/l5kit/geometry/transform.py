@@ -100,10 +100,8 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
         "points dim should be one less than matrix dim"
     )
 
-    num_dims = len(transf_matrix) - 1
-    transf_matrix = transf_matrix.T
+    return (points @ transf_matrix.T[:-1, :-1]) + transf_matrix[:-1, -1]
 
-    return points @ transf_matrix[:num_dims, :num_dims] + transf_matrix[-1, :num_dims]
 
 
 def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
