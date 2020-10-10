@@ -103,7 +103,6 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     return (points @ transf_matrix.T[:-1, :-1]) + transf_matrix[:-1, -1]
 
 
-
 def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     """Transform a single vector using transformation matrix.
 
