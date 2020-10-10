@@ -92,13 +92,9 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     ), f"transf_matrix ({transf_matrix.shape}) should be a square matrix."
 
     if points.shape[1] not in [2, 3]:
-        raise AssertionError(
-            f"Points input should be (N, 2) or (N, 3) shape, received {points.shape}"
-        )
+        raise AssertionError(f"Points input should be (N, 2) or (N, 3) shape, received {points.shape}")
 
-    assert points.shape[1] == transf_matrix.shape[1] - 1, (
-        "points dim should be one less than matrix dim"
-    )
+    assert points.shape[1] == transf_matrix.shape[1] - 1, "points dim should be one less than matrix dim"
 
     return (points @ transf_matrix.T[:-1, :-1]) + transf_matrix[:-1, -1]
 
