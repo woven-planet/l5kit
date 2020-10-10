@@ -144,12 +144,14 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
             ecef_to_aerial = get_hardcoded_ecef_to_aerial()
 
         world_to_aerial = np.matmul(ecef_to_aerial, world_to_ecef)
+        sat_rast = SatelliteRasterizer(render_context, sat_image, world_to_aerial)
         if map_type == "py_satellite":
+            box_rast = BoxRasterizer(render_context, filter_agents_threshold, history_num_frames)
             return SatBoxRasterizer(
-                render_context, filter_agents_threshold, history_num_frames, sat_image, world_to_aerial,
+                render_context, filter_agents_threshold, history_num_frames, sat_rast=sat_rast, box_rast=box_rast,
             )
         else:
-            return SatelliteRasterizer(render_context, sat_image, world_to_aerial)
+            return sat_rast
 
     elif map_type in ["py_semantic", "semantic_debug"]:
         semantic_map_filepath = data_manager.require(raster_cfg["semantic_map_key"])
@@ -158,12 +160,14 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
             world_to_ecef = np.array(dataset_meta["world_to_ecef"], dtype=np.float64)
         except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
             world_to_ecef = get_hardcoded_world_to_ecef()
+        sem_rast = SemanticRasterizer(render_context, semantic_map_filepath, world_to_ecef)
         if map_type == "py_semantic":
+            box_rast = BoxRasterizer(render_context, filter_agents_threshold, history_num_frames)
             return SemBoxRasterizer(
-                render_context, filter_agents_threshold, history_num_frames, semantic_map_filepath, world_to_ecef,
+                render_context, filter_agents_threshold, history_num_frames, sem_rast=sem_rast, box_rast=box_rast,
             )
         else:
-            return SemanticRasterizer(render_context, semantic_map_filepath, world_to_ecef)
+            return sem_rast
 
     elif map_type == "box_debug":
         return BoxRasterizer(render_context, filter_agents_threshold, history_num_frames)

@@ -1,4 +1,5 @@
 from .box_rasterizer import BoxRasterizer
+from .map_and_box_rasterizer import MapAndBoxRasterizer
 from .rasterizer import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
 from .rasterizer_builder import build_rasterizer
 from .render_context import RenderContext
@@ -21,6 +22,7 @@ __all__ = [
     "BoxRasterizer",
     "SatBoxRasterizer",
     "SemBoxRasterizer",
+    "MapAndBoxRasterizer",
     "build_rasterizer",
     "EGO_EXTENT_WIDTH",
     "EGO_EXTENT_LENGTH",
