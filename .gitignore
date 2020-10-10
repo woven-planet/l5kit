@@ -9,7 +9,7 @@ __pycache__/
 *.egg-info/
 .eggs/
 
-.DS_Store
+*.DS_Store
 
 *.pth
 *.pt
