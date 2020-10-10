@@ -96,8 +96,12 @@ None if not desired
                 stacklevel=2,
             )
         data = self.sample_function(state_index, frames, self.dataset.agents, tl_faces, track_id)
-        # 0,1,C -> C,0,1
-        image = data["image"].transpose(2, 0, 1)
+
+        # when rast is None, image could be None
+        image = data["image"]
+        if image is not None:
+            # 0,1,C -> C,0,1
+            image = image.transpose(2, 0, 1)
 
         target_positions = np.array(data["target_positions"], dtype=np.float32)
         target_yaws = np.array(data["target_yaws"], dtype=np.float32)
