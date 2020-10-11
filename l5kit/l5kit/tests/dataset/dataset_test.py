@@ -5,7 +5,7 @@ import pytest
 from torch.utils.data import DataLoader, Dataset, Subset
 
 from l5kit.data import ChunkedDataset, LocalDataManager
-from l5kit.dataset import AgentDataset, EgoDataset
+from l5kit.dataset import AgentDataset, EgoDataset, MultiAgentDataset
 from l5kit.rasterization import RenderContext, StubRasterizer, build_rasterizer
 
 
@@ -18,6 +18,15 @@ def check_sample(cfg: dict, dataset: Dataset) -> None:
         assert len(el["target_yaws"]) == cfg["model_params"]["future_num_frames"]
         assert len(el["target_availabilities"]) == cfg["model_params"]["future_num_frames"]
         assert el["world_to_image"].shape == (3, 3)
+
+
+def check_multi_agent_sample(cfg: dict, dataset: MultiAgentDataset) -> None:
+    iterator = iter(dataset)  # type: ignore
+    for i in range(10):
+        el = next(iterator)
+        assert "ego_dict" in el
+        assert "others_dict" in el
+        assert "others_len" in el
 
 
 def check_torch_loading(dataset: Dataset) -> None:
@@ -91,4 +100,16 @@ def test_no_rast_dataset(
     for idx in indexes:
         data = dataset[idx]
         assert "image" not in data
+
+@pytest.mark.parametrize("rast_name", ["py_semantic"])
+def test_multi_agent(rast_name: str, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict,) -> None:
+    rasterizer = build_rasterizer(cfg, dmg)
+    rast_only_agent_dataset = AgentDataset(
+        cfg=cfg, zarr_dataset=zarr_dataset, rasterizer=rasterizer, perturbation=None
+    )
+    history_agent_dataset = AgentDataset(cfg=cfg, zarr_dataset=zarr_dataset, rasterizer=rasterizer, perturbation=None)
+    dataset = MultiAgentDataset(
+        rast_only_agent_dataset=rast_only_agent_dataset, history_agent_dataset=history_agent_dataset
+    )
+    check_multi_agent_sample(cfg, dataset)
     check_torch_loading(dataset)
