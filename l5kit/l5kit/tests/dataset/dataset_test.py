@@ -91,3 +91,4 @@ def test_no_rast_dataset(
     for idx in indexes:
         data = dataset[idx]
         assert data["image"] is None
+    check_torch_loading(dataset)
