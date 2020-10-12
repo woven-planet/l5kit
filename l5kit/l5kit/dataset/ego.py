@@ -98,12 +98,6 @@ None if not desired
             )
         data = self.sample_function(state_index, frames, self.dataset.agents, tl_faces, track_id)
 
-        # when rast is None, image could be None
-        image = data["image"]
-        if image is not None:
-            # 0,1,C -> C,0,1
-            image = image.transpose(2, 0, 1)
-
         target_positions = np.array(data["target_positions"], dtype=np.float32)
         target_yaws = np.array(data["target_yaws"], dtype=np.float32)
 
@@ -113,8 +107,7 @@ None if not desired
         timestamp = frames[state_index]["timestamp"]
         track_id = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
 
-        return {
-            "image": image,
+        result = {
             "target_positions": target_positions,
             "target_yaws": target_yaws,
             "target_availabilities": data["target_availabilities"],
@@ -132,6 +125,14 @@ None if not desired
             "yaw": data["yaw"],
             "extent": data["extent"],
         }
+
+        # when rast is None, image could be None
+        image = data["image"]
+        if image is not None:
+            # 0,1,C -> C,0,1
+            result["image"] = image.transpose(2, 0, 1)
+
+        return result
 
     def __getitem__(self, index: int) -> dict:
         """
