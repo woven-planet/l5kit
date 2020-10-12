@@ -90,5 +90,5 @@ def test_no_rast_dataset(
     indexes = [0, 1, 10, -1]  # because we pad, even the first index should have an (entire black) history
     for idx in indexes:
         data = dataset[idx]
-        assert data["image"] is None
+        assert "image" not in data
     check_torch_loading(dataset)
