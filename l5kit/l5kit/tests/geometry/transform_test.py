@@ -6,14 +6,48 @@ from l5kit.geometry import transform_point, transform_points
 
 
 def test_transform_points() -> None:
-    tf = np.asarray([[1.0, 0, 100], [0, 0.5, 50], [0, 0, 1]])
-
+    # 2D points (e.g. "world_from_agent")
+    tf = np.asarray(
+        [
+            [-1.08912448e00, 2.25029062e00, 6.03325482e03],
+            [-2.25029062e00, -1.08912448e00, -1.28582624e03],
+            [0.0, 0.0, 1.0],
+        ]
+    )
     points = np.array([[0, 10], [10, 0], [10, 10]])
-    expected_point = np.array([[100, 55], [110, 50], [110, 55]])
-
+    expected_points = np.array([[6055.757726, -1296.717485], [6022.363575, -1308.329146], [6044.866481, -1319.220391]])
     output_points = transform_points(points, tf)
+    np.testing.assert_allclose(output_points, expected_points)
 
-    np.testing.assert_array_equal(output_points, expected_point)
+    # 3D points (e.g. "world_to_ecef")
+    tf = np.asarray(
+        [
+            [0.846617444, 0.323463078, -0.422623402, -2698767.44],
+            [-0.532201938, 0.514559352, -0.672301845, -4293151.58],
+            [-3.05311332e-16, 0.794103464, 0.6077826, 3855164.76],
+            [0.0, 0.0, 0.0, 1.0],
+        ]
+    )
+    points = np.array([[0, 10, 0], [10, 0, 0], [0, 0, 10], [10, 10, 0], [10, 10, 10], [0, 10, 10]])
+    expected_points = np.array(
+        [
+            [-2698764.20536922, -4293146.43440648, 3855172.70103464],
+            [-2698758.97382556, -4293156.90201938, 3855164.76],
+            [-2698771.66623402, -4293158.30301845, 3855170.837826],
+            [-2698755.73919478, -4293151.75642586, 3855172.70103464],
+            [-2698759.9654288, -4293158.47944431, 3855178.77886064],
+            [-2698768.43160324, -4293153.15742493, 3855178.77886064],
+        ]
+    )
+    output_points = transform_points(points, tf)
+    np.testing.assert_allclose(output_points, expected_points)
+
+    # original test
+    tf = np.asarray([[1.0, 0, 100], [0, 0.5, 50], [0, 0, 1]])
+    points = np.array([[0, 10], [10, 0], [10, 10]])
+    expected_points = np.array([[100, 55], [110, 50], [110, 55]])
+    output_points = transform_points(points, tf)
+    np.testing.assert_array_equal(output_points, expected_points)
 
 
 def test_transform_single_point() -> None:
