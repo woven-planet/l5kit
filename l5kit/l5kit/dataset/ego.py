@@ -79,8 +79,9 @@ None if not desired
             state_index (int): a relative frame index in the scene
             track_id (Optional[int]): the agent to rasterize or None for the AV
         Returns:
-            dict: the rasterised image, the target trajectory (position and yaw) along with their availability,
-            the 2D matrix to center that agent, the agent track (-1 if ego) and the timestamp
+            dict: the rasterised image in (Cx0x1) if the rast is not None, the target trajectory
+            (position and yaw) along with their availability, the 2D matrix to center that agent,
+            the agent track (-1 if ego) and the timestamp
 
         """
         frames = self.dataset.frames[get_frames_slice_from_scenes(self.dataset.scenes[scene_index])]
@@ -96,8 +97,6 @@ None if not desired
                 stacklevel=2,
             )
         data = self.sample_function(state_index, frames, self.dataset.agents, tl_faces, track_id)
-        # 0,1,C -> C,0,1
-        image = data["image"].transpose(2, 0, 1)
 
         target_positions = np.array(data["target_positions"], dtype=np.float32)
         target_yaws = np.array(data["target_yaws"], dtype=np.float32)
@@ -108,8 +107,7 @@ None if not desired
         timestamp = frames[state_index]["timestamp"]
         track_id = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
 
-        return {
-            "image": image,
+        result = {
             "target_positions": target_positions,
             "target_yaws": target_yaws,
             "target_availabilities": data["target_availabilities"],
@@ -127,6 +125,14 @@ None if not desired
             "yaw": data["yaw"],
             "extent": data["extent"],
         }
+
+        # when rast is None, image could be None
+        image = data["image"]
+        if image is not None:
+            # 0,1,C -> C,0,1
+            result["image"] = image.transpose(2, 0, 1)
+
+        return result
 
     def __getitem__(self, index: int) -> dict:
         """
