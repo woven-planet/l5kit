@@ -111,6 +111,7 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     Note this function assumes points.shape[1] == matrix.shape[1] - 1, which means that the last
     row in the matrix does not influence the final result.
     For 2D points only the first 2x3 part of the matrix will be used.
+    This function calls transform_points_batch internally
 
     Args:
         points (np.ndarray): Input points (Nx2) or (Nx3).
@@ -119,28 +120,14 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     Returns:
         np.ndarray: array of shape (N,2) for 2D input points, or (N,3) points for 3D input points
     """
-    assert len(points.shape) == len(transf_matrix.shape) == 2, (
-        f"dimensions mismatch, both points ({points.shape}) and "
-        f"transf_matrix ({transf_matrix.shape}) needs to be 2D numpy ndarrays."
-    )
-    assert (
-        transf_matrix.shape[0] == transf_matrix.shape[1]
-    ), f"transf_matrix ({transf_matrix.shape}) should be a square matrix."
-
-    if points.shape[1] not in [2, 3]:
-        raise AssertionError("Points input should be (N, 2) or (N, 3) shape, received {}".format(points.shape))
-
-    assert points.shape[1] == transf_matrix.shape[1] - 1, "points dim should be one less than matrix dim"
-
-    num_dims = len(transf_matrix) - 1
-    transf_matrix = transf_matrix.T
-
-    return points @ transf_matrix[:num_dims, :num_dims] + transf_matrix[-1, :num_dims]
+    points = np.expand_dims(points, 0)
+    transf_matrix = np.expand_dims(transf_matrix, 0)
+    return transform_points_batch(points, transf_matrix)[0]
 
 
 def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     """Transform a single vector using transformation matrix.
-
+        This function call transform_points internally
     Args:
         point (np.ndarray): vector of shape (N)
         transf_matrix (np.ndarray): transformation matrix of shape (N+1, N+1)
@@ -148,8 +135,8 @@ def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: vector of same shape as input point
     """
-    point_ext = np.hstack((point, np.ones(1)))
-    return np.matmul(transf_matrix, point_ext)[: point.shape[0]]
+    point = np.expand_dims(point, 0)
+    return transform_points(point, transf_matrix)[0]
 
 
 def ecef_to_geodetic(point: Union[np.ndarray, Sequence[float]]) -> np.ndarray:
