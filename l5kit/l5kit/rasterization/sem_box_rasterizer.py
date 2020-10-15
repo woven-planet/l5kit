@@ -29,7 +29,7 @@ class SemBoxRasterizer(Rasterizer):
         self.history_num_frames = history_num_frames
 
         self.box_rast = BoxRasterizer(render_context, filter_agents_threshold, history_num_frames)
-        self.sat_rast = SemanticRasterizer(render_context, semantic_map_path, world_to_ecef)
+        self.sem_rast = SemanticRasterizer(render_context, semantic_map_path, world_to_ecef)
 
     def rasterize(
         self,
@@ -39,13 +39,13 @@ class SemBoxRasterizer(Rasterizer):
         agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         im_out_box = self.box_rast.rasterize(history_frames, history_agents, history_tl_faces, agent)
-        im_out_sat = self.sat_rast.rasterize(history_frames, history_agents, history_tl_faces, agent)
-        return np.concatenate([im_out_box, im_out_sat], -1)
+        im_out_sem = self.sem_rast.rasterize(history_frames, history_agents, history_tl_faces, agent)
+        return np.concatenate([im_out_box, im_out_sem], -1)
 
     def to_rgb(self, in_im: np.ndarray, **kwargs: dict) -> np.ndarray:
         im_out_box = self.box_rast.to_rgb(in_im[..., :-3], **kwargs)
-        im_out_sat = self.sat_rast.to_rgb(in_im[..., -3:], **kwargs)
+        im_out_sem = self.sem_rast.to_rgb(in_im[..., -3:], **kwargs)
         # merge the two together
         mask_box = np.any(im_out_box > 0, -1)
-        im_out_sat[mask_box] = im_out_box[mask_box]
-        return im_out_sat
+        im_out_sem[mask_box] = im_out_box[mask_box]
+        return im_out_sem

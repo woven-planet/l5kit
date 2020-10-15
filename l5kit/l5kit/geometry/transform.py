@@ -113,6 +113,7 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     For 2D points only the first 2x3 part of the matrix will be used.
     This function calls transform_points_batch internally
 
+<<<<<<< HEAD
     Args:
         points (np.ndarray): Input points (Nx2) or (Nx3).
         transf_matrix (np.ndarray): 3x3 or 4x4 transformation matrix for 2D and 3D input respectively

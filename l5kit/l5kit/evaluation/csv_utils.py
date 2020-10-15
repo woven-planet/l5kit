@@ -145,7 +145,7 @@ def write_pred_csv(
     confs: Optional[np.ndarray] = None,
 ) -> None:
     """
-    Encode the ground truth into a csv file. Coords can have an additional axis for multi-mode.
+    Encode the predictions into a csv file. Coords can have an additional axis for multi-mode.
     We handle up to MAX_MODES modes.
     For the uni-modal case (i.e. all predictions have just a single mode), coords should not have the additional axis
     and confs should be set to None. In this case, a single mode with confidence 1 will be written.
