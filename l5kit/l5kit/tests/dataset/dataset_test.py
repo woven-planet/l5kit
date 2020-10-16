@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Callable
 
 import numpy as np
@@ -42,7 +41,6 @@ def check_torch_loading(dataset: Dataset) -> None:
 def test_dataset_rasterizer(
     rast_name: str, dataset_cls: Callable, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
 ) -> None:
-    cfg = deepcopy(cfg)
     cfg["raster_params"]["map_type"] = rast_name
     rasterizer = build_rasterizer(cfg, dmg)
 
@@ -56,7 +54,6 @@ def test_dataset_rasterizer(
 def test_dataset_rasterizer_with_override(
     rast_name: str, dataset_cls: Callable, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
 ) -> None:
-    cfg = deepcopy(cfg)
     cfg["raster_params"]["map_type"] = rast_name
     cfg["model_params"]["history_num_frames"] = 1
     cfg["raster_params"]["history_num_frames_to_rasterize"] = 0
