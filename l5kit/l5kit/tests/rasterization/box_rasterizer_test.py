@@ -102,7 +102,7 @@ def test_out_shape_override(hist_data: tuple, dmg: LocalDataManager, cfg: dict, 
     assert out.shape == (224, 224, (real_length + 1) * 2)
 
 
-@pytest.mark.parametrize("lengths", [(5, 6), (5, -1), (5, "1")])
+@pytest.mark.parametrize("lengths", [(5, 6), (5, -1)])
 def test_out_shape_override_err_config(
     hist_data: tuple, dmg: LocalDataManager, cfg: dict, lengths: Tuple[int, Any]
 ) -> None:
