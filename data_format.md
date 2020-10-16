@@ -208,3 +208,101 @@ centroids = dt.agents[slice(10_000)]["centroid"]  # note this is the same as dt.
 we reduce the decompression numbers by **a factor of 10K**.
 
 **TL;DR**: when working with `zarr` you should always aim to minimise the number of accesses to the compressed data.
+
+## Dataset Abstraction Classes
+
+As shown above, working with the raw `zarr` dataset has its own perils. To that end, we provide two structures
+which form an additional abstraction layer over the raw `zarr` dataset. These two Python classes allow to rasterise
+and get information about the past and future state of the AV or another agent. 
+
+**Notes:** 
+- the following 2 classes inherit from Pytorch Dataset and as such are tied to work with it;
+- the following 2 classes assume the world to be rasterised as BEV (Bird-Eye-View), which is a common choice for 
+CNN-based approaches. Still, this can be disabled by using `stub_debug` as `map_type`.
+
+
+### EgoDataset
+The `EgoDataset` retrieves information about the status of the AV in the current frame and the frames before it (if history is enabled).
+When iterated, it yields a dict with the following information:
+
+| Field Name               | Description                                                                                                                                          |
+|--------------------------|------------------------------------------------------------------------------------------------------------------------------------------------------|
+| `image`                  | The BEV raster as a multi-channel tensor                                                                                                             |
+| `target_positions`       | The coordinates (in **agent** reference system) of the AV in the future. Unit is meters                                                         |
+| `target_yaws`            | The yaws (in **agent** reference system) of the AV in the future. Unit is radians                                                       |
+| `target_availabilities`  | A 1D array. Each item can be either 1 (future step is valid) or 0 (future step is not valid). Invalid steps may occur at the end or start of a scene |
+| `history_positions`      | Same as target_positions but for the frames in the past                                                                                              |
+| `history_yaws`           | Same as target_yaws but for the frames in the past                                                                                                   |
+| `history_availabilities` | Same as target_availabilities but for the frames in the past                                                                                         |
+| `raster_from_world`      | A 3x3 matrix mapping from world to the image reference system                                                                                        |
+| `raster_from_agent`      | A 3x3 matrix mapping from agent to the image reference system                                                                                        |
+| `agent_from_world`       | A 3x3 matrix mapping from world to the agent reference system                                                                                        |
+| `world_from_agent`       | A 3x3 matrix mapping from agent to the world reference system                                                                                        |
+| `track_id`               | A scene-unique identifier id for the agent, or -1 for the AV                                                                                         |
+| `timestamp`              | The timestamp of the current frame                                                                                                                   |
+| `centroid`               | The centroid of the AV in the current frame in **world** reference system. Unit is meters                                                            |
+| `yaw`                    | The angle of yaw of the AV in the current frame in **world** reference system. Unit is radians                                                                                     |
+| `extent`                 | The extent of the AV (in XYZ) in the world reference system. Unit is meters   
+
+
+A sample usage would be:
+```python
+from l5kit.rasterization import build_rasterizer
+from l5kit.configs import load_config_data
+from l5kit.data import LocalDataManager, ChunkedDataset
+from l5kit.dataset import EgoDataset
+
+
+zarr_dt = ChunkedDataset("<path>")
+zarr_dt.open()
+
+# additional information is required for rasterisation
+cfg = load_config_data("<path>")
+rast = build_rasterizer(cfg, LocalDataManager("/tmp/l5kit_data"))
+
+dataset = EgoDataset(cfg, zarr_dt, rast)
+for data in dataset:  # this iterates over frames under the hood
+    print(data["target_positions"])
+    print(data["history_positions"])
+```
+
+### AgentDataset
+The `AgentDataset` iterates over agents (i.e. every other dynamic entity in the scene) instead of the AV. Because the returned dict
+is exactly the same as the `EgoDataset`, the two classes are almost interchangeable. 
+
+However, one fundamental difference exists:
+The `AgentDataset` is seeded with an `agents_mask` which defines which agents should be iterated over. 
+This is used in multiple contexts:
+- to exclude unreliable agents during training (e.g. agents underneath a certain detection threshold);
+- to select a subset of agents (e.g. during evaluation for the competition)
+
+If the mask is not passed as an argument to the `AgentDataset`, a new one will be computed and **cached** based on the current value of `filter_agents_threshold`.
+
+
+An example of using a custom `agents_mask` would be:
+```python
+from l5kit.rasterization import build_rasterizer
+from l5kit.configs import load_config_data
+from l5kit.data import LocalDataManager, ChunkedDataset
+from l5kit.dataset import AgentDataset
+import numpy as np
+
+
+zarr_dt = ChunkedDataset("<path>")
+zarr_dt.open()
+
+# additional information is required for rasterisation
+cfg = load_config_data("<path>")
+rast = build_rasterizer(cfg, LocalDataManager("/tmp/l5kit_data"))
+
+# create a mask where an agent every 100th is set to True
+agents_mask = np.zeros(len(zarr_dt.agents), dtype=np.bool)
+agents_mask[np.arange(0, len(agents_mask), 100)] = True
+
+
+dataset = AgentDataset(cfg, zarr_dt, rast, agents_mask=agents_mask)
+for data in dataset:  # this iterates over valid agents under the hood
+    print(data["target_positions"])
+    print(data["history_positions"])
+```
+

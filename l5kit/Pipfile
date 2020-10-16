@@ -1,0 +1,36 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+pytest = "*"
+mypy = "*"
+pytest-cov = "*"
+flake8 = "*"
+isort = "*"
+sphinx = "*"
+sphinx-rtd-theme = "*"
+recommonmark = "*"
+pre-commit = "*"
+black = "==19.10b0"
+importlib-metadata = "*"  # required for python 3.8
+
+[packages]
+l5kit = {editable = true, path = "."}
+zarr = "*"
+numpy = "*"
+opencv-contrib-python-headless = "*"
+pymap3d = "*"
+scipy = "*"
+tqdm = "*"
+transforms3d = "*"
+pyyaml = "*"
+matplotlib = "*"
+imageio = "*"
+notebook = "*"
+ptable = "*"
+ipywidgets = "*"
+protobuf = ">=3.12.2"
+torch = ">=1.5.0,<1.6.0"
+torchvision = ">=0.6.0,<0.7.0"

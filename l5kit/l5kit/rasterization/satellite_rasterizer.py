@@ -1,10 +1,11 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional
 
 import cv2
 import numpy as np
 
-from ..geometry import rotation33_as_yaw, transform_point, world_to_image_pixels_matrix
+from ..geometry import rotation33_as_yaw, transform_point
 from .rasterizer import Rasterizer
+from .render_context import RenderContext
 from .satellite_image import get_sat_image_crop_scaled
 
 
@@ -16,9 +17,7 @@ class SatelliteRasterizer(Rasterizer):
 
     def __init__(
         self,
-        raster_size: Tuple[int, int],
-        pixel_size: np.ndarray,
-        ego_center: np.ndarray,
+        render_context: RenderContext,
         map_im: np.ndarray,
         world_to_aerial: np.ndarray,
         interpolation: int = cv2.INTER_LINEAR,
@@ -26,15 +25,13 @@ class SatelliteRasterizer(Rasterizer):
         """
 
         Arguments:
-            raster_size (Tuple[int, int]): Desired output image size
-            pixel_size (np.ndarray): Dimensions of one pixel in the real world
-            ego_center (np.ndarray): Center of ego in the image, [0.5,0.5] would be in the image center.
+            render_context (RenderContext): Render Context
             map_im (np.ndarray): Satellite image to crop from.
             world_to_aerial (np.ndarray): Transform to go from map coordinates to satellite image pixel coordinates.
         """
-        self.raster_size = raster_size
-        self.pixel_size = pixel_size
-        self.ego_center = ego_center
+        self.render_context = render_context
+        self.raster_size = render_context.raster_size_px
+        self.pixel_size = render_context.pixel_size_m
         self.map_im = map_im
         self.world_to_aerial = world_to_aerial
         self.interpolation = interpolation
@@ -50,36 +47,30 @@ class SatelliteRasterizer(Rasterizer):
         agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
 
+        # Note 1: it looks like we are assuming that yaw in ecef == yaw in sat image
         if agent is None:
-            ego_translation = history_frames[0]["ego_translation"]
-            # Note 2: it looks like we are assuming that yaw in ecef == yaw in sat image
-            ego_yaw = rotation33_as_yaw(history_frames[0]["ego_rotation"])
+            ego_translation_m = history_frames[0]["ego_translation"]
+            ego_yaw_rad = rotation33_as_yaw(history_frames[0]["ego_rotation"])
+
         else:
-            ego_translation = np.append(agent["centroid"], history_frames[0]["ego_translation"][-1])
-            # Note 2: it looks like we are assuming that yaw in ecef == yaw in sat image
-            ego_yaw = agent["yaw"]
+            ego_translation_m = np.append(agent["centroid"], history_frames[0]["ego_translation"][-1])
+            ego_yaw_rad = agent["yaw"]
 
-        world_to_image_space = world_to_image_pixels_matrix(
-            self.raster_size,
-            self.pixel_size,
-            ego_translation_m=ego_translation,
-            ego_yaw_rad=ego_yaw,
-            ego_center_in_image_ratio=self.ego_center,
-        )
+        raster_from_world = self.render_context.raster_from_world(ego_translation_m, ego_yaw_rad)
+        world_from_raster = np.linalg.inv(raster_from_world)
 
-        # get the center of the images in meters using the inverse of the matrix,
-        # Transform it to satellite coordinates (consider also z here)
-        center_pixel = np.asarray(self.raster_size) * (0.5, 0.5)
-        world_translation = transform_point(center_pixel, np.linalg.inv(world_to_image_space))
-        sat_translation = transform_point(np.append(world_translation, ego_translation[2]), self.world_to_aerial)
+        # Transform raster center to satellite coordinates (consider also z here)
+        center_in_raster_px = np.asarray(self.raster_size) * (0.5, 0.5)
+        center_in_world_m = transform_point(center_in_raster_px, world_from_raster)
+        center_in_aerial_px = transform_point(np.append(center_in_world_m, ego_translation_m[2]), self.world_to_aerial)
 
-        # Note 1: there is a negation here, unknown why this is necessary.
+        # Note 2: there is a negation here, unknown why this is necessary.
         # My best guess is because Y is flipped, maybe we can do this more elegantly.
         sat_im = get_sat_image_crop_scaled(
             self.map_im,
             self.raster_size,
-            sat_translation,
-            yaw=-ego_yaw,
+            center_in_aerial_px,
+            yaw=-ego_yaw_rad,
             pixel_size=self.pixel_size,
             sat_pixel_scale=self.map_pixel_scale,
             interpolation=self.interpolation,

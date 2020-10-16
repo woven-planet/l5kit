@@ -12,27 +12,28 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
-    - name: Set up Python 3.8
-      uses: actions/setup-python@v1
-      with:
-        python-version: 3.8
-    - name: Install dependencies
-      working-directory: l5kit
-      run: |
-        python -m pip install --upgrade pip
-        pip install -r requirements.txt
-    - name: Build docs
-      working-directory: .
-      run: |
-        sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
-        sphinx-build . docs_built
+      - uses: actions/checkout@v2
+      - name: Set up Python 3.8
+        uses: actions/setup-python@v1
+        with:
+          python-version: 3.8
+      - name: Install dependencies
+        working-directory: l5kit
+        run: |
+          pip install --upgrade pip
+          pip install pipenv
+          pipenv sync --dev
+      - name: Build docs
+        working-directory: l5kit
+        run: |
+          pipenv run sphinx-apidoc --module-first --separate -o ../API/ l5kit l5kit/tests*
+          pipenv run sphinx-build .. ../docs_built
 
-    - name: Deploy docs
-      uses: JamesIves/github-pages-deploy-action@releases/v3
-      with:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        BASE_BRANCH: master # The branch the action should deploy from.
-        BRANCH: gh-pages # The branch the action should deploy to.
-        FOLDER: docs_built # The folder the action should deploy (only stuff inside will be copied).
-      if: github.event_name == 'push'
+      - name: Deploy docs
+        uses: JamesIves/github-pages-deploy-action@releases/v3
+        with:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BASE_BRANCH: master # The branch the action should deploy from.
+          BRANCH: gh-pages # The branch the action should deploy to.
+          FOLDER: docs_built # The folder the action should deploy (only stuff inside will be copied).
+        if: github.event_name == 'push'

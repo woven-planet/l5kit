@@ -5,7 +5,7 @@ import numpy as np
 import pytest
 
 from l5kit.data import AGENT_DTYPE, FRAME_DTYPE, ChunkedDataset
-from l5kit.rasterization import StubRasterizer
+from l5kit.rasterization import RenderContext, StubRasterizer
 from l5kit.sampling import generate_agent_sample
 
 
@@ -14,17 +14,16 @@ def get_partial(
 ) -> Callable:
     rast_params = cfg["raster_params"]
 
-    rasterizer = StubRasterizer(
-        rast_params["raster_size"],
-        np.asarray(rast_params["pixel_size"]),
-        np.asarray(rast_params["ego_center"]),
-        rast_params["filter_agents_threshold"],
+    render_context = RenderContext(
+        raster_size_px=np.array(cfg["raster_params"]["raster_size"]),
+        pixel_size_m=np.array(cfg["raster_params"]["pixel_size"]),
+        center_in_raster_ratio=np.array(cfg["raster_params"]["ego_center"]),
     )
+
+    rasterizer = StubRasterizer(render_context, rast_params["filter_agents_threshold"],)
     return functools.partial(
         generate_agent_sample,
-        raster_size=rast_params["raster_size"],
-        pixel_size=np.asarray(rast_params["pixel_size"]),
-        ego_center=np.asarray(rast_params["ego_center"]),
+        render_context=render_context,
         history_num_frames=history_num_frames,
         history_step_size=history_step_size,
         future_num_frames=future_num_frames,

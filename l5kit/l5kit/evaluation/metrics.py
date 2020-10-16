@@ -1,4 +1,8 @@
+from typing import Callable
+
 import numpy as np
+
+metric_signature = Callable[[np.ndarray, np.ndarray, np.ndarray, np.ndarray], np.ndarray]
 
 
 def _assert_shapes(ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray) -> None:
@@ -17,12 +21,13 @@ def _assert_shapes(ground_truth: np.ndarray, pred: np.ndarray, confidences: np.n
     assert len(pred.shape) == 3, f"expected 3D (MxTxC) array for pred, got {pred.shape}"
     num_modes, future_len, num_coords = pred.shape
 
-    assert ground_truth.shape == (future_len, num_coords), (
-        f"expected 2D (Time x Coords) array for gt, " f"got {ground_truth.shape}"
-    )
-    assert confidences.shape == (num_modes,), f"expected 1D (Modes) array for gt, got {confidences.shape}"
+    assert ground_truth.shape == (
+        future_len,
+        num_coords,
+    ), f"expected 2D (Time x Coords) array for gt, got {ground_truth.shape}"
+    assert confidences.shape == (num_modes,), f"expected 1D (Modes) array for confidences, got {confidences.shape}"
     assert np.allclose(np.sum(confidences), 1), "confidences should sum to 1"
-    assert avails.shape == (future_len,), f"expected 1D (Time) array for gt, got {avails.shape}"
+    assert avails.shape == (future_len,), f"expected 1D (Time) array for avails, got {avails.shape}"
     # assert all data are valid
     assert np.isfinite(pred).all(), "invalid value found in pred"
     assert np.isfinite(ground_truth).all(), "invalid value found in gt"

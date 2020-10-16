@@ -6,9 +6,11 @@ import numpy as np
 from l5kit.data.zarr_dataset import AGENT_DTYPE
 
 from ..data.filter import filter_agents_by_labels, filter_agents_by_track_id
-from ..geometry import rotation33_as_yaw, transform_points, world_to_image_pixels_matrix
+from ..geometry import rotation33_as_yaw, transform_points
 from ..geometry.transform import yaw_as_rotation33
 from .rasterizer import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
+from .render_context import RenderContext
+from .semantic_rasterizer import CV2_SHIFT, cv2_subpixel
 
 
 def get_ego_as_agent(frame: np.ndarray) -> np.ndarray:  # TODO this can be useful to have around
@@ -30,7 +32,7 @@ def get_ego_as_agent(frame: np.ndarray) -> np.ndarray:  # TODO this can be usefu
 
 def draw_boxes(
     raster_size: Tuple[int, int],
-    world_to_image_space: np.ndarray,
+    raster_from_world: np.ndarray,
     agents: np.ndarray,
     color: Union[int, Tuple[int, int, int]],
 ) -> np.ndarray:
@@ -62,36 +64,28 @@ def draw_boxes(
         r_m = yaw_as_rotation33(agent["yaw"])
         box_world_coords[idx] = transform_points(corners, r_m) + agent["centroid"][:2]
 
-    box_image_coords = transform_points(box_world_coords.reshape((-1, 2)), world_to_image_space)
+    box_raster_coords = transform_points(box_world_coords.reshape((-1, 2)), raster_from_world)
 
     # fillPoly wants polys in a sequence with points inside as (x,y)
-    box_image_coords = box_image_coords.reshape((-1, 4, 2)).astype(np.int64)
-    cv2.fillPoly(im, box_image_coords, color=color)
+    box_raster_coords = cv2_subpixel(box_raster_coords.reshape((-1, 4, 2)))
+    cv2.fillPoly(im, box_raster_coords, color=color, lineType=cv2.LINE_AA, shift=CV2_SHIFT)
     return im
 
 
 class BoxRasterizer(Rasterizer):
     def __init__(
-        self,
-        raster_size: Tuple[int, int],
-        pixel_size: np.ndarray,
-        ego_center: np.ndarray,
-        filter_agents_threshold: float,
-        history_num_frames: int,
+        self, render_context: RenderContext, filter_agents_threshold: float, history_num_frames: int,
     ):
         """
 
-        Arguments:
-            raster_size (Tuple[int, int]): Desired output image size
-            pixel_size (np.ndarray): Dimensions of one pixel in the real world
-            ego_center (np.ndarray): Center of ego in the image, [0.5,0.5] would be in the image center.
+        Args:
+            render_context (RenderContext): Render context
             filter_agents_threshold (float): Value between 0 and 1 used to filter uncertain agent detections
             history_num_frames (int): Number of frames to rasterise in the past
         """
         super(BoxRasterizer, self).__init__()
-        self.raster_size = raster_size
-        self.pixel_size = pixel_size
-        self.ego_center = ego_center
+        self.render_context = render_context
+        self.raster_size = render_context.raster_size_px
         self.filter_agents_threshold = filter_agents_threshold
         self.history_num_frames = history_num_frames
 
@@ -105,22 +99,13 @@ class BoxRasterizer(Rasterizer):
         # all frames are drawn relative to this one"
         frame = history_frames[0]
         if agent is None:
-            translation = frame["ego_translation"][:2]
-            yaw = rotation33_as_yaw(frame["ego_rotation"])
+            ego_translation_m = history_frames[0]["ego_translation"]
+            ego_yaw_rad = rotation33_as_yaw(frame["ego_rotation"])
         else:
-            translation = agent["centroid"]
-            yaw = agent["yaw"]
+            ego_translation_m = np.append(agent["centroid"], history_frames[0]["ego_translation"][-1])
+            ego_yaw_rad = agent["yaw"]
 
-        if self.pixel_size[0] != self.pixel_size[1]:
-            raise NotImplementedError("No support for non squared pixels yet")
-
-        world_to_image_space = world_to_image_pixels_matrix(
-            self.raster_size,
-            self.pixel_size,
-            ego_translation_m=translation,
-            ego_yaw_rad=yaw,
-            ego_center_in_image_ratio=self.ego_center,
-        )
+        raster_from_world = self.render_context.raster_from_world(ego_translation_m, ego_yaw_rad)
 
         # this ensures we always end up with fixed size arrays, +1 is because current time is also in the history
         out_shape = (self.raster_size[1], self.raster_size[0], self.history_num_frames + 1)
@@ -133,17 +118,17 @@ class BoxRasterizer(Rasterizer):
             av_agent = get_ego_as_agent(frame).astype(agents.dtype)
 
             if agent is None:
-                agents_image = draw_boxes(self.raster_size, world_to_image_space, agents, 255)
-                ego_image = draw_boxes(self.raster_size, world_to_image_space, av_agent, 255)
+                agents_image = draw_boxes(self.raster_size, raster_from_world, agents, 255)
+                ego_image = draw_boxes(self.raster_size, raster_from_world, av_agent, 255)
             else:
                 agent_ego = filter_agents_by_track_id(agents, agent["track_id"])
                 if len(agent_ego) == 0:  # agent not in this history frame
-                    agents_image = draw_boxes(self.raster_size, world_to_image_space, np.append(agents, av_agent), 255)
+                    agents_image = draw_boxes(self.raster_size, raster_from_world, np.append(agents, av_agent), 255)
                     ego_image = np.zeros_like(agents_image)
                 else:  # add av to agents and remove the agent from agents
                     agents = agents[agents != agent_ego[0]]
-                    agents_image = draw_boxes(self.raster_size, world_to_image_space, np.append(agents, av_agent), 255)
-                    ego_image = draw_boxes(self.raster_size, world_to_image_space, agent_ego, 255)
+                    agents_image = draw_boxes(self.raster_size, raster_from_world, np.append(agents, av_agent), 255)
+                    ego_image = draw_boxes(self.raster_size, raster_from_world, agent_ego, 255)
 
             agents_images[..., i] = agents_image
             ego_images[..., i] = ego_image

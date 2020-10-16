@@ -15,16 +15,23 @@ def test_empty_boxes() -> None:
 
 
 def test_draw_boxes() -> None:
+    centroid_1 = (90, 100)
+    centroid_2 = (150, 160)
+
     agents = np.zeros(2, dtype=AGENT_DTYPE)
     agents[0]["extent"] = (20, 20, 20)
-    agents[0]["centroid"] = (100, 100)
+    agents[0]["centroid"] = centroid_1
 
     agents[1]["extent"] = (20, 20, 20)
-    agents[1]["centroid"] = (150, 150)
+    agents[1]["centroid"] = centroid_2
 
     to_image_space = np.eye(3)
     im = draw_boxes((200, 200), to_image_space, agents, color=1)
-    assert im.sum() == (21 * 21) * 2
+
+    # due to subpixel precision we can't check the exact number of pixels
+    # check that a 10x10 centred on the boxes is all 1
+    assert np.allclose(im[centroid_1[1] - 5 : centroid_1[1] + 5, centroid_1[0] - 5 : centroid_1[0] + 5], 1)
+    assert np.allclose(im[centroid_2[1] - 5 : centroid_2[1] + 5, centroid_2[0] - 5 : centroid_2[0] + 5], 1)
 
 
 @pytest.fixture(scope="module")
