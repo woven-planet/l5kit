@@ -29,6 +29,7 @@ def generate_agent_sample(
     filter_agents_threshold: float,
     rasterizer: Optional[Rasterizer] = None,
     perturbation: Optional[Perturbation] = None,
+    do_not_include_history_on_raster: Optional[bool] = False,
 ) -> dict:
     """Generates the inputs and targets to train a deep prediction model. A deep prediction model takes as input
     the state of the world (here: an image we will call the "raster"), and outputs where that agent will be some
@@ -119,7 +120,12 @@ to train models that can recover from slight divergence from training set data
     input_im = (
         None
         if not rasterizer
-        else rasterizer.rasterize(history_frames, history_agents, history_tl_faces, selected_agent)
+        else (
+            rasterizer.rasterize(history_frames, history_agents, history_tl_faces, selected_agent)
+            if not do_not_include_history_on_raster
+            else
+            rasterizer.rasterize(history_frames[0:1], history_agents[0:1], history_tl_faces, selected_agent)
+        )
     )
 
     world_from_agent = agent_pose(agent_centroid_m, agent_yaw_rad)

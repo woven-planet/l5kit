@@ -24,6 +24,7 @@ class EgoDataset(Dataset):
         zarr_dataset: ChunkedDataset,
         rasterizer: Rasterizer,
         perturbation: Optional[Perturbation] = None,
+        do_not_include_history_on_raster: Optional[bool] = False,
     ):
         """
         Get a PyTorch dataset object that can be used to train DNN
@@ -39,6 +40,7 @@ None if not desired
         self.cfg = cfg
         self.dataset = zarr_dataset
         self.rasterizer = rasterizer
+        self.do_not_include_history_on_raster = do_not_include_history_on_raster
 
         self.cumulative_sizes = self.dataset.scenes["frame_index_interval"][:, 1]
 
@@ -59,6 +61,7 @@ None if not desired
             filter_agents_threshold=cfg["raster_params"]["filter_agents_threshold"],
             rasterizer=rasterizer,
             perturbation=perturbation,
+            do_not_include_history_on_raster=do_not_include_history_on_raster,
         )
 
     def __len__(self) -> int:
@@ -183,7 +186,7 @@ None if not desired
         dataset.frames = frames
         dataset.scenes = scenes
 
-        return EgoDataset(self.cfg, dataset, self.rasterizer, self.perturbation)
+        return EgoDataset(self.cfg, dataset, self.rasterizer, self.perturbation, self.do_not_include_history_on_raster)
 
     def get_scene_indices(self, scene_idx: int) -> np.ndarray:
         """
