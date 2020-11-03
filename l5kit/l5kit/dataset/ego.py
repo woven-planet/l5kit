@@ -41,6 +41,9 @@ None if not desired
         self.rasterizer = rasterizer
 
         self.cumulative_sizes = self.dataset.scenes["frame_index_interval"][:, 1]
+        self.future_step_time = (
+            self.cfg["model_params"]["future_delta_time"] * self.cfg["model_params"]["future_step_size"]
+        )
 
         render_context = RenderContext(
             raster_size_px=np.array(cfg["raster_params"]["raster_size"]),
@@ -98,18 +101,38 @@ None if not desired
             )
         data = self.sample_function(state_index, frames, self.dataset.agents, tl_faces, track_id)
 
-        target_positions = np.array(data["target_positions"], dtype=np.float32)
-        target_yaws = np.array(data["target_yaws"], dtype=np.float32)
-
+        # [history_num_frames + 1, 2]
         history_positions = np.array(data["history_positions"], dtype=np.float32)
+        # [history_num_frames + 1, 1]
         history_yaws = np.array(data["history_yaws"], dtype=np.float32)
 
+        # [future_num_frames, 2]
+        target_positions = np.array(data["target_positions"], dtype=np.float32)
+        # [future_num_frames, 1]
+        target_yaws = np.array(data["target_yaws"], dtype=np.float32)
+
+        # compute estimated target velocities by finite differentiatin on target positions
+        curr_position = np.array([0.0, 0.0])
+        assert np.allclose(history_positions[0], curr_position), "current ego position should be normalized to origin"
+        # [future_num_frames, 2]
+        target_pos_diff = target_positions - np.append([curr_position], target_positions[:-1, :], axis=0)
+        # [future_num_frames,]
+        target_velocities = np.float32(np.linalg.norm(target_pos_diff / self.future_step_time, axis=1))
+
+        # estimate velocity at T with (pos(T+t) - pos(T))/t
+        # this gives < 0.5% velocity difference to (pos(T+t) - pos(T-t))/2t on v1.1/sample.zarr.tar
+        # [1, ]
+        velocity = target_velocities[0]
+
+        # [1, ]
         timestamp = frames[state_index]["timestamp"]
+        # [1, ]
         track_id = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
 
         result = {
             "target_positions": target_positions,
             "target_yaws": target_yaws,
+            "target_velocities": target_velocities,
             "target_availabilities": data["target_availabilities"],
             "history_positions": history_positions,
             "history_yaws": history_yaws,
@@ -124,6 +147,7 @@ None if not desired
             "centroid": data["centroid"],
             "yaw": data["yaw"],
             "extent": data["extent"],
+            "velocity": velocity,
         }
 
         # when rast is None, image could be None
