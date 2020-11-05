@@ -24,8 +24,10 @@ def generate_agent_sample(
     render_context: RenderContext,
     history_num_frames: int,
     history_step_size: int,
+    history_step_time: float,
     future_num_frames: int,
     future_step_size: int,
+    future_step_time: float,
     filter_agents_threshold: float,
     rasterizer: Optional[Rasterizer] = None,
     perturbation: Optional[Perturbation] = None,
@@ -126,23 +128,40 @@ to train models that can recover from slight divergence from training set data
     agent_from_world = np.linalg.inv(world_from_agent)
     raster_from_world = render_context.raster_from_world(agent_centroid_m, agent_yaw_rad)
 
-    future_coords_offset, future_yaws_offset, future_availability = _create_targets_for_deep_prediction(
-        future_num_frames, future_frames, selected_track_id, future_agents, agent_from_world, agent_yaw_rad
+    future_positions_m, future_yaws_rad, future_availabilities = _create_targets_for_deep_prediction(
+        future_num_frames, future_frames, selected_track_id, future_agents, agent_from_world, agent_yaw_rad,
     )
 
     # history_num_frames + 1 because it also includes the current frame
-    history_coords_offset, history_yaws_offset, history_availability = _create_targets_for_deep_prediction(
-        history_num_frames + 1, history_frames, selected_track_id, history_agents, agent_from_world, agent_yaw_rad
+    history_positions_m, history_yaws_rad, history_availabilities = _create_targets_for_deep_prediction(
+        history_num_frames + 1, history_frames, selected_track_id, history_agents, agent_from_world, agent_yaw_rad,
     )
+
+    # compute estimated velocities by finite differentiatin on future positions
+    # estimate velocity at T with (pos(T+t) - pos(T))/t
+    # this gives < 0.5% velocity difference to (pos(T+t) - pos(T-t))/2t on v1.1/sample.zarr.tar
+
+    # [future_num_frames, 2]
+    future_positions_diff_m = np.concatenate((future_positions_m[:1], np.diff(future_positions_m, axis=0)))
+    # [future_num_frames, 2]
+    future_vels_mps = np.float32(future_positions_diff_m / future_step_time)
+
+    # current position is included in history positions
+    # [history_num_frames, 2]
+    history_positions_diff_m = np.diff(history_positions_m, axis=0)
+    # [history_num_frames, 2]
+    history_vels_mps = np.float32(history_positions_diff_m / history_step_time)
 
     return {
         "image": input_im,
-        "target_positions": future_coords_offset,
-        "target_yaws": future_yaws_offset,
-        "target_availabilities": future_availability,
-        "history_positions": history_coords_offset,
-        "history_yaws": history_yaws_offset,
-        "history_availabilities": history_availability,
+        "target_positions": future_positions_m,
+        "target_yaws": future_yaws_rad,
+        "target_velocities": future_vels_mps,
+        "target_availabilities": future_availabilities,
+        "history_positions": history_positions_m,
+        "history_yaws": history_yaws_rad,
+        "history_velocities": history_vels_mps,
+        "history_availabilities": history_availabilities,
         "world_to_image": raster_from_world,  # TODO deprecate
         "raster_from_agent": raster_from_world @ world_from_agent,
         "raster_from_world": raster_from_world,
@@ -150,6 +169,7 @@ to train models that can recover from slight divergence from training set data
         "world_from_agent": world_from_agent,
         "centroid": agent_centroid_m,
         "yaw": agent_yaw_rad,
+        "speed": np.linalg.norm(future_vels_mps[0]),
         "extent": agent_extent_m,
     }
 
@@ -180,25 +200,25 @@ def _create_targets_for_deep_prediction(
 
     """
     # How much the coordinates differ from the current state in meters.
-    coords_offset = np.zeros((num_frames, 2), dtype=np.float32)
-    yaws_offset = np.zeros((num_frames, 1), dtype=np.float32)
-    availability = np.zeros((num_frames,), dtype=np.float32)
+    positions_m = np.zeros((num_frames, 2), dtype=np.float32)
+    yaws_rad = np.zeros((num_frames, 1), dtype=np.float32)
+    availabilities = np.zeros((num_frames,), dtype=np.float32)
 
     for i, (frame, frame_agents) in enumerate(zip(frames, agents)):
         if selected_track_id is None:
-            agent_centroid = frame["ego_translation"][:2]
-            agent_yaw = rotation33_as_yaw(frame["ego_rotation"])
+            agent_centroid_m = frame["ego_translation"][:2]
+            agent_yaw_rad = rotation33_as_yaw(frame["ego_rotation"])
         else:
             # it's not guaranteed the target will be in every frame
             try:
                 agent = filter_agents_by_track_id(frame_agents, selected_track_id)[0]
-                agent_centroid = agent["centroid"]
-                agent_yaw = agent["yaw"]
+                agent_centroid_m = agent["centroid"]
+                agent_yaw_rad = agent["yaw"]
             except IndexError:
-                availability[i] = 0.0  # keep track of invalid futures/history
+                availabilities[i] = 0.0  # keep track of invalid futures/history
                 continue
 
-        coords_offset[i] = transform_point(agent_centroid, agent_from_world)
-        yaws_offset[i] = angular_distance(agent_yaw, current_agent_yaw)
-        availability[i] = 1.0
-    return coords_offset, yaws_offset, availability
+        positions_m[i] = transform_point(agent_centroid_m, agent_from_world)
+        yaws_rad[i] = angular_distance(agent_yaw_rad, current_agent_yaw)
+        availabilities[i] = 1.0
+    return positions_m, yaws_rad, availabilities

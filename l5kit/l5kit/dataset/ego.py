@@ -41,9 +41,6 @@ None if not desired
         self.rasterizer = rasterizer
 
         self.cumulative_sizes = self.dataset.scenes["frame_index_interval"][:, 1]
-        self.future_step_time = (
-            self.cfg["model_params"]["future_delta_time"] * self.cfg["model_params"]["future_step_size"]
-        )
 
         render_context = RenderContext(
             raster_size_px=np.array(cfg["raster_params"]["raster_size"]),
@@ -57,8 +54,10 @@ None if not desired
             render_context=render_context,
             history_num_frames=cfg["model_params"]["history_num_frames"],
             history_step_size=cfg["model_params"]["history_step_size"],
+            history_step_time=cfg["model_params"]["history_delta_time"] * cfg["model_params"]["history_step_size"],
             future_num_frames=cfg["model_params"]["future_num_frames"],
             future_step_size=cfg["model_params"]["future_step_size"],
+            future_step_time=cfg["model_params"]["future_delta_time"] * cfg["model_params"]["future_step_size"],
             filter_agents_threshold=cfg["raster_params"]["filter_agents_threshold"],
             rasterizer=rasterizer,
             perturbation=perturbation,
@@ -105,28 +104,18 @@ None if not desired
         history_positions = np.array(data["history_positions"], dtype=np.float32)
         # [history_num_frames + 1, 1]
         history_yaws = np.array(data["history_yaws"], dtype=np.float32)
+        # [future_num_frames + 1, 2]
+        history_velocities = np.array(data["history_velocities"], dtype=np.float32)
 
         # [future_num_frames, 2]
         target_positions = np.array(data["target_positions"], dtype=np.float32)
         # [future_num_frames, 1]
         target_yaws = np.array(data["target_yaws"], dtype=np.float32)
-
-        # compute estimated target velocities by finite differentiatin on target positions
-        curr_position = np.array([0.0, 0.0])
-        assert np.allclose(history_positions[0], curr_position), "current ego position should be normalized to origin"
         # [future_num_frames, 2]
-        target_pos_diff = target_positions - np.append([curr_position], target_positions[:-1, :], axis=0)
-        # [future_num_frames,]
-        target_velocities = np.float32(np.linalg.norm(target_pos_diff / self.future_step_time, axis=1))
+        target_velocities = np.array(data["target_velocities"], dtype=np.float32)
 
-        # estimate velocity at T with (pos(T+t) - pos(T))/t
-        # this gives < 0.5% velocity difference to (pos(T+t) - pos(T-t))/2t on v1.1/sample.zarr.tar
-        # [1, ]
-        velocity = target_velocities[0]
-
-        # [1, ]
+        host_id = (self.dataset.scenes[scene_index]["host"],)
         timestamp = frames[state_index]["timestamp"]
-        # [1, ]
         track_id = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
 
         result = {
@@ -136,6 +125,7 @@ None if not desired
             "target_availabilities": data["target_availabilities"],
             "history_positions": history_positions,
             "history_yaws": history_yaws,
+            "history_velocities": history_velocities,
             "history_availabilities": data["history_availabilities"],
             "world_to_image": data["raster_from_world"],  # TODO deprecate
             "raster_from_world": data["raster_from_world"],
@@ -143,11 +133,12 @@ None if not desired
             "agent_from_world": data["agent_from_world"],
             "world_from_agent": data["world_from_agent"],
             "track_id": track_id,
+            "host_id": host_id,
             "timestamp": timestamp,
             "centroid": data["centroid"],
             "yaw": data["yaw"],
             "extent": data["extent"],
-            "velocity": velocity,
+            "speed": data["speed"],
         }
 
         # when rast is None, image could be None
