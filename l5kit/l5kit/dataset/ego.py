@@ -54,8 +54,10 @@ None if not desired
             render_context=render_context,
             history_num_frames=cfg["model_params"]["history_num_frames"],
             history_step_size=cfg["model_params"]["history_step_size"],
+            history_step_time=cfg["model_params"]["history_delta_time"] * cfg["model_params"]["history_step_size"],
             future_num_frames=cfg["model_params"]["future_num_frames"],
             future_step_size=cfg["model_params"]["future_step_size"],
+            future_step_time=cfg["model_params"]["future_delta_time"] * cfg["model_params"]["future_step_size"],
             filter_agents_threshold=cfg["raster_params"]["filter_agents_threshold"],
             rasterizer=rasterizer,
             perturbation=perturbation,
@@ -98,21 +100,32 @@ None if not desired
             )
         data = self.sample_function(state_index, frames, self.dataset.agents, tl_faces, track_id)
 
-        target_positions = np.array(data["target_positions"], dtype=np.float32)
-        target_yaws = np.array(data["target_yaws"], dtype=np.float32)
-
+        # [history_num_frames + 1, 2]
         history_positions = np.array(data["history_positions"], dtype=np.float32)
+        # [history_num_frames + 1, 1]
         history_yaws = np.array(data["history_yaws"], dtype=np.float32)
+        # [history_num_frames + 1, 2]
+        history_velocities = np.array(data["history_velocities"], dtype=np.float32)
 
+        # [future_num_frames, 2]
+        target_positions = np.array(data["target_positions"], dtype=np.float32)
+        # [future_num_frames, 1]
+        target_yaws = np.array(data["target_yaws"], dtype=np.float32)
+        # [future_num_frames, 2]
+        target_velocities = np.array(data["target_velocities"], dtype=np.float32)
+
+        host_id = self.dataset.scenes[scene_index]["host"]
         timestamp = frames[state_index]["timestamp"]
         track_id = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
 
         result = {
             "target_positions": target_positions,
             "target_yaws": target_yaws,
+            "target_velocities": target_velocities,
             "target_availabilities": data["target_availabilities"],
             "history_positions": history_positions,
             "history_yaws": history_yaws,
+            "history_velocities": history_velocities,
             "history_availabilities": data["history_availabilities"],
             "world_to_image": data["raster_from_world"],  # TODO deprecate
             "raster_from_world": data["raster_from_world"],
@@ -120,10 +133,12 @@ None if not desired
             "agent_from_world": data["agent_from_world"],
             "world_from_agent": data["world_from_agent"],
             "track_id": track_id,
+            "host_id": host_id,
             "timestamp": timestamp,
             "centroid": data["centroid"],
             "yaw": data["yaw"],
             "extent": data["extent"],
+            "speed": data["speed"],
         }
 
         # when rast is None, image could be None
