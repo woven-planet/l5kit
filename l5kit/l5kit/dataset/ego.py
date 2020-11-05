@@ -104,7 +104,7 @@ None if not desired
         history_positions = np.array(data["history_positions"], dtype=np.float32)
         # [history_num_frames + 1, 1]
         history_yaws = np.array(data["history_yaws"], dtype=np.float32)
-        # [future_num_frames + 1, 2]
+        # [history_num_frames + 1, 2]
         history_velocities = np.array(data["history_velocities"], dtype=np.float32)
 
         # [future_num_frames, 2]
@@ -114,7 +114,7 @@ None if not desired
         # [future_num_frames, 2]
         target_velocities = np.array(data["target_velocities"], dtype=np.float32)
 
-        host_id = (self.dataset.scenes[scene_index]["host"],)
+        host_id = self.dataset.scenes[scene_index]["host"]
         timestamp = frames[state_index]["timestamp"]
         track_id = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
 
