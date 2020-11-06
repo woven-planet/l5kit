@@ -100,54 +100,19 @@ None if not desired
             )
         data = self.sample_function(state_index, frames, self.dataset.agents, tl_faces, track_id)
 
-        # [history_num_frames + 1, 2]
-        history_positions = np.array(data["history_positions"], dtype=np.float32)
-        # [history_num_frames + 1, 1]
-        history_yaws = np.array(data["history_yaws"], dtype=np.float32)
-        # [history_num_frames + 1, 2]
-        history_velocities = np.array(data["history_velocities"], dtype=np.float32)
+        # add information only, so that all data keys are always preserved
+        data["host_id"] = self.dataset.scenes[scene_index]["host"]
+        data["timestamp"] = frames[state_index]["timestamp"]
+        data["track_id"] = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
+        data["world_to_image"] = data["raster_from_world"]  # TODO deprecate
 
-        # [future_num_frames, 2]
-        target_positions = np.array(data["target_positions"], dtype=np.float32)
-        # [future_num_frames, 1]
-        target_yaws = np.array(data["target_yaws"], dtype=np.float32)
-        # [future_num_frames, 2]
-        target_velocities = np.array(data["target_velocities"], dtype=np.float32)
+        # when rast is None, image could be None. In that case we remove the key
+        if data["image"] is not None:
+            data["image"] = data["image"].transpose(2, 0, 1)  # 0,1,C -> C,0,1
+        else:
+            del data["image"]
 
-        host_id = self.dataset.scenes[scene_index]["host"]
-        timestamp = frames[state_index]["timestamp"]
-        track_id = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
-
-        result = {
-            "target_positions": target_positions,
-            "target_yaws": target_yaws,
-            "target_velocities": target_velocities,
-            "target_availabilities": data["target_availabilities"],
-            "history_positions": history_positions,
-            "history_yaws": history_yaws,
-            "history_velocities": history_velocities,
-            "history_availabilities": data["history_availabilities"],
-            "world_to_image": data["raster_from_world"],  # TODO deprecate
-            "raster_from_world": data["raster_from_world"],
-            "raster_from_agent": data["raster_from_agent"],
-            "agent_from_world": data["agent_from_world"],
-            "world_from_agent": data["world_from_agent"],
-            "track_id": track_id,
-            "host_id": host_id,
-            "timestamp": timestamp,
-            "centroid": data["centroid"],
-            "yaw": data["yaw"],
-            "extent": data["extent"],
-            "speed": data["speed"],
-        }
-
-        # when rast is None, image could be None
-        image = data["image"]
-        if image is not None:
-            # 0,1,C -> C,0,1
-            result["image"] = image.transpose(2, 0, 1)
-
-        return result
+        return data
 
     def __getitem__(self, index: int) -> dict:
         """
