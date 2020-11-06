@@ -50,8 +50,14 @@ class AgentDataset(EgoDataset):
         else:
             warnings.warn("you're running with a custom agents_mask", RuntimeWarning, stacklevel=2)
 
-        # store the valid agents indexes
+        # store the valid agents indices (N_valid_agents,)
         self.agents_indices = np.nonzero(agents_mask)[0]
+
+        # store an array where valid indices have increasing numbers and the rest is -1 (N_total_agents,)
+        self.mask_indices = agents_mask.copy().astype(np.int)
+        self.mask_indices[self.mask_indices == 0] = -1
+        self.mask_indices[self.mask_indices == 1] = np.arange(0, np.sum(agents_mask))
+
         # this will be used to get the frame idx from the agent idx
         self.cumulative_sizes_agents = self.dataset.frames["agent_index_interval"][:, 1]
         self.agents_mask = agents_mask
@@ -164,10 +170,10 @@ class AgentDataset(EgoDataset):
         """
         assert frame_idx < len(self.dataset.frames), f"frame_idx {frame_idx} is over len {len(self.dataset.frames)}"
 
-        # avoid accessing zarr here as we already have the information in `cumulative_sizes_agents`
+        # avoid using `get_agents_slice_from_frames` as it hits the disk
         agent_start = self.cumulative_sizes_agents[frame_idx - 1] if frame_idx > 0 else 0
         agent_end = self.cumulative_sizes_agents[frame_idx]
-
-        mask_valid_indices = (self.agents_indices >= agent_start) * (self.agents_indices < agent_end)
-        indices = np.nonzero(mask_valid_indices)[0]
+        # slice using frame boundaries and take only valid indices
+        mask_idx = self.mask_indices[agent_start:agent_end]
+        indices = mask_idx[mask_idx != -1]
         return indices
