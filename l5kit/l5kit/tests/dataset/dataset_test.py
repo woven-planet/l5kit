@@ -42,7 +42,7 @@ def test_dataset_rasterizer(
 @pytest.mark.parametrize("dataset_cls", [EgoDataset, AgentDataset])
 def test_frame_index_interval(dataset_cls: Callable, frame_idx: int, zarr_dataset: ChunkedDataset, cfg: dict) -> None:
     render_context = RenderContext(np.asarray((100, 100)), np.asarray((0.25, 0.25)), np.asarray((0.5, 0.5)))
-    rasterizer = StubRasterizer(render_context, 0)
+    rasterizer = StubRasterizer(render_context)
     dataset = dataset_cls(cfg, zarr_dataset, rasterizer, None)
     indices = dataset.get_frame_indices(frame_idx)
     subdata = Subset(dataset, indices)
@@ -54,7 +54,7 @@ def test_frame_index_interval(dataset_cls: Callable, frame_idx: int, zarr_datase
 @pytest.mark.parametrize("dataset_cls", [EgoDataset, AgentDataset])
 def test_scene_index_interval(dataset_cls: Callable, scene_idx: int, zarr_dataset: ChunkedDataset, cfg: dict) -> None:
     render_context = RenderContext(np.asarray((100, 100)), np.asarray((0.25, 0.25)), np.asarray((0.5, 0.5)))
-    rasterizer = StubRasterizer(render_context, 0)
+    rasterizer = StubRasterizer(render_context)
     dataset = dataset_cls(cfg, zarr_dataset, rasterizer, None)
     indices = dataset.get_scene_indices(scene_idx)
     subdata = Subset(dataset, indices)

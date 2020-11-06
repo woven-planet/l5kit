@@ -168,6 +168,6 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
     elif map_type == "box_debug":
         return BoxRasterizer(render_context, filter_agents_threshold, history_num_frames)
     elif map_type == "stub_debug":
-        return StubRasterizer(render_context, filter_agents_threshold)
+        return StubRasterizer(render_context)
     else:
         raise NotImplementedError(f"Rasterizer for map type {map_type} is not supported.")
