@@ -11,9 +11,7 @@ class StubRasterizer(Rasterizer):
 
     """
 
-    def __init__(
-        self, render_context: RenderContext, filter_agents_threshold: float,
-    ):
+    def __init__(self, render_context: RenderContext):
         """
 
         Args:
@@ -24,7 +22,6 @@ class StubRasterizer(Rasterizer):
         self.raster_size = render_context.raster_size_px
         self.pixel_size = render_context.pixel_size_m
         self.ego_center = render_context.center_in_raster_ratio
-        self.filter_agents_threshold = filter_agents_threshold
 
     def rasterize(
         self,
@@ -34,9 +31,9 @@ class StubRasterizer(Rasterizer):
         agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         """
-        Rasterize the history wrt to the first element in history_frames (most recent)
+        Just return an empty raster_size x 3 black image
         """
-        out_im = np.zeros((len(history_frames) * 2, self.raster_size[0], self.raster_size[1]), dtype=np.float32)
+        out_im = np.zeros((self.raster_size[0], self.raster_size[1], 3), dtype=np.float32)
         return out_im
 
     def to_rgb(self, in_im: np.ndarray, **kwargs: dict) -> np.ndarray:
