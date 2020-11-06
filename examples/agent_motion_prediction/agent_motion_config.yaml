@@ -6,7 +6,7 @@ format_version: 4
 model_params:
   model_architecture: "resnet50"
 
-  history_num_frames: 10
+  history_num_frames: 0
   history_step_size: 1
   history_delta_time: 0.1
 
