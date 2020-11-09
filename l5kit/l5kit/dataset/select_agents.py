@@ -3,6 +3,7 @@ import multiprocessing
 import os
 import pprint
 import sys
+import warnings
 from collections import Counter, defaultdict
 from functools import partial
 from multiprocessing import Pool, cpu_count
@@ -23,7 +24,13 @@ from l5kit.geometry import angular_distance
 if sys.platform == "darwin":
     multiprocessing.set_start_method("fork", force=True)  # this fixes loop in python 3.8 on MacOS
 
-os.environ["BLOSC_NOLOCK"] = "1"  # this is required for multiprocessing
+if sys.platform not in ["win32", "cygwin"]:
+    os.environ["BLOSC_NOLOCK"] = "1"  # this is required for multiprocessing
+else:
+    warnings.warn(
+        "Windows detected. BLOSC_NOLOCK has not been set as it causes memory leaks on Windows."
+        "However, writing the mask with this config may be inconsistent."
+    )
 
 TH_YAW_DEGREE = 30
 TH_EXTENT_RATIO = 1.1
