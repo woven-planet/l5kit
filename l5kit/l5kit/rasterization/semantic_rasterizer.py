@@ -70,52 +70,7 @@ class SemanticRasterizer(Rasterizer):
 
         self.proto_API = MapAPI(semantic_map_path, world_to_ecef)
 
-        self.bounds_info = self.get_bounds()
-
-    # TODO is this the right place for this function?
-    def get_bounds(self) -> dict:
-        """
-        For each elements of interest returns bounds [[min_x, min_y],[max_x, max_y]] and proto ids
-        Coords are computed by the MapAPI and, as such, are in the world ref system.
-
-        Returns:
-            dict: keys are classes of elements, values are dict with `bounds` and `ids` keys
-        """
-        lanes_ids = []
-        crosswalks_ids = []
-
-        lanes_bounds = np.empty((0, 2, 2), dtype=np.float)  # [(X_MIN, Y_MIN), (X_MAX, Y_MAX)]
-        crosswalks_bounds = np.empty((0, 2, 2), dtype=np.float)  # [(X_MIN, Y_MIN), (X_MAX, Y_MAX)]
-
-        for element in self.proto_API:
-            element_id = MapAPI.id_as_str(element.id)
-
-            if self.proto_API.is_lane(element):
-                lane = self.proto_API.get_lane_coords(element_id)
-                x_min = min(np.min(lane["xyz_left"][:, 0]), np.min(lane["xyz_right"][:, 0]))
-                y_min = min(np.min(lane["xyz_left"][:, 1]), np.min(lane["xyz_right"][:, 1]))
-                x_max = max(np.max(lane["xyz_left"][:, 0]), np.max(lane["xyz_right"][:, 0]))
-                y_max = max(np.max(lane["xyz_left"][:, 1]), np.max(lane["xyz_right"][:, 1]))
-
-                lanes_bounds = np.append(lanes_bounds, np.asarray([[[x_min, y_min], [x_max, y_max]]]), axis=0)
-                lanes_ids.append(element_id)
-
-            if self.proto_API.is_crosswalk(element):
-                crosswalk = self.proto_API.get_crosswalk_coords(element_id)
-                x_min = np.min(crosswalk["xyz"][:, 0])
-                y_min = np.min(crosswalk["xyz"][:, 1])
-                x_max = np.max(crosswalk["xyz"][:, 0])
-                y_max = np.max(crosswalk["xyz"][:, 1])
-
-                crosswalks_bounds = np.append(
-                    crosswalks_bounds, np.asarray([[[x_min, y_min], [x_max, y_max]]]), axis=0,
-                )
-                crosswalks_ids.append(element_id)
-
-        return {
-            "lanes": {"bounds": lanes_bounds, "ids": lanes_ids},
-            "crosswalks": {"bounds": crosswalks_bounds, "ids": crosswalks_ids},
-        }
+        self.bounds_info = self.proto_API.get_bounds()
 
     def rasterize(
         self,
