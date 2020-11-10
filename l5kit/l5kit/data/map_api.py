@@ -33,6 +33,8 @@ class MapAPI:
         self.elements = mf.elements
         self.ids_to_el = {self.id_as_str(el.id): idx for idx, el in enumerate(self.elements)}  # store a look-up table
 
+        self.bounds_info = self.get_bounds()  # store bound for semantic elements for fast look-up
+
     @staticmethod
     @no_type_check
     def id_as_str(element_id: GlobalId) -> str:
@@ -214,7 +216,7 @@ class MapAPI:
         lanes_bounds = np.empty((0, 2, 2), dtype=np.float)  # [(X_MIN, Y_MIN), (X_MAX, Y_MAX)]
         crosswalks_bounds = np.empty((0, 2, 2), dtype=np.float)  # [(X_MIN, Y_MIN), (X_MAX, Y_MAX)]
 
-        for element in self:
+        for element in self.elements:
             element_id = MapAPI.id_as_str(element.id)
 
             if self.is_lane(element):

@@ -15,7 +15,7 @@ CV2_SHIFT = 8  # how many bits to shift in drawing
 CV2_SHIFT_VALUE = 2 ** CV2_SHIFT
 
 
-def elements_within_bounds(center: np.ndarray, bounds: np.ndarray, half_extent: float) -> np.ndarray:
+def indices_in_bounds(center: np.ndarray, bounds: np.ndarray, half_extent: float) -> np.ndarray:
     """
     Get indices of elements for which the bounding box described by bounds intersects the one defined around
     center (square with side 2*half_side)
@@ -68,9 +68,7 @@ class SemanticRasterizer(Rasterizer):
 
         self.world_to_ecef = world_to_ecef
 
-        self.proto_API = MapAPI(semantic_map_path, world_to_ecef)
-
-        self.bounds_info = self.proto_API.get_bounds()
+        self.mapAPI = MapAPI(semantic_map_path, world_to_ecef)
 
     def rasterize(
         self,
@@ -120,11 +118,11 @@ class SemanticRasterizer(Rasterizer):
         # plot lanes
         lanes_lines = defaultdict(list)
 
-        for idx in elements_within_bounds(center_in_world, self.bounds_info["lanes"]["bounds"], raster_radius):
-            lane = self.proto_API[self.bounds_info["lanes"]["ids"][idx]].element.lane
+        for idx in indices_in_bounds(center_in_world, self.mapAPI.bounds_info["lanes"]["bounds"], raster_radius):
+            lane = self.mapAPI[self.mapAPI.bounds_info["lanes"]["ids"][idx]].element.lane
 
             # get image coords
-            lane_coords = self.proto_API.get_lane_coords(self.bounds_info["lanes"]["ids"][idx])
+            lane_coords = self.mapAPI.get_lane_coords(self.mapAPI.bounds_info["lanes"]["ids"][idx])
             xy_left = cv2_subpixel(transform_points(lane_coords["xyz_left"][:, :2], raster_from_world))
             xy_right = cv2_subpixel(transform_points(lane_coords["xyz_right"][:, :2], raster_from_world))
             lanes_area = np.vstack((xy_left, np.flip(xy_right, 0)))  # start->end left then end->start right
@@ -135,11 +133,11 @@ class SemanticRasterizer(Rasterizer):
             lane_type = "default"  # no traffic light face is controlling this lane
             lane_tl_ids = set([MapAPI.id_as_str(la_tc) for la_tc in lane.traffic_controls])
             for tl_id in lane_tl_ids.intersection(active_tl_ids):
-                if self.proto_API.is_traffic_face_colour(tl_id, "red"):
+                if self.mapAPI.is_traffic_face_colour(tl_id, "red"):
                     lane_type = "red"
-                elif self.proto_API.is_traffic_face_colour(tl_id, "green"):
+                elif self.mapAPI.is_traffic_face_colour(tl_id, "green"):
                     lane_type = "green"
-                elif self.proto_API.is_traffic_face_colour(tl_id, "yellow"):
+                elif self.mapAPI.is_traffic_face_colour(tl_id, "yellow"):
                     lane_type = "yellow"
 
             lanes_lines[lane_type].extend([xy_left, xy_right])
@@ -151,8 +149,8 @@ class SemanticRasterizer(Rasterizer):
 
         # plot crosswalks
         crosswalks = []
-        for idx in elements_within_bounds(center_in_world, self.bounds_info["crosswalks"]["bounds"], raster_radius):
-            crosswalk = self.proto_API.get_crosswalk_coords(self.bounds_info["crosswalks"]["ids"][idx])
+        for idx in indices_in_bounds(center_in_world, self.mapAPI.bounds_info["crosswalks"]["bounds"], raster_radius):
+            crosswalk = self.mapAPI.get_crosswalk_coords(self.mapAPI.bounds_info["crosswalks"]["ids"][idx])
 
             xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], raster_from_world))
             crosswalks.append(xy_cross)
