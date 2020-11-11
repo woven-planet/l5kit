@@ -98,7 +98,7 @@ class AckermanPerturbation(Perturbation):
         if np.random.rand() >= self.perturb_prob:
             return history_frames.copy(), future_frames.copy()
 
-        lateral_offset_distance, yaw_offset_angle = self.random_offset_generator()
+        lateral_offset_distance, yaw_offset_angle, speed_offset_mps = self.random_offset_generator()
 
         if np.abs(lateral_offset_distance) < NUMERICAL_THRESHOLD:
             warnings.warn("ack not applied because of low lateral_distance", RuntimeWarning, stacklevel=2)
@@ -125,13 +125,16 @@ class AckermanPerturbation(Perturbation):
         # laterally rotate the anchor frame
         new_trajectory_to_be_smoothed[num_history_frames - 1, 2] += yaw_offset_angle
 
+        new_speed_to_be_smoothed = _compute_speeds_from_positions(new_trajectory_to_be_smoothed[:, :2]).reshape((-1,))
+        new_speed_to_be_smoothed[num_history_frames - 1] += abs(speed_offset_mps)
+
         #  perform ackerman steering model fitting
         #  TODO(sms): Replace the call below to a cleaned up implementation
 
         gx = new_trajectory_to_be_smoothed[:, 0].reshape((-1,))
         gy = new_trajectory_to_be_smoothed[:, 1].reshape((-1,))
         gr = new_trajectory_to_be_smoothed[:, 2].reshape((-1,))
-        gv = _compute_speeds_from_positions(new_trajectory_to_be_smoothed[:, :2]).reshape((-1,))
+        gv = new_speed_to_be_smoothed
 
         wx = 5 * np.ones(total_trajectory_length)
         wy = 5 * np.ones(total_trajectory_length)
@@ -144,6 +147,7 @@ class AckermanPerturbation(Perturbation):
         wgr = np.zeros(total_trajectory_length)
         wgr[[0, num_history_frames - 1, -1]] = 5
         wgv = np.zeros(total_trajectory_length)
+        wgv[[0, num_history_frames - 1, -1]] = 5
 
         new_xs, new_ys, new_yaws, new_vs = fit_ackerman_model_approximate(
             gx, gy, gr, gv, wx, wy, wr, wv, wgx, wgy, wgr, wgv
