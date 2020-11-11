@@ -142,13 +142,43 @@ class MapAPI:
 
         return {"xyz_left": xyz_left, "xyz_right": xyz_right}
 
+    @staticmethod
+    def interpolate(xyz: np.ndarray, cum_dist: np.ndarray, step: float, method: InterpolationMethod) -> np.ndarray:
+        """
+        Interpolate points based on cumulative distances from the first one. Two modes are available:
+        INTER_METER: interpolate using step as a meter value over cumulative distances (variable len result)
+        INTER_ENSURE_LEN: interpolate using a variable step such that we always get step values
+        Args:
+            xyz (np.ndarray): XYZ coords
+            cum_dist (np.ndarray): distances from the first coords of xyz. Same length as xyz
+            step (float): param for the interpolation
+            method (InterpolationMethod): method to use to interpolate
+
+        Returns:
+            np.ndarray: the new interpolated coordinates
+        """
+        if method == InterpolationMethod.INTER_ENSURE_LEN:
+            step = int(step)
+            assert step > 1, "step must be at least 2 with INTER_ENSURE_LEN"
+            steps = np.linspace(cum_dist[0], cum_dist[-1], step)
+
+        elif method == InterpolationMethod.INTER_METER:
+            assert step > 0, "step must be greater than 0 with INTER_FIXED"
+            steps = np.arange(cum_dist[0], cum_dist[-1], step)
+        else:
+            raise NotImplementedError("interpolation method unknown")
+
+        xyz_inter = np.zeros((len(steps), 3), dtype=xyz.dtype)
+        xyz_inter[:, 0] = np.interp(steps, xp=cum_dist, fp=xyz[:, 0])
+        xyz_inter[:, 1] = np.interp(steps, xp=cum_dist, fp=xyz[:, 1])
+        xyz_inter[:, 2] = np.interp(steps, xp=cum_dist, fp=xyz[:, 2])
+        return xyz_inter
+
     @lru_cache(maxsize=CACHE_SIZE)
     def get_lane_as_interpolation(self, element_id: str, step: float, method: InterpolationMethod) -> dict:
         """
-        Perform an interpolation of the left and right lanes.
-        Two modes are available:
-        INTER_METER: interpolate using step as a meter value over cumulative distances (variable len result)
-        INTER_ENSURE_LEN: interpolate using a variable step such that we always get step values
+        Perform an interpolation of the left and right lanes and compute the midlane.
+        See interpolate for details about the different interpolation methods
 
         Args:
             element_id (str): lane id
@@ -159,33 +189,31 @@ class MapAPI:
             dict: same as `get_lane_coords` but overwrite xyz values for the lanes
         """
         lane_dict = self.get_lane_coords(element_id)
-        for lane_key in ["xyz_left", "xyz_right"]:
-            xyz_raw = lane_dict[lane_key]
+        xyz_left = lane_dict["xyz_left"]
+        xyz_right = lane_dict["xyz_right"]
 
-            # cumulative distance from the first point, including the first itself as 0
-            distances = np.cumsum(np.linalg.norm(np.diff(xyz_raw, axis=0), axis=-1))
-            distances = np.insert(distances, 0, 0)
+        # cumulative distance from the first point, including the first itself as 0
+        distances_left = np.cumsum(np.linalg.norm(np.diff(xyz_left, axis=0), axis=-1))
+        distances_left = np.insert(distances_left, 0, 0)
 
-            if method == InterpolationMethod.INTER_ENSURE_LEN:
-                step = int(step)
-                assert step > 1, "step must be at least 2 with INTER_ENSURE_LEN"
-                steps = np.linspace(distances[0], distances[-1], step)
-                xyz_inter = np.zeros((step, 3), dtype=xyz_raw.dtype)
+        distances_right = np.cumsum(np.linalg.norm(np.diff(xyz_right, axis=0), axis=-1))
+        distances_right = np.insert(distances_right, 0, 0)
 
-            elif method == InterpolationMethod.INTER_METER:
-                assert step > 0, "step must be greater than 0 with INTER_FIXED"
-                steps = np.arange(distances[0], distances[-1], step)
-                xyz_inter = np.zeros((len(steps), 3), dtype=xyz_raw.dtype)
+        lane_dict["xyz_left"] = self.interpolate(xyz_left, distances_left, step, method)
+        lane_dict["xyz_right"] = self.interpolate(xyz_right, distances_right, step, method)
 
-            else:
-                raise NotImplementedError("interpolation method unknown")
+        # compute midlane using mean of fixed length lanes
+        if method != InterpolationMethod.INTER_ENSURE_LEN:
+            mid_steps = max(len(xyz_left), len(xyz_right))
+            # recompute lanes using fixed length
+            xyz_left = self.interpolate(xyz_left, distances_left, mid_steps, InterpolationMethod.INTER_ENSURE_LEN)
+            xyz_right = self.interpolate(xyz_right, distances_right, mid_steps, InterpolationMethod.INTER_ENSURE_LEN)
 
-            xyz_inter[:, 0] = np.interp(steps, xp=distances, fp=xyz_raw[:, 0])
-            xyz_inter[:, 1] = np.interp(steps, xp=distances, fp=xyz_raw[:, 1])
-            xyz_inter[:, 2] = np.interp(steps, xp=distances, fp=xyz_raw[:, 2])
-            if len(xyz_inter) < 2:
-                xyz_inter = xyz_raw  # TODO discuss this
-            lane_dict[lane_key] = xyz_inter
+        else:
+            xyz_left = lane_dict["xyz_left"]
+            xyz_right = lane_dict["xyz_right"]
+
+        lane_dict["midlane"] = (xyz_left + xyz_right) / 2
 
         return lane_dict
 
