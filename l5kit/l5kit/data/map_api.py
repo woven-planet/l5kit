@@ -1,3 +1,4 @@
+from enum import IntEnum
 from functools import lru_cache
 from typing import Iterator, Sequence, Union, no_type_check
 
@@ -9,6 +10,11 @@ from .proto.road_network_pb2 import GeoFrame, GlobalId, MapElement, MapFragment
 
 CACHE_SIZE = int(1e5)
 ENCODING = "utf-8"
+
+
+class InterpolationMethod(IntEnum):
+    INTER_METER = 0  # fixed interpolation at a given step in meters
+    INTER_ENSURE_LEN = 1  # ensure we always get the same number of elements
 
 
 class MapAPI:
@@ -135,6 +141,53 @@ class MapAPI:
         )
 
         return {"xyz_left": xyz_left, "xyz_right": xyz_right}
+
+    @lru_cache(maxsize=CACHE_SIZE)
+    def get_lane_as_interpolation(self, element_id: str, step: float, method: InterpolationMethod) -> dict:
+        """
+        Perform an interpolation of the left and right lanes.
+        Two modes are available:
+        INTER_METER: interpolate using step as a meter value over cumulative distances (variable len result)
+        INTER_ENSURE_LEN: interpolate using a variable step such that we always get step values
+
+        Args:
+            element_id (str): lane id
+            step (float): step param for the method
+            method (InterpolationMethod): one of the accepted methods
+
+        Returns:
+            dict: same as `get_lane_coords` but overwrite xyz values for the lanes
+        """
+        lane_dict = self.get_lane_coords(element_id)
+        for lane_key in ["xyz_left", "xyz_right"]:
+            xyz_raw = lane_dict[lane_key]
+
+            # cumulative distance from the first point, including the first itself as 0
+            distances = np.cumsum(np.linalg.norm(np.diff(xyz_raw, axis=0), axis=-1))
+            distances = np.insert(distances, 0, 0)
+
+            if method == InterpolationMethod.INTER_ENSURE_LEN:
+                step = int(step)
+                assert step > 1, "step must be at least 2 with INTER_ENSURE_LEN"
+                steps = np.linspace(distances[0], distances[-1], step)
+                xyz_inter = np.zeros((step, 3), dtype=xyz_raw.dtype)
+
+            elif method == InterpolationMethod.INTER_METER:
+                assert step > 0, "step must be greater than 0 with INTER_FIXED"
+                steps = np.arange(distances[0], distances[-1], step)
+                xyz_inter = np.zeros((len(steps), 3), dtype=xyz_raw.dtype)
+
+            else:
+                raise NotImplementedError("interpolation method unknown")
+
+            xyz_inter[:, 0] = np.interp(steps, xp=distances, fp=xyz_raw[:, 0])
+            xyz_inter[:, 1] = np.interp(steps, xp=distances, fp=xyz_raw[:, 1])
+            xyz_inter[:, 2] = np.interp(steps, xp=distances, fp=xyz_raw[:, 2])
+            if len(xyz_inter) < 2:
+                xyz_inter = xyz_raw  # TODO discuss this
+            lane_dict[lane_key] = xyz_inter
+
+        return lane_dict
 
     @staticmethod
     @no_type_check
