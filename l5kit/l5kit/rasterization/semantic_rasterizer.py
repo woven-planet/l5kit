@@ -119,10 +119,10 @@ class SemanticRasterizer(Rasterizer):
         lanes_lines = defaultdict(list)
 
         for idx in indices_in_bounds(center_in_world, self.mapAPI.bounds_info["lanes"]["bounds"], raster_radius):
-            lane = self.mapAPI[self.mapAPI.bounds_info["lanes"]["ids"][idx]].element.lane
+            lane_idx = self.mapAPI.bounds_info["lanes"]["ids"][idx]
 
             # get image coords
-            lane_coords = self.mapAPI.get_lane_coords(self.mapAPI.bounds_info["lanes"]["ids"][idx])
+            lane_coords = self.mapAPI.get_lane_coords(lane_idx)
             xy_left = cv2_subpixel(transform_points(lane_coords["xyz_left"][:, :2], raster_from_world))
             xy_right = cv2_subpixel(transform_points(lane_coords["xyz_right"][:, :2], raster_from_world))
             lanes_area = np.vstack((xy_left, np.flip(xy_right, 0)))  # start->end left then end->start right
@@ -131,7 +131,7 @@ class SemanticRasterizer(Rasterizer):
             cv2.fillPoly(img, [lanes_area], (17, 17, 31), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
 
             lane_type = "default"  # no traffic light face is controlling this lane
-            lane_tl_ids = set([MapAPI.id_as_str(la_tc) for la_tc in lane.traffic_controls])
+            lane_tl_ids = set(self.mapAPI.get_lane_traffic_control_ids(lane_idx))
             for tl_id in lane_tl_ids.intersection(active_tl_ids):
                 if self.mapAPI.is_traffic_face_colour(tl_id, "red"):
                     lane_type = "red"
