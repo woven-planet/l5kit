@@ -175,7 +175,7 @@ class MapAPI:
         return xyz_inter
 
     @lru_cache(maxsize=CACHE_SIZE)
-    def get_lane_traffic_control_ids(self, element_id: str) -> list:
+    def get_lane_traffic_control_ids(self, element_id: str) -> set:
         lane = self[element_id].element.lane
         return set([MapAPI.id_as_str(la_tc) for la_tc in lane.traffic_controls])
 
