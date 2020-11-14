@@ -177,7 +177,7 @@ class MapAPI:
     @lru_cache(maxsize=CACHE_SIZE)
     def get_lane_traffic_control_ids(self, element_id: str) -> list:
         lane = self[element_id].element.lane
-        return [MapAPI.id_as_str(la_tc) for la_tc in lane.traffic_controls]
+        return set([MapAPI.id_as_str(la_tc) for la_tc in lane.traffic_controls])
 
     @lru_cache(maxsize=CACHE_SIZE)
     def get_lane_as_interpolation(self, element_id: str, step: float, method: InterpolationMethod) -> dict:
