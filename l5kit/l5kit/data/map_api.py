@@ -218,8 +218,12 @@ class MapAPI:
             xyz_left = lane_dict["xyz_left"]
             xyz_right = lane_dict["xyz_right"]
 
-        lane_dict["midlane"] = (xyz_left + xyz_right) / 2
+        xyz_midlane = (xyz_left + xyz_right) / 2
 
+        # interpolate xyz for midlane with the selected interpolation
+        distances_midlane = np.cumsum(np.linalg.norm(np.diff(xyz_midlane, axis=0), axis=-1))
+        distances_midlane = np.insert(distances_midlane, 0, 0)
+        lane_dict["xyz_midlane"] = self.interpolate(xyz_midlane, distances_midlane, step, method)
         return lane_dict
 
     @staticmethod
