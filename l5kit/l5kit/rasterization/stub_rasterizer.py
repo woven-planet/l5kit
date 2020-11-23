@@ -41,3 +41,6 @@ class StubRasterizer(Rasterizer):
         Return a completely black image.
         """
         return np.zeros((self.raster_size[0], self.raster_size[1], 3), dtype=np.uint8)
+
+    def num_channels(self) -> int:
+        return 3

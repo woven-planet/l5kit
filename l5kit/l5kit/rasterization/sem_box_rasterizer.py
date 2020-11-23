@@ -49,3 +49,6 @@ class SemBoxRasterizer(Rasterizer):
         mask_box = np.any(im_out_box > 0, -1)
         im_out_sem[mask_box] = im_out_box[mask_box]
         return im_out_sem
+
+    def num_channels(self) -> int:
+        return self.box_rast.num_channels() + self.sem_rast.num_channels()

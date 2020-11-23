@@ -168,3 +168,6 @@ class BoxRasterizer(Rasterizer):
 
         out_im = (np.clip(out_im_agent + out_im_ego, 0, 1) * 255).astype(np.uint8)
         return out_im
+
+    def num_channels(self) -> int:
+        return (self.history_num_frames + 1) * 2

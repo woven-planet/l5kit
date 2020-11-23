@@ -29,3 +29,7 @@ class Rasterizer(ABC):
     @abstractmethod
     def to_rgb(self, in_im: np.ndarray, **kwargs: dict) -> np.ndarray:
         pass
+
+    @abstractmethod
+    def num_channels(self) -> int:
+        pass
