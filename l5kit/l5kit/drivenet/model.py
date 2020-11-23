@@ -11,7 +11,6 @@ class DriveNetModel(nn.Module):
         self,
         model_arch: str,
         num_input_channels: int,
-        step_time_s: float,
         num_targets: int,
         weights_scaling: List[float],
         criterion: nn.Module,
@@ -20,7 +19,6 @@ class DriveNetModel(nn.Module):
         super().__init__()
         self.model_arch = model_arch
         self.num_input_channels = num_input_channels
-        self.step_time_s = step_time_s
         self.num_targets = num_targets
         self.register_buffer("weight_scaling", torch.tensor(weights_scaling))
         self.pretrained = pretrained
@@ -65,11 +63,5 @@ class DriveNetModel(nn.Module):
             predicted = outputs.view(batch_size, -1, 3)
             pred_positions = predicted[:, :, :2]
             pred_yaws = predicted[:, :, 2:3]
-            # compute velocities
-            cur_positions = torch.zeros(batch_size, 1, 2, device=pred_positions.device)
-            # [batch_size, num_timestamps, 2]
-            pred_velocities = (
-                pred_positions - torch.cat((cur_positions, pred_positions[:, :-1, :]), dim=1)
-            ) / self.step_time_s
-            eval_dict = {"positions": pred_positions, "yaws": pred_yaws, "velocities": pred_velocities}
+            eval_dict = {"positions": pred_positions, "yaws": pred_yaws}
             return eval_dict
