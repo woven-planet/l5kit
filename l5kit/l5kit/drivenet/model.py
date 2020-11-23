@@ -20,7 +20,7 @@ class DriveNetModel(nn.Module):
         self.model_arch = model_arch
         self.num_input_channels = num_input_channels
         self.num_targets = num_targets
-        self.register_buffer("weight_scaling", torch.tensor(weights_scaling))
+        self.register_buffer("weights_scaling", torch.tensor(weights_scaling))
         self.pretrained = pretrained
         self.criterion = criterion
 
