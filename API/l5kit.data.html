@@ -454,6 +454,24 @@ so you should take care of re-setting it if you have previously sliced agents.</
 </dd></dl>
 
 <dl class="py function">
+<dt id="l5kit.data.filter_agents_by_track_id">
+<code class="sig-prename descclassname">l5kit.data.</code><code class="sig-name descname">filter_agents_by_track_id</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">track_id</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.data.filter_agents_by_track_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return all agent object (np.ndarray) of a given track_id.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agents</strong> (<em>np.ndarray</em>) – agents array.
+NOTE: do NOT pass a zarr to this function, it can’t handle boolean indexing</p></li>
+<li><p><strong>track_id</strong> (<em>int</em>) – agent track id to select</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>np.ndarray – Selected agent.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="l5kit.data.filter_tl_faces_by_frames">
 <code class="sig-prename descclassname">l5kit.data.</code><code class="sig-name descname">filter_tl_faces_by_frames</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">tl_faces</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.data.filter_tl_faces_by_frames" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get a list of traffic light faces arrays, one array per frame.

@@ -236,7 +236,8 @@ so you should take care of re-setting it if you have previously sliced agents.</
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>agents</strong> (<em>np.ndarray</em>) – agents array</p></li>
+<li><p><strong>agents</strong> (<em>np.ndarray</em>) – agents array.
+NOTE: do NOT pass a zarr to this function, it can’t handle boolean indexing</p></li>
 <li><p><strong>track_id</strong> (<em>int</em>) – agent track id to select</p></li>
 </ul>
 </dd>
