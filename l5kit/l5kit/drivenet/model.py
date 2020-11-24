@@ -42,7 +42,9 @@ class DriveNetModel(nn.Module):
             )
 
     def forward(self, data_batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+        # [batch_size, channels, height, width]
         image_batch = data_batch["image"]
+        # [batch_size, num_steps * 2]
         outputs = self.model(image_batch)
         batch_size = len(data_batch["image"])
 
@@ -50,9 +52,11 @@ class DriveNetModel(nn.Module):
             if self.criterion is None:
                 raise NotImplementedError("Loss function is undefined.")
 
+            # [batch_size, num_steps * 2]
             targets = (torch.cat((data_batch["target_positions"], data_batch["target_yaws"]), dim=2)).view(
                 batch_size, -1
             )
+            # [batch_size, num_steps]
             target_weights = (data_batch["target_availabilities"].unsqueeze(-1) * self.weights_scaling).view(
                 batch_size, -1
             )
@@ -61,7 +65,9 @@ class DriveNetModel(nn.Module):
             return train_dict
         else:
             predicted = outputs.view(batch_size, -1, 3)
+            # [batch_size, num_steps, 2->(XY)]
             pred_positions = predicted[:, :, :2]
+            # [batch_size, num_steps, 1->(yaw)]
             pred_yaws = predicted[:, :, 2:3]
             eval_dict = {"positions": pred_positions, "yaws": pred_yaws}
             return eval_dict
