@@ -51,11 +51,14 @@ Then, we rewrite this by substracting the maximum value x<sup>*</sup> from each 
 # Coordinates System for the competition
 Please refer to [this doc](https://github.com/lyft/l5kit/blob/master/coords_systems.md) for a full description of the different coordinate systems used in L5Kit.
 
-The ground truth coordinates for the competition are stored in the [world coordinate system](https://github.com/lyft/l5kit/blob/master/coords_systems.md#world-coordinate-system).
+The ground truth coordinates for the competition are stored as positional displacements in the [world coordinate system](https://github.com/lyft/l5kit/blob/master/coords_systems.md#world-coordinate-system).
 However, you will likely predict relative displacements for the agent of interest either in the [agent coordinate system](https://github.com/lyft/l5kit/blob/master/coords_systems.md#agent-coordinate-system)
 or in the [image coordinate system](https://github.com/lyft/l5kit/blob/master/coords_systems.md#image-coordinate-system).
 Before using [our utils](https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/evaluation/csv_utils.py) to write a CSV file for you predictions convert them
-into the world coordinate system using the appropriate transformation matrix available as part of [the input data](https://github.com/lyft/l5kit/blob/master/data_format.md#dataset-abstraction-classes).
+into the world coordinate system using the appropriate transformation matrix available as part of [the input data](https://github.com/lyft/l5kit/blob/master/data_format.md#dataset-abstraction-classes)
+and subtract the centroid.
+
+Yaw is not required/used for this competition.
 
 # Additional Metrics
 Scoring multi-modal prediction models is a highly complex task, and while we chose the metric described above due to its elegance and support for multi-modality,
