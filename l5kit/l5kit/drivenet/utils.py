@@ -1,4 +1,4 @@
-from typing import Optional, Tuple
+from typing import Tuple
 
 import numpy as np
 from shapely.geometry import LineString, Polygon
@@ -36,7 +36,7 @@ def within_range(ego_centroid: np.ndarray, ego_extent: np.ndarray, agents: np.nd
 
 def detect_collision(
     pred_centroid: np.ndarray, pred_yaw: float, pred_extent: np.ndarray, target_agents: np.ndarray
-) -> Optional[Tuple[str, str]]:
+) -> Tuple[str, str]:
     """
     Computes whether a collision occurred between ego and any another agent.
     Also computes the type of collision: rear, front, or side.
@@ -63,4 +63,4 @@ def detect_collision(
             )
             collision_type = ["front", "rear", "side", "side"][np.argmax(intersection_length_per_side)]
             return collision_type, agent["track_id"]
-    return None
+    return "", ""
