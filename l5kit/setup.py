@@ -28,7 +28,8 @@ setup(
         "pyyaml",
         "notebook",
         "ptable",
-        "ipywidgets"
+        "ipywidgets",
+        "shapely",
     ],
     extras_require={
         "dev": ["pytest", "mypy", "setuptools", "twine", "wheel", "pytest-cov", "flake8",
