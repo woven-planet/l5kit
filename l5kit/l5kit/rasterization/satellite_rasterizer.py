@@ -82,3 +82,6 @@ class SatelliteRasterizer(Rasterizer):
 
     def to_rgb(self, in_im: np.ndarray, **kwargs: dict) -> np.ndarray:
         return (in_im * 255).astype(np.uint8)
+
+    def num_channels(self) -> int:
+        return 3
