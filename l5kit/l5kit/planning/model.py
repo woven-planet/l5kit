@@ -6,7 +6,7 @@ import torch.nn as nn
 from torchvision.models.resnet import resnet18, resnet50
 
 
-class DriveNetModel(nn.Module):
+class PlanningModel(nn.Module):
     def __init__(
         self,
         model_arch: str,
