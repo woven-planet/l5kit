@@ -7,7 +7,6 @@ from l5kit.data.zarr_dataset import AGENT_DTYPE
 
 from ..data.filter import filter_agents_by_labels, filter_agents_by_track_id
 from ..geometry import rotation33_as_yaw, transform_points
-from ..geometry.transform import yaw_as_rotation33
 from .rasterizer import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
 from .render_context import RenderContext
 from .semantic_rasterizer import CV2_SHIFT, cv2_subpixel
@@ -55,14 +54,14 @@ def draw_boxes(
     else:
         im = np.zeros((raster_size[1], raster_size[0], 3), dtype=np.uint8)
 
-    box_world_coords = np.zeros((len(agents), 4, 2))
-    corners_base_coords = np.asarray([[-1, -1], [-1, 1], [1, 1], [1, -1]])
+    corners_base_coords = (np.asarray([[-1, -1], [-1, 1], [1, 1], [1, -1]]) / 2)[None, :, :]
 
     # compute the corner in world-space (start in origin, rotate and then translate)
-    for idx, agent in enumerate(agents):
-        corners = corners_base_coords * agent["extent"][:2] / 2  # corners in zero
-        r_m = yaw_as_rotation33(agent["yaw"])
-        box_world_coords[idx] = transform_points(corners, r_m) + agent["centroid"][:2]
+    corners_m = corners_base_coords * agents["extent"][:, None, :2]  # corners in zero
+    s = np.sin(agents["yaw"])
+    c = np.cos(agents["yaw"])
+    rotation_m = np.moveaxis(np.array(((c, -s), (s, c))), 2, 0)
+    box_world_coords = np.einsum("bti,bji->btj", corners_m, rotation_m) + agents["centroid"][:, None, :2]
 
     box_raster_coords = transform_points(box_world_coords.reshape((-1, 2)), raster_from_world)
 
