@@ -15,6 +15,94 @@ from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WID
 from .slicing import get_future_slice, get_history_slice
 
 
+def get_agent_context(
+    state_index: int,
+    frames: np.ndarray,
+    agents: np.ndarray,
+    tl_faces: np.ndarray,
+    history_num_frames: int,
+    history_step_size: int,
+    future_num_frames: int,
+    future_step_size: int,
+) -> Tuple[np.ndarray, np.ndarray, List[np.ndarray], List[np.ndarray], List[np.ndarray], List[np.ndarray]]:
+    """
+    Slice zarr or numpy arrays to get the context around the agent onf interest (both in space and time)
+
+    Args:
+        state_index (int): frame index inside the scene
+        frames (np.ndarray): frames from the scene
+        agents (np.ndarray): agents from the scene
+        tl_faces (np.ndarray): tl_faces from the scene
+        history_num_frames (int): how many frames in the past to slice
+        history_step_size (int): size of each step in the past
+        future_num_frames (int): how many frames in the future to slice
+        future_step_size (int): size of each step in the future
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray, List[np.ndarray], List[np.ndarray], List[np.ndarray], List[np.ndarray]]
+    """
+
+    #  the history slice is ordered starting from the latest frame and goes backward in time., ex. slice(100, 91, -2)
+    history_slice = get_history_slice(state_index, history_num_frames, history_step_size, include_current_state=True)
+    future_slice = get_future_slice(state_index, future_num_frames, future_step_size)
+
+    history_frames = frames[history_slice].copy()  # copy() required if the object is a np.ndarray
+    future_frames = frames[future_slice].copy()
+
+    sorted_frames = np.concatenate((history_frames[::-1], future_frames))  # from past to future
+
+    # get agents (past and future)
+    agent_slice = get_agents_slice_from_frames(sorted_frames[0], sorted_frames[-1])
+    agents = agents[agent_slice].copy()
+    # sync interval with the agents array
+    history_frames["agent_index_interval"] -= agent_slice.start
+    future_frames["agent_index_interval"] -= agent_slice.start
+    history_agents = filter_agents_by_frames(history_frames, agents)
+    future_agents = filter_agents_by_frames(future_frames, agents)
+
+    # get traffic lights (past and future)
+    tl_slice = get_tl_faces_slice_from_frames(sorted_frames[0], sorted_frames[-1])
+    tl_faces = tl_faces[tl_slice].copy()
+    # sync interval with the traffic light faces array
+    history_frames["traffic_light_faces_index_interval"] -= tl_slice.start
+    history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces)
+    future_tl_faces = filter_tl_faces_by_frames(future_frames, tl_faces)
+
+    return history_frames, future_frames, history_agents, future_agents, history_tl_faces, future_tl_faces
+
+
+def compute_agent_speed(
+    history_positions_m: np.ndarray, future_positions_m: np.ndarray, history_step_time: float, future_step_time: float
+) -> Tuple[np.ndarray, np.ndarray]:
+    """
+    compute estimated velocities by finite differentiation on future positions
+    estimate velocity at T with (pos(T+t) - pos(T))/t
+    this gives < 0.5% velocity difference to (pos(T+t) - pos(T-t))/2t on v1.1/sample.zarr.tar
+
+    Args:
+        history_positions_m (np.ndarray): history XY positions in meters
+        future_positions_m (np.ndarray): future XY positions in meters
+        history_step_time (np.ndarray): length of a step in second
+        future_step_time (np.ndarray): length of a step in second
+
+    Returns:
+        Tuple[np.ndarray, np.ndarray]: history and future XY speeds
+
+    """
+    # [future_num_frames, 2]
+    future_positions_diff_m = np.concatenate((future_positions_m[:1], np.diff(future_positions_m, axis=0)))
+    # [future_num_frames, 2]
+    future_vels_mps = np.float32(future_positions_diff_m / future_step_time)
+
+    # current position is included in history positions
+    # [history_num_frames, 2]
+    history_positions_diff_m = np.diff(history_positions_m, axis=0)
+    # [history_num_frames, 2]
+    history_vels_mps = np.float32(history_positions_diff_m / history_step_time)
+
+    return history_vels_mps, future_vels_mps
+
+
 def generate_agent_sample(
     state_index: int,
     frames: np.ndarray,
@@ -47,13 +135,13 @@ def generate_agent_sample(
         selected_track_id (Optional[int]): Either None for AV, or the ID of an agent that you want to
         predict the future of. This agent is centered in the raster and the returned targets are derived from
         their future states.
-        raster_size (Tuple[int, int]): Desired output raster dimensions
-        pixel_size (np.ndarray): Size of one pixel in the real world
-        ego_center (np.ndarray): Where in the raster to draw the ego, [0.5,0.5] would be the center
+        render_context (RenderContext): The context for rasterisation
         history_num_frames (int): Amount of history frames to draw into the rasters
         history_step_size (int): Steps to take between frames, can be used to subsample history frames
+        history_step_time (float): Length of a step in seconds into the past
         future_num_frames (int): Amount of history frames to draw into the rasters
         future_step_size (int): Steps to take between targets into the future
+        future_step_time (float): Length of a step in seconds into the future
         filter_agents_threshold (float): Value between 0 and 1 to use as cutoff value for agent filtering
         based on their probability of being a relevant agent
         rasterizer (Optional[Rasterizer]): Rasterizer of some sort that draws a map image
@@ -61,34 +149,30 @@ def generate_agent_sample(
 to train models that can recover from slight divergence from training set data
 
     Raises:
-        ValueError: A ValueError is returned if the specified ``selected_track_id`` is not present in the scene
+        ValueError: A IndexError is returned if the specified ``selected_track_id`` is not present in the scene
         or was filtered by applying the ``filter_agent_threshold`` probability filtering.
 
     Returns:
         dict: a dict object with the raster array, the future offset coordinates (meters),
         the future yaw angular offset, the future_availability as a binary mask
     """
-    #  the history slice is ordered starting from the latest frame and goes backward in time., ex. slice(100, 91, -2)
-    history_slice = get_history_slice(state_index, history_num_frames, history_step_size, include_current_state=True)
-    future_slice = get_future_slice(state_index, future_num_frames, future_step_size)
-
-    history_frames = frames[history_slice].copy()  # copy() required if the object is a np.ndarray
-    future_frames = frames[future_slice].copy()
-
-    sorted_frames = np.concatenate((history_frames[::-1], future_frames))  # from past to future
-
-    # get agents (past and future)
-    agent_slice = get_agents_slice_from_frames(sorted_frames[0], sorted_frames[-1])
-    agents = agents[agent_slice].copy()  # this is the minimum slice of agents we need
-    history_frames["agent_index_interval"] -= agent_slice.start  # sync interval with the agents array
-    future_frames["agent_index_interval"] -= agent_slice.start  # sync interval with the agents array
-    history_agents = filter_agents_by_frames(history_frames, agents)
-    future_agents = filter_agents_by_frames(future_frames, agents)
-
-    tl_slice = get_tl_faces_slice_from_frames(history_frames[-1], history_frames[0])  # -1 is the farthest
-    # sync interval with the traffic light faces array
-    history_frames["traffic_light_faces_index_interval"] -= tl_slice.start
-    history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces[tl_slice].copy())
+    (
+        history_frames,
+        future_frames,
+        history_agents,
+        future_agents,
+        history_tl_faces,
+        future_tl_faces,
+    ) = get_agent_context(
+        state_index,
+        frames,
+        agents,
+        tl_faces,
+        history_num_frames,
+        history_step_size,
+        future_num_frames,
+        future_step_size,
+    )
 
     if perturbation is not None:
         history_frames, future_frames = perturbation.perturb(
@@ -107,12 +191,8 @@ to train models that can recover from slight divergence from training set data
     else:
         # this will raise IndexError if the agent is not in the frame or under agent-threshold
         # this is a strict error, we cannot recover from this situation
-        try:
-            agent = filter_agents_by_track_id(
-                filter_agents_by_labels(cur_agents, filter_agents_threshold), selected_track_id
-            )[0]
-        except IndexError:
-            raise ValueError(f" track_id {selected_track_id} not in frame or below threshold")
+        filtered_agents = filter_agents_by_labels(cur_agents, filter_agents_threshold)
+        agent = filter_agents_by_track_id(filtered_agents, selected_track_id)[0]
         agent_centroid_m = agent["centroid"]
         agent_yaw_rad = float(agent["yaw"])
         agent_extent_m = agent["extent"]
@@ -131,26 +211,14 @@ to train models that can recover from slight divergence from training set data
     future_positions_m, future_yaws_rad, future_availabilities = _create_targets_for_deep_prediction(
         future_num_frames, future_frames, selected_track_id, future_agents, agent_from_world, agent_yaw_rad,
     )
-
     # history_num_frames + 1 because it also includes the current frame
     history_positions_m, history_yaws_rad, history_availabilities = _create_targets_for_deep_prediction(
         history_num_frames + 1, history_frames, selected_track_id, history_agents, agent_from_world, agent_yaw_rad,
     )
 
-    # compute estimated velocities by finite differentiatin on future positions
-    # estimate velocity at T with (pos(T+t) - pos(T))/t
-    # this gives < 0.5% velocity difference to (pos(T+t) - pos(T-t))/2t on v1.1/sample.zarr.tar
-
-    # [future_num_frames, 2]
-    future_positions_diff_m = np.concatenate((future_positions_m[:1], np.diff(future_positions_m, axis=0)))
-    # [future_num_frames, 2]
-    future_vels_mps = np.float32(future_positions_diff_m / future_step_time)
-
-    # current position is included in history positions
-    # [history_num_frames, 2]
-    history_positions_diff_m = np.diff(history_positions_m, axis=0)
-    # [history_num_frames, 2]
-    history_vels_mps = np.float32(history_positions_diff_m / history_step_time)
+    history_vels_mps, future_vels_mps = compute_agent_speed(
+        history_positions_m, future_positions_m, history_step_time, future_step_time
+    )
 
     return {
         "image": input_im,
