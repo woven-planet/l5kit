@@ -60,8 +60,8 @@ def draw_boxes(
     corners_m = corners_base_coords * agents["extent"][:, None, :2]  # corners in zero
     s = np.sin(agents["yaw"])
     c = np.cos(agents["yaw"])
-    rotation_m = np.moveaxis(np.array(((c, -s), (s, c))), 2, 0)
-    box_world_coords = np.einsum("bti,bji->btj", corners_m, rotation_m) + agents["centroid"][:, None, :2]
+    rotation_m = np.moveaxis(np.array(((c, s), (-s, c))), 2, 0)
+    box_world_coords = corners_m @ rotation_m + agents["centroid"][:, None, :2]
 
     box_raster_coords = transform_points(box_world_coords.reshape((-1, 2)), raster_from_world)
 
