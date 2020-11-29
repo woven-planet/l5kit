@@ -54,12 +54,14 @@ def draw_boxes(
     else:
         im = np.zeros((raster_size[1], raster_size[0], 3), dtype=np.uint8)
 
-    corners_base_coords = (np.asarray([[-1, -1], [-1, 1], [1, 1], [1, -1]]) / 2)[None, :, :]
+    corners_base_coords = (np.asarray([[-1, -1], [-1, 1], [1, 1], [1, -1]]) * 0.5)[None, :, :]
 
     # compute the corner in world-space (start in origin, rotate and then translate)
     corners_m = corners_base_coords * agents["extent"][:, None, :2]  # corners in zero
     s = np.sin(agents["yaw"])
     c = np.cos(agents["yaw"])
+    # note this is clockwise because it's right-multiplied and not left-multiplied later,
+    # and therefore we're still rotating counterclockwise.
     rotation_m = np.moveaxis(np.array(((c, s), (-s, c))), 2, 0)
     box_world_coords = corners_m @ rotation_m + agents["centroid"][:, None, :2]
 
