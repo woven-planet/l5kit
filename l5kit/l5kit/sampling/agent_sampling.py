@@ -71,13 +71,13 @@ def get_agent_context(
     return history_frames, future_frames, history_agents, future_agents, history_tl_faces, future_tl_faces
 
 
-def compute_agent_speed(
+def compute_agent_velocity(
     history_positions_m: np.ndarray, future_positions_m: np.ndarray, history_step_time: float, future_step_time: float
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
-    compute estimated velocities by finite differentiation on future positions
-    estimate velocity at T with (pos(T+t) - pos(T))/t
-    this gives < 0.5% velocity difference to (pos(T+t) - pos(T-t))/2t on v1.1/sample.zarr.tar
+    Compute estimated velocities by finite differentiation on future positions as(pos(T+t) - pos(T))/t.
+    This simple approach gives less than 0.5% velocity difference
+    compared to (pos(T+t) - pos(T-t))/2t on v1.1/sample.zarr.tar.
 
     Args:
         history_positions_m (np.ndarray): history XY positions in meters
@@ -216,7 +216,7 @@ to train models that can recover from slight divergence from training set data
         history_num_frames + 1, history_frames, selected_track_id, history_agents, agent_from_world, agent_yaw_rad,
     )
 
-    history_vels_mps, future_vels_mps = compute_agent_speed(
+    history_vels_mps, future_vels_mps = compute_agent_velocity(
         history_positions_m, future_positions_m, history_step_time, future_step_time
     )
 
