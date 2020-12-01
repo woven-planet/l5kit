@@ -12,10 +12,10 @@ as it contains key insights on how to effectively train a ML policy for planning
 
 # [Training Notebook](./train.ipynb)
 
-In this notebook you are going to train your own ML policy to fully control a SVD. You will train your model using the Lyft Prediction Dataset and L5Kit
+In this notebook you are going to train your own ML policy to fully control a Self Driving Vehicle (SDV). You will train your model using the Lyft Prediction Dataset and L5Kit
 
 
-The policy will be a deep neural network (DNN) which will be invoked by the SVD to obtain the next command to execute.
+The policy will be a deep neural network (DNN) which will be invoked by the SDV to obtain the next command to execute.
 
 More in details, you will be working with a CNN architecture based on ResNet50.
 
@@ -23,14 +23,14 @@ More in details, you will be working with a CNN architecture based on ResNet50.
 
 
 #### Inputs
-The network will get a BEV of the scene surrounding the SVD as the only input. This has been rasterised in a fixed grid image to comply with the CNN input. L5Kit is shipped with various rasterisers. Each one of them captures different aspects of the scene (e.g. lanes or satellite view).
+The network will get a BEV of the scene surrounding the SDV as the only input. This has been rasterised in a fixed grid image to comply with the CNN input. L5Kit is shipped with various rasterisers. Each one of them captures different aspects of the scene (e.g. lanes or satellite view).
 
 This input representation is very similar to the one used in the [prediction competition](https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview). Please refer to our [competition baseline notebook](../agent_motion_prediction/agent_motion_prediction.ipynb) and our [data format notebook](../visualisation/visualise_data.ipynb) if you want to learn more about it.
 
 #### Outputs
-The network outputs the driving signals required to fully control the SVD. In particular, this is a trajectory of XY and yaw displacements which can be used to move and steer the vehicle.
+The network outputs the driving signals required to fully control the SDV. In particular, this is a trajectory of XY and yaw displacements which can be used to move and steer the vehicle.
 
-After enough training, your model will be able to drive an agent along a specific route. Among others, it will do lane-following while respecting traffic lights.
+After enough training, your model will be able to drive the SDV along a specific route. Among others, it will do lane-following while respecting traffic lights.
 
 # [Open-Loop Evaluation Notebook](./open_loop_test.ipynb)
 
@@ -39,9 +39,9 @@ In this notebook you are going to evaluate a CNN-based policy to control the SDV
 ## What is open-loop evaluation?
 In open-loop evaluation we evaluate our model prediction as we follow the annotated ground truth.
 
-In each frame, we compare the predictions of our model against the annotated ground truth. This can be done with different metrics, and we will see few of them in the following.
+In each frame, we compare the predictions of our model against the annotated ground truth. This can be done with different metrics, and we will see a few of them in the following.
 
-**Regardless of the metric used, this evaluation protocol doesn't modify the future locations according to our predictions**
+**Regardless of the metric used, this evaluation protocol doesn't modify the future locations according to our predictions.**
 
 ![open-loop](../../images/planning/open-loop.svg)
 
@@ -49,8 +49,8 @@ In each frame, we compare the predictions of our model against the annotated gro
 # [Closed-Loop Evaluation Notebook](./closed_loop_test.ipynb)
 In this notebook you are going to evaluate a CNN-based policy to control the SDV with a protocol named *closed-loop* evaluation.
 
-## What is a closed-loop evaluation?
-In closed-loop evaluation the model is in **full control of the SVD**. At each time step, we predict the future trajectory and then move the AV to the first of the model's predictions. 
+## What is closed-loop evaluation?
+In closed-loop evaluation the model is in **full control of the SDV**. At each time step, we predict the future trajectory and then move the AV to the first of the model's predictions. 
 
 We refer to this process with the terms **forward-simulate** or **unroll**.
 
