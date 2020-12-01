@@ -268,6 +268,21 @@ class MapAPI:
 
         return {"xyz": xyz}
 
+    def is_traffic_light(self, element_id: str) -> bool:
+        """
+        Check if the element is a traffic light
+        Args:
+            element_id (str): the id (utf-8 encode) of the element
+
+        Returns:
+            True if the element is a traffic light
+        """
+        element = self[element_id]
+        if not element.element.HasField("traffic_control_element"):
+            return False
+        traffic_el = element.element.traffic_control_element
+        return traffic_el.HasField("traffic_light") is True
+
     def is_traffic_face_colour(self, element_id: str, colour: str) -> bool:
         """
         Check if the element is a traffic light face of the given colour
@@ -276,7 +291,7 @@ class MapAPI:
             element_id (str): the id (utf-8 encode) of the element
             colour (str): the colour to check
         Returns:
-            True if the element is a traffic light with the given colour
+            True if the element is a traffic light face with the given colour
         """
         element = self[element_id]
         if not element.element.HasField("traffic_control_element"):
