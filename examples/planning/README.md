@@ -39,9 +39,9 @@ In this notebook you are going to evaluate a CNN-based policy to control the SDV
 ## What is open-loop evaluation?
 In open-loop evaluation we evaluate our model prediction as we follow the annotated ground truth.
 
-In each frame, we compare the predictions of our model against the annotated ground truth. This can be done with different metrics, and we will see a few of them in the following.
+In each frame, we compare the predictions of our model against the annotated ground truth. This can be done with different metrics.
 
-**Regardless of the metric used, this evaluation protocol doesn't modify the future locations according to our predictions.**
+**Regardless of the metric used, this evaluation protocol doesn't modify the future locations according to the model's predictions.**
 
 ![open-loop](../../images/planning/open-loop.svg)
 
