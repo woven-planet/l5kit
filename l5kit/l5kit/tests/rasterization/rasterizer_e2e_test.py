@@ -17,6 +17,7 @@ def check_rasterizer(cfg: dict, rasterizer: Rasterizer, zarr_dataset: ChunkedDat
         tl_faces = [np.empty(0, dtype=TL_FACE_DTYPE) for _ in agents]  # TODO TR_FACES
         im = rasterizer.rasterize(frames_to_rasterize, agents, tl_faces)
         assert len(im.shape) == 3
+        assert im.shape[-1] == rasterizer.num_channels()
         assert im.shape[:2] == tuple(cfg["raster_params"]["raster_size"])
         assert im.max() <= 1
         assert im.min() >= 0

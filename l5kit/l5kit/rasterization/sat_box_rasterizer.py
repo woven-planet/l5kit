@@ -56,3 +56,6 @@ class SatBoxRasterizer(Rasterizer):
         mask = np.any(im_out_box > 0, axis=-1)
         im_out_sat[mask] = im_out_box[mask]
         return im_out_sat
+
+    def num_channels(self) -> int:
+        return self.box_rast.num_channels() + self.sat_rast.num_channels()
