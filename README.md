@@ -39,6 +39,11 @@ Please refer to our [README](./examples/planning/README.md) for a full descripti
 We also provide pre-trained models for this task. Please refer to the [training notebook](./examples/planning/train.ipynb). 
 
 # News
+- 12-03-2020: Notebooks for training and evaluating planning released! Learn more about it in the dedicated [README](./examples/planning/README.md)
+- 11-26-2020: [2020 Kaggle Lyft Motion Prediction for Autonomous Vehicles Competition](https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview) ended. We had more than 900 teams taking part in it!
+- 11-16-2020: [Dataset paper](https://corlconf.github.io/paper_86/) presented at CoRL 2020  
+- 09-29-2020: L5Kit v1.0.1 released 
+- 08-25-2020: [2020 Kaggle Lyft Motion Prediction for Autonomous Vehicles Competition](https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview) started  
 - 08-24-2020: L5Kit v1.0.6 and Dataset v1.1 (includes traffic light support) released! 
 - 06-25-2020: Docs and API available at https://lyft.github.io/l5kit/ (thanks Kevin Zhao!)
 
