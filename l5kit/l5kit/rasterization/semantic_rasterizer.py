@@ -1,18 +1,19 @@
 from collections import defaultdict
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import cv2
 import numpy as np
 
 from ..data.filter import filter_tl_faces_by_status
-from ..data.map_api import MapAPI
+from ..data.map_api import InterpolationMethod, MapAPI
 from ..geometry import rotation33_as_yaw, transform_point, transform_points
 from .rasterizer import Rasterizer
 from .render_context import RenderContext
 
 # sub-pixel drawing precision constants
-CV2_SHIFT = 8  # how many bits to shift in drawing
-CV2_SHIFT_VALUE = 2 ** CV2_SHIFT
+CV2_SUB_VALUES = {"shift": 9, "lineType": cv2.LINE_AA}
+CV2_SHIFT_VALUE = 2 ** CV2_SUB_VALUES["shift"]
+INTERPOLATION_POINTS = 20
 
 
 def indices_in_bounds(center: np.ndarray, bounds: np.ndarray, half_extent: float) -> np.ndarray:
@@ -115,20 +116,20 @@ class SemanticRasterizer(Rasterizer):
         # get active traffic light faces
         active_tl_ids = set(filter_tl_faces_by_status(tl_faces, "ACTIVE")["face_id"].tolist())
 
-        # plot lanes
-        lanes_lines = defaultdict(list)
+        # get all lanes as interpolation so that we can transform them all together
 
-        for idx in indices_in_bounds(center_in_world, self.mapAPI.bounds_info["lanes"]["bounds"], raster_radius):
-            lane_idx = self.mapAPI.bounds_info["lanes"]["ids"][idx]
+        lane_indices = indices_in_bounds(center_in_world, self.mapAPI.bounds_info["lanes"]["bounds"], raster_radius)
+        lanes_lines: Dict[str, np.ndarray] = defaultdict(lambda: np.zeros(len(lane_indices) * 2, dtype=np.bool))
+        lanes_area = np.zeros((len(lane_indices) * 2, INTERPOLATION_POINTS, 2))
 
-            # get image coords
-            lane_coords = self.mapAPI.get_lane_coords(lane_idx)
-            xy_left = cv2_subpixel(transform_points(lane_coords["xyz_left"][:, :2], raster_from_world))
-            xy_right = cv2_subpixel(transform_points(lane_coords["xyz_right"][:, :2], raster_from_world))
-            lanes_area = np.vstack((xy_left, np.flip(xy_right, 0)))  # start->end left then end->start right
+        for idx, lane_idx in enumerate(lane_indices):
+            lane_idx = self.mapAPI.bounds_info["lanes"]["ids"][lane_idx]
 
-            # Note(lberg): this called on all polygons skips some of them, don't know why
-            cv2.fillPoly(img, [lanes_area], (17, 17, 31), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
+            lane_coords = self.mapAPI.get_lane_as_interpolation(
+                lane_idx, INTERPOLATION_POINTS, InterpolationMethod.INTER_ENSURE_LEN
+            )
+            lanes_area[idx * 2] = lane_coords["xyz_left"][:, :2]
+            lanes_area[idx * 2 + 1] = lane_coords["xyz_right"][::-1, :2]
 
             lane_type = "default"  # no traffic light face is controlling this lane
             lane_tl_ids = set(self.mapAPI.get_lane_traffic_control_ids(lane_idx))
@@ -139,13 +140,20 @@ class SemanticRasterizer(Rasterizer):
                     lane_type = "green"
                 elif self.mapAPI.is_traffic_face_colour(tl_id, "yellow"):
                     lane_type = "yellow"
+            lanes_lines[lane_type][idx * 2 : idx * 2 + 2] = True
 
-            lanes_lines[lane_type].extend([xy_left, xy_right])
+        if len(lanes_area):
+            lanes_area = cv2_subpixel(transform_points(lanes_area.reshape((-1, 2)), raster_from_world))
 
-        cv2.polylines(img, lanes_lines["default"], False, (255, 217, 82), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
-        cv2.polylines(img, lanes_lines["green"], False, (0, 255, 0), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
-        cv2.polylines(img, lanes_lines["yellow"], False, (255, 255, 0), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
-        cv2.polylines(img, lanes_lines["red"], False, (255, 0, 0), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
+            for lane_area in lanes_area.reshape((-1, INTERPOLATION_POINTS * 2, 2)):
+                # need to for-loop otherwise some of them are empty
+                cv2.fillPoly(img, [lane_area], (17, 17, 31), **CV2_SUB_VALUES)
+
+            lanes_area = lanes_area.reshape((-1, INTERPOLATION_POINTS, 2))
+            cv2.polylines(img, lanes_area[lanes_lines["default"]], False, (255, 217, 82), **CV2_SUB_VALUES)
+            cv2.polylines(img, lanes_area[lanes_lines["red"]], False, (255, 0, 0), **CV2_SUB_VALUES)
+            cv2.polylines(img, lanes_area[lanes_lines["yellow"]], False, (255, 255, 0), **CV2_SUB_VALUES)
+            cv2.polylines(img, lanes_area[lanes_lines["green"]], False, (0, 255, 0), **CV2_SUB_VALUES)
 
         # plot crosswalks
         crosswalks = []
@@ -155,7 +163,7 @@ class SemanticRasterizer(Rasterizer):
             xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], raster_from_world))
             crosswalks.append(xy_cross)
 
-        cv2.polylines(img, crosswalks, True, (255, 117, 69), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
+        cv2.polylines(img, crosswalks, True, (255, 117, 69), **CV2_SUB_VALUES)
 
         return img
 
