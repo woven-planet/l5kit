@@ -32,6 +32,10 @@ The network outputs the driving signals required to fully control the SDV. In pa
 
 After enough training, your model will be able to drive the SDV along a specific route. Among others, it will do lane-following while respecting traffic lights.
 
+# Pre-Trained Models
+We provide a collection of pre-trained models you can experiment with and use in your own experiments.
+Please refer to the [training notebook](./train.ipynb) for additional details and download links.
+
 # [Open-Loop Evaluation Notebook](./open_loop_test.ipynb)
 
 In this notebook you are going to evaluate a CNN-based policy to control the SDV with a protocol named *open-loop* evaluation.
