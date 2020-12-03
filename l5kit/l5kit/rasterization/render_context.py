@@ -28,7 +28,7 @@ class RenderContext:
         scaling = 1.0 / pixel_size_m  # scaling factor from world to raster space [pixels per meter]
         center_in_raster_px = center_in_raster_ratio * raster_size_px
         self.raster_from_local = np.array(
-            [[scaling[0], 0, center_in_raster_px[0]], [0, scaling[1], center_in_raster_px[1]], [0, 0, 1]]
+            [[scaling[0], 0, center_in_raster_px[0]], [0, -scaling[1], center_in_raster_px[1]], [0, 0, 1]]
         )
 
     def raster_from_world(self, position_m: np.ndarray, angle_rad: float) -> np.ndarray:
