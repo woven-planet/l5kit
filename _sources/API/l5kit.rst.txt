@@ -18,6 +18,7 @@ Subpackages
    l5kit.evaluation
    l5kit.geometry
    l5kit.kinematic
+   l5kit.planning
    l5kit.random
    l5kit.rasterization
    l5kit.sampling

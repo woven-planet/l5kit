@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>l5kit.rasterization.sat_box_rasterizer module &mdash; L5Kit 1.1.0 documentation</title>
+  <title>l5kit.planning.model module &mdash; L5Kit 1.1.0 documentation</title>
   
 
   
@@ -144,13 +144,13 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>l5kit.rasterization.sat_box_rasterizer module</li>
+      <li>l5kit.planning.model module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/API/l5kit.rasterization.sat_box_rasterizer.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/API/l5kit.planning.model.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -163,26 +163,29 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-l5kit.rasterization.sat_box_rasterizer">
-<span id="l5kit-rasterization-sat-box-rasterizer-module"></span><h1>l5kit.rasterization.sat_box_rasterizer module<a class="headerlink" href="#module-l5kit.rasterization.sat_box_rasterizer" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-l5kit.planning.model">
+<span id="l5kit-planning-model-module"></span><h1>l5kit.planning.model module<a class="headerlink" href="#module-l5kit.planning.model" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="l5kit.rasterization.sat_box_rasterizer.SatBoxRasterizer">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.rasterization.sat_box_rasterizer.</code><code class="sig-name descname">SatBoxRasterizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">render_context</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.rasterization.render_context.html#l5kit.rasterization.render_context.RenderContext" title="l5kit.rasterization.render_context.RenderContext">l5kit.rasterization.render_context.RenderContext</a></span></em>, <em class="sig-param"><span class="n">filter_agents_threshold</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">history_num_frames</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">map_im</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">world_to_aerial</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">interpolation</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.rasterization.sat_box_rasterizer.SatBoxRasterizer" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.rasterization.rasterizer.Rasterizer</span></code></a></p>
-<p>Combine a Satellite and a Box Rasterizers into a single class</p>
+<dt id="l5kit.planning.model.PlanningModel">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.planning.model.</code><code class="sig-name descname">PlanningModel</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">model_arch</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">num_input_channels</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">num_targets</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">weights_scaling</span><span class="p">:</span> <span class="n">List<span class="p">[</span>float<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">criterion</span><span class="p">:</span> <span class="n">torch.nn.modules.module.Module</span></em>, <em class="sig-param"><span class="n">pretrained</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">True</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.planning.model.PlanningModel" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
 <dl class="py method">
-<dt id="l5kit.rasterization.sat_box_rasterizer.SatBoxRasterizer.num_channels">
-<code class="sig-name descname">num_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#l5kit.rasterization.sat_box_rasterizer.SatBoxRasterizer.num_channels" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dt id="l5kit.planning.model.PlanningModel.forward">
+<code class="sig-name descname">forward</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data_batch</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>torch.Tensor<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>torch.Tensor<span class="p">]</span><a class="headerlink" href="#l5kit.planning.model.PlanningModel.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
+</dd></dl>
 
-<dl class="py method">
-<dt id="l5kit.rasterization.sat_box_rasterizer.SatBoxRasterizer.rasterize">
-<code class="sig-name descname">rasterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">history_frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">history_agents</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">history_tl_faces</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">agent</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.sat_box_rasterizer.SatBoxRasterizer.rasterize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
-
-<dl class="py method">
-<dt id="l5kit.rasterization.sat_box_rasterizer.SatBoxRasterizer.to_rgb">
-<code class="sig-name descname">to_rgb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_im</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.sat_box_rasterizer.SatBoxRasterizer.to_rgb" title="Permalink to this definition">¶</a></dt>
+<dl class="py attribute">
+<dt id="l5kit.planning.model.PlanningModel.training">
+<code class="sig-name descname">training</code><em class="property">: bool</em><a class="headerlink" href="#l5kit.planning.model.PlanningModel.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

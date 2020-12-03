@@ -299,12 +299,14 @@
         <li><a href="API/l5kit.data.local_data_manager.html#l5kit.data.local_data_manager.DataManager">(class in l5kit.data.local_data_manager)</a>
 </li>
       </ul></li>
-      <li><a href="API/l5kit.visualization.utils.html#l5kit.visualization.utils.draw_arrowed_line">draw_arrowed_line() (in module l5kit.visualization.utils)</a>
+      <li><a href="API/l5kit.planning.utils.html#l5kit.planning.utils.detect_collision">detect_collision() (in module l5kit.planning.utils)</a>
 </li>
-      <li><a href="API/l5kit.rasterization.box_rasterizer.html#l5kit.rasterization.box_rasterizer.draw_boxes">draw_boxes() (in module l5kit.rasterization.box_rasterizer)</a>
+      <li><a href="API/l5kit.visualization.utils.html#l5kit.visualization.utils.draw_arrowed_line">draw_arrowed_line() (in module l5kit.visualization.utils)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.rasterization.box_rasterizer.html#l5kit.rasterization.box_rasterizer.draw_boxes">draw_boxes() (in module l5kit.rasterization.box_rasterizer)</a>
+</li>
       <li><a href="API/l5kit.visualization.html#l5kit.visualization.draw_reference_trajectory">draw_reference_trajectory() (in module l5kit.visualization)</a>
 
       <ul>
@@ -405,6 +407,8 @@
         <li><a href="API/l5kit.geometry.transform.html#l5kit.geometry.transform.flip_y_axis">(in module l5kit.geometry.transform)</a>
 </li>
       </ul></li>
+      <li><a href="API/l5kit.planning.model.html#l5kit.planning.model.PlanningModel.forward">forward() (l5kit.planning.model.PlanningModel method)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -797,8 +801,6 @@
         <li><a href="API/l5kit.geometry.voxel.html#module-l5kit.geometry.voxel">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     l5kit.kinematic
 
@@ -813,6 +815,8 @@
         <li><a href="API/l5kit.kinematic.ackerman_perturbation.html#module-l5kit.kinematic.ackerman_perturbation">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     l5kit.kinematic.ackerman_steering_model
 
@@ -825,6 +829,27 @@
 
       <ul>
         <li><a href="API/l5kit.kinematic.perturbation.html#module-l5kit.kinematic.perturbation">module</a>
+</li>
+      </ul></li>
+      <li>
+    l5kit.planning
+
+      <ul>
+        <li><a href="API/l5kit.planning.html#module-l5kit.planning">module</a>
+</li>
+      </ul></li>
+      <li>
+    l5kit.planning.model
+
+      <ul>
+        <li><a href="API/l5kit.planning.model.html#module-l5kit.planning.model">module</a>
+</li>
+      </ul></li>
+      <li>
+    l5kit.planning.utils
+
+      <ul>
+        <li><a href="API/l5kit.planning.utils.html#module-l5kit.planning.utils">module</a>
 </li>
       </ul></li>
       <li>
@@ -1073,6 +1098,12 @@
 </li>
         <li><a href="API/l5kit.kinematic.perturbation.html#module-l5kit.kinematic.perturbation">l5kit.kinematic.perturbation</a>
 </li>
+        <li><a href="API/l5kit.planning.html#module-l5kit.planning">l5kit.planning</a>
+</li>
+        <li><a href="API/l5kit.planning.model.html#module-l5kit.planning.model">l5kit.planning.model</a>
+</li>
+        <li><a href="API/l5kit.planning.utils.html#module-l5kit.planning.utils">l5kit.planning.utils</a>
+</li>
         <li><a href="API/l5kit.random.html#module-l5kit.random">l5kit.random</a>
 </li>
         <li><a href="API/l5kit.random.random_generator.html#module-l5kit.random.random_generator">l5kit.random.random_generator</a>
@@ -1122,12 +1153,40 @@
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.neg_multi_log_likelihood">neg_multi_log_likelihood() (in module l5kit.evaluation.metrics)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.geometry.html#l5kit.geometry.normalize_intensity">normalize_intensity() (in module l5kit.geometry)</a>
 
       <ul>
         <li><a href="API/l5kit.geometry.voxel.html#l5kit.geometry.voxel.normalize_intensity">(in module l5kit.geometry.voxel)</a>
+</li>
+      </ul></li>
+      <li><a href="API/l5kit.rasterization.box_rasterizer.html#l5kit.rasterization.box_rasterizer.BoxRasterizer.num_channels">num_channels() (l5kit.rasterization.box_rasterizer.BoxRasterizer method)</a>
+
+      <ul>
+        <li><a href="API/l5kit.rasterization.html#l5kit.rasterization.BoxRasterizer.num_channels">(l5kit.rasterization.BoxRasterizer method)</a>
+</li>
+        <li><a href="API/l5kit.rasterization.html#l5kit.rasterization.Rasterizer.num_channels">(l5kit.rasterization.Rasterizer method)</a>
+</li>
+        <li><a href="API/l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer.num_channels">(l5kit.rasterization.rasterizer.Rasterizer method)</a>
+</li>
+        <li><a href="API/l5kit.rasterization.sat_box_rasterizer.html#l5kit.rasterization.sat_box_rasterizer.SatBoxRasterizer.num_channels">(l5kit.rasterization.sat_box_rasterizer.SatBoxRasterizer method)</a>
+</li>
+        <li><a href="API/l5kit.rasterization.html#l5kit.rasterization.SatBoxRasterizer.num_channels">(l5kit.rasterization.SatBoxRasterizer method)</a>
+</li>
+        <li><a href="API/l5kit.rasterization.satellite_rasterizer.html#l5kit.rasterization.satellite_rasterizer.SatelliteRasterizer.num_channels">(l5kit.rasterization.satellite_rasterizer.SatelliteRasterizer method)</a>
+</li>
+        <li><a href="API/l5kit.rasterization.html#l5kit.rasterization.SatelliteRasterizer.num_channels">(l5kit.rasterization.SatelliteRasterizer method)</a>
+</li>
+        <li><a href="API/l5kit.rasterization.sem_box_rasterizer.html#l5kit.rasterization.sem_box_rasterizer.SemBoxRasterizer.num_channels">(l5kit.rasterization.sem_box_rasterizer.SemBoxRasterizer method)</a>
+</li>
+        <li><a href="API/l5kit.rasterization.semantic_rasterizer.html#l5kit.rasterization.semantic_rasterizer.SemanticRasterizer.num_channels">(l5kit.rasterization.semantic_rasterizer.SemanticRasterizer method)</a>
+</li>
+        <li><a href="API/l5kit.rasterization.html#l5kit.rasterization.SemanticRasterizer.num_channels">(l5kit.rasterization.SemanticRasterizer method)</a>
+</li>
+        <li><a href="API/l5kit.rasterization.html#l5kit.rasterization.SemBoxRasterizer.num_channels">(l5kit.rasterization.SemBoxRasterizer method)</a>
+</li>
+        <li><a href="API/l5kit.rasterization.stub_rasterizer.html#l5kit.rasterization.stub_rasterizer.StubRasterizer.num_channels">(l5kit.rasterization.stub_rasterizer.StubRasterizer method)</a>
+</li>
+        <li><a href="API/l5kit.rasterization.html#l5kit.rasterization.StubRasterizer.num_channels">(l5kit.rasterization.StubRasterizer method)</a>
 </li>
       </ul></li>
   </ul></td>
@@ -1158,14 +1217,16 @@
         <li><a href="API/l5kit.kinematic.perturbation.html#l5kit.kinematic.perturbation.Perturbation.perturb">(l5kit.kinematic.perturbation.Perturbation method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.kinematic.html#l5kit.kinematic.Perturbation">Perturbation (class in l5kit.kinematic)</a>
 
       <ul>
         <li><a href="API/l5kit.kinematic.perturbation.html#l5kit.kinematic.perturbation.Perturbation">(class in l5kit.kinematic.perturbation)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.planning.model.html#l5kit.planning.model.PlanningModel">PlanningModel (class in l5kit.planning.model)</a>
+</li>
       <li><a href="API/l5kit.geometry.html#l5kit.geometry.points_within_bounds">points_within_bounds() (in module l5kit.geometry)</a>
 
       <ul>
@@ -1362,6 +1423,8 @@
       </ul></li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.planning.model.html#l5kit.planning.model.PlanningModel.training">training (l5kit.planning.model.PlanningModel attribute)</a>
+</li>
       <li><a href="API/l5kit.geometry.html#l5kit.geometry.transform_point">transform_point() (in module l5kit.geometry)</a>
 
       <ul>
@@ -1412,6 +1475,8 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.planning.utils.html#l5kit.planning.utils.within_range">within_range() (in module l5kit.planning.utils)</a>
+</li>
       <li><a href="API/l5kit.visualization.html#l5kit.visualization.write_gif">write_gif() (in module l5kit.visualization)</a>
 
       <ul>

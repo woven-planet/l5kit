@@ -1,0 +1,7 @@
+l5kit.planning.model module
+===========================
+
+.. automodule:: l5kit.planning.model
+   :members:
+   :undoc-members:
+   :show-inheritance:

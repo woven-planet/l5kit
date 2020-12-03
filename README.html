@@ -84,7 +84,12 @@
             
               <ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ML Prediction, Planning and Simulation for Self-Driving</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#examples">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#examples">Examples</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#l5kit-usage">L5Kit Usage</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#agent-motion-prediction">Agent Motion Prediction</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#planning">Planning</a></li>
+</ul>
+</li>
 <li class="toctree-l1"><a class="reference internal" href="#news">News</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#overview">Overview</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#datasets">1. Datasets</a><ul>
@@ -94,7 +99,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#l5kit">2. L5Kit</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#id1">3. Examples</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#dataset-visualization">Dataset visualization</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#agent-motion-prediction">Agent motion prediction</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id2">Agent motion prediction</a></li>
 </ul>
 </li>
 </ul>
@@ -113,7 +118,7 @@
 </ul>
 </li>
 <li class="toctree-l3"><a class="reference internal" href="#generate-l5kit-code-html-documentation-optional">4. Generate L5Kit code html documentation (optional)</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#id2">5. Run example</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#id3">5. Run example</a></li>
 </ul>
 </li>
 </ul>
@@ -216,6 +221,28 @@
 <li><p>Plan behavior of an AV in order to imitate human driving.</p></li>
 <li><p>Study the improvement in performance of these systems as the amount of data increases.</p></li>
 </ul>
+<p>We provide several notebooks with examples and applications.</p>
+<div class="section" id="l5kit-usage">
+<h2>L5Kit Usage<a class="headerlink" href="#l5kit-usage" title="Permalink to this headline">¶</a></h2>
+<p>Our <a class="reference external" href="./examples/visualisation/visualise_data.ipynb">visualisation notebook</a> is the perfect place to start if you want to
+know more about L5Kit.</p>
+</div>
+<div class="section" id="agent-motion-prediction">
+<h2>Agent Motion Prediction<a class="headerlink" href="#agent-motion-prediction" title="Permalink to this headline">¶</a></h2>
+<p>Related to our 2020 competition, we provide a <a class="reference external" href="./examples/agent_motion_prediction/agent_motion_prediction.ipynb">notebook to train and test</a> our baseline model for predicting
+future agents trajectories.</p>
+</div>
+<div class="section" id="planning">
+<h2>Planning<a class="headerlink" href="#planning" title="Permalink to this headline">¶</a></h2>
+<p>We provide 3 notebooks for a deep dive into planning for a Self Driving Vehicle (SDV).
+Please refer to our <a class="reference internal" href="examples/planning/README.html"><span class="doc">README</span></a> for a full description of what you can achieve using them:</p>
+<ul class="simple">
+<li><p>you can train your first ML policy for planning using our <a class="reference external" href="./examples/planning/train.ipynb">training notebook</a>;</p></li>
+<li><p>you can evaluate your model in the open-loop setting using our <a class="reference external" href="./examples/planning/open_loop_test.ipynb">open-loop evaluation notebook</a>;</p></li>
+<li><p>you can evaluate your model in the closed-loop setting using our <a class="reference external" href="./examples/planning/closed_loop_test.ipynb">closed-loop evaluation notebook</a>;</p></li>
+</ul>
+<p>We also provide pre-trained models for this task. Please refer to the <a class="reference external" href="./examples/planning/train.ipynb">training notebook</a>.</p>
+</div>
 </div>
 <div class="section" id="news">
 <h1>News<a class="headerlink" href="#news" title="Permalink to this headline">¶</a></h1>
@@ -283,8 +310,8 @@ Store all files in a single folder to match this structure:</p>
 <h3>Dataset visualization<a class="headerlink" href="#dataset-visualization" title="Permalink to this headline">¶</a></h3>
 <p>A tutorial on how to load and visualize samples from a dataset using L5Kit.</p>
 </div>
-<div class="section" id="agent-motion-prediction">
-<h3>Agent motion prediction<a class="headerlink" href="#agent-motion-prediction" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id2">
+<h3>Agent motion prediction<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
 <p>An example of training a neural network to predict the future positions of cars nearby an AV. This example is a baseline solution for the Lyft 2020 Kaggle Motion Prediction Challenge.</p>
 </div>
 </div>
@@ -364,8 +391,8 @@ sphinx-build . docs
 </pre></div>
 </div>
 </div>
-<div class="section" id="id2">
-<h3>5. Run example<a class="headerlink" href="#id2" title="Permalink to this headline">¶</a></h3>
+<div class="section" id="id3">
+<h3>5. Run example<a class="headerlink" href="#id3" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>jupyter notebook examples/visualisation/visualise_data.ipynb
 </pre></div>
 </div>

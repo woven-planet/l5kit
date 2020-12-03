@@ -170,6 +170,11 @@
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.rasterization.</code><code class="sig-name descname">BoxRasterizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">render_context</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.rasterization.render_context.html#l5kit.rasterization.render_context.RenderContext" title="l5kit.rasterization.render_context.RenderContext">l5kit.rasterization.render_context.RenderContext</a></span></em>, <em class="sig-param"><span class="n">filter_agents_threshold</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">history_num_frames</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.rasterization.BoxRasterizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.rasterization.rasterizer.Rasterizer</span></code></a></p>
 <dl class="py method">
+<dt id="l5kit.rasterization.BoxRasterizer.num_channels">
+<code class="sig-name descname">num_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#l5kit.rasterization.BoxRasterizer.num_channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="l5kit.rasterization.BoxRasterizer.rasterize">
 <code class="sig-name descname">rasterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">history_frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">history_agents</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">history_tl_faces</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">agent</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.BoxRasterizer.rasterize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -196,6 +201,11 @@
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.rasterization.</code><code class="sig-name descname">Rasterizer</code><a class="headerlink" href="#l5kit.rasterization.Rasterizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>Base class for something that takes a single state of the world, and outputs a (multi-channel) image.</p>
+<dl class="py method">
+<dt id="l5kit.rasterization.Rasterizer.num_channels">
+<em class="property">abstract </em><code class="sig-name descname">num_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#l5kit.rasterization.Rasterizer.num_channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="l5kit.rasterization.Rasterizer.rasterize">
 <em class="property">abstract </em><code class="sig-name descname">rasterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">history_frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">history_agents</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">history_tl_faces</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">agent</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.Rasterizer.rasterize" title="Permalink to this definition">¶</a></dt>
@@ -241,6 +251,11 @@
 <dd><p>Bases: <a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.rasterization.rasterizer.Rasterizer</span></code></a></p>
 <p>Combine a Satellite and a Box Rasterizers into a single class</p>
 <dl class="py method">
+<dt id="l5kit.rasterization.SatBoxRasterizer.num_channels">
+<code class="sig-name descname">num_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#l5kit.rasterization.SatBoxRasterizer.num_channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="l5kit.rasterization.SatBoxRasterizer.rasterize">
 <code class="sig-name descname">rasterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">history_frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">history_agents</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">history_tl_faces</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">agent</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.SatBoxRasterizer.rasterize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -260,6 +275,11 @@
 When you call rasterize, it will return a crop around the agent of interest with the agent’s forward vector
 pointing right for the current timestep.</p>
 <dl class="py method">
+<dt id="l5kit.rasterization.SatelliteRasterizer.num_channels">
+<code class="sig-name descname">num_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#l5kit.rasterization.SatelliteRasterizer.num_channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="l5kit.rasterization.SatelliteRasterizer.rasterize">
 <code class="sig-name descname">rasterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">history_frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">history_agents</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">history_tl_faces</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">agent</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.SatelliteRasterizer.rasterize" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
@@ -276,6 +296,11 @@ pointing right for the current timestep.</p>
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.rasterization.</code><code class="sig-name descname">SemBoxRasterizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">render_context</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.rasterization.render_context.html#l5kit.rasterization.render_context.RenderContext" title="l5kit.rasterization.render_context.RenderContext">l5kit.rasterization.render_context.RenderContext</a></span></em>, <em class="sig-param"><span class="n">filter_agents_threshold</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">history_num_frames</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">semantic_map_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">world_to_ecef</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.rasterization.SemBoxRasterizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.rasterization.rasterizer.Rasterizer</span></code></a></p>
 <p>Combine a Semantic Map and a Box Rasterizers into a single class</p>
+<dl class="py method">
+<dt id="l5kit.rasterization.SemBoxRasterizer.num_channels">
+<code class="sig-name descname">num_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#l5kit.rasterization.SemBoxRasterizer.num_channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="l5kit.rasterization.SemBoxRasterizer.rasterize">
 <code class="sig-name descname">rasterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">history_frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">history_agents</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">history_tl_faces</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">agent</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.SemBoxRasterizer.rasterize" title="Permalink to this definition">¶</a></dt>
@@ -307,6 +332,11 @@ Coords are computed by the MapAPI and, as such, are in the world ref system.</p>
 </dd>
 </dl>
 </dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.rasterization.SemanticRasterizer.num_channels">
+<code class="sig-name descname">num_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#l5kit.rasterization.SemanticRasterizer.num_channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 <dl class="py method">
 <dt id="l5kit.rasterization.SemanticRasterizer.rasterize">
@@ -345,6 +375,11 @@ Coords are computed by the MapAPI and, as such, are in the world ref system.</p>
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.rasterization.</code><code class="sig-name descname">StubRasterizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">render_context</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.rasterization.render_context.html#l5kit.rasterization.render_context.RenderContext" title="l5kit.rasterization.render_context.RenderContext">l5kit.rasterization.render_context.RenderContext</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.rasterization.StubRasterizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.rasterization.rasterizer.Rasterizer</span></code></a></p>
 <p>This rasterizer doesn’t actually do anything, it returns an all-black image. Useful for testing.</p>
+<dl class="py method">
+<dt id="l5kit.rasterization.StubRasterizer.num_channels">
+<code class="sig-name descname">num_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#l5kit.rasterization.StubRasterizer.num_channels" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
 <dl class="py method">
 <dt id="l5kit.rasterization.StubRasterizer.rasterize">
 <code class="sig-name descname">rasterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">history_frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">history_agents</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">history_tl_faces</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">agent</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.StubRasterizer.rasterize" title="Permalink to this definition">¶</a></dt>
