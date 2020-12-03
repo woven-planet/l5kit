@@ -5,14 +5,14 @@ In this series of notebooks you will train and evaluate a data-driven ML policy.
 
 **Before starting, please download the [Lyft L5 Prediction Dataset 2020](https://self-driving.lyft.com/level5/prediction/) and follow [the instructions](https://github.com/lyft/l5kit#download-the-datasets) to correctly organise it.**
 
-Training an effective ML policy for planning can takes several hours on the most performing hardware.
+Training an effective ML policy for planning can take several hours on the best performing hardware.
 For this reason, we provide trained models you can experiment with in our evaluations notebooks,
 without requiring to train one yourself. Still, we suggest you to go through the training notebook we provide,
-as it contains key insights on how to effectively train a ML policy for planning.
+as it contains key insights on how to effectively train an ML policy for planning.
 
 # [Training Notebook](./train.ipynb)
 
-In this notebook you are going to train your own ML policy to fully control a Self Driving Vehicle (SDV). You will train your model using the Lyft Prediction Dataset and L5Kit
+In this notebook you are going to train your own ML policy to fully control a Self Driving Vehicle (SDV). You will train your model using the Lyft Prediction Dataset and L5Kit.
 
 
 The policy will be a deep neural network (DNN) which will be invoked by the SDV to obtain the next command to execute.
