@@ -103,7 +103,7 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     ), f"transf_matrix ({transf_matrix.shape}) should be a square matrix."
     assert points.shape[-1] == transf_matrix.shape[-1] - 1, "points last dim should be one less than matrix's one"
 
-    def _transform(points: np.ndarray, transf_matrix: np.ndarray):
+    def _transform(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
         num_dims = transf_matrix.shape[-1] - 1
         transf_matrix = np.transpose(transf_matrix, (0, 2, 1))
         return points @ transf_matrix[:, :num_dims, :num_dims] + transf_matrix[:, -1:, :num_dims]
