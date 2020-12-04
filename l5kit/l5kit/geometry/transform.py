@@ -70,60 +70,57 @@ def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
     return tm
 
 
-def transform_points_batch(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
-    """Transform a batch of sequence of points using a batch of transformation matrices.
-    Each sequence is transformed using its own matrix
+def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
+    """
+    Transform points using transformation matrices with 3 modes:
+    - points (N, f), transf_matrix (f+1, f+1)
+        all points are transformed using the matrix and output has shape (N,f).
+    - points (B, N, f), transf_matrix (f+1, f+1)
+        all sequences of points are transformed using the same matrix and output has shape (B, N,f).
+        transf_matrix is broadcasted.
+    - points (B, N, f), transf_matrix (B, f+1, f+1)
+        each sequence of points is transformed using its own matrix and output has shape (B, N,f).
+
     Note this function assumes points.shape[-1] == matrix.shape[-1] - 1, which means that last
     rows in the matrices do not influence the final results.
     For 2D points only the first 2x3 parts of the matrices will be used.
 
     Args:
-        points (np.ndarray): Input points (BxNx2) or (BxNx3).
-        transf_matrix (np.ndarray): (Bx3x3) or (Bx4x4) transformation matrix for 2D and 3D input respectively
+        points (np.ndarray): Input points (N, 2), (N, 3, (BxNx2), (BxNx3).
+        transf_matrix (np.ndarray): Transformation matrix (3x3), (4x4), (Bx3x3), (Bx4x4).
 
     Returns:
-        np.ndarray: array of shape (B,N,2) for 2D input points, or (B,N,3) points for 3D input points
+        np.ndarray: transformed points, same shape as input
     """
-    assert len(points) == len(transf_matrix), (
-        f"batch size should be the same for points and matrices, "
-        f"got points: {len(points)} and matrices: {len(transf_matrix)}"
-    )
-    assert len(points.shape) == len(transf_matrix.shape) == 3, (
-        f"dimensions mismatch, both points ({points.shape}) and "
-        f"transf_matrix ({transf_matrix.shape}) needs to be 3D numpy ndarrays."
-    )
+    assert len(points.shape) in [2, 3], "points should have 2 or 3 dimensions"
+    assert len(transf_matrix.shape) in [2, 3], "matrix should have 2 or 3 dimensions"
+    assert len(points.shape) >= len(transf_matrix.shape), "points and matrix must have same dim or points one more"
+
+    assert points.shape[-1] in [2, 3], f"last points dimension must be 2 or 3, received {points.shape}"
+    assert transf_matrix.shape[-1] in [3, 4], f"last matrix dimension must be 3 or 4 received {transf_matrix.shape}"
     assert (
-        transf_matrix.shape[1] == transf_matrix.shape[2]
+        transf_matrix.shape[-1] == transf_matrix.shape[-2]
     ), f"transf_matrix ({transf_matrix.shape}) should be a square matrix."
+    assert points.shape[-1] == transf_matrix.shape[-1] - 1, "points last dim should be one less than matrix's one"
 
-    if points.shape[-1] not in [2, 3]:
-        raise AssertionError("Points input should be (B, N, 2) or (B, N, 3) shape, received {}".format(points.shape))
+    def _transform(points: np.ndarray, transf_matrix: np.ndarray):
+        num_dims = transf_matrix.shape[-1] - 1
+        transf_matrix = np.transpose(transf_matrix, (0, 2, 1))
+        return points @ transf_matrix[:, :num_dims, :num_dims] + transf_matrix[:, -1:, :num_dims]
 
-    assert points.shape[-1] == transf_matrix.shape[-1] - 1, "points dim should be one less than matrix dim"
+    if len(points.shape) == len(transf_matrix.shape) == 2:
+        points = np.expand_dims(points, 0)
+        transf_matrix = np.expand_dims(transf_matrix, 0)
+        return _transform(points, transf_matrix)[0]
 
-    num_dims = transf_matrix.shape[-1] - 1
-    transf_matrix = np.transpose(transf_matrix, (0, 2, 1))
-    return points @ transf_matrix[:, :num_dims, :num_dims] + transf_matrix[:, -1:, :num_dims]
+    elif len(points.shape) == len(transf_matrix.shape) == 3:
+        return _transform(points, transf_matrix)
 
-
-def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
-    """Transform points using transformation matrix.
-    Note this function assumes points.shape[1] == matrix.shape[1] - 1, which means that the last
-    row in the matrix does not influence the final result.
-    For 2D points only the first 2x3 part of the matrix will be used.
-    This function calls transform_points_batch internally
-
-<<<<<<< HEAD
-    Args:
-        points (np.ndarray): Input points (Nx2) or (Nx3).
-        transf_matrix (np.ndarray): 3x3 or 4x4 transformation matrix for 2D and 3D input respectively
-
-    Returns:
-        np.ndarray: array of shape (N,2) for 2D input points, or (N,3) points for 3D input points
-    """
-    points = np.expand_dims(points, 0)
-    transf_matrix = np.expand_dims(transf_matrix, 0)
-    return transform_points_batch(points, transf_matrix)[0]
+    elif len(points.shape) == 3 and len(transf_matrix.shape) == 2:
+        transf_matrix = np.expand_dims(transf_matrix, 0)
+        return _transform(points, transf_matrix)
+    else:
+        raise NotImplementedError(f"unhandled case! points: {points.shape}, matrix: {transf_matrix.shape}")
 
 
 def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
