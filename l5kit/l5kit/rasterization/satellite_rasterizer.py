@@ -75,7 +75,8 @@ class SatelliteRasterizer(Rasterizer):
             sat_pixel_scale=self.map_pixel_scale,
             interpolation=self.interpolation,
         )
-
+        if not self.render_context.origin_bottom:
+            sat_im = sat_im[::-1]
         return sat_im.astype(np.float32) / 255
 
     def to_rgb(self, in_im: np.ndarray, **kwargs: dict) -> np.ndarray:

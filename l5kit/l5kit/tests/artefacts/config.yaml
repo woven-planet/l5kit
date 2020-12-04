@@ -39,3 +39,8 @@ raster_params:
 
   # whether to completely disable traffic light faces in the semantic rasterizer
   disable_traffic_light_faces: False
+
+  # when set to True performs a flip inside the rasteriser.
+  # Set it to False for models trained before December.
+  # In that case visualisation will be flipped (we've removed the flip there) but the model's input will be correct.
+  origin_bottom: True
