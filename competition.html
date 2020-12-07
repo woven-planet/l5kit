@@ -98,6 +98,7 @@
 <li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Competition</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#scoring">Scoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="#coordinates-system-for-the-competition">Coordinates System for the competition</a></li>
 <li class="toctree-l1"><a class="reference internal" href="#additional-metrics">Additional Metrics</a></li>
 </ul>
 
@@ -197,6 +198,17 @@ Assume, we need to calculate the logarithm of a sum of exponentials:</p>
 <p><img alt="equation" src="https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20LSE%28x_1%2C%20%5Cldots%2C%20x_n%29%20%3D%20%5Clog%28e%5E%7Bx_1%7D%20+%20%5Cldots%20+%20e%5E%7Bx_n%7D%29" /></p>
 <p>Then, we rewrite this by substracting the maximum value x<sup>*</sup> from each exponent, resulting in much increased numerical stability:</p>
 <p><img alt="equation" src="https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20LSE%28x_1%2C%20%5Cldots%2C%20x_n%29%20%3D%20x%5E*%20+%20%5Clog%28e%5E%7Bx_1%20-%20x%5E%7B*%7D%7D%20+%20%5Cldots%20+%20e%5E%7Bx_n%20-%20x%5E%7B*%7D%7D%29" /></p>
+</div>
+<div class="section" id="coordinates-system-for-the-competition">
+<h1>Coordinates System for the competition<a class="headerlink" href="#coordinates-system-for-the-competition" title="Permalink to this headline">¶</a></h1>
+<p>Please refer to <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/coords_systems">this doc</a> for a full description of the different coordinate systems used in L5Kit.</p>
+<p>The ground truth coordinates for the competition are stored as positional displacements in the <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/coords_systems.md#world-coordinate-system">world coordinate system</a>.
+However, you will likely predict relative displacements for the agent of interest either in the <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/coords_systems.md#agent-coordinate-system">agent coordinate system</a>
+or in the <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/coords_systems.md#image-coordinate-system">image coordinate system</a>.
+Before using <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/evaluation/csv_utils.py">our utils</a> to write a CSV file for you predictions convert them
+into the world coordinate system using the appropriate transformation matrix available as part of <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/data_format.md#dataset-abstraction-classes">the input data</a>
+and subtract the centroid.</p>
+<p>Yaw is not required/used for this competition.</p>
 </div>
 <div class="section" id="additional-metrics">
 <h1>Additional Metrics<a class="headerlink" href="#additional-metrics" title="Permalink to this headline">¶</a></h1>
