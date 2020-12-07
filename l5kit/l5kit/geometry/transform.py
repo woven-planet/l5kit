@@ -72,7 +72,8 @@ def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
 
 def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     """
-    Transform points using transformation matrices with 3 modes:
+    Transform a set of 2D/3D points using the given transformation matrix.
+    Assumes row major ordering of the input points. The transform function has 3 modes:
     - points (N, f), transf_matrix (f+1, f+1)
         all points are transformed using the matrix and output has shape (N,f).
     - points (B, N, f), transf_matrix (f+1, f+1)
@@ -92,35 +93,39 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     Returns:
         np.ndarray: transformed points, same shape as input
     """
-    assert len(points.shape) in [2, 3], "points should have 2 or 3 dimensions"
-    assert len(transf_matrix.shape) in [2, 3], "matrix should have 2 or 3 dimensions"
-    assert len(points.shape) >= len(transf_matrix.shape), "points and matrix must have same dim or points one more"
+    points_log = f" received points with shape {points.shape} "
+    matrix_log = f" received matrices with shape {transf_matrix.shape} "
 
-    assert points.shape[-1] in [2, 3], f"last points dimension must be 2 or 3, received {points.shape}"
-    assert transf_matrix.shape[-1] in [3, 4], f"last matrix dimension must be 3 or 4 received {transf_matrix.shape}"
-    assert (
-        transf_matrix.shape[-1] == transf_matrix.shape[-2]
-    ), f"transf_matrix ({transf_matrix.shape}) should be a square matrix."
-    assert points.shape[-1] == transf_matrix.shape[-1] - 1, "points last dim should be one less than matrix's one"
+    assert points.ndim in [2, 3], f"points should have ndim in [2,3],{points_log}"
+    assert transf_matrix.ndim in [2, 3], f"matrix should have ndim in [2,3],{matrix_log}"
+    assert points.ndim >= transf_matrix.ndim, f"points ndim should be >= than matrix,{points_log},{matrix_log}"
+
+    points_feat = points.shape[-1]
+    assert points_feat in [2, 3], f"last points dimension must be 2 or 3,{points_log}"
+    assert transf_matrix.shape[-1] == transf_matrix.shape[-2], f"matrix should be a square matrix,{matrix_log}"
+
+    matrix_feat = transf_matrix.shape[-1]
+    assert matrix_feat in [3, 4], f"last matrix dimension must be 3 or 4,{matrix_log}"
+    assert points_feat == matrix_feat - 1, f"points last dim should be one less than matrix,{points_log},{matrix_log}"
 
     def _transform(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
         num_dims = transf_matrix.shape[-1] - 1
         transf_matrix = np.transpose(transf_matrix, (0, 2, 1))
         return points @ transf_matrix[:, :num_dims, :num_dims] + transf_matrix[:, -1:, :num_dims]
 
-    if len(points.shape) == len(transf_matrix.shape) == 2:
+    if points.ndim == transf_matrix.ndim == 2:
         points = np.expand_dims(points, 0)
         transf_matrix = np.expand_dims(transf_matrix, 0)
         return _transform(points, transf_matrix)[0]
 
-    elif len(points.shape) == len(transf_matrix.shape) == 3:
+    elif points.ndim == transf_matrix.ndim == 3:
         return _transform(points, transf_matrix)
 
-    elif len(points.shape) == 3 and len(transf_matrix.shape) == 2:
+    elif points.ndim == 3 and transf_matrix.ndim == 2:
         transf_matrix = np.expand_dims(transf_matrix, 0)
         return _transform(points, transf_matrix)
     else:
-        raise NotImplementedError(f"unhandled case! points: {points.shape}, matrix: {transf_matrix.shape}")
+        raise NotImplementedError(f"unsupported case!{points_log},{matrix_log}")
 
 
 def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
