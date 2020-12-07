@@ -48,7 +48,7 @@ raster_params:
   # With this change, the vertical flipping on the raster used in the visualization code is no longer needed.
   # Set it to False for models trained before v1.1.0-25-g3c517f0 (December 2020).
   # In that case visualisation will be flipped (we've removed the flip there) but the model's input will be correct.
-  vertical_flip: True
+  set_origin_to_bottom: True
 
 ###################
 ## Data loader options
