@@ -89,6 +89,9 @@ def compute_agent_velocity(
         Tuple[np.ndarray, np.ndarray]: history and future XY speeds
 
     """
+    assert future_step_time > np.finfo(float).eps, f"future step must be greater then eps, got {future_step_time}"
+    assert history_step_time > np.finfo(float).eps, f"history step must be greater then eps, got {history_step_time}"
+
     # [future_num_frames, 2]
     future_positions_diff_m = np.concatenate((future_positions_m[:1], np.diff(future_positions_m, axis=0)))
     # [future_num_frames, 2]
@@ -149,7 +152,7 @@ def generate_agent_sample(
 to train models that can recover from slight divergence from training set data
 
     Raises:
-        ValueError: A IndexError is returned if the specified ``selected_track_id`` is not present in the scene
+        IndexError: An IndexError is returned if the specified ``selected_track_id`` is not present in the scene
         or was filtered by applying the ``filter_agent_threshold`` probability filtering.
 
     Returns:
