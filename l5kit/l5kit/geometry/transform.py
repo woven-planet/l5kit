@@ -87,7 +87,8 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     For 2D points only the first 2x3 parts of the matrices will be used.
 
     Args:
-        points (np.ndarray): Input points of shape (N, f) or (B, N, f) with f = 2 or 3 depending on input points are 2D or 3D points.
+        points (np.ndarray): Input points of shape (N, f) or (B, N, f)
+        with f = 2 or 3 depending on input points are 2D or 3D points.
         transf_matrix (np.ndarray): Transformation matrix of shape (f+1, f+1) or (B, f+1, f+1) with f = 2 or 3.
 
     Returns:
