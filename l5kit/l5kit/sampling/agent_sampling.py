@@ -23,10 +23,8 @@ def generate_agent_sample(
     selected_track_id: Optional[int],
     render_context: RenderContext,
     history_num_frames: int,
-    history_step_size: int,
     history_step_time: float,
     future_num_frames: int,
-    future_step_size: int,
     future_step_time: float,
     filter_agents_threshold: float,
     rasterizer: Optional[Rasterizer] = None,
@@ -51,9 +49,7 @@ def generate_agent_sample(
         pixel_size (np.ndarray): Size of one pixel in the real world
         ego_center (np.ndarray): Where in the raster to draw the ego, [0.5,0.5] would be the center
         history_num_frames (int): Amount of history frames to draw into the rasters
-        history_step_size (int): Steps to take between frames, can be used to subsample history frames
         future_num_frames (int): Amount of history frames to draw into the rasters
-        future_step_size (int): Steps to take between targets into the future
         filter_agents_threshold (float): Value between 0 and 1 to use as cutoff value for agent filtering
         based on their probability of being a relevant agent
         rasterizer (Optional[Rasterizer]): Rasterizer of some sort that draws a map image
@@ -68,9 +64,9 @@ to train models that can recover from slight divergence from training set data
         dict: a dict object with the raster array, the future offset coordinates (meters),
         the future yaw angular offset, the future_availability as a binary mask
     """
-    #  the history slice is ordered starting from the latest frame and goes backward in time., ex. slice(100, 91, -2)
-    history_slice = get_history_slice(state_index, history_num_frames, history_step_size, include_current_state=True)
-    future_slice = get_future_slice(state_index, future_num_frames, future_step_size)
+    #  the history slice is ordered starting from the latest frame and goes backward in time., ex. slice(100, 91, -1)
+    history_slice = get_history_slice(state_index, history_num_frames, 1, include_current_state=True)
+    future_slice = get_future_slice(state_index, future_num_frames, 1)
 
     history_frames = frames[history_slice].copy()  # copy() required if the object is a np.ndarray
     future_frames = frames[future_slice].copy()

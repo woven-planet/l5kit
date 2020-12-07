@@ -16,8 +16,6 @@ def export_zarr_to_csv(
     csv_file_path: str,
     future_num_frames: int,
     filter_agents_threshold: float,
-    history_step_size: int = 1,
-    future_step_size: int = 1,
     history_delta_time: float = 0.1,
     future_delta_time: float = 0.1,
     agents_mask: Optional[np.array] = None,
@@ -29,13 +27,10 @@ def export_zarr_to_csv(
         csv_file_path (str): File path to write a CSV to.
         future_num_frames (int): Amount of future displacements we want.
         filter_agents_threshold (float): Value between 0 and 1 to use as cutoff value for agent filtering
-        history_step_size (int): Steps to take between frames, can be used to subsample history frames.
-        future_step_size (int): Steps to take between targets into the future.
         agents_mask (Optional[np.array]): a boolean mask of shape (len(zarr_dataset.agents)) which will be used
         instead of computing the agents_mask
     """
 
-    assert future_step_size == history_step_size == 1, "still not handled in select_agents"
     cfg = {
         "raster_params": {
             "pixel_size": np.asarray((0.25, 0.25)),
@@ -47,8 +42,6 @@ def export_zarr_to_csv(
         "model_params": {
             "history_num_frames": 0,
             "future_num_frames": future_num_frames,
-            "history_step_size": history_step_size,
-            "future_step_size": future_step_size,
             "history_delta_time": history_delta_time,
             "future_delta_time": future_delta_time,
         },
