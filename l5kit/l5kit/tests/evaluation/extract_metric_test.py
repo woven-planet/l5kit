@@ -15,7 +15,7 @@ def test_compute_mse_error(tmp_path: Path, zarr_dataset: ChunkedDataset, cfg: di
         np.asarray((10, 10)),
         np.asarray((0.25, 0.25)),
         np.asarray((0.5, 0.5)),
-        vertical_flip=cfg["raster_params"]["vertical_flip"],
+        set_origin_to_bottom=cfg["raster_params"]["set_origin_to_bottom"],
     )
     rast = StubRasterizer(render_context)
     dataset = AgentDataset(cfg, zarr_dataset, rast)

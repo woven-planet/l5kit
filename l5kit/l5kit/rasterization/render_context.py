@@ -1,6 +1,6 @@
 import numpy as np
 
-from ..geometry import flip_y_axis
+from ..geometry import vertical_flip
 
 
 class RenderContext:
@@ -9,7 +9,7 @@ class RenderContext:
         raster_size_px: np.ndarray,
         pixel_size_m: np.ndarray,
         center_in_raster_ratio: np.ndarray,
-        vertical_flip: bool,
+        set_origin_to_bottom: bool,
     ) -> None:
         """
         This class stores render context information (raster size, pixel size, raster center / principle point) and
@@ -30,15 +30,15 @@ class RenderContext:
         self.raster_size_px = raster_size_px
         self.pixel_size_m = pixel_size_m
         self.center_in_raster_ratio = center_in_raster_ratio
-        self.vertical_flip = vertical_flip
+        self.set_origin_to_bottom = set_origin_to_bottom
 
         scaling = 1.0 / pixel_size_m  # scaling factor from world to raster space [pixels per meter]
         center_in_raster_px = center_in_raster_ratio * raster_size_px
         self.raster_from_local = np.array(
             [[scaling[0], 0, center_in_raster_px[0]], [0, scaling[1], center_in_raster_px[1]], [0, 0, 1]]
         )
-        if vertical_flip:
-            self.raster_from_local = flip_y_axis(self.raster_from_local, self.raster_size_px[1])
+        if set_origin_to_bottom:
+            self.raster_from_local = vertical_flip(self.raster_from_local, self.raster_size_px[1])
 
     def raster_from_world(self, position_m: np.ndarray, angle_rad: float) -> np.ndarray:
         """

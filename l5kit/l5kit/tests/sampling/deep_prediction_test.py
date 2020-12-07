@@ -24,7 +24,7 @@ def get_partial(
         raster_size_px=np.array(cfg["raster_params"]["raster_size"]),
         pixel_size_m=np.array(cfg["raster_params"]["pixel_size"]),
         center_in_raster_ratio=np.array(cfg["raster_params"]["ego_center"]),
-        vertical_flip=cfg["raster_params"]["vertical_flip"],
+        set_origin_to_bottom=cfg["raster_params"]["set_origin_to_bottom"],
     )
 
     rasterizer = StubRasterizer(render_context)

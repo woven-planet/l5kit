@@ -47,7 +47,7 @@ def test_same_displacement(
         np.asarray(raster_size),
         np.asarray(pixel_size),
         np.asarray(ego_center),
-        vertical_flip=cfg["raster_params"]["vertical_flip"],
+        set_origin_to_bottom=cfg["raster_params"]["set_origin_to_bottom"],
     )
     dataset = EgoDataset(cfg, zarr_dataset, StubRasterizer(render_context),)
     data = dataset[0]
@@ -60,7 +60,7 @@ def test_coordinates_straight_road(zarr_dataset: ChunkedDataset, cfg: dict) -> N
         np.asarray(cfg["raster_params"]["raster_size"]),
         np.asarray(cfg["raster_params"]["pixel_size"]),
         np.asarray(cfg["raster_params"]["ego_center"]),
-        vertical_flip=cfg["raster_params"]["vertical_flip"],
+        set_origin_to_bottom=cfg["raster_params"]["set_origin_to_bottom"],
     )
     dataset = EgoDataset(cfg, zarr_dataset, StubRasterizer(render_context),)
 

@@ -45,7 +45,7 @@ def test_frame_index_interval(dataset_cls: Callable, frame_idx: int, zarr_datase
         np.asarray((100, 100)),
         np.asarray((0.25, 0.25)),
         np.asarray((0.5, 0.5)),
-        vertical_flip=cfg["raster_params"]["vertical_flip"],
+        set_origin_to_bottom=cfg["raster_params"]["set_origin_to_bottom"],
     )
     rasterizer = StubRasterizer(render_context)
     dataset = dataset_cls(cfg, zarr_dataset, rasterizer, None)
@@ -62,7 +62,7 @@ def test_scene_index_interval(dataset_cls: Callable, scene_idx: int, zarr_datase
         np.asarray((100, 100)),
         np.asarray((0.25, 0.25)),
         np.asarray((0.5, 0.5)),
-        vertical_flip=cfg["raster_params"]["vertical_flip"],
+        set_origin_to_bottom=cfg["raster_params"]["set_origin_to_bottom"],
     )
     rasterizer = StubRasterizer(render_context)
     dataset = dataset_cls(cfg, zarr_dataset, rasterizer, None)

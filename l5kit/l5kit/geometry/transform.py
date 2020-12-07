@@ -53,7 +53,7 @@ def yaw_as_rotation33(yaw: float) -> np.ndarray:
     return transforms3d.euler.euler2mat(0, 0, yaw)
 
 
-def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
+def vertical_flip(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
     """Return a new matrix that also performs a flip on the y axis.
 
     Args:
