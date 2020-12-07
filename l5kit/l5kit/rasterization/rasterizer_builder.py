@@ -126,7 +126,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         raster_size_px=np.array(raster_cfg["raster_size"]),
         pixel_size_m=np.array(raster_cfg["pixel_size"]),
         center_in_raster_ratio=np.array(raster_cfg["ego_center"]),
-        origin_bottom=raster_cfg["origin_bottom"],
+        vertical_flip=raster_cfg["vertical_flip"],
     )
 
     filter_agents_threshold = raster_cfg["filter_agents_threshold"]

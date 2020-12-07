@@ -14,7 +14,7 @@ def test_transform_points_to_raster() -> None:
         raster_size_px=image_shape_px,
         pixel_size_m=pixel_size_m,
         center_in_raster_ratio=center_in_raster_ratio,
-        origin_bottom=False,
+        vertical_flip=False,
     )
 
     input_points = np.array([[0, 0], [10, 10], [-10, -10]])

@@ -75,7 +75,7 @@ class SatelliteRasterizer(Rasterizer):
             sat_pixel_scale=self.map_pixel_scale,
             interpolation=self.interpolation,
         )
-        if not self.render_context.origin_bottom:
+        if not self.render_context.vertical_flip:
             sat_im = sat_im[::-1]
         return sat_im.astype(np.float32) / 255
 

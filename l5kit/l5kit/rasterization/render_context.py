@@ -9,7 +9,7 @@ class RenderContext:
         raster_size_px: np.ndarray,
         pixel_size_m: np.ndarray,
         center_in_raster_ratio: np.ndarray,
-        origin_bottom: bool,
+        vertical_flip: bool,
     ) -> None:
         """
         This class stores render context information (raster size, pixel size, raster center / principle point) and
@@ -30,14 +30,14 @@ class RenderContext:
         self.raster_size_px = raster_size_px
         self.pixel_size_m = pixel_size_m
         self.center_in_raster_ratio = center_in_raster_ratio
-        self.origin_bottom = origin_bottom
+        self.vertical_flip = vertical_flip
 
         scaling = 1.0 / pixel_size_m  # scaling factor from world to raster space [pixels per meter]
         center_in_raster_px = center_in_raster_ratio * raster_size_px
         self.raster_from_local = np.array(
             [[scaling[0], 0, center_in_raster_px[0]], [0, scaling[1], center_in_raster_px[1]], [0, 0, 1]]
         )
-        if origin_bottom:
+        if vertical_flip:
             self.raster_from_local = flip_y_axis(self.raster_from_local, self.raster_size_px[1])
 
     def raster_from_world(self, position_m: np.ndarray, angle_rad: float) -> np.ndarray:

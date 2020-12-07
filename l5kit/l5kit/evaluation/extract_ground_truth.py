@@ -43,7 +43,7 @@ def export_zarr_to_csv(
             "filter_agents_threshold": filter_agents_threshold,
             "disable_traffic_light_faces": True,
             "ego_center": np.asarray((0.5, 0.5)),
-            "origin_bottom": True,
+            "vertical_flip": True,
         },
         "model_params": {
             "history_num_frames": 0,
@@ -59,7 +59,7 @@ def export_zarr_to_csv(
         np.asarray(cfg["raster_params"]["raster_size"]),
         cfg["raster_params"]["pixel_size"],
         cfg["raster_params"]["ego_center"],
-        cfg["raster_params"]["origin_bottom"],
+        cfg["raster_params"]["vertical_flip"],
     )
     rasterizer = StubRasterizer(render_context)
     dataset = AgentDataset(cfg=cfg, zarr_dataset=zarr_dataset, rasterizer=rasterizer, agents_mask=agents_mask)

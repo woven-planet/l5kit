@@ -43,10 +43,12 @@ raster_params:
   # whether to completely disable traffic light faces in the semantic rasterizer
   disable_traffic_light_faces: False
 
-  # when set to True performs a flip inside the rasteriser.
-  # Set it to False for models trained before December.
+  # When set to True, the rasterizer will set the raster origin at bottom left,
+  # i.e. vehicles are driving on the right side of the road.
+  # With this change, the vertical flipping on the raster used in the visualization code is no longer needed.
+  # Set it to False for models trained before v1.1.0-25-g3c517f0 (December 2020).
   # In that case visualisation will be flipped (we've removed the flip there) but the model's input will be correct.
-  origin_bottom: True
+  vertical_flip: True
 
 ###################
 ## Data loader options
