@@ -16,8 +16,7 @@ def export_zarr_to_csv(
     csv_file_path: str,
     future_num_frames: int,
     filter_agents_threshold: float,
-    history_delta_time: float = 0.1,
-    future_delta_time: float = 0.1,
+    delta_time: float = 0.1,
     agents_mask: Optional[np.array] = None,
 ) -> None:
     """Produces a csv file containing the ground truth from a zarr file.
@@ -39,12 +38,7 @@ def export_zarr_to_csv(
             "disable_traffic_light_faces": True,
             "ego_center": np.asarray((0.5, 0.5)),
         },
-        "model_params": {
-            "history_num_frames": 0,
-            "future_num_frames": future_num_frames,
-            "history_delta_time": history_delta_time,
-            "future_delta_time": future_delta_time,
-        },
+        "model_params": {"history_num_frames": 0, "future_num_frames": future_num_frames, "delta_time": delta_time},
     }
 
     render_context = RenderContext(
