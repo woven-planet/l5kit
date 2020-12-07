@@ -39,7 +39,7 @@ Please refer to our [README](./examples/planning/README.md) for a full descripti
 We also provide pre-trained models for this task. Please refer to the [training notebook](./examples/planning/train.ipynb). 
 
 # News
-- 12-03-2020: We've just released a series of notebooks to train and evaluate a ML planning model. We've also included pre-trained models! Learn more about that in the dedicated [README](./examples/planning/README.md)
+- 12-03-2020: We've just released a series of notebooks to train and evaluate an ML planning model. We've also included pre-trained models! Learn more about this in the dedicated [README](./examples/planning/README.md)
 - 11-26-2020: [2020 Kaggle Lyft Motion Prediction for Autonomous Vehicles Competition](https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview) ended. We had more than 900 teams taking part in it!
 - 11-16-2020: [Dataset paper](https://corlconf.github.io/paper_86/) presented at CoRL 2020  
 - 09-29-2020: L5Kit v1.0.1 released 
