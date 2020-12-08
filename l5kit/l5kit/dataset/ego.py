@@ -54,7 +54,7 @@ None if not desired
             render_context=render_context,
             history_num_frames=cfg["model_params"]["history_num_frames"],
             future_num_frames=cfg["model_params"]["future_num_frames"],
-            step_time=cfg["model_params"]["delta_time"],
+            step_time=cfg["model_params"]["step_time"],
             filter_agents_threshold=cfg["raster_params"]["filter_agents_threshold"],
             rasterizer=rasterizer,
             perturbation=perturbation,
