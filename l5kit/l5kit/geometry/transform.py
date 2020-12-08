@@ -74,25 +74,25 @@ def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarra
     """
     Transform a set of 2D/3D points using the given transformation matrix.
     Assumes row major ordering of the input points. The transform function has 3 modes:
-    - points (N, f), transf_matrix (f+1, f+1)
-        all points are transformed using the matrix and the output points have shape (N, f).
-    - points (B, N, f), transf_matrix (f+1, f+1)
-        all sequences of points are transformed using the same matrix and the output points have shape (B, N, f).
+    - points (N, F), transf_matrix (F+1, F+1)
+        all points are transformed using the matrix and the output points have shape (N, F).
+    - points (B, N, F), transf_matrix (F+1, F+1)
+        all sequences of points are transformed using the same matrix and the output points have shape (B, N, F).
         transf_matrix is broadcasted.
-    - points (B, N, f), transf_matrix (B, f+1, f+1)
-        each sequence of points is transformed using its own matrix and the output points have shape (B, N, f).
+    - points (B, N, F), transf_matrix (B, F+1, F+1)
+        each sequence of points is transformed using its own matrix and the output points have shape (B, N, F).
 
     Note this function assumes points.shape[-1] == matrix.shape[-1] - 1, which means that last
     rows in the matrices do not influence the final results.
     For 2D points only the first 2x3 parts of the matrices will be used.
 
     Args:
-        points (np.ndarray): Input points of shape (N, f) or (B, N, f)
-        with f = 2 or 3 depending on input points are 2D or 3D points.
-        transf_matrix (np.ndarray): Transformation matrix of shape (f+1, f+1) or (B, f+1, f+1) with f = 2 or 3.
+        points (np.ndarray): Input points of shape (N, F) or (B, N, F)
+        with F = 2 or 3 depending on input points are 2D or 3D points.
+        transf_matrix (np.ndarray): Transformation matrix of shape (F+1, F+1) or (B, F+1, F+1) with F = 2 or 3.
 
     Returns:
-        np.ndarray: Transformed points of shape (N, f) or (B, N, f) depending on the dimensions of the input points.
+        np.ndarray: Transformed points of shape (N, F) or (B, N, F) depending on the dimensions of the input points.
     """
     points_log = f" received points with shape {points.shape} "
     matrix_log = f" received matrices with shape {transf_matrix.shape} "
