@@ -20,10 +20,10 @@ def test_transform_points_to_raster(set_origin_to_bottom: bool) -> None:
     )
 
     input_points = np.array([[0, 0], [10, 10], [-10, -10]])
-    if not set_origin_to_bottom:
-        expected_output_points = np.array([[100, 102], [110, 112], [90, 92]])
-    else:
+    if set_origin_to_bottom:
         expected_output_points = np.array([[100, 98], [110, 88], [90, 108]])
+    else:
+        expected_output_points = np.array([[100, 102], [110, 112], [90, 92]])
 
     tf = render_context.raster_from_world(center_world, 0.0)
     output_points = transform_points(input_points, tf)
