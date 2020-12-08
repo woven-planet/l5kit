@@ -65,6 +65,7 @@ def get_agent_context(
     tl_faces = tl_faces[tl_slice].copy()
     # sync interval with the traffic light faces array
     history_frames["traffic_light_faces_index_interval"] -= tl_slice.start
+    future_frames["traffic_light_faces_index_interval"] -= tl_slice.start
     history_tl_faces = filter_tl_faces_by_frames(history_frames, tl_faces)
     future_tl_faces = filter_tl_faces_by_frames(future_frames, tl_faces)
 
