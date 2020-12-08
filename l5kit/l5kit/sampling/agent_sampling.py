@@ -211,11 +211,11 @@ to train models that can recover from slight divergence from training set data
     agent_from_world = np.linalg.inv(world_from_agent)
     raster_from_world = render_context.raster_from_world(agent_centroid_m, agent_yaw_rad)
 
-    future_positions_m, future_yaws_rad, future_availabilities = _create_targets_for_deep_prediction(
+    future_positions_m, future_yaws_rad, future_availabilities = create_relative_targets(
         future_num_frames, future_frames, selected_track_id, future_agents, agent_from_world, agent_yaw_rad,
     )
     # history_num_frames + 1 because it also includes the current frame
-    history_positions_m, history_yaws_rad, history_availabilities = _create_targets_for_deep_prediction(
+    history_positions_m, history_yaws_rad, history_availabilities = create_relative_targets(
         history_num_frames + 1, history_frames, selected_track_id, history_agents, agent_from_world, agent_yaw_rad,
     )
 
@@ -245,7 +245,7 @@ to train models that can recover from slight divergence from training set data
     }
 
 
-def _create_targets_for_deep_prediction(
+def create_relative_targets(
     num_frames: int,
     frames: np.ndarray,
     selected_track_id: Optional[int],
