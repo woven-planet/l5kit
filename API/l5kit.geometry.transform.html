@@ -281,7 +281,10 @@ coordinates. If no altitude is given, altitude 0 is assumed.</p>
 <dl class="py function">
 <dt id="l5kit.geometry.transform.transform_point">
 <code class="sig-prename descclassname">l5kit.geometry.transform.</code><code class="sig-name descname">transform_point</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">point</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">transf_matrix</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.geometry.transform.transform_point" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transform a single vector using transformation matrix.</p>
+<dd><dl class="simple">
+<dt>Transform a single vector using transformation matrix.</dt><dd><p>This function call transform_points internally</p>
+</dd>
+</dl>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -301,19 +304,38 @@ coordinates. If no altitude is given, altitude 0 is assumed.</p>
 <dl class="py function">
 <dt id="l5kit.geometry.transform.transform_points">
 <code class="sig-prename descclassname">l5kit.geometry.transform.</code><code class="sig-name descname">transform_points</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">points</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">transf_matrix</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.geometry.transform.transform_points" title="Permalink to this definition">¶</a></dt>
-<dd><p>Transform points using transformation matrix.
-Note this function assumes points.shape[1] == matrix.shape[1] - 1, which means that the last
-row in the matrix does not influence the final result.
-For 2D points only the first 2x3 part of the matrix will be used.</p>
+<dd><p>Transform a set of 2D/3D points using the given transformation matrix.
+Assumes row major ordering of the input points. The transform function has 3 modes:
+- points (N, F), transf_matrix (F+1, F+1)</p>
+<blockquote>
+<div><p>all points are transformed using the matrix and the output points have shape (N, F).</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>points (B, N, F), transf_matrix (F+1, F+1)</dt><dd><p>all sequences of points are transformed using the same matrix and the output points have shape (B, N, F).
+transf_matrix is broadcasted.</p>
+</dd>
+</dl>
+</li>
+<li><dl class="simple">
+<dt>points (B, N, F), transf_matrix (B, F+1, F+1)</dt><dd><p>each sequence of points is transformed using its own matrix and the output points have shape (B, N, F).</p>
+</dd>
+</dl>
+</li>
+</ul>
+<p>Note this function assumes points.shape[-1] == matrix.shape[-1] - 1, which means that last
+rows in the matrices do not influence the final results.
+For 2D points only the first 2x3 parts of the matrices will be used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>np.ndarray</em>) – Input points (Nx2) or (Nx3).</p></li>
-<li><p><strong>transf_matrix</strong> (<em>np.ndarray</em>) – 3x3 or 4x4 transformation matrix for 2D and 3D input respectively</p></li>
+<li><p><strong>points</strong> (<em>np.ndarray</em>) – Input points of shape (N, F) or (B, N, F)</p></li>
+<li><p><strong>F = 2</strong><strong> or </strong><strong>3 depending on input points are 2D</strong><strong> or </strong><strong>3D points.</strong> (<em>with</em>) – </p></li>
+<li><p><strong>transf_matrix</strong> (<em>np.ndarray</em>) – Transformation matrix of shape (F+1, F+1) or (B, F+1, F+1) with F = 2 or 3.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>array of shape (N,2) for 2D input points, or (N,3) points for 3D input points</p>
+<dd class="field-even"><p>Transformed points of shape (N, F) or (B, N, F) depending on the dimensions of the input points.</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>np.ndarray</p>
