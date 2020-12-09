@@ -207,7 +207,9 @@ class MapAPI:
         lane_dict["xyz_left"] = self.interpolate(xyz_left, distances_left, step, method)
         lane_dict["xyz_right"] = self.interpolate(xyz_right, distances_right, step, method)
 
-        # compute midlane using mean of fixed length lanes
+        # to compute midlane we average between left and right bounds
+        # but to do that we need them to have the same numbers of points
+        # if that's not the case (interpolation is not INTER_ENSURE_LEN) we interpolate again with that mode
         if method != InterpolationMethod.INTER_ENSURE_LEN:
             mid_steps = max(len(xyz_left), len(xyz_right))
             # recompute lanes using fixed length
