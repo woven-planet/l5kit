@@ -18,6 +18,8 @@ class InterpolationMethod(IntEnum):
 
 
 class MapAPI:
+    TR_FACES_COLORS = ["red", "green", "yellow"]
+
     def __init__(self, protobuf_map_path: str, world_to_ecef: np.ndarray):
         """
         Interface to the raw protobuf map file with the following features:
@@ -308,6 +310,22 @@ class MapAPI:
         ):
             return True
         return False
+
+    @lru_cache(maxsize=CACHE_SIZE)
+    def get_color_for_face(self, face_id: str) -> str:
+        """
+        Utility function. It calls `is_traffic_face_colour` for a set of colours until it gets an answer.
+        If no color is found, then `face_id` is not the id of a traffic light face (and we raise ValueError).
+
+        Args:
+            face_id (str): the element id
+        Returns:
+            str: the colour as string for this traffic face
+        """
+        for color in self.TR_FACES_COLORS:
+            if self.is_traffic_face_colour(face_id, color):
+                return color
+        raise ValueError(f"Face {face_id} has no valid color among {self.TR_FACES_COLORS}")
 
     def get_bounds(self) -> dict:
         """
