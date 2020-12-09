@@ -15,6 +15,7 @@ from ..data import (
 from ..kinematic import Perturbation
 from ..rasterization import Rasterizer, RenderContext
 from ..sampling import generate_agent_sample
+from .utils import convert_str_to_fixed_length_tensor
 
 
 class EgoDataset(Dataset):
@@ -102,7 +103,7 @@ None if not desired
         data = self.sample_function(state_index, frames, self.dataset.agents, tl_faces, track_id)
 
         # add information only, so that all data keys are always preserved
-        data["host_id"] = self.dataset.scenes[scene_index]["host"]
+        data["host_id"] = convert_str_to_fixed_length_tensor(self.dataset.scenes[scene_index]["host"])
         data["timestamp"] = frames[state_index]["timestamp"]
         data["track_id"] = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
         data["world_to_image"] = data["raster_from_world"]  # TODO deprecate
