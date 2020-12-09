@@ -301,21 +301,6 @@ the sub-image inside that cropped area, rotated upright.</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="l5kit.geometry.flip_y_axis">
-<code class="sig-prename descclassname">l5kit.geometry.</code><code class="sig-name descname">flip_y_axis</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tm</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">y_dim_size</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.geometry.flip_y_axis" title="Permalink to this definition">¶</a></dt>
-<dd><p>Return a new matrix that also performs a flip on the y axis.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>tm</strong> – the original 3x3 matrix</p></li>
-<li><p><strong>y_dim_size</strong> – this should match the resolution on y. It makes all coordinates positive</p></li>
-</ul>
-</dd>
-</dl>
-<p>Returns: a new 3x3 matrix.</p>
-</dd></dl>
-
-<dl class="py function">
 <dt id="l5kit.geometry.geodetic_to_ecef">
 <code class="sig-prename descclassname">l5kit.geometry.</code><code class="sig-name descname">geodetic_to_ecef</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">lla_point</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>numpy.ndarray<span class="p">, </span>Sequence<span class="p">[</span>float<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.geometry.geodetic_to_ecef" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert given latitude, longitude, and optionally altitude into ECEF
@@ -446,6 +431,21 @@ For 2D points only the first 2x3 parts of the matrices will be used.</p>
 <dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.geometry.vertical_flip">
+<code class="sig-prename descclassname">l5kit.geometry.</code><code class="sig-name descname">vertical_flip</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">tm</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">y_dim_size</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.geometry.vertical_flip" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a new matrix that also performs a flip on the y axis.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>tm</strong> – the original 3x3 matrix</p></li>
+<li><p><strong>y_dim_size</strong> – this should match the resolution on y. It makes all coordinates positive</p></li>
+</ul>
+</dd>
+</dl>
+<p>Returns: a new 3x3 matrix.</p>
 </dd></dl>
 
 <dl class="py function">
