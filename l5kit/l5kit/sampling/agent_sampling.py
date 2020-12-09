@@ -14,6 +14,7 @@ from ..kinematic import Perturbation
 from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer, RenderContext
 from .slicing import get_future_slice, get_history_slice
 
+THRESHOLD_RATIO_TO_INTERPOLATE = 1.8
 
 def generate_agent_sample(
     state_index: int,
@@ -222,3 +223,33 @@ def _create_targets_for_deep_prediction(
         yaws_rad[i] = angular_distance(agent_yaw_rad, current_agent_yaw)
         availabilities[i] = 1.0
     return positions_m, yaws_rad, availabilities
+
+def _interpolate_trajectory(frames: np.ndarray) -> np.ndarray:
+    all_timestamps = frames["timestamp"]
+    average_gap = np.median(all_timestamps)
+    interpolation_gap = average_gap * THRESHOLD_RATIO_TO_INTERPOLATE
+    # frames_ids_to_interpolate = np.where(all_timestamps >= average_gap * THRESHOLD_RATIO_TO_INTERPOLATE)
+    last_timestamp = frames[0]["timestamp"]
+    interpolated_frames = np.ndarray([])
+    for frame in frames:
+        current_gap = frame["timestamp"] - last_timestamp
+        if  current_gap > interpolation_gap:
+            interpolated_frame = frame.copy()
+            interpolated_frame["ego_translation"]
+            interpolated_frames.append()
+
+def _get_interpolated_frames(previous_frame: np.ndarray, current_frame: np.ndarray, current_gap:float, average_gap: float) -> List[np.ndarray]:
+
+    num_frame_to_add = int(numpy.floor(current_gap/avg_gap)) - 1
+    
+    frames_to_add = []
+	for i in range(num_frame_to_add):
+        ratio = i / (num_frame_to_add + 1)
+        interpolated_frame = previous_frame.copy()
+        interpolated_frame["timestamp"] = p.interp(ratio,[0,1],[previous_frame["timestamp"],current_frame["timestamp"]])
+        interpolated_frame["ego_translation"] = p.interp(ratio,[0,1],[previous_frame["timestamp"],current_frame["timestamp"]])
+		frames_to_add.append(result, &trajectories.TimestampedPose{
+			Timestamp: t,
+			Pose:      nil,
+		})
+	}
