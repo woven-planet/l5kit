@@ -75,9 +75,8 @@ class SatelliteRasterizer(Rasterizer):
             sat_pixel_scale=self.map_pixel_scale,
             interpolation=self.interpolation,
         )
-
-        # Here we flip the Y axis as Y+ should to the left of ego
-        sat_im = sat_im[::-1]
+        if not self.render_context.set_origin_to_bottom:
+            sat_im = sat_im[::-1]
         return sat_im.astype(np.float32) / 255
 
     def to_rgb(self, in_im: np.ndarray, **kwargs: dict) -> np.ndarray:
