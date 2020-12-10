@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   
-  <title>l5kit.dataset.agent module &mdash; L5Kit 1.1.0 documentation</title>
+  <title>l5kit.dataset.utils module &mdash; L5Kit 1.1.0 documentation</title>
   
 
   
@@ -36,8 +36,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="l5kit.dataset.ego module" href="l5kit.dataset.ego.html" />
-    <link rel="prev" title="l5kit.dataset package" href="l5kit.dataset.html" /> 
+    <link rel="next" title="l5kit.evaluation package" href="l5kit.evaluation.html" />
+    <link rel="prev" title="l5kit.dataset.select_agents module" href="l5kit.dataset.select_agents.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -95,10 +95,10 @@
 <li class="toctree-l2"><a class="reference internal" href="l5kit.data.html">l5kit.data package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="l5kit.dataset.html">l5kit.dataset package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="l5kit.dataset.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.dataset.agent module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.agent.html">l5kit.dataset.agent module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.ego.html">l5kit.dataset.ego module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.select_agents.html">l5kit.dataset.select_agents module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.utils.html">l5kit.dataset.utils module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.dataset.utils module</a></li>
 </ul>
 </li>
 </ul>
@@ -170,13 +170,13 @@
         
           <li><a href="l5kit.dataset.html">l5kit.dataset package</a> &raquo;</li>
         
-      <li>l5kit.dataset.agent module</li>
+      <li>l5kit.dataset.utils module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
             
-            <a href="../_sources/API/l5kit.dataset.agent.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/API/l5kit.dataset.utils.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -189,60 +189,26 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-l5kit.dataset.agent">
-<span id="l5kit-dataset-agent-module"></span><h1>l5kit.dataset.agent module<a class="headerlink" href="#module-l5kit.dataset.agent" title="Permalink to this headline">¶</a></h1>
-<dl class="py class">
-<dt id="l5kit.dataset.agent.AgentDataset">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.dataset.agent.</code><code class="sig-name descname">AgentDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">cfg</span><span class="p">:</span> <span class="n">dict</span></em>, <em class="sig-param"><span class="n">zarr_dataset</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset">l5kit.data.zarr_dataset.ChunkedDataset</a></span></em>, <em class="sig-param"><span class="n">rasterizer</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer">l5kit.rasterization.rasterizer.Rasterizer</a></span></em>, <em class="sig-param"><span class="n">perturbation</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="l5kit.kinematic.perturbation.html#l5kit.kinematic.perturbation.Perturbation" title="l5kit.kinematic.perturbation.Perturbation">l5kit.kinematic.perturbation.Perturbation</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">agents_mask</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">min_frame_history</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">10</span></em>, <em class="sig-param"><span class="n">min_frame_future</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">1</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.dataset.agent.AgentDataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="l5kit.dataset.ego.html#l5kit.dataset.ego.EgoDataset" title="l5kit.dataset.ego.EgoDataset"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.dataset.ego.EgoDataset</span></code></a></p>
-<dl class="py method">
-<dt id="l5kit.dataset.agent.AgentDataset.get_frame_indices">
-<code class="sig-name descname">get_frame_indices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frame_idx</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.dataset.agent.AgentDataset.get_frame_indices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get indices for the given frame. Here __getitem__ iterate over valid agents indices.
-This means <code class="docutils literal notranslate"><span class="pre">__getitem__(0)</span></code> matches the first valid agent in the dataset.
-:param frame_idx: index of the scene
-:type frame_idx: int</p>
+  <div class="section" id="module-l5kit.dataset.utils">
+<span id="l5kit-dataset-utils-module"></span><h1>l5kit.dataset.utils module<a class="headerlink" href="#module-l5kit.dataset.utils" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="l5kit.dataset.utils.convert_str_to_fixed_length_tensor">
+<code class="sig-prename descclassname">l5kit.dataset.utils.</code><code class="sig-name descname">convert_str_to_fixed_length_tensor</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">string</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">max_length</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">70</span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.dataset.utils.convert_str_to_fixed_length_tensor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Converts a string into a fixed length tensor of type torch.uint8.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>indices that can be used for indexing with __getitem__</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>string</strong> (<em>str</em>) – String to convert</p></li>
+<li><p><strong>max_length</strong> (<em>int</em>) – Fixed length, default kMaxStrLength</p></li>
+</ul>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>np.ndarray</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A fixed length tensor of type torch.uint8 that encodes the string</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor</p>
 </dd>
 </dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="l5kit.dataset.agent.AgentDataset.get_scene_dataset">
-<code class="sig-name descname">get_scene_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_index</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#l5kit.dataset.agent.AgentDataset" title="l5kit.dataset.agent.AgentDataset">l5kit.dataset.agent.AgentDataset</a><a class="headerlink" href="#l5kit.dataset.agent.AgentDataset.get_scene_dataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Differs from parent only in the return type.
-Instead of doing everything from scratch, we rely on super call and fix the agents_mask</p>
-</dd></dl>
-
-<dl class="py method">
-<dt id="l5kit.dataset.agent.AgentDataset.get_scene_indices">
-<code class="sig-name descname">get_scene_indices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_idx</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.dataset.agent.AgentDataset.get_scene_indices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get indices for the given scene. Here __getitem__ iterate over valid agents indices.
-This means <code class="docutils literal notranslate"><span class="pre">__getitem__(0)</span></code> matches the first valid agent in the dataset.
-:param scene_idx: index of the scene
-:type scene_idx: int</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>indices that can be used for indexing with __getitem__</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
-<dt id="l5kit.dataset.agent.AgentDataset.load_agents_mask">
-<code class="sig-name descname">load_agents_mask</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.dataset.agent.AgentDataset.load_agents_mask" title="Permalink to this definition">¶</a></dt>
-<dd><p>Loads a boolean mask of the agent availability stored into the zarr. Performs some sanity check against cfg.
-Returns: a boolean mask of the same length of the dataset agents</p>
-</dd></dl>
-
 </dd></dl>
 
 </div>
@@ -255,10 +221,10 @@ Returns: a boolean mask of the same length of the dataset agents</p>
   
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
       
-        <a href="l5kit.dataset.ego.html" class="btn btn-neutral float-right" title="l5kit.dataset.ego module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
+        <a href="l5kit.evaluation.html" class="btn btn-neutral float-right" title="l5kit.evaluation package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
       
       
-        <a href="l5kit.dataset.html" class="btn btn-neutral float-left" title="l5kit.dataset package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
+        <a href="l5kit.dataset.select_agents.html" class="btn btn-neutral float-left" title="l5kit.dataset.select_agents module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
       
     </div>
   
