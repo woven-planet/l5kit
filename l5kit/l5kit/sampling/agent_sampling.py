@@ -1,7 +1,8 @@
 from typing import List, Optional, Tuple
 
 import numpy as np
-
+from pyquaternion import Quaternion
+from l5kit.data import FRAME_DTYPE
 from ..data import (
     filter_agents_by_labels,
     filter_tl_faces_by_frames,
@@ -32,6 +33,7 @@ def generate_agent_sample(
     filter_agents_threshold: float,
     rasterizer: Optional[Rasterizer] = None,
     perturbation: Optional[Perturbation] = None,
+    interpolate_frames: bool = True
 ) -> dict:
     """Generates the inputs and targets to train a deep prediction model. A deep prediction model takes as input
     the state of the world (here: an image we will call the "raster"), and outputs where that agent will be some
@@ -77,7 +79,9 @@ to train models that can recover from slight divergence from training set data
     future_frames = frames[future_slice].copy()
 
     sorted_frames = np.concatenate((history_frames[::-1], future_frames))  # from past to future
-
+    if interpolate_frames:
+        # print("Interpolating frames")
+        sorted_frames = _interpolate_trajectory(sorted_frames)
     # get agents (past and future)
     agent_slice = get_agents_slice_from_frames(sorted_frames[0], sorted_frames[-1])
     agents = agents[agent_slice].copy()  # this is the minimum slice of agents we need
@@ -224,32 +228,36 @@ def _create_targets_for_deep_prediction(
         availabilities[i] = 1.0
     return positions_m, yaws_rad, availabilities
 
+
 def _interpolate_trajectory(frames: np.ndarray) -> np.ndarray:
     all_timestamps = frames["timestamp"]
-    average_gap = np.median(all_timestamps)
-    interpolation_gap = average_gap * THRESHOLD_RATIO_TO_INTERPOLATE
-    # frames_ids_to_interpolate = np.where(all_timestamps >= average_gap * THRESHOLD_RATIO_TO_INTERPOLATE)
-    last_timestamp = frames[0]["timestamp"]
-    interpolated_frames = np.ndarray([])
+    avg_gap = np.median(np.diff(all_timestamps))
+    gap_to_interpolate = avg_gap * 1.8
+    # frames_ids_to_interpolate = np.where(all_timestamps >= avg_gap * THRESHOLD_RATIO_TO_INTERPOLATE)
+    interpolated_frames = []
+    prev_frame = frames[0]
     for frame in frames:
-        current_gap = frame["timestamp"] - last_timestamp
-        if  current_gap > interpolation_gap:
-            interpolated_frame = frame.copy()
-            interpolated_frame["ego_translation"]
-            interpolated_frames.append()
+        cur_gap = frame["timestamp"] - prev_frame["timestamp"]
+        if cur_gap > gap_to_interpolate:
+            interpolated_frames.extend(_get_interpolated_frames(prev_frame, frame, cur_gap, avg_gap))
+        interpolated_frames.append(frame)
+        prev_frame = frame
+    return np.array(interpolated_frames, dtype=FRAME_DTYPE)
 
-def _get_interpolated_frames(previous_frame: np.ndarray, current_frame: np.ndarray, current_gap:float, average_gap: float) -> List[np.ndarray]:
 
-    num_frame_to_add = int(numpy.floor(current_gap/avg_gap)) - 1
-    
+def _get_interpolated_frames(prev_frame: np.ndarray, cur_frame: np.ndarray, cur_gap: float, avg_gap: float):
+    num_frame_to_add = int(np.round(cur_gap / avg_gap)) - 1
+    print("Interpolating", num_frame_to_add, "frames of gap", cur_gap, "while average gap is", avg_gap)
     frames_to_add = []
-	for i in range(num_frame_to_add):
-        ratio = i / (num_frame_to_add + 1)
-        interpolated_frame = previous_frame.copy()
-        interpolated_frame["timestamp"] = p.interp(ratio,[0,1],[previous_frame["timestamp"],current_frame["timestamp"]])
-        interpolated_frame["ego_translation"] = p.interp(ratio,[0,1],[previous_frame["timestamp"],current_frame["timestamp"]])
-		frames_to_add.append(result, &trajectories.TimestampedPose{
-			Timestamp: t,
-			Pose:      nil,
-		})
-	}
+    for i in range(num_frame_to_add):
+        ratio = (i + 1) / (num_frame_to_add + 1)
+        interpolated_frame = prev_frame.copy()
+        interpolated_frame["timestamp"] = _lerp(prev_frame["timestamp"], cur_frame["timestamp"], ratio)
+        interpolated_frame["ego_translation"] = _lerp(prev_frame["ego_translation"], cur_frame["ego_translation"], ratio)
+        interpolated_frame["ego_rotation"] = Quaternion.slerp(Quaternion(matrix=prev_frame["ego_rotation"],rtol=1e-05, atol=1e-05), Quaternion(matrix=cur_frame["ego_rotation"], rtol=1e-05, atol=1e-05), ratio).rotation_matrix
+        frames_to_add.append(interpolated_frame)
+    return frames_to_add
+
+
+def _lerp(v1: np.ndarray, v2: np.ndarray, t: float) -> np.ndarray:
+    return t * (v2 - v1) + v1
