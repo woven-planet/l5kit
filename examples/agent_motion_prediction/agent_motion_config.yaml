@@ -7,12 +7,8 @@ model_params:
   model_architecture: "resnet50"
 
   history_num_frames: 0
-  history_step_size: 1
-  history_delta_time: 0.1
-
   future_num_frames: 50
-  future_step_size: 1
-  future_delta_time: 0.1
+  step_time: 0.1
 
 ###################
 ## Input raster parameters
