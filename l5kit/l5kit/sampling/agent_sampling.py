@@ -191,11 +191,11 @@ def generate_agent_sample(
     agent_from_world = np.linalg.inv(world_from_agent)
     raster_from_world = render_context.raster_from_world(agent_centroid_m, agent_yaw_rad)
 
-    future_positions_m, future_yaws_rad, future_availabilities = create_relative_targets(
+    future_positions_m, future_yaws_rad, future_extents, future_availabilities = create_relative_targets(
         future_num_frames, future_frames, selected_track_id, future_agents, agent_from_world, agent_yaw_rad,
     )
     # history_num_frames + 1 because it also includes the current frame
-    history_positions_m, history_yaws_rad, history_availabilities = create_relative_targets(
+    history_positions_m, history_yaws_rad, history_extents, history_availabilities = create_relative_targets(
         history_num_frames + 1, history_frames, selected_track_id, history_agents, agent_from_world, agent_yaw_rad,
     )
 
@@ -220,6 +220,8 @@ def generate_agent_sample(
         "yaw": agent_yaw_rad,
         "speed": np.linalg.norm(future_vels_mps[0]),
         "extent": agent_extent_m,
+        "history_extents": history_extents,
+        "future_extents": future_extents,
     }
 
 
@@ -230,7 +232,7 @@ def create_relative_targets(
     agents: List[np.ndarray],
     agent_from_world: np.ndarray,
     current_agent_yaw: float,
-) -> Tuple[np.ndarray, np.ndarray, np.ndarray]:
+) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Internal function that creates the targets and availability masks for deep prediction-type models.
     The futures/history offset (in meters) are computed. When no info is available (e.g. agent not in frame)
@@ -245,29 +247,33 @@ def create_relative_targets(
         current_agent_yaw (float): angle of the agent at timestep 0
 
     Returns:
-        Tuple[np.ndarray, np.ndarray, np.ndarray]: position offsets, angle offsets, availabilities
+        Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]: position offsets, angle offsets, extent, availabilities
 
     """
     # How much the coordinates differ from the current state in meters.
     positions_m = np.zeros((num_frames, 2), dtype=np.float32)
     yaws_rad = np.zeros((num_frames, 1), dtype=np.float32)
+    extents_m = np.zeros((num_frames, 2), dtype=np.float32)
     availabilities = np.zeros((num_frames,), dtype=np.float32)
 
     for i, (frame, frame_agents) in enumerate(zip(frames, agents)):
         if selected_track_id is None:
             agent_centroid_m = frame["ego_translation"][:2]
             agent_yaw_rad = rotation33_as_yaw(frame["ego_rotation"])
+            agent_extent = (EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH)
         else:
             # it's not guaranteed the target will be in every frame
             try:
                 agent = filter_agents_by_track_id(frame_agents, selected_track_id)[0]
                 agent_centroid_m = agent["centroid"]
                 agent_yaw_rad = agent["yaw"]
+                agent_extent = agent["extent"][:2]
             except IndexError:
                 availabilities[i] = 0.0  # keep track of invalid futures/history
                 continue
 
         positions_m[i] = transform_point(agent_centroid_m, agent_from_world)
         yaws_rad[i] = angular_distance(agent_yaw_rad, current_agent_yaw)
+        extents_m[i] = agent_extent
         availabilities[i] = 1.0
-    return positions_m, yaws_rad, availabilities
+    return positions_m, yaws_rad, extents_m, availabilities
