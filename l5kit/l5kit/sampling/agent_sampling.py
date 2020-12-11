@@ -191,11 +191,11 @@ def generate_agent_sample(
     agent_from_world = np.linalg.inv(world_from_agent)
     raster_from_world = render_context.raster_from_world(agent_centroid_m, agent_yaw_rad)
 
-    future_positions_m, future_yaws_rad, future_extents, future_availabilities = create_relative_targets(
+    future_positions_m, future_yaws_rad, future_extents, future_availabilities = get_relative_poses(
         future_num_frames, future_frames, selected_track_id, future_agents, agent_from_world, agent_yaw_rad,
     )
     # history_num_frames + 1 because it also includes the current frame
-    history_positions_m, history_yaws_rad, history_extents, history_availabilities = create_relative_targets(
+    history_positions_m, history_yaws_rad, history_extents, history_availabilities = get_relative_poses(
         history_num_frames + 1, history_frames, selected_track_id, history_agents, agent_from_world, agent_yaw_rad,
     )
 
@@ -225,7 +225,7 @@ def generate_agent_sample(
     }
 
 
-def create_relative_targets(
+def get_relative_poses(
     num_frames: int,
     frames: np.ndarray,
     selected_track_id: Optional[int],
