@@ -41,7 +41,12 @@ def test_dataset_rasterizer(
 @pytest.mark.parametrize("frame_idx", [0, 10, 247, pytest.param(775, marks=pytest.mark.xfail)])
 @pytest.mark.parametrize("dataset_cls", [EgoDataset, AgentDataset])
 def test_frame_index_interval(dataset_cls: Callable, frame_idx: int, zarr_dataset: ChunkedDataset, cfg: dict) -> None:
-    render_context = RenderContext(np.asarray((100, 100)), np.asarray((0.25, 0.25)), np.asarray((0.5, 0.5)))
+    render_context = RenderContext(
+        np.asarray((100, 100)),
+        np.asarray((0.25, 0.25)),
+        np.asarray((0.5, 0.5)),
+        set_origin_to_bottom=cfg["raster_params"]["set_origin_to_bottom"],
+    )
     rasterizer = StubRasterizer(render_context)
     dataset = dataset_cls(cfg, zarr_dataset, rasterizer, None)
     indices = dataset.get_frame_indices(frame_idx)
@@ -53,7 +58,12 @@ def test_frame_index_interval(dataset_cls: Callable, frame_idx: int, zarr_datase
 @pytest.mark.parametrize("scene_idx", [0, pytest.param(1, marks=pytest.mark.xfail)])
 @pytest.mark.parametrize("dataset_cls", [EgoDataset, AgentDataset])
 def test_scene_index_interval(dataset_cls: Callable, scene_idx: int, zarr_dataset: ChunkedDataset, cfg: dict) -> None:
-    render_context = RenderContext(np.asarray((100, 100)), np.asarray((0.25, 0.25)), np.asarray((0.5, 0.5)))
+    render_context = RenderContext(
+        np.asarray((100, 100)),
+        np.asarray((0.25, 0.25)),
+        np.asarray((0.5, 0.5)),
+        set_origin_to_bottom=cfg["raster_params"]["set_origin_to_bottom"],
+    )
     rasterizer = StubRasterizer(render_context)
     dataset = dataset_cls(cfg, zarr_dataset, rasterizer, None)
     indices = dataset.get_scene_indices(scene_idx)

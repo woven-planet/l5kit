@@ -25,7 +25,7 @@ def test_get_agent_context(
     tls = zarr_dataset.tl_faces[get_tl_faces_slice_from_frames(*frames[[0, -1]])]
 
     frames_his_f, frames_fut_f, agents_his_f, agents_fut_f, tls_his_f, tls_fut_f = get_agent_context(
-        state_index, frames, agents, tls, history_steps, 1, future_steps, 1
+        state_index, frames, agents, tls, history_steps, future_steps
     )
 
     # test future using timestamp

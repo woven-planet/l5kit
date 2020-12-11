@@ -19,7 +19,31 @@ You can use this framework to build systems which:
 * Plan behavior of an AV in order to imitate human driving.
 * Study the improvement in performance of these systems as the amount of data increases.
 
+We provide several notebooks with examples and applications.
+
+### L5Kit Usage
+Our [visualisation notebook](./examples/visualisation/visualise_data.ipynb) is the perfect place to start if you want to 
+know more about L5Kit.
+
+### Agent Motion Prediction
+Related to our 2020 competition, we provide a [notebook to train and test](./examples/agent_motion_prediction/agent_motion_prediction.ipynb) our baseline model for predicting
+future agents trajectories.
+
+### Planning
+We provide 3 notebooks for a deep dive into planning for a Self Driving Vehicle (SDV).
+Please refer to our [README](./examples/planning/README.md) for a full description of what you can achieve using them:
+* you can train your first ML policy for planning using our [training notebook](./examples/planning/train.ipynb);
+* you can evaluate your model in the open-loop setting using our [open-loop evaluation notebook](./examples/planning/open_loop_test.ipynb);
+* you can evaluate your model in the closed-loop setting using our [closed-loop evaluation notebook](./examples/planning/closed_loop_test.ipynb);
+
+We also provide pre-trained models for this task. Please refer to the [training notebook](./examples/planning/train.ipynb). 
+
 # News
+- 12-03-2020: We've just released a series of notebooks to train and evaluate an ML planning model. We've also included pre-trained models! Learn more about this in the dedicated [README](./examples/planning/README.md)
+- 11-26-2020: [2020 Kaggle Lyft Motion Prediction for Autonomous Vehicles Competition](https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview) ended. We had more than 900 teams taking part in it!
+- 11-16-2020: [Dataset paper](https://corlconf.github.io/paper_86/) presented at CoRL 2020  
+- 09-29-2020: L5Kit v1.0.1 released 
+- 08-25-2020: [2020 Kaggle Lyft Motion Prediction for Autonomous Vehicles Competition](https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview) started  
 - 08-24-2020: L5Kit v1.0.6 and Dataset v1.1 (includes traffic light support) released! 
 - 06-25-2020: Docs and API available at https://lyft.github.io/l5kit/ (thanks Kevin Zhao!)
 

@@ -15,6 +15,7 @@ from ..data import (
 from ..kinematic import Perturbation
 from ..rasterization import Rasterizer, RenderContext
 from ..sampling import generate_agent_sample
+from .utils import convert_str_to_fixed_length_tensor
 
 
 class EgoDataset(Dataset):
@@ -46,6 +47,7 @@ None if not desired
             raster_size_px=np.array(cfg["raster_params"]["raster_size"]),
             pixel_size_m=np.array(cfg["raster_params"]["pixel_size"]),
             center_in_raster_ratio=np.array(cfg["raster_params"]["ego_center"]),
+            set_origin_to_bottom=cfg["raster_params"]["set_origin_to_bottom"],
         )
 
         # build a partial so we don't have to access cfg each time
@@ -53,11 +55,8 @@ None if not desired
             generate_agent_sample,
             render_context=render_context,
             history_num_frames=cfg["model_params"]["history_num_frames"],
-            history_step_size=cfg["model_params"]["history_step_size"],
-            history_step_time=cfg["model_params"]["history_delta_time"] * cfg["model_params"]["history_step_size"],
             future_num_frames=cfg["model_params"]["future_num_frames"],
-            future_step_size=cfg["model_params"]["future_step_size"],
-            future_step_time=cfg["model_params"]["future_delta_time"] * cfg["model_params"]["future_step_size"],
+            step_time=cfg["model_params"]["step_time"],
             filter_agents_threshold=cfg["raster_params"]["filter_agents_threshold"],
             rasterizer=rasterizer,
             perturbation=perturbation,
@@ -101,7 +100,7 @@ None if not desired
         data = self.sample_function(state_index, frames, self.dataset.agents, tl_faces, track_id)
 
         # add information only, so that all data keys are always preserved
-        data["host_id"] = self.dataset.scenes[scene_index]["host"]
+        data["host_id"] = convert_str_to_fixed_length_tensor(self.dataset.scenes[scene_index]["host"])
         data["timestamp"] = frames[state_index]["timestamp"]
         data["track_id"] = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
         data["world_to_image"] = data["raster_from_world"]  # TODO deprecate

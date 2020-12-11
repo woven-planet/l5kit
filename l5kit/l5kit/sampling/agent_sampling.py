@@ -21,9 +21,7 @@ def get_agent_context(
     agents: np.ndarray,
     tl_faces: np.ndarray,
     history_num_frames: int,
-    history_step_size: int,
     future_num_frames: int,
-    future_step_size: int,
 ) -> Tuple[np.ndarray, np.ndarray, List[np.ndarray], List[np.ndarray], List[np.ndarray], List[np.ndarray]]:
     """
     Slice zarr or numpy arrays to get the context around the agent onf interest (both in space and time)
@@ -34,17 +32,15 @@ def get_agent_context(
         agents (np.ndarray): agents from the scene
         tl_faces (np.ndarray): tl_faces from the scene
         history_num_frames (int): how many frames in the past to slice
-        history_step_size (int): size of each step in the past
         future_num_frames (int): how many frames in the future to slice
-        future_step_size (int): size of each step in the future
 
     Returns:
         Tuple[np.ndarray, np.ndarray, List[np.ndarray], List[np.ndarray], List[np.ndarray], List[np.ndarray]]
     """
 
     #  the history slice is ordered starting from the latest frame and goes backward in time., ex. slice(100, 91, -2)
-    history_slice = get_history_slice(state_index, history_num_frames, history_step_size, include_current_state=True)
-    future_slice = get_future_slice(state_index, future_num_frames, future_step_size)
+    history_slice = get_history_slice(state_index, history_num_frames, 1, include_current_state=True)
+    future_slice = get_future_slice(state_index, future_num_frames, 1)
 
     history_frames = frames[history_slice].copy()  # copy() required if the object is a np.ndarray
     future_frames = frames[future_slice].copy()
@@ -73,7 +69,7 @@ def get_agent_context(
 
 
 def compute_agent_velocity(
-    history_positions_m: np.ndarray, future_positions_m: np.ndarray, history_step_time: float, future_step_time: float
+    history_positions_m: np.ndarray, future_positions_m: np.ndarray, step_time: float
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Compute estimated velocities by finite differentiation on future positions as(pos(T+t) - pos(T))/t.
@@ -83,26 +79,24 @@ def compute_agent_velocity(
     Args:
         history_positions_m (np.ndarray): history XY positions in meters
         future_positions_m (np.ndarray): future XY positions in meters
-        history_step_time (np.ndarray): length of a step in second
-        future_step_time (np.ndarray): length of a step in second
+        step_time (np.ndarray): length of a step in second
 
     Returns:
         Tuple[np.ndarray, np.ndarray]: history and future XY speeds
 
     """
-    assert future_step_time > np.finfo(float).eps, f"future step must be greater then eps, got {future_step_time}"
-    assert history_step_time > np.finfo(float).eps, f"history step must be greater then eps, got {history_step_time}"
+    assert step_time > np.finfo(float).eps, f"step_time must be greater then eps, got {step_time}"
 
     # [future_num_frames, 2]
     future_positions_diff_m = np.concatenate((future_positions_m[:1], np.diff(future_positions_m, axis=0)))
     # [future_num_frames, 2]
-    future_vels_mps = np.float32(future_positions_diff_m / future_step_time)
+    future_vels_mps = np.float32(future_positions_diff_m / step_time)
 
     # current position is included in history positions
     # [history_num_frames, 2]
     history_positions_diff_m = np.diff(history_positions_m, axis=0)
     # [history_num_frames, 2]
-    history_vels_mps = np.float32(history_positions_diff_m / history_step_time)
+    history_vels_mps = np.float32(history_positions_diff_m / step_time)
 
     return history_vels_mps, future_vels_mps
 
@@ -115,11 +109,8 @@ def generate_agent_sample(
     selected_track_id: Optional[int],
     render_context: RenderContext,
     history_num_frames: int,
-    history_step_size: int,
-    history_step_time: float,
     future_num_frames: int,
-    future_step_size: int,
-    future_step_time: float,
+    step_time: float,
     filter_agents_threshold: float,
     rasterizer: Optional[Rasterizer] = None,
     perturbation: Optional[Perturbation] = None,
@@ -141,16 +132,13 @@ def generate_agent_sample(
         their future states.
         render_context (RenderContext): The context for rasterisation
         history_num_frames (int): Amount of history frames to draw into the rasters
-        history_step_size (int): Steps to take between frames, can be used to subsample history frames
-        history_step_time (float): Length of a step in seconds into the past
         future_num_frames (int): Amount of history frames to draw into the rasters
-        future_step_size (int): Steps to take between targets into the future
-        future_step_time (float): Length of a step in seconds into the future
+        step_time (float): seconds between consecutive steps
         filter_agents_threshold (float): Value between 0 and 1 to use as cutoff value for agent filtering
         based on their probability of being a relevant agent
         rasterizer (Optional[Rasterizer]): Rasterizer of some sort that draws a map image
         perturbation (Optional[Perturbation]): Object that perturbs the input and targets, used
-to train models that can recover from slight divergence from training set data
+        to train models that can recover from slight divergence from training set data
 
     Raises:
         IndexError: An IndexError is returned if the specified ``selected_track_id`` is not present in the scene
@@ -167,16 +155,7 @@ to train models that can recover from slight divergence from training set data
         future_agents,
         history_tl_faces,
         future_tl_faces,
-    ) = get_agent_context(
-        state_index,
-        frames,
-        agents,
-        tl_faces,
-        history_num_frames,
-        history_step_size,
-        future_num_frames,
-        future_step_size,
-    )
+    ) = get_agent_context(state_index, frames, agents, tl_faces, history_num_frames, future_num_frames,)
 
     if perturbation is not None:
         history_frames, future_frames = perturbation.perturb(
@@ -220,9 +199,7 @@ to train models that can recover from slight divergence from training set data
         history_num_frames + 1, history_frames, selected_track_id, history_agents, agent_from_world, agent_yaw_rad,
     )
 
-    history_vels_mps, future_vels_mps = compute_agent_velocity(
-        history_positions_m, future_positions_m, history_step_time, future_step_time
-    )
+    history_vels_mps, future_vels_mps = compute_agent_velocity(history_positions_m, future_positions_m, step_time)
 
     return {
         "image": input_im,
