@@ -16,7 +16,7 @@ def base_displacement(zarr_dataset: ChunkedDataset, cfg: dict) -> np.ndarray:
         ref_frame["ego_translation"][:2], rotation33_as_yaw((ref_frame["ego_rotation"]))
     )
 
-    future_coords_offset, *_ = get_relative_poses(
+    future_positions, *_ = get_relative_poses(
         num_frames=future_num_frames,
         frames=zarr_dataset.frames[1 : 1 + future_num_frames],
         selected_track_id=None,
@@ -24,7 +24,7 @@ def base_displacement(zarr_dataset: ChunkedDataset, cfg: dict) -> np.ndarray:
         agent_from_world=np.linalg.inv(world_from_agent),
         current_agent_yaw=rotation33_as_yaw(ref_frame["ego_rotation"]),
     )
-    return future_coords_offset
+    return future_positions
 
 
 # all these params should not have any effect on the displacement (as it is in agent coordinates)
