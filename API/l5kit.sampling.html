@@ -188,46 +188,92 @@
   <div class="section" id="module-l5kit.sampling">
 <span id="l5kit-sampling-package"></span><h1>l5kit.sampling package<a class="headerlink" href="#module-l5kit.sampling" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
+<dt id="l5kit.sampling.compute_agent_velocity">
+<code class="sig-prename descclassname">l5kit.sampling.</code><code class="sig-name descname">compute_agent_velocity</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">history_positions_m</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">future_positions_m</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">step_time</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.sampling.compute_agent_velocity" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute estimated velocities by finite differentiation on future positions as(pos(T+t) - pos(T))/t.
+This simple approach gives less than 0.5% velocity difference
+compared to (pos(T+t) - pos(T-t))/2t on v1.1/sample.zarr.tar.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>history_positions_m</strong> (<em>np.ndarray</em>) – history XY positions in meters</p></li>
+<li><p><strong>future_positions_m</strong> (<em>np.ndarray</em>) – future XY positions in meters</p></li>
+<li><p><strong>step_time</strong> (<em>np.ndarray</em>) – length of a step in second</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>history and future XY speeds</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="l5kit.sampling.generate_agent_sample">
 <code class="sig-prename descclassname">l5kit.sampling.</code><code class="sig-name descname">generate_agent_sample</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state_index</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">tl_faces</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">selected_track_id</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">render_context</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.rasterization.render_context.html#l5kit.rasterization.render_context.RenderContext" title="l5kit.rasterization.render_context.RenderContext">l5kit.rasterization.render_context.RenderContext</a></span></em>, <em class="sig-param"><span class="n">history_num_frames</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">future_num_frames</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">step_time</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">filter_agents_threshold</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">rasterizer</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer">l5kit.rasterization.rasterizer.Rasterizer</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">perturbation</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span><a class="reference internal" href="l5kit.kinematic.perturbation.html#l5kit.kinematic.perturbation.Perturbation" title="l5kit.kinematic.perturbation.Perturbation">l5kit.kinematic.perturbation.Perturbation</a><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#l5kit.sampling.generate_agent_sample" title="Permalink to this definition">¶</a></dt>
-<dd><dl>
-<dt>Generates the inputs and targets to train a deep prediction model. A deep prediction model takes as input</dt><dd><p>the state of the world (here: an image we will call the “raster”), and outputs where that agent will be some
+<dd><p>Generates the inputs and targets to train a deep prediction model. A deep prediction model takes as input
+the state of the world (here: an image we will call the “raster”), and outputs where that agent will be some
 seconds into the future.</p>
 <p>This function has a lot of arguments and is intended for internal use, you should try to use higher level classes
 and partials that use this function.</p>
-<dl class="simple">
-<dt>Args:</dt><dd><p>state_index (int): The anchor frame index, i.e. the “current” timestep in the scene
-frames (np.ndarray): The scene frames array, can be numpy array or a zarr array
-agents (np.ndarray): The full agents array, can be numpy array or a zarr array
-tl_faces (np.ndarray): The full traffic light faces array, can be numpy array or a zarr array
-selected_track_id (Optional[int]): Either None for AV, or the ID of an agent that you want to
-predict the future of. This agent is centered in the raster and the returned targets are derived from
-their future states.
-raster_size (Tuple[int, int]): Desired output raster dimensions
-pixel_size (np.ndarray): Size of one pixel in the real world
-ego_center (np.ndarray): Where in the raster to draw the ego, [0.5,0.5] would be the center
-history_num_frames (int): Amount of history frames to draw into the rasters
-future_num_frames (int): Amount of history frames to draw into the rasters
-step_time (float): seconds between consecutive steps
-filter_agents_threshold (float): Value between 0 and 1 to use as cutoff value for agent filtering
-based on their probability of being a relevant agent
-rasterizer (Optional[Rasterizer]): Rasterizer of some sort that draws a map image
-perturbation (Optional[Perturbation]): Object that perturbs the input and targets, used</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_index</strong> (<em>int</em>) – The anchor frame index, i.e. the “current” timestep in the scene</p></li>
+<li><p><strong>frames</strong> (<em>np.ndarray</em>) – The scene frames array, can be numpy array or a zarr array</p></li>
+<li><p><strong>agents</strong> (<em>np.ndarray</em>) – The full agents array, can be numpy array or a zarr array</p></li>
+<li><p><strong>tl_faces</strong> (<em>np.ndarray</em>) – The full traffic light faces array, can be numpy array or a zarr array</p></li>
+<li><p><strong>selected_track_id</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – Either None for AV, or the ID of an agent that you want to</p></li>
+<li><p><strong>the future of. This agent is centered in the raster and the returned targets are derived from</strong> (<em>predict</em>) – </p></li>
+<li><p><strong>future states.</strong> (<em>their</em>) – </p></li>
+<li><p><strong>render_context</strong> (<a class="reference internal" href="l5kit.rasterization.html#l5kit.rasterization.RenderContext" title="l5kit.rasterization.RenderContext"><em>RenderContext</em></a>) – The context for rasterisation</p></li>
+<li><p><strong>history_num_frames</strong> (<em>int</em>) – Amount of history frames to draw into the rasters</p></li>
+<li><p><strong>future_num_frames</strong> (<em>int</em>) – Amount of history frames to draw into the rasters</p></li>
+<li><p><strong>step_time</strong> (<em>float</em>) – seconds between consecutive steps</p></li>
+<li><p><strong>filter_agents_threshold</strong> (<em>float</em>) – Value between 0 and 1 to use as cutoff value for agent filtering</p></li>
+<li><p><strong>on their probability of being a relevant agent</strong> (<em>based</em>) – </p></li>
+<li><p><strong>rasterizer</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="l5kit.rasterization.html#l5kit.rasterization.Rasterizer" title="l5kit.rasterization.Rasterizer"><em>Rasterizer</em></a><em>]</em>) – Rasterizer of some sort that draws a map image</p></li>
+<li><p><strong>perturbation</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="l5kit.kinematic.html#l5kit.kinematic.Perturbation" title="l5kit.kinematic.Perturbation"><em>Perturbation</em></a><em>]</em>) – Object that perturbs the input and targets, used</p></li>
+<li><p><strong>train models that can recover from slight divergence from training set data</strong> (<em>to</em>) – </p></li>
+</ul>
 </dd>
-</dl>
+<dt class="field-even">Raises</dt>
+<dd class="field-even"><ul class="simple">
+<li><p><strong>IndexError</strong> – An IndexError is returned if the specified <code class="docutils literal notranslate"><span class="pre">selected_track_id</span></code> is not present in the scene</p></li>
+<li><p><strong>or was filtered by applying the filter_agent_threshold probability filtering.</strong> – </p></li>
+</ul>
 </dd>
-</dl>
-<p>to train models that can recover from slight divergence from training set data</p>
-<blockquote>
-<div><dl class="simple">
-<dt>Raises:</dt><dd><p>ValueError: A ValueError is returned if the specified <code class="docutils literal notranslate"><span class="pre">selected_track_id</span></code> is not present in the scene
-or was filtered by applying the <code class="docutils literal notranslate"><span class="pre">filter_agent_threshold</span></code> probability filtering.</p>
-</dd>
-<dt>Returns:</dt><dd><p>dict: a dict object with the raster array, the future offset coordinates (meters),
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a dict object with the raster array, the future offset coordinates (meters),
 the future yaw angular offset, the future_availability as a binary mask</p>
 </dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
 </dl>
-</div></blockquote>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.sampling.get_agent_context">
+<code class="sig-prename descclassname">l5kit.sampling.</code><code class="sig-name descname">get_agent_context</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state_index</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">tl_faces</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">history_num_frames</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">future_num_frames</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">, </span>List<span class="p">[</span>numpy.ndarray<span class="p">]</span><span class="p">, </span>List<span class="p">[</span>numpy.ndarray<span class="p">]</span><span class="p">, </span>List<span class="p">[</span>numpy.ndarray<span class="p">]</span><span class="p">, </span>List<span class="p">[</span>numpy.ndarray<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#l5kit.sampling.get_agent_context" title="Permalink to this definition">¶</a></dt>
+<dd><p>Slice zarr or numpy arrays to get the context around the agent onf interest (both in space and time)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_index</strong> (<em>int</em>) – frame index inside the scene</p></li>
+<li><p><strong>frames</strong> (<em>np.ndarray</em>) – frames from the scene</p></li>
+<li><p><strong>agents</strong> (<em>np.ndarray</em>) – agents from the scene</p></li>
+<li><p><strong>tl_faces</strong> (<em>np.ndarray</em>) – tl_faces from the scene</p></li>
+<li><p><strong>history_num_frames</strong> (<em>int</em>) – how many frames in the past to slice</p></li>
+<li><p><strong>future_num_frames</strong> (<em>int</em>) – how many frames in the future to slice</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>Tuple[np.ndarray, np.ndarray, List[np.ndarray], List[np.ndarray], List[np.ndarray], List[np.ndarray]]</p>
+</dd>
+</dl>
 </dd></dl>
 
 <dl class="py function">
@@ -280,6 +326,32 @@ would return a slice for frame index 20, 18, 16.</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>slice – Slice that when applied to an array returns the history frames in the right order.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.sampling.get_relative_poses">
+<code class="sig-prename descclassname">l5kit.sampling.</code><code class="sig-name descname">get_relative_poses</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">num_frames</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">selected_track_id</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">agent_from_world</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">current_agent_yaw</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.sampling.get_relative_poses" title="Permalink to this definition">¶</a></dt>
+<dd><p>Internal function that creates the targets and availability masks for deep prediction-type models.
+The futures/history offset (in meters) are computed. When no info is available (e.g. agent not in frame)
+a 0 is set in the availability array (1 otherwise).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>num_frames</strong> (<em>int</em>) – number of offset we want in the future/history</p></li>
+<li><p><strong>frames</strong> (<em>np.ndarray</em>) – available frames. This may be less than num_frames</p></li>
+<li><p><strong>selected_track_id</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – agent track_id or AV (None)</p></li>
+<li><p><strong>agents</strong> (<em>List</em><em>[</em><em>np.ndarray</em><em>]</em>) – list of agents arrays (same len of frames)</p></li>
+<li><p><strong>agent_from_world</strong> (<em>np.ndarray</em>) – local from world matrix</p></li>
+<li><p><strong>current_agent_yaw</strong> (<em>float</em>) – angle of the agent at timestep 0</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>position offsets, angle offsets, extent, availabilities</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]</p>
 </dd>
 </dl>
 </dd></dl>
