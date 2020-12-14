@@ -2,6 +2,7 @@ from .combine import get_combined_scenes
 from .filter import (
     filter_agents_by_frames,
     filter_agents_by_labels,
+    filter_agents_by_track_id,
     filter_tl_faces_by_frames,
     filter_tl_faces_by_status,
     get_agents_slice_from_frames,
@@ -36,4 +37,5 @@ __all__ = [
     "get_frames_slice_from_scenes",
     "get_tl_faces_slice_from_frames",
     "get_agents_slice_from_frames",
+    "filter_agents_by_track_id",
 ]

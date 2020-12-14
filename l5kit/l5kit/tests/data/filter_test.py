@@ -4,6 +4,7 @@ import pytest
 from l5kit.data import (
     ChunkedDataset,
     filter_agents_by_frames,
+    filter_agents_by_track_id,
     get_agents_slice_from_frames,
     get_frames_slice_from_scenes,
     get_tl_faces_slice_from_frames,
@@ -75,3 +76,27 @@ def test_get_tl_faces_slice_from_frames(slice_end: int, zarr_dataset: ChunkedDat
         frame_a["traffic_light_faces_index_interval"][0] : frame_b["traffic_light_faces_index_interval"][1]
     ]
     assert np.all(tl_faces_new == tl_faces)
+
+
+@pytest.mark.parametrize("track_id", [1, 2, 10, -100])
+def test_filter_agents_by_track_id(zarr_dataset: ChunkedDataset, track_id: int) -> None:
+    agents = np.asarray(zarr_dataset.agents)
+    agents_filtered = filter_agents_by_track_id(agents, track_id)
+
+    # standard approach, iterate through agents and check condition
+    agents_filtered_slow = []
+    for agent in agents:
+        if agent["track_id"] == track_id:
+            agents_filtered_slow.append(agent)
+    # ensure empty case works for both
+    assert len(agents_filtered) == len(agents_filtered_slow)
+
+    if len(agents_filtered) > 0:
+        agents_filtered_slow = np.stack(agents_filtered_slow, 0)
+        # ensure the elements are the same
+        assert np.all(agents_filtered_slow == agents_filtered)
+
+
+def test_filter_agents_by_track_id_fail_zarr(zarr_dataset: ChunkedDataset) -> None:
+    with pytest.raises(IndexError):
+        filter_agents_by_track_id(zarr_dataset.agents, 1)  # zarr can't handle boolean indexing

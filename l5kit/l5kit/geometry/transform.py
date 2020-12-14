@@ -53,7 +53,7 @@ def yaw_as_rotation33(yaw: float) -> np.ndarray:
     return transforms3d.euler.euler2mat(0, 0, yaw)
 
 
-def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
+def vertical_flip(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
     """Return a new matrix that also performs a flip on the y axis.
 
     Args:
@@ -71,37 +71,67 @@ def flip_y_axis(tm: np.ndarray, y_dim_size: int) -> np.ndarray:
 
 
 def transform_points(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
-    """Transform points using transformation matrix.
-    Note this function assumes points.shape[1] == matrix.shape[1] - 1, which means that the last
-    row in the matrix does not influence the final result.
-    For 2D points only the first 2x3 part of the matrix will be used.
+    """
+    Transform a set of 2D/3D points using the given transformation matrix.
+    Assumes row major ordering of the input points. The transform function has 3 modes:
+    - points (N, F), transf_matrix (F+1, F+1)
+        all points are transformed using the matrix and the output points have shape (N, F).
+    - points (B, N, F), transf_matrix (F+1, F+1)
+        all sequences of points are transformed using the same matrix and the output points have shape (B, N, F).
+        transf_matrix is broadcasted.
+    - points (B, N, F), transf_matrix (B, F+1, F+1)
+        each sequence of points is transformed using its own matrix and the output points have shape (B, N, F).
+
+    Note this function assumes points.shape[-1] == matrix.shape[-1] - 1, which means that last
+    rows in the matrices do not influence the final results.
+    For 2D points only the first 2x3 parts of the matrices will be used.
 
     Args:
-        points (np.ndarray): Input points (Nx2) or (Nx3).
-        transf_matrix (np.ndarray): 3x3 or 4x4 transformation matrix for 2D and 3D input respectively
+        points (np.ndarray): Input points of shape (N, F) or (B, N, F)
+        with F = 2 or 3 depending on input points are 2D or 3D points.
+        transf_matrix (np.ndarray): Transformation matrix of shape (F+1, F+1) or (B, F+1, F+1) with F = 2 or 3.
 
     Returns:
-        np.ndarray: array of shape (N,2) for 2D input points, or (N,3) points for 3D input points
+        np.ndarray: Transformed points of shape (N, F) or (B, N, F) depending on the dimensions of the input points.
     """
-    assert len(points.shape) == len(transf_matrix.shape) == 2, (
-        f"dimensions mismatch, both points ({points.shape}) and "
-        f"transf_matrix ({transf_matrix.shape}) needs to be 2D numpy ndarrays."
-    )
-    assert (
-        transf_matrix.shape[0] == transf_matrix.shape[1]
-    ), f"transf_matrix ({transf_matrix.shape}) should be a square matrix."
+    points_log = f" received points with shape {points.shape} "
+    matrix_log = f" received matrices with shape {transf_matrix.shape} "
 
-    if points.shape[1] not in [2, 3]:
-        raise AssertionError(f"Points input should be (N, 2) or (N, 3) shape, received {points.shape}")
+    assert points.ndim in [2, 3], f"points should have ndim in [2,3],{points_log}"
+    assert transf_matrix.ndim in [2, 3], f"matrix should have ndim in [2,3],{matrix_log}"
+    assert points.ndim >= transf_matrix.ndim, f"points ndim should be >= than matrix,{points_log},{matrix_log}"
 
-    assert points.shape[1] == transf_matrix.shape[1] - 1, "points dim should be one less than matrix dim"
+    points_feat = points.shape[-1]
+    assert points_feat in [2, 3], f"last points dimension must be 2 or 3,{points_log}"
+    assert transf_matrix.shape[-1] == transf_matrix.shape[-2], f"matrix should be a square matrix,{matrix_log}"
 
-    return (points @ transf_matrix.T[:-1, :-1]) + transf_matrix[:-1, -1]
+    matrix_feat = transf_matrix.shape[-1]
+    assert matrix_feat in [3, 4], f"last matrix dimension must be 3 or 4,{matrix_log}"
+    assert points_feat == matrix_feat - 1, f"points last dim should be one less than matrix,{points_log},{matrix_log}"
+
+    def _transform(points: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
+        num_dims = transf_matrix.shape[-1] - 1
+        transf_matrix = np.transpose(transf_matrix, (0, 2, 1))
+        return points @ transf_matrix[:, :num_dims, :num_dims] + transf_matrix[:, -1:, :num_dims]
+
+    if points.ndim == transf_matrix.ndim == 2:
+        points = np.expand_dims(points, 0)
+        transf_matrix = np.expand_dims(transf_matrix, 0)
+        return _transform(points, transf_matrix)[0]
+
+    elif points.ndim == transf_matrix.ndim == 3:
+        return _transform(points, transf_matrix)
+
+    elif points.ndim == 3 and transf_matrix.ndim == 2:
+        transf_matrix = np.expand_dims(transf_matrix, 0)
+        return _transform(points, transf_matrix)
+    else:
+        raise NotImplementedError(f"unsupported case!{points_log},{matrix_log}")
 
 
 def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     """Transform a single vector using transformation matrix.
-
+        This function call transform_points internally
     Args:
         point (np.ndarray): vector of shape (N)
         transf_matrix (np.ndarray): transformation matrix of shape (N+1, N+1)
@@ -109,8 +139,8 @@ def transform_point(point: np.ndarray, transf_matrix: np.ndarray) -> np.ndarray:
     Returns:
         np.ndarray: vector of same shape as input point
     """
-    point_ext = np.hstack((point, np.ones(1)))
-    return np.matmul(transf_matrix, point_ext)[: point.shape[0]]
+    point = np.expand_dims(point, 0)
+    return transform_points(point, transf_matrix)[0]
 
 
 def ecef_to_geodetic(point: Union[np.ndarray, Sequence[float]]) -> np.ndarray:

@@ -5,7 +5,7 @@ from l5kit.data import ChunkedDataset
 from l5kit.dataset import EgoDataset
 from l5kit.geometry import compute_agent_pose, rotation33_as_yaw, transform_points
 from l5kit.rasterization import RenderContext, StubRasterizer
-from l5kit.sampling.agent_sampling import _create_targets_for_deep_prediction
+from l5kit.sampling.agent_sampling import get_relative_poses
 
 
 @pytest.fixture(scope="function")
@@ -16,7 +16,7 @@ def base_displacement(zarr_dataset: ChunkedDataset, cfg: dict) -> np.ndarray:
         ref_frame["ego_translation"][:2], rotation33_as_yaw((ref_frame["ego_rotation"]))
     )
 
-    future_coords_offset, *_ = _create_targets_for_deep_prediction(
+    future_positions, *_ = get_relative_poses(
         num_frames=future_num_frames,
         frames=zarr_dataset.frames[1 : 1 + future_num_frames],
         selected_track_id=None,
@@ -24,7 +24,7 @@ def base_displacement(zarr_dataset: ChunkedDataset, cfg: dict) -> np.ndarray:
         agent_from_world=np.linalg.inv(world_from_agent),
         current_agent_yaw=rotation33_as_yaw(ref_frame["ego_rotation"]),
     )
-    return future_coords_offset
+    return future_positions
 
 
 # all these params should not have any effect on the displacement (as it is in agent coordinates)
@@ -43,7 +43,12 @@ def test_same_displacement(
     cfg["raster_params"]["pixel_size"] = np.asarray(pixel_size)
     cfg["raster_params"]["ego_center"] = np.asarray(ego_center)
 
-    render_context = RenderContext(np.asarray(raster_size), np.asarray(pixel_size), np.asarray(ego_center))
+    render_context = RenderContext(
+        np.asarray(raster_size),
+        np.asarray(pixel_size),
+        np.asarray(ego_center),
+        set_origin_to_bottom=cfg["raster_params"]["set_origin_to_bottom"],
+    )
     dataset = EgoDataset(cfg, zarr_dataset, StubRasterizer(render_context),)
     data = dataset[0]
     assert np.allclose(data["target_positions"], base_displacement)
@@ -55,6 +60,7 @@ def test_coordinates_straight_road(zarr_dataset: ChunkedDataset, cfg: dict) -> N
         np.asarray(cfg["raster_params"]["raster_size"]),
         np.asarray(cfg["raster_params"]["pixel_size"]),
         np.asarray(cfg["raster_params"]["ego_center"]),
+        set_origin_to_bottom=cfg["raster_params"]["set_origin_to_bottom"],
     )
     dataset = EgoDataset(cfg, zarr_dataset, StubRasterizer(render_context),)
 
