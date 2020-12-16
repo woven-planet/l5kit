@@ -125,6 +125,7 @@ class SemanticRasterizer(Rasterizer):
         for idx, lane_idx in enumerate(lane_indices):
             lane_idx = self.mapAPI.bounds_info["lanes"]["ids"][lane_idx]
 
+            # interpolate over polyline to always have the same number of points
             lane_coords = self.mapAPI.get_lane_as_interpolation(
                 lane_idx, INTERPOLATION_POINTS, InterpolationMethod.INTER_ENSURE_LEN
             )
