@@ -119,7 +119,7 @@ class SemanticRasterizer(Rasterizer):
         # get all lanes as interpolation so that we can transform them all together
 
         lane_indices = indices_in_bounds(center_in_world, self.mapAPI.bounds_info["lanes"]["bounds"], raster_radius)
-        lanes_lines: Dict[str, np.ndarray] = defaultdict(lambda: np.zeros(len(lane_indices) * 2, dtype=np.bool))
+        lanes_mask: Dict[str, np.ndarray] = defaultdict(lambda: np.zeros(len(lane_indices) * 2, dtype=np.bool))
         lanes_area = np.zeros((len(lane_indices) * 2, INTERPOLATION_POINTS, 2))
 
         for idx, lane_idx in enumerate(lane_indices):
@@ -141,7 +141,7 @@ class SemanticRasterizer(Rasterizer):
                     lane_type = "green"
                 elif self.mapAPI.is_traffic_face_colour(tl_id, "yellow"):
                     lane_type = "yellow"
-            lanes_lines[lane_type][idx * 2 : idx * 2 + 2] = True
+            lanes_mask[lane_type][idx * 2 : idx * 2 + 2] = True
 
         if len(lanes_area):
             lanes_area = cv2_subpixel(transform_points(lanes_area.reshape((-1, 2)), raster_from_world))
@@ -151,10 +151,10 @@ class SemanticRasterizer(Rasterizer):
                 cv2.fillPoly(img, [lane_area], (17, 17, 31), **CV2_SUB_VALUES)
 
             lanes_area = lanes_area.reshape((-1, INTERPOLATION_POINTS, 2))
-            cv2.polylines(img, lanes_area[lanes_lines["default"]], False, (255, 217, 82), **CV2_SUB_VALUES)
-            cv2.polylines(img, lanes_area[lanes_lines["red"]], False, (255, 0, 0), **CV2_SUB_VALUES)
-            cv2.polylines(img, lanes_area[lanes_lines["yellow"]], False, (255, 255, 0), **CV2_SUB_VALUES)
-            cv2.polylines(img, lanes_area[lanes_lines["green"]], False, (0, 255, 0), **CV2_SUB_VALUES)
+            cv2.polylines(img, lanes_area[lanes_mask["default"]], False, (255, 217, 82), **CV2_SUB_VALUES)
+            cv2.polylines(img, lanes_area[lanes_mask["red"]], False, (255, 0, 0), **CV2_SUB_VALUES)
+            cv2.polylines(img, lanes_area[lanes_mask["yellow"]], False, (255, 255, 0), **CV2_SUB_VALUES)
+            cv2.polylines(img, lanes_area[lanes_mask["green"]], False, (0, 255, 0), **CV2_SUB_VALUES)
 
         # plot crosswalks
         crosswalks = []
