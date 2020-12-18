@@ -15,6 +15,15 @@ def test_draw_trajectory() -> None:
     assert np.all(on_image[0, 20] == (0, 0, 0))
     assert np.all(on_image[0, 10] == (0, 0, 0))
 
+    # test also with arrowed lines
+    on_image = np.zeros((224, 244, 3), dtype=np.uint8)
+    yaws = np.asarray([[0.1], [-0.1], [0.0]])
+    draw_trajectory(on_image, positions, (255, 255, 255), yaws=yaws)
+
+    assert np.all(on_image[0, 0] == (255, 255, 255))
+    assert np.all(on_image[10, 0] == (255, 255, 255))
+    assert np.all(on_image[20, 0] == (255, 255, 255))
+
 
 def test_draw_reference_trajectory() -> None:
     on_image = np.zeros((224, 244, 3), dtype=np.uint8)

@@ -28,7 +28,8 @@ def draw_arrowed_line(on_image: np.ndarray, position: np.ndarray, yaw: float, rg
     """
     start_pixel = np.array(position[:2])
 
-    rot = cv2.getRotationMatrix2D((0, 0), np.degrees(-yaw), 1.0)  # minus here because of cv2 rotations convention
+    rot = np.eye(3)
+    rot[:-1] = cv2.getRotationMatrix2D((0, 0), np.degrees(-yaw), 1.0)  # minus here because of cv2 rotations convention
     end_pixel = start_pixel + transform_point(np.asarray([ARROW_LENGTH_IN_PIXELS, 0]), rot)
 
     cv2.arrowedLine(
