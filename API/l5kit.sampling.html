@@ -336,6 +336,8 @@ would return a slice for frame index 20, 18, 16.</p>
 <dd><p>Internal function that creates the targets and availability masks for deep prediction-type models.
 The futures/history offset (in meters) are computed. When no info is available (e.g. agent not in frame)
 a 0 is set in the availability array (1 otherwise).</p>
+<p>Note: return dtype is float32, even if the provided args are float64. Still, the transformation
+between space is performed in float64 to ensure precision</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
