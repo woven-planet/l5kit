@@ -256,6 +256,7 @@ def generate_agent_sample(
     history_vels_mps, future_vels_mps = compute_agent_velocity(history_positions_m, future_positions_m, step_time)
 
     return {
+        "frame_index": state_index,
         "image": input_im,
         "target_positions": future_positions_m,
         "target_yaws": future_yaws_rad,
