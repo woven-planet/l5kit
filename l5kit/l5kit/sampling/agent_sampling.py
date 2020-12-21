@@ -157,8 +157,8 @@ def get_relative_poses(
         availabilities[i] = 1.0
 
     # batch transform to speed up
-    positions_m = transform_points(positions_m, agent_from_world) * availabilities[:, None]
-    yaws_rad = angular_distance(yaws_rad, current_agent_yaw) * availabilities[:, None]
+    positions_m = transform_points(positions_m, agent_from_world) * availabilities[:, np.newaxis]
+    yaws_rad = angular_distance(yaws_rad, current_agent_yaw) * availabilities[:, np.newaxis]
     return positions_m.astype(np.float32), yaws_rad, extents_m, availabilities
 
 
