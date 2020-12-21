@@ -9,7 +9,7 @@ from ..data import (
     get_tl_faces_slice_from_frames,
 )
 from ..data.filter import filter_agents_by_frames, filter_agents_by_track_id
-from ..geometry import angular_distance, compute_agent_pose, rotation33_as_yaw, transform_point
+from ..geometry import angular_distance, compute_agent_pose, rotation33_as_yaw, transform_points
 from ..kinematic import Perturbation
 from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer, RenderContext
 from .slicing import get_future_slice, get_history_slice
@@ -114,6 +114,9 @@ def get_relative_poses(
     The futures/history offset (in meters) are computed. When no info is available (e.g. agent not in frame)
     a 0 is set in the availability array (1 otherwise).
 
+    Note: return dtype is float32, even if the provided args are float64. Still, the transformation
+    between space is performed in float64 to ensure precision
+
     Args:
         num_frames (int): number of offset we want in the future/history
         frames (np.ndarray): available frames. This may be less than num_frames
@@ -127,7 +130,7 @@ def get_relative_poses(
 
     """
     # How much the coordinates differ from the current state in meters.
-    positions_m = np.zeros((num_frames, 2), dtype=np.float32)
+    positions_m = np.zeros((num_frames, 2), dtype=agent_from_world.dtype)
     yaws_rad = np.zeros((num_frames, 1), dtype=np.float32)
     extents_m = np.zeros((num_frames, 2), dtype=np.float32)
     availabilities = np.zeros((num_frames,), dtype=np.float32)
@@ -148,11 +151,15 @@ def get_relative_poses(
                 availabilities[i] = 0.0  # keep track of invalid futures/history
                 continue
 
-        positions_m[i] = transform_point(agent_centroid_m, agent_from_world)
-        yaws_rad[i] = angular_distance(agent_yaw_rad, current_agent_yaw)
+        positions_m[i] = agent_centroid_m
+        yaws_rad[i] = agent_yaw_rad
         extents_m[i] = agent_extent
         availabilities[i] = 1.0
-    return positions_m, yaws_rad, extents_m, availabilities
+
+    # batch transform to speed up
+    positions_m = transform_points(positions_m, agent_from_world) * availabilities[:, None]
+    yaws_rad = angular_distance(yaws_rad, current_agent_yaw) * availabilities[:, None]
+    return positions_m.astype(np.float32), yaws_rad, extents_m, availabilities
 
 
 def generate_agent_sample(
