@@ -41,7 +41,10 @@ None if not desired
         self.dataset = zarr_dataset
         self.rasterizer = rasterizer
 
-        self.cumulative_sizes = self.dataset.scenes["frame_index_interval"][:, 1]
+        try:
+            self.cumulative_sizes = self.dataset.frames.cumsum
+        except Exception:
+            self.cumulative_sizes = self.dataset.scenes["frame_index_interval"][:, 1]
 
         render_context = RenderContext(
             raster_size_px=np.array(cfg["raster_params"]["raster_size"]),
