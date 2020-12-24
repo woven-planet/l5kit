@@ -28,7 +28,8 @@ class Dataset:
         reader = csv.DictReader(open(str(self.path / "dataset.txt"), "r"))
         fieldnames = reader.fieldnames
         assert fieldnames is not None, "error reading fieldnames"
-        assert fieldnames[0] == self.PATH_KEY
+        assert fieldnames[0] == self.PATH_KEY, f"{self.PATH_KEY} should be the first field name"
+        assert len(fieldnames) > 1, f"no fields other than {self.PATH_KEY} found"
 
         keys = fieldnames[1:]
         print(f"this dataset contains: {keys}")
@@ -49,7 +50,16 @@ class Dataset:
 
         return self
 
-    def load_npz(self, scene_idx: int) -> np.ndarry:  # lazy load here
+    def load_npz(self, scene_idx: int) -> np.ndarray:  # lazy load here
+        """
+        Load an npz given its idx in the dataset
+
+        Args:
+            scene_idx (int): the npz index in the dataset
+
+        Returns:
+            np.ndarray:
+        """
         name = self.npz_names[scene_idx]
         scene_path = self.path / name
         assert scene_path.is_file()
@@ -57,7 +67,7 @@ class Dataset:
         return data
 
     @lru_cache(maxsize=256)
-    def get_data_by_npz_idx(self, name: str, scene_idx: int) -> np.ndarry:  # cache only arrays, not full npz
+    def get_data_by_npz_idx(self, name: str, scene_idx: int) -> np.ndarray:  # cache only arrays, not full npz
         data = self.load_npz(scene_idx)
         return data[name]
 
