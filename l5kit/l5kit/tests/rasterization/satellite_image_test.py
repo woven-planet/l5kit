@@ -39,7 +39,7 @@ def test_satellite_image_cropping_rectangular() -> None:
         crop_im = get_sat_image_crop_scaled(
             sat_image, crop_size=(200, 100), sat_pixel_translation=np.array([500, 500]), yaw=yaw
         )
-        assert crop_im.shape == (200, 100, 3)
+        assert crop_im.shape == (100, 200, 3)
 
         assert crop_im[..., 0].mean() == pytest.approx(0.25, 0.1)  # One quarter should still be red
         assert crop_im[..., 1].mean() == pytest.approx(0.25, 0.1)  # One quarter should still be green
