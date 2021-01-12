@@ -172,9 +172,9 @@ class MapAPI:
             assert step > 0, "step must be greater than 0 with INTER_FIXED"
             steps = np.arange(cum_dist[0], cum_dist[-1], step)
         else:
-            raise NotImplementedError("interpolation method unknown")
+            raise NotImplementedError(f"interpolation method should be in {InterpolationMethod.__members__}")
 
-        xyz_inter = np.zeros((len(steps), 3), dtype=xyz.dtype)
+        xyz_inter = np.empty((len(steps), 3), dtype=xyz.dtype)
         xyz_inter[:, 0] = np.interp(steps, xp=cum_dist, fp=xyz[:, 0])
         xyz_inter[:, 1] = np.interp(steps, xp=cum_dist, fp=xyz[:, 1])
         xyz_inter[:, 2] = np.interp(steps, xp=cum_dist, fp=xyz[:, 2])
@@ -361,10 +361,8 @@ class MapAPI:
 
             if self.is_crosswalk(element):
                 crosswalk = self.get_crosswalk_coords(element_id)
-                x_min = np.min(crosswalk["xyz"][:, 0])
-                y_min = np.min(crosswalk["xyz"][:, 1])
-                x_max = np.max(crosswalk["xyz"][:, 0])
-                y_max = np.max(crosswalk["xyz"][:, 1])
+                x_min, y_min = np.min(crosswalk["xyz"], axis=0)[:2]
+                x_max, y_max = np.max(crosswalk["xyz"], axis=0)[:2]
 
                 crosswalks_bounds = np.append(
                     crosswalks_bounds, np.asarray([[[x_min, y_min], [x_max, y_max]]]), axis=0,
