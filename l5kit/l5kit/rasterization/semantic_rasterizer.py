@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 
 from ..data.filter import filter_tl_faces_by_status
-from ..data.map_api import InterpolationMethod, MapAPI
+from ..data.map_api import InterpolationMethod, MapAPI, TrFacesColors
 from ..geometry import rotation33_as_yaw, transform_point, transform_points
 from .rasterizer import Rasterizer
 from .render_context import RenderContext
@@ -14,6 +14,15 @@ from .render_context import RenderContext
 CV2_SUB_VALUES = {"shift": 9, "lineType": cv2.LINE_AA}
 CV2_SHIFT_VALUE = 2 ** CV2_SUB_VALUES["shift"]
 INTERPOLATION_POINTS = 20
+# map elements colours
+COLOURS = {
+    TrFacesColors.GREEN.name.lower(): (0, 255, 0),
+    TrFacesColors.RED.name.lower(): (255, 0, 0),
+    TrFacesColors.YELLOW.name.lower(): (255, 255, 0),
+    "lane_no_tl": (255, 217, 82),
+    "road": (17, 17, 31),
+    "crosswalk": (255, 117, 69),
+}
 
 
 def indices_in_bounds(center: np.ndarray, bounds: np.ndarray, half_extent: float) -> np.ndarray:
@@ -132,15 +141,11 @@ class SemanticRasterizer(Rasterizer):
             lanes_area[idx * 2] = lane_coords["xyz_left"][:, :2]
             lanes_area[idx * 2 + 1] = lane_coords["xyz_right"][::-1, :2]
 
-            lane_type = "default"  # no traffic light face is controlling this lane
+            lane_type = "lane_no_tl"
             lane_tl_ids = set(self.mapAPI.get_lane_traffic_control_ids(lane_idx))
             for tl_id in lane_tl_ids.intersection(active_tl_ids):
-                if self.mapAPI.is_traffic_face_colour(tl_id, "red"):
-                    lane_type = "red"
-                elif self.mapAPI.is_traffic_face_colour(tl_id, "green"):
-                    lane_type = "green"
-                elif self.mapAPI.is_traffic_face_colour(tl_id, "yellow"):
-                    lane_type = "yellow"
+                lane_type = self.mapAPI.get_color_for_face(tl_id)
+
             lanes_mask[lane_type][idx * 2 : idx * 2 + 2] = True
 
         if len(lanes_area):
@@ -148,23 +153,20 @@ class SemanticRasterizer(Rasterizer):
 
             for lane_area in lanes_area.reshape((-1, INTERPOLATION_POINTS * 2, 2)):
                 # need to for-loop otherwise some of them are empty
-                cv2.fillPoly(img, [lane_area], (17, 17, 31), **CV2_SUB_VALUES)
+                cv2.fillPoly(img, [lane_area], COLOURS["road"], **CV2_SUB_VALUES)
 
             lanes_area = lanes_area.reshape((-1, INTERPOLATION_POINTS, 2))
-            cv2.polylines(img, lanes_area[lanes_mask["default"]], False, (255, 217, 82), **CV2_SUB_VALUES)
-            cv2.polylines(img, lanes_area[lanes_mask["red"]], False, (255, 0, 0), **CV2_SUB_VALUES)
-            cv2.polylines(img, lanes_area[lanes_mask["yellow"]], False, (255, 255, 0), **CV2_SUB_VALUES)
-            cv2.polylines(img, lanes_area[lanes_mask["green"]], False, (0, 255, 0), **CV2_SUB_VALUES)
+            for name, mask in lanes_mask.items():  # draw each type of lane with its own colour
+                cv2.polylines(img, lanes_area[mask], False, COLOURS[name], **CV2_SUB_VALUES)
 
         # plot crosswalks
         crosswalks = []
         for idx in indices_in_bounds(center_in_world, self.mapAPI.bounds_info["crosswalks"]["bounds"], raster_radius):
             crosswalk = self.mapAPI.get_crosswalk_coords(self.mapAPI.bounds_info["crosswalks"]["ids"][idx])
-
             xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], raster_from_world))
             crosswalks.append(xy_cross)
 
-        cv2.polylines(img, crosswalks, True, (255, 117, 69), **CV2_SUB_VALUES)
+        cv2.polylines(img, crosswalks, True, COLOURS["crosswalk"], **CV2_SUB_VALUES)
 
         return img
 

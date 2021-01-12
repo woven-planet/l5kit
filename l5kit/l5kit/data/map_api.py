@@ -17,9 +17,13 @@ class InterpolationMethod(IntEnum):
     INTER_ENSURE_LEN = 1  # ensure we always get the same number of elements
 
 
-class MapAPI:
-    TR_FACES_COLORS = ["red", "green", "yellow"]
+class TrFacesColors(IntEnum):
+    RED = 0
+    GREEN = 1
+    YELLOW = 2
 
+
+class MapAPI:
     def __init__(self, protobuf_map_path: str, world_to_ecef: np.ndarray):
         """
         Interface to the raw protobuf map file with the following features:
@@ -322,10 +326,11 @@ class MapAPI:
         Returns:
             str: the colour as string for this traffic face
         """
-        for color in self.TR_FACES_COLORS:
-            if self.is_traffic_face_colour(face_id, color):
-                return color
-        raise ValueError(f"Face {face_id} has no valid color among {self.TR_FACES_COLORS}")
+        for color in TrFacesColors:
+            color_name = color.name.lower()
+            if self.is_traffic_face_colour(face_id, color_name):
+                return color_name
+        raise ValueError(f"Face {face_id} has no valid color among {TrFacesColors.__members__}")
 
     def get_bounds(self) -> dict:
         """
