@@ -327,8 +327,8 @@ class MapAPI:
             str: the colour as string for this traffic face
         """
         for color in TrFacesColors:
-            color_name = color.name.lower()
-            if self.is_traffic_face_colour(face_id, color_name):
+            color_name = color.name
+            if self.is_traffic_face_colour(face_id, color_name.lower()):
                 return color_name
         raise ValueError(f"Face {face_id} has no valid color among {TrFacesColors.__members__}")
 

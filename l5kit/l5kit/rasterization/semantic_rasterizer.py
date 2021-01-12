@@ -1,4 +1,5 @@
 from collections import defaultdict
+from enum import IntEnum
 from typing import Dict, List, Optional
 
 import cv2
@@ -14,14 +15,21 @@ from .render_context import RenderContext
 CV2_SUB_VALUES = {"shift": 9, "lineType": cv2.LINE_AA}
 CV2_SHIFT_VALUE = 2 ** CV2_SUB_VALUES["shift"]
 INTERPOLATION_POINTS = 20
-# map elements colours
+
+
+class RasterEls(IntEnum):  # map elements
+    LANE_NOTL = 0
+    ROAD = 1
+    CROSSWALK = 2
+
+
 COLOURS = {
-    TrFacesColors.GREEN.name.lower(): (0, 255, 0),
-    TrFacesColors.RED.name.lower(): (255, 0, 0),
-    TrFacesColors.YELLOW.name.lower(): (255, 255, 0),
-    "lane_no_tl": (255, 217, 82),
-    "road": (17, 17, 31),
-    "crosswalk": (255, 117, 69),
+    TrFacesColors.GREEN.name: (0, 255, 0),
+    TrFacesColors.RED.name: (255, 0, 0),
+    TrFacesColors.YELLOW.name: (255, 255, 0),
+    RasterEls.LANE_NOTL.name: (255, 217, 82),
+    RasterEls.ROAD.name: (17, 17, 31),
+    RasterEls.CROSSWALK.name: (255, 117, 69),
 }
 
 
@@ -141,7 +149,7 @@ class SemanticRasterizer(Rasterizer):
             lanes_area[idx * 2] = lane_coords["xyz_left"][:, :2]
             lanes_area[idx * 2 + 1] = lane_coords["xyz_right"][::-1, :2]
 
-            lane_type = "lane_no_tl"
+            lane_type = RasterEls.LANE_NOTL.name
             lane_tl_ids = set(self.mapAPI.get_lane_traffic_control_ids(lane_idx))
             for tl_id in lane_tl_ids.intersection(active_tl_ids):
                 lane_type = self.mapAPI.get_color_for_face(tl_id)
@@ -153,7 +161,7 @@ class SemanticRasterizer(Rasterizer):
 
             for lane_area in lanes_area.reshape((-1, INTERPOLATION_POINTS * 2, 2)):
                 # need to for-loop otherwise some of them are empty
-                cv2.fillPoly(img, [lane_area], COLOURS["road"], **CV2_SUB_VALUES)
+                cv2.fillPoly(img, [lane_area], COLOURS[RasterEls.ROAD.name], **CV2_SUB_VALUES)
 
             lanes_area = lanes_area.reshape((-1, INTERPOLATION_POINTS, 2))
             for name, mask in lanes_mask.items():  # draw each type of lane with its own colour
@@ -166,7 +174,7 @@ class SemanticRasterizer(Rasterizer):
             xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], raster_from_world))
             crosswalks.append(xy_cross)
 
-        cv2.polylines(img, crosswalks, True, COLOURS["crosswalk"], **CV2_SUB_VALUES)
+        cv2.polylines(img, crosswalks, True, COLOURS[RasterEls.CROSSWALK.name], **CV2_SUB_VALUES)
 
         return img
 
