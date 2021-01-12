@@ -17,7 +17,7 @@ class InterpolationMethod(IntEnum):
     INTER_ENSURE_LEN = 1  # ensure we always get the same number of elements
 
 
-class TrFacesColors(IntEnum):
+class TLFacesColors(IntEnum):
     RED = 0
     GREEN = 1
     YELLOW = 2
@@ -326,11 +326,11 @@ class MapAPI:
         Returns:
             str: the color as string for this traffic face
         """
-        for color in TrFacesColors:
+        for color in TLFacesColors:
             color_name = color.name
             if self.is_traffic_face_color(face_id, color_name.lower()):
                 return color_name
-        raise ValueError(f"Face {face_id} has no valid color among {TrFacesColors.__members__}")
+        raise ValueError(f"Face {face_id} has no valid color among {TLFacesColors.__members__}")
 
     def get_bounds(self) -> dict:
         """

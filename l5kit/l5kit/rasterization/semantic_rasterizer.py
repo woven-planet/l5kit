@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 
 from ..data.filter import filter_tl_faces_by_status
-from ..data.map_api import InterpolationMethod, MapAPI, TrFacesColors
+from ..data.map_api import InterpolationMethod, MapAPI, TLFacesColors
 from ..geometry import rotation33_as_yaw, transform_point, transform_points
 from .rasterizer import Rasterizer
 from .render_context import RenderContext
@@ -24,9 +24,9 @@ class RasterEls(IntEnum):  # map elements
 
 
 COLORS = {
-    TrFacesColors.GREEN.name: (0, 255, 0),
-    TrFacesColors.RED.name: (255, 0, 0),
-    TrFacesColors.YELLOW.name: (255, 255, 0),
+    TLFacesColors.GREEN.name: (0, 255, 0),
+    TLFacesColors.RED.name: (255, 0, 0),
+    TLFacesColors.YELLOW.name: (255, 255, 0),
     RasterEls.LANE_NOTL.name: (255, 217, 82),
     RasterEls.ROAD.name: (17, 17, 31),
     RasterEls.CROSSWALK.name: (255, 117, 69),
