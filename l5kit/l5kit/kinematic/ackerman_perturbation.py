@@ -95,8 +95,14 @@ class AckermanPerturbation(Perturbation):
     def perturb(
         self, history_frames: np.ndarray, future_frames: np.ndarray, **kwargs: dict
     ) -> Tuple[np.ndarray, np.ndarray]:
-        if np.random.rand() >= self.perturb_prob:
+        if future_frames.size > 0:
+            displacement = np.linalg.norm(future_frames["ego_translation"][-1,:2] - future_frames["ego_translation"][0,:2])
+        else:
+            displacement = 0
+        if np.random.rand() >= self.perturb_prob or displacement < 1:
             return history_frames.copy(), future_frames.copy()
+        # if np.random.rand() >= self.perturb_prob:
+        #     return history_frames.copy(), future_frames.copy()
 
         lateral_offset_distance, yaw_offset_angle = self.random_offset_generator()
 
