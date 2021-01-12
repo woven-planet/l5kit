@@ -23,7 +23,7 @@ class RasterEls(IntEnum):  # map elements
     CROSSWALK = 2
 
 
-COLOURS = {
+COLORS = {
     TrFacesColors.GREEN.name: (0, 255, 0),
     TrFacesColors.RED.name: (255, 0, 0),
     TrFacesColors.YELLOW.name: (255, 255, 0),
@@ -161,11 +161,11 @@ class SemanticRasterizer(Rasterizer):
 
             for lane_area in lanes_area.reshape((-1, INTERPOLATION_POINTS * 2, 2)):
                 # need to for-loop otherwise some of them are empty
-                cv2.fillPoly(img, [lane_area], COLOURS[RasterEls.ROAD.name], **CV2_SUB_VALUES)
+                cv2.fillPoly(img, [lane_area], COLORS[RasterEls.ROAD.name], **CV2_SUB_VALUES)
 
             lanes_area = lanes_area.reshape((-1, INTERPOLATION_POINTS, 2))
-            for name, mask in lanes_mask.items():  # draw each type of lane with its own colour
-                cv2.polylines(img, lanes_area[mask], False, COLOURS[name], **CV2_SUB_VALUES)
+            for name, mask in lanes_mask.items():  # draw each type of lane with its own color
+                cv2.polylines(img, lanes_area[mask], False, COLORS[name], **CV2_SUB_VALUES)
 
         # plot crosswalks
         crosswalks = []
@@ -174,7 +174,7 @@ class SemanticRasterizer(Rasterizer):
             xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], raster_from_world))
             crosswalks.append(xy_cross)
 
-        cv2.polylines(img, crosswalks, True, COLOURS[RasterEls.CROSSWALK.name], **CV2_SUB_VALUES)
+        cv2.polylines(img, crosswalks, True, COLORS[RasterEls.CROSSWALK.name], **CV2_SUB_VALUES)
 
         return img
 

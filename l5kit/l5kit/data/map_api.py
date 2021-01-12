@@ -291,26 +291,26 @@ class MapAPI:
         traffic_el = element.element.traffic_control_element
         return traffic_el.HasField("traffic_light") is True
 
-    def is_traffic_face_colour(self, element_id: str, colour: str) -> bool:
+    def is_traffic_face_color(self, element_id: str, color: str) -> bool:
         """
-        Check if the element is a traffic light face of the given colour
+        Check if the element is a traffic light face of the given color
 
         Args:
             element_id (str): the id (utf-8 encode) of the element
-            colour (str): the colour to check
+            color (str): the color to check
         Returns:
-            True if the element is a traffic light face with the given colour
+            True if the element is a traffic light face with the given color
         """
         element = self[element_id]
         if not element.element.HasField("traffic_control_element"):
             return False
         traffic_el = element.element.traffic_control_element
         if (
-            traffic_el.HasField(f"signal_{colour}_face")
-            or traffic_el.HasField(f"signal_left_arrow_{colour}_face")
-            or traffic_el.HasField(f"signal_right_arrow_{colour}_face")
-            or traffic_el.HasField(f"signal_upper_left_arrow_{colour}_face")
-            or traffic_el.HasField(f"signal_upper_right_arrow_{colour}_face")
+            traffic_el.HasField(f"signal_{color}_face")
+            or traffic_el.HasField(f"signal_left_arrow_{color}_face")
+            or traffic_el.HasField(f"signal_right_arrow_{color}_face")
+            or traffic_el.HasField(f"signal_upper_left_arrow_{color}_face")
+            or traffic_el.HasField(f"signal_upper_right_arrow_{color}_face")
         ):
             return True
         return False
@@ -318,17 +318,17 @@ class MapAPI:
     @lru_cache(maxsize=CACHE_SIZE)
     def get_color_for_face(self, face_id: str) -> str:
         """
-        Utility function. It calls `is_traffic_face_colour` for a set of colours until it gets an answer.
+        Utility function. It calls `is_traffic_face_color` for a set of colors until it gets an answer.
         If no color is found, then `face_id` is not the id of a traffic light face (and we raise ValueError).
 
         Args:
             face_id (str): the element id
         Returns:
-            str: the colour as string for this traffic face
+            str: the color as string for this traffic face
         """
         for color in TrFacesColors:
             color_name = color.name
-            if self.is_traffic_face_colour(face_id, color_name.lower()):
+            if self.is_traffic_face_color(face_id, color_name.lower()):
                 return color_name
         raise ValueError(f"Face {face_id} has no valid color among {TrFacesColors.__members__}")
 
