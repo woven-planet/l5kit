@@ -149,20 +149,22 @@ class MapAPI:
         return {"xyz_left": xyz_left, "xyz_right": xyz_right}
 
     @staticmethod
-    def interpolate(xyz: np.ndarray, cum_dist: np.ndarray, step: float, method: InterpolationMethod) -> np.ndarray:
+    def interpolate(xyz: np.ndarray, step: float, method: InterpolationMethod) -> np.ndarray:
         """
         Interpolate points based on cumulative distances from the first one. Two modes are available:
         INTER_METER: interpolate using step as a meter value over cumulative distances (variable len result)
         INTER_ENSURE_LEN: interpolate using a variable step such that we always get step values
         Args:
             xyz (np.ndarray): XYZ coords
-            cum_dist (np.ndarray): distances from the first coords of xyz. Same length as xyz
             step (float): param for the interpolation
             method (InterpolationMethod): method to use to interpolate
 
         Returns:
             np.ndarray: the new interpolated coordinates
         """
+        cum_dist = np.cumsum(np.linalg.norm(np.diff(xyz, axis=0), axis=-1))
+        cum_dist = np.insert(cum_dist, 0, 0)
+
         if method == InterpolationMethod.INTER_ENSURE_LEN:
             step = int(step)
             assert step > 1, "step must be at least 2 with INTER_ENSURE_LEN"
@@ -203,15 +205,8 @@ class MapAPI:
         xyz_left = lane_dict["xyz_left"]
         xyz_right = lane_dict["xyz_right"]
 
-        # cumulative distance from the first point, including the first itself as 0
-        distances_left = np.cumsum(np.linalg.norm(np.diff(xyz_left, axis=0), axis=-1))
-        distances_left = np.insert(distances_left, 0, 0)
-
-        distances_right = np.cumsum(np.linalg.norm(np.diff(xyz_right, axis=0), axis=-1))
-        distances_right = np.insert(distances_right, 0, 0)
-
-        lane_dict["xyz_left"] = self.interpolate(xyz_left, distances_left, step, method)
-        lane_dict["xyz_right"] = self.interpolate(xyz_right, distances_right, step, method)
+        lane_dict["xyz_left"] = self.interpolate(xyz_left, step, method)
+        lane_dict["xyz_right"] = self.interpolate(xyz_right, step, method)
 
         # to compute midlane we average between left and right bounds
         # but to do that we need them to have the same numbers of points
@@ -219,8 +214,8 @@ class MapAPI:
         if method != InterpolationMethod.INTER_ENSURE_LEN:
             mid_steps = max(len(xyz_left), len(xyz_right))
             # recompute lanes using fixed length
-            xyz_left = self.interpolate(xyz_left, distances_left, mid_steps, InterpolationMethod.INTER_ENSURE_LEN)
-            xyz_right = self.interpolate(xyz_right, distances_right, mid_steps, InterpolationMethod.INTER_ENSURE_LEN)
+            xyz_left = self.interpolate(xyz_left, mid_steps, InterpolationMethod.INTER_ENSURE_LEN)
+            xyz_right = self.interpolate(xyz_right, mid_steps, InterpolationMethod.INTER_ENSURE_LEN)
 
         else:
             xyz_left = lane_dict["xyz_left"]
@@ -229,9 +224,7 @@ class MapAPI:
         xyz_midlane = (xyz_left + xyz_right) / 2
 
         # interpolate xyz for midlane with the selected interpolation
-        distances_midlane = np.cumsum(np.linalg.norm(np.diff(xyz_midlane, axis=0), axis=-1))
-        distances_midlane = np.insert(distances_midlane, 0, 0)
-        lane_dict["xyz_midlane"] = self.interpolate(xyz_midlane, distances_midlane, step, method)
+        lane_dict["xyz_midlane"] = self.interpolate(xyz_midlane, step, method)
         return lane_dict
 
     @staticmethod
