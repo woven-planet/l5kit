@@ -63,12 +63,21 @@ def get_sat_image_crop_scaled(
         (np.ndarray): a crop of input ``sat_image``
     """
 
-    crop_size_in_meters = np.array(crop_size) * pixel_size
+    max_crop_size = [max(crop_size), max(crop_size)]
+    crop_size_in_meters = np.array(max_crop_size) * pixel_size
     crop_size_in_sat_pixels = np.int0(np.round(crop_size_in_meters / sat_pixel_scale))
 
     sat_crop = get_sat_image_crop(sat_image, crop_size_in_sat_pixels, sat_pixel_translation, yaw)
 
-    return cv2.resize(sat_crop, tuple(crop_size), interpolation=interpolation)
+    resized_sat_crop = cv2.resize(sat_crop, tuple(max_crop_size), interpolation=interpolation)
+    start_x = np.int0(resized_sat_crop.shape[0] / 2 - crop_size[1] / 2)
+    end_x = start_x + crop_size[1]
+    start_y = np.int0(resized_sat_crop.shape[1] / 2 - crop_size[0] / 2)
+    end_y = start_y + crop_size[0]
+
+    out_sat_crop = resized_sat_crop[start_x:end_x, start_y:end_y]
+
+    return out_sat_crop
 
 
 def get_sat_image_crop(
