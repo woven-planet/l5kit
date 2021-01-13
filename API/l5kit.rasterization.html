@@ -320,21 +320,6 @@ pointing right for the current timestep.</p>
 <dd><p>Bases: <a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.rasterization.rasterizer.Rasterizer</span></code></a></p>
 <p>Rasteriser for the vectorised semantic map (generally loaded from json files).</p>
 <dl class="py method">
-<dt id="l5kit.rasterization.SemanticRasterizer.get_bounds">
-<code class="sig-name descname">get_bounds</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#l5kit.rasterization.SemanticRasterizer.get_bounds" title="Permalink to this definition">¶</a></dt>
-<dd><p>For each elements of interest returns bounds [[min_x, min_y],[max_x, max_y]] and proto ids
-Coords are computed by the MapAPI and, as such, are in the world ref system.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>keys are classes of elements, values are dict with <cite>bounds</cite> and <cite>ids</cite> keys</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>dict</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt id="l5kit.rasterization.SemanticRasterizer.num_channels">
 <code class="sig-name descname">num_channels</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#l5kit.rasterization.SemanticRasterizer.num_channels" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>

@@ -196,9 +196,59 @@
   <div class="section" id="module-l5kit.data.map_api">
 <span id="l5kit-data-map-api-module"></span><h1>l5kit.data.map_api module<a class="headerlink" href="#module-l5kit.data.map_api" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
+<dt id="l5kit.data.map_api.InterpolationMethod">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.data.map_api.</code><code class="sig-name descname">InterpolationMethod</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.data.map_api.InterpolationMethod" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt id="l5kit.data.map_api.InterpolationMethod.INTER_ENSURE_LEN">
+<code class="sig-name descname">INTER_ENSURE_LEN</code><em class="property"> = 1</em><a class="headerlink" href="#l5kit.data.map_api.InterpolationMethod.INTER_ENSURE_LEN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.data.map_api.InterpolationMethod.INTER_METER">
+<code class="sig-name descname">INTER_METER</code><em class="property"> = 0</em><a class="headerlink" href="#l5kit.data.map_api.InterpolationMethod.INTER_METER" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="l5kit.data.map_api.MapAPI">
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.data.map_api.</code><code class="sig-name descname">MapAPI</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">protobuf_map_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">world_to_ecef</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="l5kit.data.map_api.MapAPI.get_bounds">
+<code class="sig-name descname">get_bounds</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_bounds" title="Permalink to this definition">¶</a></dt>
+<dd><p>For each elements of interest returns bounds [[min_x, min_y],[max_x, max_y]] and proto ids
+Coords are computed by the MapAPI and, as such, are in the world ref system.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>keys are classes of elements, values are dict with <cite>bounds</cite> and <cite>ids</cite> keys</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.data.map_api.MapAPI.get_color_for_face">
+<code class="sig-name descname">get_color_for_face</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">face_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_color_for_face" title="Permalink to this definition">¶</a></dt>
+<dd><p>Utility function. It calls <cite>is_traffic_face_color</cite> for a set of colors until it gets an answer.
+If no color is found, then <cite>face_id</cite> is not the id of a traffic light face (and we raise ValueError).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>face_id</strong> (<em>str</em>) – the element id</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the color as string for this traffic face</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py method">
 <dt id="l5kit.data.map_api.MapAPI.get_crosswalk_coords">
 <code class="sig-name descname">get_crosswalk_coords</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_crosswalk_coords" title="Permalink to this definition">¶</a></dt>
@@ -210,6 +260,28 @@ lru_cached for O(1) access</p>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>a dict with the polygon coordinates as an (Nx3) XYZ array</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.data.map_api.MapAPI.get_lane_as_interpolation">
+<code class="sig-name descname">get_lane_as_interpolation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">step</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#l5kit.data.map_api.InterpolationMethod" title="l5kit.data.map_api.InterpolationMethod">l5kit.data.map_api.InterpolationMethod</a></span></em><span class="sig-paren">)</span> &#x2192; dict<a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_lane_as_interpolation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Perform an interpolation of the left and right lanes and compute the midlane.
+See interpolate for details about the different interpolation methods</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>element_id</strong> (<em>str</em>) – lane id</p></li>
+<li><p><strong>step</strong> (<em>float</em>) – step param for the method</p></li>
+<li><p><strong>method</strong> (<a class="reference internal" href="#l5kit.data.map_api.InterpolationMethod" title="l5kit.data.map_api.InterpolationMethod"><em>InterpolationMethod</em></a>) – one of the accepted methods</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>same as <cite>get_lane_coords</cite> but overwrite xyz values for the lanes</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>dict</p>
@@ -236,6 +308,11 @@ lru_cached for O(1) access</p>
 </dd></dl>
 
 <dl class="py method">
+<dt id="l5kit.data.map_api.MapAPI.get_lane_traffic_control_ids">
+<code class="sig-name descname">get_lane_traffic_control_ids</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; set<a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_lane_traffic_control_ids" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
 <dt id="l5kit.data.map_api.MapAPI.id_as_str">
 <em class="property">static </em><code class="sig-name descname">id_as_str</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element_id</span><span class="p">:</span> <span class="n">road_network_pb2.GlobalId</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#l5kit.data.map_api.MapAPI.id_as_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the element id as a string.
@@ -249,6 +326,28 @@ Elements ids are stored as a variable len sequence of bytes in the protobuf</p>
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>str</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.data.map_api.MapAPI.interpolate">
+<em class="property">static </em><code class="sig-name descname">interpolate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">xyz</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">step</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">method</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#l5kit.data.map_api.InterpolationMethod" title="l5kit.data.map_api.InterpolationMethod">l5kit.data.map_api.InterpolationMethod</a></span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.data.map_api.MapAPI.interpolate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Interpolate points based on cumulative distances from the first one. Two modes are available:
+INTER_METER: interpolate using step as a meter value over cumulative distances (variable len result)
+INTER_ENSURE_LEN: interpolate using a variable step such that we always get step values
+:param xyz: XYZ coords
+:type xyz: np.ndarray
+:param step: param for the interpolation
+:type step: float
+:param method: method to use to interpolate
+:type method: InterpolationMethod</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the new interpolated coordinates</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -288,18 +387,31 @@ Elements ids are stored as a variable len sequence of bytes in the protobuf</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.is_traffic_face_colour">
-<code class="sig-name descname">is_traffic_face_colour</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">colour</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#l5kit.data.map_api.MapAPI.is_traffic_face_colour" title="Permalink to this definition">¶</a></dt>
-<dd><p>Check if the element is a traffic light face of the given colour</p>
+<dt id="l5kit.data.map_api.MapAPI.is_traffic_face_color">
+<code class="sig-name descname">is_traffic_face_color</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element_id</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">color</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#l5kit.data.map_api.MapAPI.is_traffic_face_color" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the element is a traffic light face of the given color</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
 <li><p><strong>element_id</strong> (<em>str</em>) – the id (utf-8 encode) of the element</p></li>
-<li><p><strong>colour</strong> (<em>str</em>) – the colour to check</p></li>
+<li><p><strong>color</strong> (<em>str</em>) – the color to check</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>True if the element is a traffic light with the given colour</p>
+<dd class="field-even"><p>True if the element is a traffic light face with the given color</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.data.map_api.MapAPI.is_traffic_light">
+<code class="sig-name descname">is_traffic_light</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">element_id</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; bool<a class="headerlink" href="#l5kit.data.map_api.MapAPI.is_traffic_light" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the element is a traffic light
+:param element_id: the id (utf-8 encode) of the element
+:type element_id: str</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>True if the element is a traffic light</p>
 </dd>
 </dl>
 </dd></dl>
@@ -326,6 +438,28 @@ See the protobuf annotations for additional information about how coordinates ar
 </dd>
 </dl>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.data.map_api.TLFacesColors">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.data.map_api.</code><code class="sig-name descname">TLFacesColors</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.data.map_api.TLFacesColors" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<p>An enumeration.</p>
+<dl class="py attribute">
+<dt id="l5kit.data.map_api.TLFacesColors.GREEN">
+<code class="sig-name descname">GREEN</code><em class="property"> = 1</em><a class="headerlink" href="#l5kit.data.map_api.TLFacesColors.GREEN" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.data.map_api.TLFacesColors.RED">
+<code class="sig-name descname">RED</code><em class="property"> = 0</em><a class="headerlink" href="#l5kit.data.map_api.TLFacesColors.RED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.data.map_api.TLFacesColors.YELLOW">
+<code class="sig-name descname">YELLOW</code><em class="property"> = 2</em><a class="headerlink" href="#l5kit.data.map_api.TLFacesColors.YELLOW" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
