@@ -1,21 +1,39 @@
 from collections import defaultdict
-from typing import List, Optional
+from enum import IntEnum
+from typing import Dict, List, Optional
 
 import cv2
 import numpy as np
 
 from ..data.filter import filter_tl_faces_by_status
-from ..data.map_api import MapAPI
+from ..data.map_api import InterpolationMethod, MapAPI, TLFacesColors
 from ..geometry import rotation33_as_yaw, transform_point, transform_points
 from .rasterizer import Rasterizer
 from .render_context import RenderContext
 
 # sub-pixel drawing precision constants
-CV2_SHIFT = 8  # how many bits to shift in drawing
-CV2_SHIFT_VALUE = 2 ** CV2_SHIFT
+CV2_SUB_VALUES = {"shift": 9, "lineType": cv2.LINE_AA}
+CV2_SHIFT_VALUE = 2 ** CV2_SUB_VALUES["shift"]
+INTERPOLATION_POINTS = 20
 
 
-def elements_within_bounds(center: np.ndarray, bounds: np.ndarray, half_extent: float) -> np.ndarray:
+class RasterEls(IntEnum):  # map elements
+    LANE_NOTL = 0
+    ROAD = 1
+    CROSSWALK = 2
+
+
+COLORS = {
+    TLFacesColors.GREEN.name: (0, 255, 0),
+    TLFacesColors.RED.name: (255, 0, 0),
+    TLFacesColors.YELLOW.name: (255, 255, 0),
+    RasterEls.LANE_NOTL.name: (255, 217, 82),
+    RasterEls.ROAD.name: (17, 17, 31),
+    RasterEls.CROSSWALK.name: (255, 117, 69),
+}
+
+
+def indices_in_bounds(center: np.ndarray, bounds: np.ndarray, half_extent: float) -> np.ndarray:
     """
     Get indices of elements for which the bounding box described by bounds intersects the one defined around
     center (square with side 2*half_side)
@@ -68,54 +86,7 @@ class SemanticRasterizer(Rasterizer):
 
         self.world_to_ecef = world_to_ecef
 
-        self.proto_API = MapAPI(semantic_map_path, world_to_ecef)
-
-        self.bounds_info = self.get_bounds()
-
-    # TODO is this the right place for this function?
-    def get_bounds(self) -> dict:
-        """
-        For each elements of interest returns bounds [[min_x, min_y],[max_x, max_y]] and proto ids
-        Coords are computed by the MapAPI and, as such, are in the world ref system.
-
-        Returns:
-            dict: keys are classes of elements, values are dict with `bounds` and `ids` keys
-        """
-        lanes_ids = []
-        crosswalks_ids = []
-
-        lanes_bounds = np.empty((0, 2, 2), dtype=np.float)  # [(X_MIN, Y_MIN), (X_MAX, Y_MAX)]
-        crosswalks_bounds = np.empty((0, 2, 2), dtype=np.float)  # [(X_MIN, Y_MIN), (X_MAX, Y_MAX)]
-
-        for element in self.proto_API:
-            element_id = MapAPI.id_as_str(element.id)
-
-            if self.proto_API.is_lane(element):
-                lane = self.proto_API.get_lane_coords(element_id)
-                x_min = min(np.min(lane["xyz_left"][:, 0]), np.min(lane["xyz_right"][:, 0]))
-                y_min = min(np.min(lane["xyz_left"][:, 1]), np.min(lane["xyz_right"][:, 1]))
-                x_max = max(np.max(lane["xyz_left"][:, 0]), np.max(lane["xyz_right"][:, 0]))
-                y_max = max(np.max(lane["xyz_left"][:, 1]), np.max(lane["xyz_right"][:, 1]))
-
-                lanes_bounds = np.append(lanes_bounds, np.asarray([[[x_min, y_min], [x_max, y_max]]]), axis=0)
-                lanes_ids.append(element_id)
-
-            if self.proto_API.is_crosswalk(element):
-                crosswalk = self.proto_API.get_crosswalk_coords(element_id)
-                x_min = np.min(crosswalk["xyz"][:, 0])
-                y_min = np.min(crosswalk["xyz"][:, 1])
-                x_max = np.max(crosswalk["xyz"][:, 0])
-                y_max = np.max(crosswalk["xyz"][:, 1])
-
-                crosswalks_bounds = np.append(
-                    crosswalks_bounds, np.asarray([[[x_min, y_min], [x_max, y_max]]]), axis=0,
-                )
-                crosswalks_ids.append(element_id)
-
-        return {
-            "lanes": {"bounds": lanes_bounds, "ids": lanes_ids},
-            "crosswalks": {"bounds": crosswalks_bounds, "ids": crosswalks_ids},
-        }
+        self.mapAPI = MapAPI(semantic_map_path, world_to_ecef)
 
     def rasterize(
         self,
@@ -162,47 +133,48 @@ class SemanticRasterizer(Rasterizer):
         # get active traffic light faces
         active_tl_ids = set(filter_tl_faces_by_status(tl_faces, "ACTIVE")["face_id"].tolist())
 
-        # plot lanes
-        lanes_lines = defaultdict(list)
+        # get all lanes as interpolation so that we can transform them all together
 
-        for idx in elements_within_bounds(center_in_world, self.bounds_info["lanes"]["bounds"], raster_radius):
-            lane = self.proto_API[self.bounds_info["lanes"]["ids"][idx]].element.lane
+        lane_indices = indices_in_bounds(center_in_world, self.mapAPI.bounds_info["lanes"]["bounds"], raster_radius)
+        lanes_mask: Dict[str, np.ndarray] = defaultdict(lambda: np.zeros(len(lane_indices) * 2, dtype=np.bool))
+        lanes_area = np.zeros((len(lane_indices) * 2, INTERPOLATION_POINTS, 2))
 
-            # get image coords
-            lane_coords = self.proto_API.get_lane_coords(self.bounds_info["lanes"]["ids"][idx])
-            xy_left = cv2_subpixel(transform_points(lane_coords["xyz_left"][:, :2], raster_from_world))
-            xy_right = cv2_subpixel(transform_points(lane_coords["xyz_right"][:, :2], raster_from_world))
-            lanes_area = np.vstack((xy_left, np.flip(xy_right, 0)))  # start->end left then end->start right
+        for idx, lane_idx in enumerate(lane_indices):
+            lane_idx = self.mapAPI.bounds_info["lanes"]["ids"][lane_idx]
 
-            # Note(lberg): this called on all polygons skips some of them, don't know why
-            cv2.fillPoly(img, [lanes_area], (17, 17, 31), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
+            # interpolate over polyline to always have the same number of points
+            lane_coords = self.mapAPI.get_lane_as_interpolation(
+                lane_idx, INTERPOLATION_POINTS, InterpolationMethod.INTER_ENSURE_LEN
+            )
+            lanes_area[idx * 2] = lane_coords["xyz_left"][:, :2]
+            lanes_area[idx * 2 + 1] = lane_coords["xyz_right"][::-1, :2]
 
-            lane_type = "default"  # no traffic light face is controlling this lane
-            lane_tl_ids = set([MapAPI.id_as_str(la_tc) for la_tc in lane.traffic_controls])
+            lane_type = RasterEls.LANE_NOTL.name
+            lane_tl_ids = set(self.mapAPI.get_lane_traffic_control_ids(lane_idx))
             for tl_id in lane_tl_ids.intersection(active_tl_ids):
-                if self.proto_API.is_traffic_face_colour(tl_id, "red"):
-                    lane_type = "red"
-                elif self.proto_API.is_traffic_face_colour(tl_id, "green"):
-                    lane_type = "green"
-                elif self.proto_API.is_traffic_face_colour(tl_id, "yellow"):
-                    lane_type = "yellow"
+                lane_type = self.mapAPI.get_color_for_face(tl_id)
 
-            lanes_lines[lane_type].extend([xy_left, xy_right])
+            lanes_mask[lane_type][idx * 2 : idx * 2 + 2] = True
 
-        cv2.polylines(img, lanes_lines["default"], False, (255, 217, 82), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
-        cv2.polylines(img, lanes_lines["green"], False, (0, 255, 0), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
-        cv2.polylines(img, lanes_lines["yellow"], False, (255, 255, 0), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
-        cv2.polylines(img, lanes_lines["red"], False, (255, 0, 0), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
+        if len(lanes_area):
+            lanes_area = cv2_subpixel(transform_points(lanes_area.reshape((-1, 2)), raster_from_world))
+
+            for lane_area in lanes_area.reshape((-1, INTERPOLATION_POINTS * 2, 2)):
+                # need to for-loop otherwise some of them are empty
+                cv2.fillPoly(img, [lane_area], COLORS[RasterEls.ROAD.name], **CV2_SUB_VALUES)
+
+            lanes_area = lanes_area.reshape((-1, INTERPOLATION_POINTS, 2))
+            for name, mask in lanes_mask.items():  # draw each type of lane with its own color
+                cv2.polylines(img, lanes_area[mask], False, COLORS[name], **CV2_SUB_VALUES)
 
         # plot crosswalks
         crosswalks = []
-        for idx in elements_within_bounds(center_in_world, self.bounds_info["crosswalks"]["bounds"], raster_radius):
-            crosswalk = self.proto_API.get_crosswalk_coords(self.bounds_info["crosswalks"]["ids"][idx])
-
+        for idx in indices_in_bounds(center_in_world, self.mapAPI.bounds_info["crosswalks"]["bounds"], raster_radius):
+            crosswalk = self.mapAPI.get_crosswalk_coords(self.mapAPI.bounds_info["crosswalks"]["ids"][idx])
             xy_cross = cv2_subpixel(transform_points(crosswalk["xyz"][:, :2], raster_from_world))
             crosswalks.append(xy_cross)
 
-        cv2.polylines(img, crosswalks, True, (255, 117, 69), lineType=cv2.LINE_AA, shift=CV2_SHIFT)
+        cv2.polylines(img, crosswalks, True, COLORS[RasterEls.CROSSWALK.name], **CV2_SUB_VALUES)
 
         return img
 

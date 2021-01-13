@@ -9,7 +9,7 @@ from ..data.filter import filter_agents_by_labels, filter_agents_by_track_id
 from ..geometry import rotation33_as_yaw, transform_points
 from .rasterizer import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer
 from .render_context import RenderContext
-from .semantic_rasterizer import CV2_SHIFT, cv2_subpixel
+from .semantic_rasterizer import CV2_SUB_VALUES, cv2_subpixel
 
 
 def get_ego_as_agent(frame: np.ndarray) -> np.ndarray:  # TODO this can be useful to have around
@@ -69,7 +69,7 @@ def draw_boxes(
 
     # fillPoly wants polys in a sequence with points inside as (x,y)
     box_raster_coords = cv2_subpixel(box_raster_coords.reshape((-1, 4, 2)))
-    cv2.fillPoly(im, box_raster_coords, color=color, lineType=cv2.LINE_AA, shift=CV2_SHIFT)
+    cv2.fillPoly(im, box_raster_coords, color=color, **CV2_SUB_VALUES)
     return im
 
 
