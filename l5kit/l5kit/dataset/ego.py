@@ -6,12 +6,8 @@ from typing import Optional
 import numpy as np
 from torch.utils.data import Dataset
 
-from ..data import (
-    ChunkedDataset,
-    get_agents_slice_from_frames,
-    get_frames_slice_from_scenes,
-    get_tl_faces_slice_from_frames,
-)
+from ..data import (ChunkedDataset, get_agents_slice_from_frames, get_frames_slice_from_scenes,
+                    get_tl_faces_slice_from_frames)
 from ..kinematic import Perturbation
 from ..rasterization import Rasterizer, RenderContext
 from ..sampling import generate_agent_sample
@@ -20,11 +16,11 @@ from .utils import convert_str_to_fixed_length_tensor
 
 class EgoDataset(Dataset):
     def __init__(
-        self,
-        cfg: dict,
-        zarr_dataset: ChunkedDataset,
-        rasterizer: Rasterizer,
-        perturbation: Optional[Perturbation] = None,
+            self,
+            cfg: dict,
+            zarr_dataset: ChunkedDataset,
+            rasterizer: Rasterizer,
+            perturbation: Optional[Perturbation] = None,
     ):
         """
         Get a PyTorch dataset object that can be used to train DNN
@@ -150,7 +146,7 @@ None if not desired
 
         """
         # copy everything to avoid references (scene is already detached from zarr if get_combined_scene was called)
-        scenes = self.dataset.scenes[scene_index : scene_index + 1].copy()
+        scenes = self.dataset.scenes[scene_index: scene_index + 1].copy()
         frame_slice = get_frames_slice_from_scenes(*scenes)
         frames = self.dataset.frames[frame_slice].copy()
         agent_slice = get_agents_slice_from_frames(*frames[[0, -1]])

@@ -6,7 +6,6 @@ from l5kit.rasterization import get_sat_image_crop, get_sat_image_crop_scaled
 
 
 def test_satellite_image_cropping_square() -> None:
-
     sat_image = np.zeros((1001, 1001, 3), dtype=np.float32)
     sat_image[500:, :500, 0] = 1  # Make top right corner red
     sat_image[:500, :500, 1] = 1  # Make bottom right corner green
@@ -29,7 +28,6 @@ def test_satellite_image_cropping_square() -> None:
 
 
 def test_satellite_image_cropping_rectangular() -> None:
-
     sat_image = np.zeros((1001, 1001, 3), dtype=np.float32)
     sat_image[500:, :500, 0] = 1  # Make top right corner red
     sat_image[:500, :500, 1] = 1  # Make bottom right corner green
@@ -54,7 +52,7 @@ def test_satellite_image_cropping_rectangular() -> None:
 def test_satellite_image_cropping_scaled() -> None:
     sat_image = np.zeros((10001, 10001, 3), dtype=np.float32)
     center_point = np.array([5000, 5000])
-    sat_image[center_point[0] - 50 : center_point[0] + 50, center_point[1] - 50 : center_point[1] + 50] = 1.0
+    sat_image[center_point[0] - 50: center_point[0] + 50, center_point[1] - 50: center_point[1] + 50] = 1.0
 
     for yaw in [None, 0.321 * np.pi, 0.5 * np.pi, 1.0 * np.pi]:
         crop_im = get_sat_image_crop_scaled(

@@ -16,11 +16,11 @@ class SatelliteRasterizer(Rasterizer):
     """
 
     def __init__(
-        self,
-        render_context: RenderContext,
-        map_im: np.ndarray,
-        world_to_aerial: np.ndarray,
-        interpolation: int = cv2.INTER_LINEAR,
+            self,
+            render_context: RenderContext,
+            map_im: np.ndarray,
+            world_to_aerial: np.ndarray,
+            interpolation: int = cv2.INTER_LINEAR,
     ):
         """
 
@@ -40,11 +40,11 @@ class SatelliteRasterizer(Rasterizer):
         ) / 2
 
     def rasterize(
-        self,
-        history_frames: np.ndarray,
-        history_agents: List[np.ndarray],
-        history_tl_faces: List[np.ndarray],
-        agent: Optional[np.ndarray] = None,
+            self,
+            history_frames: np.ndarray,
+            history_agents: List[np.ndarray],
+            history_tl_faces: List[np.ndarray],
+            agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
 
         # Note 1: it looks like we are assuming that yaw in ecef == yaw in sat image

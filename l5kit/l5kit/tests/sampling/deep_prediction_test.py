@@ -4,12 +4,12 @@ from typing import Callable
 import numpy as np
 import pytest
 
-from l5kit.data import AGENT_DTYPE, FRAME_DTYPE, ChunkedDataset
+from l5kit.data import AGENT_DTYPE, ChunkedDataset, FRAME_DTYPE
 from l5kit.rasterization import RenderContext, StubRasterizer
 from l5kit.sampling import generate_agent_sample
 
 
-def get_partial(cfg: dict, history_num_frames: int, future_num_frames: int, step_time: float,) -> Callable:
+def get_partial(cfg: dict, history_num_frames: int, future_num_frames: int, step_time: float, ) -> Callable:
     rast_params = cfg["raster_params"]
 
     render_context = RenderContext(

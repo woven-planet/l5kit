@@ -6,7 +6,7 @@ from torch.utils.data import DataLoader, Dataset, Subset
 
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import AgentDataset, EgoDataset
-from l5kit.rasterization import RenderContext, StubRasterizer, build_rasterizer
+from l5kit.rasterization import build_rasterizer, RenderContext, StubRasterizer
 
 
 def check_sample(cfg: dict, dataset: Dataset) -> None:
@@ -29,7 +29,7 @@ def check_torch_loading(dataset: Dataset) -> None:
 @pytest.mark.parametrize("rast_name", ["py_satellite", "py_semantic", "box_debug", "satellite_debug"])
 @pytest.mark.parametrize("dataset_cls", [EgoDataset, AgentDataset])
 def test_dataset_rasterizer(
-    rast_name: str, dataset_cls: Callable, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
+        rast_name: str, dataset_cls: Callable, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
 ) -> None:
     rasterizer = build_rasterizer(cfg, dmg)
 
@@ -75,7 +75,7 @@ def test_scene_index_interval(dataset_cls: Callable, scene_idx: int, zarr_datase
 @pytest.mark.parametrize("history_num_frames", [1, 2, 3, 4])
 @pytest.mark.parametrize("dataset_cls", [EgoDataset, AgentDataset])
 def test_non_zero_history(
-    history_num_frames: int, dataset_cls: Callable, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
+        history_num_frames: int, dataset_cls: Callable, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
 ) -> None:
     cfg["model_params"]["history_num_frames"] = history_num_frames
     rast_params = cfg["raster_params"]
@@ -92,7 +92,7 @@ def test_non_zero_history(
 @pytest.mark.parametrize("history_num_frames", [1, 2, 3, 4])
 @pytest.mark.parametrize("dataset_cls", [EgoDataset, AgentDataset])
 def test_no_rast_dataset(
-    history_num_frames: int, dataset_cls: Callable, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
+        history_num_frames: int, dataset_cls: Callable, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
 ) -> None:
     cfg["model_params"]["history_num_frames"] = history_num_frames
     rasterizer = None

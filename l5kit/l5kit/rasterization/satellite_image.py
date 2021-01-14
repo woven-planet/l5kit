@@ -7,11 +7,11 @@ from l5kit.geometry import transform_point
 
 
 def get_sat_image_crop_scaled_from_ecef(
-    sat_image: np.ndarray,
-    crop_size: Union[Tuple[int, int], np.ndarray],
-    ecef_translation: np.ndarray,
-    ecef_to_sat: np.ndarray,
-    **kwargs: Any,
+        sat_image: np.ndarray,
+        crop_size: Union[Tuple[int, int], np.ndarray],
+        ecef_translation: np.ndarray,
+        ecef_to_sat: np.ndarray,
+        **kwargs: Any,
 ) -> np.ndarray:
     """Utility function, calls get_sat_image_crop_scaled, see that function for more details on additional
     keyword arguments (such as ``yaw``).
@@ -30,13 +30,13 @@ def get_sat_image_crop_scaled_from_ecef(
 
 
 def get_sat_image_crop_scaled(
-    sat_image: np.ndarray,
-    crop_size: Union[Tuple[int, int], np.ndarray],
-    sat_pixel_translation: np.ndarray,
-    yaw: Optional[float] = None,
-    sat_pixel_scale: float = 1.0,
-    pixel_size: float = 1.0,
-    interpolation: int = cv2.INTER_LINEAR,
+        sat_image: np.ndarray,
+        crop_size: Union[Tuple[int, int], np.ndarray],
+        sat_pixel_translation: np.ndarray,
+        yaw: Optional[float] = None,
+        sat_pixel_scale: float = 1.0,
+        pixel_size: float = 1.0,
+        interpolation: int = cv2.INTER_LINEAR,
 ) -> np.ndarray:
     """Calls `get_sat_image_crop` (see that function's docs for further details), and rescales taking
         into account a desired pixel size.
@@ -81,10 +81,10 @@ def get_sat_image_crop_scaled(
 
 
 def get_sat_image_crop(
-    sat_image: np.ndarray,
-    crop_size: Union[Tuple[int, int], np.ndarray],
-    sat_pixel_translation: np.ndarray,
-    yaw: Optional[float] = None,
+        sat_image: np.ndarray,
+        crop_size: Union[Tuple[int, int], np.ndarray],
+        sat_pixel_translation: np.ndarray,
+        yaw: Optional[float] = None,
 ) -> np.ndarray:
     """Crops input satellite such that ``sat_pixel_translation`` is centered in the image.
 
@@ -122,7 +122,7 @@ def get_sat_image_crop(
 
 
 def _get_sat_image_crop_without_rotation(
-    sat_image: np.ndarray, crop_size: np.ndarray, sat_pixel_translation: np.ndarray
+        sat_image: np.ndarray, crop_size: np.ndarray, sat_pixel_translation: np.ndarray
 ) -> np.ndarray:
     """
     Crops satellite image around given translation.

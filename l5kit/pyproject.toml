@@ -1,14 +1,12 @@
-[tool.black]
-line-length = 119
-exclude = '/l5kit\/data\/proto\/*/'
-
 [tool.isort]
-multi_line_output = 3
-include_trailing_comma = true
-force_grid_wrap = 0
-use_parentheses = true
-line_length = 119
+profile = 'google'
+line_length = 120
+lines_after_imports = 2
+order_by_type = false
+force_single_line = false
+force_sort_within_sections = false
 skip='l5kit\/data\/proto'
+known_first_party='l5kit'
 
 [tool.pytest.ini_options]
 xfail_strict=true

@@ -1,4 +1,4 @@
-from collections import OrderedDict, defaultdict
+from collections import defaultdict, OrderedDict
 from typing import List
 
 import numpy as np

@@ -10,7 +10,8 @@ from ..data import ChunkedDataset, get_agents_slice_from_frames, get_frames_slic
 from ..kinematic import Perturbation
 from ..rasterization import Rasterizer
 from .ego import EgoDataset
-from .select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE, select_agents
+from .select_agents import select_agents, TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE
+
 
 # WARNING: changing these values impact the number of instances selected for both train and inference!
 MIN_FRAME_HISTORY = 10  # minimum number of frames an agents must have in the past to be picked
@@ -19,14 +20,14 @@ MIN_FRAME_FUTURE = 1  # minimum number of frames an agents must have in the futu
 
 class AgentDataset(EgoDataset):
     def __init__(
-        self,
-        cfg: dict,
-        zarr_dataset: ChunkedDataset,
-        rasterizer: Rasterizer,
-        perturbation: Optional[Perturbation] = None,
-        agents_mask: Optional[np.ndarray] = None,
-        min_frame_history: int = MIN_FRAME_HISTORY,
-        min_frame_future: int = MIN_FRAME_FUTURE,
+            self,
+            cfg: dict,
+            zarr_dataset: ChunkedDataset,
+            rasterizer: Rasterizer,
+            perturbation: Optional[Perturbation] = None,
+            agents_mask: Optional[np.ndarray] = None,
+            min_frame_history: int = MIN_FRAME_HISTORY,
+            min_frame_future: int = MIN_FRAME_FUTURE,
     ):
         assert perturbation is None, "AgentDataset does not support perturbation (yet)"
 

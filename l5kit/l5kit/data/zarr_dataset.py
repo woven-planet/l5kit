@@ -7,6 +7,7 @@ from prettytable import PrettyTable
 
 from .labels import PERCEPTION_LABELS, TL_FACE_LABELS
 
+
 # When changing the schema bump this number
 FORMAT_VERSION = 2
 
@@ -47,7 +48,7 @@ AGENT_DTYPE = [
 TL_FACE_DTYPE = [
     ("face_id", "<U16"),
     ("traffic_light_id", "<U16"),
-    ("traffic_light_face_status", np.float32, (len(TL_FACE_LABELS,))),
+    ("traffic_light_face_status", np.float32, (len(TL_FACE_LABELS, ))),
 ]
 
 
@@ -92,7 +93,7 @@ class ChunkedDataset:
             )
 
     def initialize(
-        self, mode: str = "w", num_scenes: int = 0, num_frames: int = 0, num_agents: int = 0, num_tl_faces: int = 0
+            self, mode: str = "w", num_scenes: int = 0, num_frames: int = 0, num_agents: int = 0, num_tl_faces: int = 0
     ) -> "ChunkedDataset":
         """Initializes a new zarr dataset, creating the underlying arrays.
 
