@@ -4,13 +4,8 @@ from uuid import uuid4
 import numpy as np
 import pytest
 
-from l5kit.data import (
-    ChunkedDataset,
-    LocalDataManager,
-    get_agents_slice_from_frames,
-    get_frames_slice_from_scenes,
-    get_tl_faces_slice_from_frames,
-)
+from l5kit.data import (ChunkedDataset, get_agents_slice_from_frames, get_frames_slice_from_scenes,
+                        get_tl_faces_slice_from_frames, LocalDataManager)
 from l5kit.data.zarr_utils import zarr_concat, zarr_scenes_chop, zarr_split
 
 
@@ -115,7 +110,6 @@ def test_zarr_split(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: Chunked
 
         # compare elements at the start and end of each scene in both zarrs
         for idx_scene in range(len(zarr_out.scenes)):
-
             # compare elements in the scene
             input_scene = zarr_concatenated.scenes[scene_split[0] + idx_scene]
             input_frames = zarr_concatenated.frames[get_frames_slice_from_scenes(input_scene)]
@@ -135,7 +129,7 @@ def test_zarr_split(dmg: LocalDataManager, tmp_path: Path, zarr_dataset: Chunked
 
 @pytest.mark.parametrize("num_frames_to_copy", [1, 10, 50, pytest.param(500, marks=pytest.mark.xfail)])
 def test_zarr_scenes_chunk(
-    dmg: LocalDataManager, tmp_path: Path, zarr_dataset: ChunkedDataset, num_frames_to_copy: int
+        dmg: LocalDataManager, tmp_path: Path, zarr_dataset: ChunkedDataset, num_frames_to_copy: int
 ) -> None:
     # first let's concat so we have multiple scenes
     concat_count = 10
@@ -161,7 +155,7 @@ def test_zarr_scenes_chunk(
         scene_chopped = zarr_chopped.scenes[idx]
 
         frames_cat = zarr_concatenated.frames[
-            scene_cat["frame_index_interval"][0] : scene_cat["frame_index_interval"][0] + num_frames_to_copy
+            scene_cat["frame_index_interval"][0]: scene_cat["frame_index_interval"][0] + num_frames_to_copy
         ]
 
         frames_chopped = zarr_chopped.frames[get_frames_slice_from_scenes(scene_chopped)]

@@ -8,13 +8,13 @@ from torchvision.models.resnet import resnet18, resnet50
 
 class PlanningModel(nn.Module):
     def __init__(
-        self,
-        model_arch: str,
-        num_input_channels: int,
-        num_targets: int,
-        weights_scaling: List[float],
-        criterion: nn.Module,
-        pretrained: bool = True,
+            self,
+            model_arch: str,
+            num_input_channels: int,
+            num_targets: int,
+            weights_scaling: List[float],
+            criterion: nn.Module,
+            pretrained: bool = True,
     ) -> None:
         super().__init__()
         self.model_arch = model_arch

@@ -2,6 +2,7 @@ from typing import Callable
 
 import numpy as np
 
+
 metric_signature = Callable[[np.ndarray, np.ndarray, np.ndarray, np.ndarray], np.ndarray]
 
 
@@ -36,7 +37,7 @@ def _assert_shapes(ground_truth: np.ndarray, pred: np.ndarray, confidences: np.n
 
 
 def neg_multi_log_likelihood(
-    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
+        ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
 ) -> np.ndarray:
     """
     Compute a negative log-likelihood for the multi-modal scenario.
@@ -94,7 +95,7 @@ def rmse(ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, av
 
 
 def prob_true_mode(
-    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
+        ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
 ) -> np.ndarray:
     """
     Return the probability of the true mode
@@ -127,7 +128,7 @@ def prob_true_mode(
 
 
 def time_displace(
-    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
+        ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray
 ) -> np.ndarray:
     """
     Return the displacement at timesteps T
@@ -153,7 +154,7 @@ def time_displace(
 
 
 def _average_displacement_error(
-    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
+        ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
 ) -> np.ndarray:
     """
     Returns the average displacement error (ADE), which is the average displacement over all timesteps.
@@ -191,7 +192,7 @@ def _average_displacement_error(
 
 
 def average_displacement_error_oracle(
-    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
+        ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
     Calls _average_displacement_error() to get the oracle average displacement error.
@@ -210,7 +211,7 @@ def average_displacement_error_oracle(
 
 
 def average_displacement_error_mean(
-    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
+        ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
     Calls _average_displacement_error() to get the mean average displacement error.
@@ -229,7 +230,7 @@ def average_displacement_error_mean(
 
 
 def _final_displacement_error(
-    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
+        ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray, mode: str
 ) -> np.ndarray:
     """
     Returns the final displacement error (FDE), which is the displacement calculated at the last timestep.
@@ -267,7 +268,7 @@ def _final_displacement_error(
 
 
 def final_displacement_error_oracle(
-    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
+        ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
     Calls _final_displacement_error() to get the oracle average displacement error.
@@ -286,7 +287,7 @@ def final_displacement_error_oracle(
 
 
 def final_displacement_error_mean(
-    ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
+        ground_truth: np.ndarray, pred: np.ndarray, confidences: np.ndarray, avails: np.ndarray,
 ) -> np.ndarray:
     """
     Calls _final_displacement_error() to get the mean average displacement error.

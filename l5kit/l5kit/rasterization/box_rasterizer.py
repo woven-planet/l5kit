@@ -30,10 +30,10 @@ def get_ego_as_agent(frame: np.ndarray) -> np.ndarray:  # TODO this can be usefu
 
 
 def draw_boxes(
-    raster_size: Tuple[int, int],
-    raster_from_world: np.ndarray,
-    agents: np.ndarray,
-    color: Union[int, Tuple[int, int, int]],
+        raster_size: Tuple[int, int],
+        raster_from_world: np.ndarray,
+        agents: np.ndarray,
+        color: Union[int, Tuple[int, int, int]],
 ) -> np.ndarray:
     """
     Draw multiple boxes in one sweep over the image.
@@ -75,7 +75,7 @@ def draw_boxes(
 
 class BoxRasterizer(Rasterizer):
     def __init__(
-        self, render_context: RenderContext, filter_agents_threshold: float, history_num_frames: int,
+            self, render_context: RenderContext, filter_agents_threshold: float, history_num_frames: int,
     ):
         """
 
@@ -91,11 +91,11 @@ class BoxRasterizer(Rasterizer):
         self.history_num_frames = history_num_frames
 
     def rasterize(
-        self,
-        history_frames: np.ndarray,
-        history_agents: List[np.ndarray],
-        history_tl_faces: List[np.ndarray],
-        agent: Optional[np.ndarray] = None,
+            self,
+            history_frames: np.ndarray,
+            history_agents: List[np.ndarray],
+            history_tl_faces: List[np.ndarray],
+            agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         # all frames are drawn relative to this one"
         frame = history_frames[0]

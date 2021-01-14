@@ -4,6 +4,7 @@ import numpy as np
 
 from .labels import PERCEPTION_LABEL_TO_INDEX, TL_FACE_LABEL_TO_INDEX
 
+
 # Labels that belong to "agents" of some sort.
 PERCEPTION_LABELS_TO_KEEP = [
     "PERCEPTION_LABEL_CAR",

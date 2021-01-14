@@ -7,7 +7,8 @@ import numpy as np
 class Perturbation(ABC):
     @abstractmethod
     def perturb(
-        self, history_frames: np.ndarray, future_frames: np.ndarray, **kwargs: dict  # Or zarr array  # Or zarr array
+            self, history_frames: np.ndarray, future_frames: np.ndarray, **kwargs: dict
+            # Or zarr array  # Or zarr array
     ) -> Tuple[np.ndarray, np.ndarray]:
         """
         Args:

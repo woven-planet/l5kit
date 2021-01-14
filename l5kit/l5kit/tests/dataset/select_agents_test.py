@@ -5,7 +5,8 @@ import numpy as np
 import pytest
 
 from l5kit.data import ChunkedDataset
-from l5kit.dataset.select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE, get_valid_agents
+from l5kit.dataset.select_agents import get_valid_agents, TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE
+
 
 SCENE_LENGTH = 50
 

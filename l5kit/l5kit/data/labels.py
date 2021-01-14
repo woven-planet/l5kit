@@ -19,7 +19,6 @@ PERCEPTION_LABELS = [
 ]
 PERCEPTION_LABEL_TO_INDEX = {label: index for (index, label) in enumerate(PERCEPTION_LABELS)}
 
-
 TL_FACE_LABELS = [
     "ACTIVE",
     "INACTIVE",

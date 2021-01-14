@@ -3,6 +3,7 @@ from typing import List, Optional
 
 import numpy as np
 
+
 # Ford Fusion dimensions TODO move somewhere else
 EGO_EXTENT_WIDTH = 1.85
 EGO_EXTENT_LENGTH = 4.87
@@ -18,11 +19,11 @@ class Rasterizer(ABC):
 
     @abstractmethod
     def rasterize(
-        self,
-        history_frames: np.ndarray,
-        history_agents: List[np.ndarray],
-        history_tl_faces: List[np.ndarray],
-        agent: Optional[np.ndarray] = None,
+            self,
+            history_frames: np.ndarray,
+            history_agents: List[np.ndarray],
+            history_tl_faces: List[np.ndarray],
+            agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         pass
 

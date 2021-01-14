@@ -9,6 +9,7 @@ from .sem_box_rasterizer import SemBoxRasterizer
 from .semantic_rasterizer import SemanticRasterizer
 from .stub_rasterizer import StubRasterizer
 
+
 __all__ = [
     "get_sat_image_crop_scaled_from_ecef",
     "get_sat_image_crop_scaled",

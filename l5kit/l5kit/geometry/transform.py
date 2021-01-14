@@ -1,4 +1,4 @@
-from typing import Sequence, Union, cast
+from typing import cast, Sequence, Union
 
 import numpy as np
 import pymap3d as pm

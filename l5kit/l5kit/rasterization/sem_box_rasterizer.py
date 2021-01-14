@@ -13,12 +13,12 @@ class SemBoxRasterizer(Rasterizer):
     """
 
     def __init__(
-        self,
-        render_context: RenderContext,
-        filter_agents_threshold: float,
-        history_num_frames: int,
-        semantic_map_path: str,
-        world_to_ecef: np.ndarray,
+            self,
+            render_context: RenderContext,
+            filter_agents_threshold: float,
+            history_num_frames: int,
+            semantic_map_path: str,
+            world_to_ecef: np.ndarray,
     ):
         super(SemBoxRasterizer, self).__init__()
         self.render_context = render_context
@@ -32,11 +32,11 @@ class SemBoxRasterizer(Rasterizer):
         self.sem_rast = SemanticRasterizer(render_context, semantic_map_path, world_to_ecef)
 
     def rasterize(
-        self,
-        history_frames: np.ndarray,
-        history_agents: List[np.ndarray],
-        history_tl_faces: List[np.ndarray],
-        agent: Optional[np.ndarray] = None,
+            self,
+            history_frames: np.ndarray,
+            history_agents: List[np.ndarray],
+            history_tl_faces: List[np.ndarray],
+            agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         im_out_box = self.box_rast.rasterize(history_frames, history_agents, history_tl_faces, agent)
         im_out_sem = self.sem_rast.rasterize(history_frames, history_agents, history_tl_faces, agent)

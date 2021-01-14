@@ -6,12 +6,12 @@ import numpy as np
 
 
 def write_gif(
-    output_filepath: str,
-    images: Iterable[np.ndarray],
-    resolution: Tuple[int, int],
-    fps: float = 24.0,
-    loop: int = 0,
-    interpolation: int = cv2.INTER_CUBIC,
+        output_filepath: str,
+        images: Iterable[np.ndarray],
+        resolution: Tuple[int, int],
+        fps: float = 24.0,
+        loop: int = 0,
+        interpolation: int = cv2.INTER_CUBIC,
 ) -> None:
     """Writes input RGB images to given output gif filepath using imageio. It resizes images
     if necessary using given interpolation (default=``cv2.INTER_CUBIC``).

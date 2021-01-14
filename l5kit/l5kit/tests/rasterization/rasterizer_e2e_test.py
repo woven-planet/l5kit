@@ -1,8 +1,8 @@
 import numpy as np
 import pytest
 
-from l5kit.data import TL_FACE_DTYPE, ChunkedDataset, LocalDataManager, filter_agents_by_frames
-from l5kit.rasterization import Rasterizer, build_rasterizer
+from l5kit.data import ChunkedDataset, filter_agents_by_frames, LocalDataManager, TL_FACE_DTYPE
+from l5kit.rasterization import build_rasterizer, Rasterizer
 from l5kit.sampling import get_history_slice
 
 
@@ -30,7 +30,7 @@ def check_rasterizer(cfg: dict, rasterizer: Rasterizer, zarr_dataset: ChunkedDat
 
 @pytest.mark.parametrize("map_type", ["py_semantic", "py_satellite", "box_debug"])
 def test_rasterizer_created_from_config(
-    map_type: str, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
+        map_type: str, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
 ) -> None:
     cfg["raster_params"]["map_type"] = map_type
     rasterizer = build_rasterizer(cfg, dmg)

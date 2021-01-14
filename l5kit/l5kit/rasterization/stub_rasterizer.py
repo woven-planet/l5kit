@@ -24,11 +24,11 @@ class StubRasterizer(Rasterizer):
         self.ego_center = render_context.center_in_raster_ratio
 
     def rasterize(
-        self,
-        history_frames: np.ndarray,
-        history_agents: List[np.ndarray],
-        history_tl_faces: List[np.ndarray],
-        agent: Optional[np.ndarray] = None,
+            self,
+            history_frames: np.ndarray,
+            history_agents: List[np.ndarray],
+            history_tl_faces: List[np.ndarray],
+            agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         """
         Just return an empty raster_size x 3 black image

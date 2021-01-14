@@ -1,4 +1,4 @@
-from typing import Union, cast
+from typing import cast, Union
 
 import numpy as np
 

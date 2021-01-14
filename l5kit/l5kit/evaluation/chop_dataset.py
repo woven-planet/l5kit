@@ -6,15 +6,16 @@ from zarr import convenience
 
 from l5kit.data import ChunkedDataset, get_agents_slice_from_frames
 from l5kit.data.zarr_utils import zarr_scenes_chop
-from l5kit.dataset.select_agents import TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE, select_agents
+from l5kit.dataset.select_agents import select_agents, TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE
 
 from .extract_ground_truth import export_zarr_to_csv
+
 
 MIN_FUTURE_STEPS = 10
 
 
 def create_chopped_dataset(
-    zarr_path: str, th_agent_prob: float, num_frames_to_copy: int, num_frames_gt: int, min_frame_future: int
+        zarr_path: str, th_agent_prob: float, num_frames_to_copy: int, num_frames_gt: int, min_frame_future: int
 ) -> str:
     """
     Create a chopped version of the zarr that can be used as a test set.

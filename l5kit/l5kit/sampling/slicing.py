@@ -1,5 +1,5 @@
 def get_history_slice(
-    frame_index: int, history_num_states: int, history_step_size: int, include_current_state: bool = False
+        frame_index: int, history_num_states: int, history_step_size: int, include_current_state: bool = False
 ) -> slice:
     """Given a frame index and history settings returns a slice that returns the given data in the right order.
     Note that this history returned starts with the most "recent" frame first (i.e. reverse in time as it's history).

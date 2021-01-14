@@ -12,12 +12,12 @@ from .csv_utils import write_gt_csv
 
 
 def export_zarr_to_csv(
-    zarr_dataset: ChunkedDataset,
-    csv_file_path: str,
-    future_num_frames: int,
-    filter_agents_threshold: float,
-    step_time: float = 0.1,
-    agents_mask: Optional[np.array] = None,
+        zarr_dataset: ChunkedDataset,
+        csv_file_path: str,
+        future_num_frames: int,
+        filter_agents_threshold: float,
+        step_time: float = 0.1,
+        agents_mask: Optional[np.array] = None,
 ) -> None:
     """Produces a csv file containing the ground truth from a zarr file.
 
