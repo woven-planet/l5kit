@@ -12,6 +12,8 @@ from l5kit.evaluation.metrics import (
     rmse,
     time_displace,
     _ego_agent_within_range,
+    _get_bounding_box,
+    _get_sides,
 )
 
 
@@ -196,5 +198,45 @@ def test_ego_agent_within_range() -> None:
     assert np.count_nonzero(truth_value) == 5
 
 
-                    
+def test_get_bounding_box() -> None:
+    agent_centroid = np.array([10., 10.])
+    agent_extent = np.array([5.0, 2.0, 2.0])
+    agent_yaw = 1.0
+
+    bbox = _get_bounding_box(agent_centroid, agent_yaw, agent_extent)
+
+    # Check centroid coordinates and other preoperties of the polygon
+    assert np.allclose(bbox.centroid.coords, agent_centroid)
+    assert np.allclose(bbox.area, 10.0)
+    assert not bbox.is_empty
+    assert bbox.is_valid
+
+
+def test_get_sides() -> None:
+    agent_centroid = np.array([10., 10.])
+    agent_extent = np.array([5.0, 2.0, 2.0])
+    agent_yaw = 1.0
+
+    bbox = _get_bounding_box(agent_centroid, agent_yaw, agent_extent)
+    s1, s2, s3, s4 = _get_sides(bbox)
+
+    # The parallel offset of s1 should be the same as s2
+    coords_parallel_s1 = np.array(s1.parallel_offset(agent_extent[0], 'right').coords) 
+    coords_s2 = np.array(s2.coords)
+    assert np.allclose(coords_s2, coords_parallel_s1)
+
+    # One side shouldn't touch the other parallel side
+    assert not s1.touches(s2)
+
+    # .. but should touch other ortoghonal
+    assert s1.touches(s3)
+    assert s1.touches(s4)
+
+    assert np.allclose(s3.length, agent_extent[0])
+    assert np.allclose(s3.length, agent_extent[0])
+
+    assert np.allclose(s1.length, agent_extent[1])
+    assert np.allclose(s2.length, agent_extent[1])
+
+
 
