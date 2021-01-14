@@ -1,6 +1,7 @@
-from typing import Callable
+from typing import Callable, Tuple
 
 import numpy as np
+from shapely.geometry import LineString, Polygon
 
 metric_signature = Callable[[np.ndarray, np.ndarray, np.ndarray, np.ndarray], np.ndarray]
 
@@ -302,3 +303,21 @@ def final_displacement_error_mean(
     """
 
     return _final_displacement_error(ground_truth, pred, confidences, avails, "mean")
+
+
+def _ego_agent_within_range(ego_centroid: np.ndarray, ego_extent: np.ndarray,
+                            agent_centroid: np.ndarray, agent_extent: np.ndarray) -> np.ndarray:
+    """This function will check if the agent is within range of the ego. It accepts
+    as input a vectorized form with shapes N,D or a flat vector as well with shapes just D.
+
+    :param ego_centroid: the ego centroid (shape: N, 2)
+    :param ego_extent: the ego extent (shape: N, 3)
+    :param agent_centroid: the agent centroid (shape: N, 2)
+    :param agent_extent: the agent extent (shape: N, 3)
+    :return: array with True if within range, False otherwise (shape: N)
+    """
+    distance = np.linalg.norm(ego_centroid - agent_centroid, axis=-1)
+    norm_ego = np.linalg.norm(ego_extent[..., :2], axis=-1)
+    norm_agent = np.linalg.norm(agent_extent[..., :2], axis=-1)
+    max_range = 0.5 * (norm_ego + norm_agent)
+    return distance < max_range

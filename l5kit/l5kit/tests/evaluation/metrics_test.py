@@ -11,6 +11,7 @@ from l5kit.evaluation.metrics import (
     prob_true_mode,
     rmse,
     time_displace,
+    _ego_agent_within_range,
 )
 
 
@@ -148,3 +149,52 @@ def test_ade_fde_known_results() -> None:
     assert np.allclose(average_displacement_error_oracle(gt, pred, confs, avail), 0.5)
     assert np.allclose(final_displacement_error_mean(gt, pred, confs, avail), 1.5)
     assert np.allclose(final_displacement_error_oracle(gt, pred, confs, avail), 0.5)
+
+
+def test_ego_agent_within_range() -> None:
+    # Fixture: overlapping ego and agent
+    ego_centroid = np.array([10., 10.])
+    ego_extent = np.array([5.0, 2.0, 2.0])
+    agent_centroid = np.array([10.0, 10.0])
+    agent_extent = np.array([5., 2., 2.])
+
+    # Ovelarpping ego and agent should be within range
+    assert _ego_agent_within_range(ego_centroid, ego_extent,
+                                   agent_centroid, agent_extent)
+
+    # The contrary is also true
+    assert _ego_agent_within_range(agent_centroid, agent_extent,
+                                   ego_centroid, ego_extent)
+
+    # Agent is far from the ego, not within range
+    assert not _ego_agent_within_range(ego_centroid, ego_extent,
+                                       agent_centroid + 1000.0, agent_extent)
+
+    # Vectorized version (1, D)
+    ego_centroid = np.expand_dims(ego_centroid, 0)
+    ego_extent = np.expand_dims(ego_extent, 0)
+    agent_centroid = np.expand_dims(agent_centroid, 0)
+    agent_extent = np.expand_dims(agent_extent, 0)
+
+    # Repeat dimension (10, D)
+    num_repeat = 10
+    ego_centroid = ego_centroid.repeat(num_repeat, axis=0)
+    ego_extent = ego_extent.repeat(num_repeat, axis=0)
+    agent_centroid = agent_centroid.repeat(num_repeat, axis=0)
+    agent_extent = agent_extent.repeat(num_repeat, axis=0)
+
+    truth_value = _ego_agent_within_range(ego_centroid, ego_extent,
+                                          agent_centroid, agent_extent)
+    assert len(truth_value) == num_repeat
+    assert truth_value.all()
+
+    # Only half not within range
+    ego_centroid[5:, :] += 1000.0
+    truth_value = _ego_agent_within_range(ego_centroid, ego_extent,
+                                          agent_centroid, agent_extent)
+    assert len(truth_value) == num_repeat
+    assert np.count_nonzero(truth_value) == 5
+
+
+                    
+
