@@ -13,7 +13,6 @@ sphinx = "*"
 sphinx-rtd-theme = "*"
 recommonmark = "*"
 pre-commit = "*"
-black = "==19.10b0"
 importlib-metadata = "*"  # required for python 3.8
 
 [packages]
