@@ -3,9 +3,9 @@
 <!DOCTYPE html>
 <html class="writer-html5" lang="en" >
 <head>
-  <meta charset="utf-8">
+  <meta charset="utf-8" />
   
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
   <title>How to contribute &mdash; L5Kit 1.2.0 documentation</title>
   
@@ -16,7 +16,10 @@
 
   
   
+
   
+  
+
   
 
   
@@ -29,7 +32,6 @@
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-        <script src="_static/language_data.js"></script>
     
     <script type="text/javascript" src="_static/js/theme.js"></script>
 
@@ -51,7 +53,7 @@
           
 
           
-            <a href="index.html" class="icon icon-home" alt="Documentation Home"> L5Kit
+            <a href="index.html" class="icon icon-home"> L5Kit
           
 
           
@@ -151,6 +153,8 @@
 
 
 
+
+
 <div role="navigation" aria-label="breadcrumbs navigation">
 
   <ul class="wy-breadcrumbs">
@@ -162,7 +166,7 @@
     
       <li class="wy-breadcrumbs-aside">
         
-            
+          
             <a href="_sources/how_to_contribute.md.txt" rel="nofollow"> View page source</a>
           
         
@@ -230,7 +234,7 @@ pytest --cov --cov-report html
 </div>
 <div class="section" id="code-style-linting-and-formatting">
 <h2>Code style, linting and formatting<a class="headerlink" href="#code-style-linting-and-formatting" title="Permalink to this headline">¶</a></h2>
-<p>We use <a class="reference external" href="https://black.readthedocs.io/en/stable/">Black</a> for automatic formatting, <a class="reference external" href="https://github.com/timothycrosley/isort">isort</a> for import sorting, and <a class="reference external" href="https://flake8.pycqa.org/en/latest/">flake8</a> to check for linting errors. These are the relevant commands:</p>
+<p>We use <a class="reference external" href="https://github.com/timothycrosley/isort">isort</a> for import sorting, and <a class="reference external" href="https://flake8.pycqa.org/en/latest/">flake8</a> to check for linting errors. These are the relevant commands:</p>
 <p>You can check against those by running:</p>
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./run_tests.sh lint
 </pre></div>
@@ -239,10 +243,7 @@ pytest --cov --cov-report html
 <div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sort imports automatically.</span>
 isort l5kit --apply --recursive
 
-<span class="c1"># Apply formatting.</span>
-black l5kit
-
-<span class="c1"># Check for linting errors that black wasn&#39;t able to fix.</span>
+<span class="c1"># Check for linting errors.</span>
 flake8 l5kit
 </pre></div>
 </div>
@@ -267,37 +268,29 @@ python3 setup.py sdist bdist_wheel
            
           </div>
           <footer>
-  
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-      
-        <a href="competition.html" class="btn btn-neutral float-right" title="Competition" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right"></span></a>
-      
-      
-        <a href="coords_systems.html" class="btn btn-neutral float-left" title="Coordinate Systems in L5Kit" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left"></span> Previous</a>
-      
+        <a href="competition.html" class="btn btn-neutral float-right" title="Competition" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="coords_systems.html" class="btn btn-neutral float-left" title="Coordinate Systems in L5Kit" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
-  
 
   <hr/>
 
   <div role="contentinfo">
     <p>
-        
-        &copy; Copyright 2020, Lyft Level 5
+        &#169; Copyright 2020, Lyft Level 5.
 
     </p>
   </div>
     
     
     
-    Built with <a href="http://sphinx-doc.org/">Sphinx</a> using a
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
     
-    <a href="https://github.com/rtfd/sphinx_rtd_theme">theme</a>
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
     
     provided by <a href="https://readthedocs.org">Read the Docs</a>. 
 
 </footer>
-
         </div>
       </div>
 
