@@ -14,6 +14,8 @@ from l5kit.evaluation.metrics import (
     _ego_agent_within_range,
     _get_bounding_box,
     _get_sides,
+    detect_collision,
+    CollisionType
 )
 
 
@@ -218,25 +220,53 @@ def test_get_sides() -> None:
     agent_yaw = 1.0
 
     bbox = _get_bounding_box(agent_centroid, agent_yaw, agent_extent)
-    s1, s2, s3, s4 = _get_sides(bbox)
+    front, rear, left, right = _get_sides(bbox)
 
     # The parallel offset of s1 should be the same as s2
-    coords_parallel_s1 = np.array(s1.parallel_offset(agent_extent[0], 'right').coords) 
-    coords_s2 = np.array(s2.coords)
+    coords_parallel_s1 = np.array(front.parallel_offset(agent_extent[0], 'right').coords) 
+    coords_s2 = np.array(rear.coords)
     assert np.allclose(coords_s2, coords_parallel_s1)
 
     # One side shouldn't touch the other parallel side
-    assert not s1.touches(s2)
+    assert not front.touches(rear)
 
     # .. but should touch other ortoghonal
-    assert s1.touches(s3)
-    assert s1.touches(s4)
+    assert front.touches(left)
+    assert front.touches(right)
 
-    assert np.allclose(s3.length, agent_extent[0])
-    assert np.allclose(s3.length, agent_extent[0])
+    assert np.allclose(left.length, agent_extent[0])
+    assert np.allclose(right.length, agent_extent[0])
 
-    assert np.allclose(s1.length, agent_extent[1])
-    assert np.allclose(s2.length, agent_extent[1])
+    assert np.allclose(front.length, agent_extent[1])
+    assert np.allclose(rear.length, agent_extent[1])
 
 
+def test_detect_collision() -> None:
+    pred_centroid = np.array([0.0, 0.0])
+    pred_yaw = np.array([1.0])
+    pred_extent = np.array([5., 2., 2.])
 
+    target_agents = [{
+        "extent": np.array([5., 2., 2.]),
+        "centroid": np.array([1000.0, 1000.0]),
+        "yaw": np.array([1.0]),
+        "track_id": 1,
+    }, {
+        "extent": np.array([5., 2., 2.]),
+        "centroid": np.array([0.0, 0.0]),
+        "yaw": np.array([1.0]),
+        "track_id": 2,
+    }]
+
+    collision = detect_collision(pred_centroid, pred_yaw, pred_extent, target_agents)
+    assert collision == (CollisionType.SIDE, 2)
+
+    target_agents = [{
+        "extent": np.array([5., 2., 2.]),
+        "centroid": np.array([1000.0, 1000.0]),
+        "yaw": np.array([1.0]),
+        "track_id": 1,
+    }]
+
+    collision = detect_collision(pred_centroid, pred_yaw, pred_extent, target_agents)
+    assert collision is None
