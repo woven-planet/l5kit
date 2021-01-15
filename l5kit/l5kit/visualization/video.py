@@ -5,12 +5,12 @@ import numpy as np
 
 
 def write_video(
-    output_filepath: str,
-    images: Iterable[np.ndarray],
-    resolution: Tuple[int, int],
-    fps: float = 24.0,
-    codec: str = "FMP4",
-    interpolation: int = cv2.INTER_CUBIC,
+        output_filepath: str,
+        images: Iterable[np.ndarray],
+        resolution: Tuple[int, int],
+        fps: float = 24.0,
+        codec: str = "FMP4",
+        interpolation: int = cv2.INTER_CUBIC,
 ) -> None:
     """Writes input RGB images to given output video filepath using OpenCV. It resizes images if
     necessary using given interpolation (default=``cv2.INTER_CUBIC``).

@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from l5kit.data import AGENT_DTYPE, ChunkedDataset, LocalDataManager, filter_agents_by_frames
+from l5kit.data import AGENT_DTYPE, ChunkedDataset, filter_agents_by_frames, LocalDataManager
 from l5kit.rasterization import build_rasterizer
 from l5kit.rasterization.box_rasterizer import draw_boxes
 
@@ -30,8 +30,8 @@ def test_draw_boxes() -> None:
 
     # due to subpixel precision we can't check the exact number of pixels
     # check that a 10x10 centred on the boxes is all 1
-    assert np.allclose(im[centroid_1[1] - 5 : centroid_1[1] + 5, centroid_1[0] - 5 : centroid_1[0] + 5], 1)
-    assert np.allclose(im[centroid_2[1] - 5 : centroid_2[1] + 5, centroid_2[0] - 5 : centroid_2[0] + 5], 1)
+    assert np.allclose(im[centroid_1[1] - 5: centroid_1[1] + 5, centroid_1[0] - 5: centroid_1[0] + 5], 1)
+    assert np.allclose(im[centroid_2[1] - 5: centroid_2[1] + 5, centroid_2[0] - 5: centroid_2[0] + 5], 1)
 
 
 @pytest.fixture(scope="module")

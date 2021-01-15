@@ -5,11 +5,11 @@ from ..geometry import vertical_flip
 
 class RenderContext:
     def __init__(
-        self,
-        raster_size_px: np.ndarray,
-        pixel_size_m: np.ndarray,
-        center_in_raster_ratio: np.ndarray,
-        set_origin_to_bottom: bool,
+            self,
+            raster_size_px: np.ndarray,
+            pixel_size_m: np.ndarray,
+            center_in_raster_ratio: np.ndarray,
+            set_origin_to_bottom: bool,
     ) -> None:
         """
         This class stores render context information (raster size, pixel size, raster center / principle point) and

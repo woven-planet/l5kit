@@ -1,14 +1,8 @@
 import numpy as np
 import pytest
 
-from l5kit.data import (
-    ChunkedDataset,
-    filter_agents_by_frames,
-    filter_tl_faces_by_frames,
-    get_agents_slice_from_frames,
-    get_frames_slice_from_scenes,
-    get_tl_faces_slice_from_frames,
-)
+from l5kit.data import (ChunkedDataset, filter_agents_by_frames, filter_tl_faces_by_frames,
+                        get_agents_slice_from_frames, get_frames_slice_from_scenes, get_tl_faces_slice_from_frames)
 from l5kit.sampling import get_agent_context
 
 
@@ -16,9 +10,8 @@ from l5kit.sampling import get_agent_context
 @pytest.mark.parametrize("history_steps", [0, 5, 10])
 @pytest.mark.parametrize("future_steps", [0, 5, 10])
 def test_get_agent_context(
-    zarr_dataset: ChunkedDataset, state_index: int, history_steps: int, future_steps: int
+        zarr_dataset: ChunkedDataset, state_index: int, history_steps: int, future_steps: int
 ) -> None:
-
     scene = zarr_dataset.scenes[0]
     frames = zarr_dataset.frames[get_frames_slice_from_scenes(scene)]
     agents = zarr_dataset.agents[get_agents_slice_from_frames(*frames[[0, -1]])]

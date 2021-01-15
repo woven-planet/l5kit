@@ -35,7 +35,7 @@ def within_range(ego_centroid: np.ndarray, ego_extent: np.ndarray, agents: np.nd
 
 
 def detect_collision(
-    pred_centroid: np.ndarray, pred_yaw: float, pred_extent: np.ndarray, target_agents: np.ndarray
+        pred_centroid: np.ndarray, pred_yaw: float, pred_extent: np.ndarray, target_agents: np.ndarray
 ) -> Tuple[str, str]:
     """
     Computes whether a collision occurred between ego and any another agent.

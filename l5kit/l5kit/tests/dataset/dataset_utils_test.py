@@ -1,7 +1,7 @@
 import numpy as np
 import pytest
 
-from l5kit.data import ChunkedDataset, LocalDataManager, get_agents_slice_from_frames, get_frames_slice_from_scenes
+from l5kit.data import ChunkedDataset, get_agents_slice_from_frames, get_frames_slice_from_scenes, LocalDataManager
 from l5kit.dataset import AgentDataset, EgoDataset
 from l5kit.rasterization import build_rasterizer
 
@@ -31,7 +31,7 @@ def test_get_frame_indices_ego(frame_idx: int, zarr_dataset: ChunkedDataset, dmg
 
 @pytest.mark.parametrize("scene_idx", [0, pytest.param(999, marks=pytest.mark.xfail)])
 def test_get_scene_indices_agent(
-    scene_idx: int, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
+        scene_idx: int, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
 ) -> None:
     cfg["raster_params"]["map_type"] = "box_debug"
     rasterizer = build_rasterizer(cfg, dmg)
@@ -48,7 +48,7 @@ def test_get_scene_indices_agent(
 
 @pytest.mark.parametrize("frame_idx", [0, 10, 100, 200, pytest.param(999, marks=pytest.mark.xfail)])
 def test_get_frame_indices_agent(
-    frame_idx: int, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
+        frame_idx: int, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
 ) -> None:
     cfg["raster_params"]["map_type"] = "box_debug"
     rasterizer = build_rasterizer(cfg, dmg)

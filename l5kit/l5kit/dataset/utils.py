@@ -1,5 +1,6 @@
 import torch
 
+
 kMaxStrLength = 70  # Max string length for fixed length byte encoding.
 
 

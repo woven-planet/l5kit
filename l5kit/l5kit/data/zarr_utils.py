@@ -9,6 +9,7 @@ from tqdm import tqdm
 from .filter import get_agents_slice_from_frames, get_frames_slice_from_scenes, get_tl_faces_slice_from_frames
 from .zarr_dataset import ChunkedDataset
 
+
 GIGABYTE = 1 * 1024 * 1024 * 1024
 
 
@@ -56,11 +57,11 @@ def _get_num_els_in_scene_range(zarr_dataset: ChunkedDataset, scene_index_start:
 
 
 def _append_zarr_subset(
-    input_zarr: ChunkedDataset,
-    output_zarr: ChunkedDataset,
-    scene_index_start: int,
-    scene_index_end: int,
-    output_zarr_num_els: Optional[dict] = None,
+        input_zarr: ChunkedDataset,
+        output_zarr: ChunkedDataset,
+        scene_index_start: int,
+        scene_index_end: int,
+        output_zarr_num_els: Optional[dict] = None,
 ) -> None:
     """
     Append a subset of input_zarr into output_zarr. To avoid appending (slow), output_zarr must be opened in write mode
@@ -99,7 +100,7 @@ def _append_zarr_subset(
 
     for idx_scene in range(scene_index_start, scene_index_end):
         # get slices from input zarr
-        scenes = input_zarr.scenes[idx_scene : idx_scene + 1]
+        scenes = input_zarr.scenes[idx_scene: idx_scene + 1]
         frames = input_zarr.frames[get_frames_slice_from_scenes(*scenes)]
         agents = input_zarr.agents[get_agents_slice_from_frames(*frames[[0, -1]])]
         tl_faces = input_zarr.tl_faces[get_tl_faces_slice_from_frames(*frames[[0, -1]])]
@@ -110,10 +111,10 @@ def _append_zarr_subset(
         frames["traffic_light_faces_index_interval"] += idx_start_tl_face
 
         # copy from input_zarr to output_zarr
-        output_zarr.scenes[idx_output_scene : idx_output_scene + len(scenes)] = scenes
-        output_zarr.frames[idx_output_frame : idx_output_frame + len(frames)] = frames
-        output_zarr.agents[idx_output_agent : idx_output_agent + len(agents)] = agents
-        output_zarr.tl_faces[idx_output_tl_face : idx_output_tl_face + len(tl_faces)] = tl_faces
+        output_zarr.scenes[idx_output_scene: idx_output_scene + len(scenes)] = scenes
+        output_zarr.frames[idx_output_frame: idx_output_frame + len(frames)] = frames
+        output_zarr.agents[idx_output_agent: idx_output_agent + len(agents)] = agents
+        output_zarr.tl_faces[idx_output_tl_face: idx_output_tl_face + len(tl_faces)] = tl_faces
 
         # update output indices
         idx_output_scene += len(scenes)
@@ -247,12 +248,11 @@ def zarr_scenes_chop(input_zarr: str, output_zarr: str, num_frames_to_copy: int)
     cur_scene_idx, cur_frame_idx, cur_agent_idx, cur_tl_face_idx = 0, 0, 0, 0
 
     for idx in tqdm(range(len(input_dataset.scenes)), desc="copying"):
-
         # get data and immediately chop frames, agents and traffic lights
         scene = input_dataset.scenes[idx]
         first_frame_idx = scene["frame_index_interval"][0]
 
-        frames = input_dataset.frames[first_frame_idx : first_frame_idx + num_frames_to_copy]
+        frames = input_dataset.frames[first_frame_idx: first_frame_idx + num_frames_to_copy]
         agents = input_dataset.agents[get_agents_slice_from_frames(*frames[[0, -1]])]
         tl_faces = input_dataset.tl_faces[get_tl_faces_slice_from_frames(*frames[[0, -1]])]
 

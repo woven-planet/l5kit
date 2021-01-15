@@ -56,7 +56,7 @@ To run type checking with mypy, run:
 
 ## Code style, linting and formatting
 
-We use [Black](https://black.readthedocs.io/en/stable/) for automatic formatting, [isort](https://github.com/timothycrosley/isort) for import sorting, and [flake8](https://flake8.pycqa.org/en/latest/) to check for linting errors. These are the relevant commands:
+We use [isort](https://github.com/timothycrosley/isort) for import sorting, and [flake8](https://flake8.pycqa.org/en/latest/) to check for linting errors. These are the relevant commands:
 
 You can check against those by running:
 
@@ -71,10 +71,7 @@ Or, if you want to apply those formatters:
 # Sort imports automatically.
 isort l5kit --apply --recursive
 
-# Apply formatting.
-black l5kit
-
-# Check for linting errors that black wasn't able to fix.
+# Check for linting errors.
 flake8 l5kit
 
 ```

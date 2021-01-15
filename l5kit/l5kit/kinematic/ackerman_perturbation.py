@@ -7,13 +7,14 @@ from ..geometry import rotation33_as_yaw, yaw_as_rotation33
 from .ackerman_steering_model import fit_ackerman_model_approximate
 from .perturbation import Perturbation
 
+
 #  if the offset or norm val is below this, we don't apply perturbation.
 NUMERICAL_THRESHOLD = 0.00001
 
 
 # TODO add docstrings for functions in the module
 def get_lateral_offset_at_idx(
-    input_translations: np.ndarray, perturbation_idx: int, offset_distance: float
+        input_translations: np.ndarray, perturbation_idx: int, offset_distance: float
 ) -> np.ndarray:
     len_trajectory = input_translations.shape[0]
     if len_trajectory <= perturbation_idx + 1:
@@ -46,7 +47,7 @@ def get_lateral_offset_at_idx(
 
 
 def _get_history_and_future_frames_as_joint_trajectory(
-    history_frames: np.ndarray, future_frames: np.ndarray
+        history_frames: np.ndarray, future_frames: np.ndarray
 ) -> np.ndarray:
     num_history_frames = len(history_frames)
     num_future_frames = len(future_frames)
@@ -93,7 +94,7 @@ class AckermanPerturbation(Perturbation):
             )
 
     def perturb(
-        self, history_frames: np.ndarray, future_frames: np.ndarray, **kwargs: dict
+            self, history_frames: np.ndarray, future_frames: np.ndarray, **kwargs: dict
     ) -> Tuple[np.ndarray, np.ndarray]:
         if np.random.rand() >= self.perturb_prob:
             return history_frames.copy(), future_frames.copy()

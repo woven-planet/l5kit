@@ -1,12 +1,13 @@
 from enum import IntEnum
 from functools import lru_cache
-from typing import Iterator, Sequence, Union, no_type_check
+from typing import Iterator, no_type_check, Sequence, Union
 
 import numpy as np
 import pymap3d as pm
 
 from ..geometry import transform_points
 from .proto.road_network_pb2 import GeoFrame, GlobalId, MapElement, MapFragment
+
 
 CACHE_SIZE = int(1e5)
 ENCODING = "utf-8"
@@ -299,11 +300,11 @@ class MapAPI:
             return False
         traffic_el = element.element.traffic_control_element
         if (
-            traffic_el.HasField(f"signal_{color}_face")
-            or traffic_el.HasField(f"signal_left_arrow_{color}_face")
-            or traffic_el.HasField(f"signal_right_arrow_{color}_face")
-            or traffic_el.HasField(f"signal_upper_left_arrow_{color}_face")
-            or traffic_el.HasField(f"signal_upper_right_arrow_{color}_face")
+                traffic_el.HasField(f"signal_{color}_face")
+                or traffic_el.HasField(f"signal_left_arrow_{color}_face")
+                or traffic_el.HasField(f"signal_right_arrow_{color}_face")
+                or traffic_el.HasField(f"signal_upper_left_arrow_{color}_face")
+                or traffic_el.HasField(f"signal_upper_right_arrow_{color}_face")
         ):
             return True
         return False

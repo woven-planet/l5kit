@@ -14,13 +14,13 @@ class SatBoxRasterizer(Rasterizer):
     """
 
     def __init__(
-        self,
-        render_context: RenderContext,
-        filter_agents_threshold: float,
-        history_num_frames: int,
-        map_im: np.ndarray,
-        world_to_aerial: np.ndarray,
-        interpolation: int = cv2.INTER_LINEAR,
+            self,
+            render_context: RenderContext,
+            filter_agents_threshold: float,
+            history_num_frames: int,
+            map_im: np.ndarray,
+            world_to_aerial: np.ndarray,
+            interpolation: int = cv2.INTER_LINEAR,
     ):
         super(SatBoxRasterizer, self).__init__()
         self.render_context = render_context
@@ -38,11 +38,11 @@ class SatBoxRasterizer(Rasterizer):
         self.sat_rast = SatelliteRasterizer(render_context, map_im, world_to_aerial, interpolation)
 
     def rasterize(
-        self,
-        history_frames: np.ndarray,
-        history_agents: List[np.ndarray],
-        history_tl_faces: List[np.ndarray],
-        agent: Optional[np.ndarray] = None,
+            self,
+            history_frames: np.ndarray,
+            history_agents: List[np.ndarray],
+            history_tl_faces: List[np.ndarray],
+            agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         im_out_box = self.box_rast.rasterize(history_frames, history_agents, history_tl_faces, agent)
         im_out_sat = self.sat_rast.rasterize(history_frames, history_agents, history_tl_faces, agent)

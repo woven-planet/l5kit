@@ -5,6 +5,7 @@ import numpy as np
 
 from l5kit.geometry import transform_point, transform_points
 
+
 PREDICTED_POINTS_COLOR = (0, 255, 255)
 TARGET_POINTS_COLOR = (255, 0, 255)
 REFERENCE_TRAJ_COLOR = (255, 255, 0)
@@ -43,11 +44,11 @@ def draw_arrowed_line(on_image: np.ndarray, position: np.ndarray, yaw: float, rg
 
 
 def draw_trajectory(
-    on_image: np.ndarray,
-    positions: np.ndarray,
-    rgb_color: Tuple[int, int, int],
-    radius: int = 1,
-    yaws: Optional[np.ndarray] = None,
+        on_image: np.ndarray,
+        positions: np.ndarray,
+        rgb_color: Tuple[int, int, int],
+        radius: int = 1,
+        yaws: Optional[np.ndarray] = None,
 ) -> None:
     """
     Draw a trajectory on oriented arrow onto an RGB image

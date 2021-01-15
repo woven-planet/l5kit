@@ -1,6 +1,6 @@
 import numpy as np
 
-from l5kit.data import SCENE_DTYPE, get_combined_scenes
+from l5kit.data import get_combined_scenes, SCENE_DTYPE
 
 
 def test_empty_input() -> None:

@@ -2,12 +2,8 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 
-from ..data import (
-    filter_agents_by_labels,
-    filter_tl_faces_by_frames,
-    get_agents_slice_from_frames,
-    get_tl_faces_slice_from_frames,
-)
+from ..data import (filter_agents_by_labels, filter_tl_faces_by_frames, get_agents_slice_from_frames,
+                    get_tl_faces_slice_from_frames)
 from ..data.filter import filter_agents_by_frames, filter_agents_by_track_id
 from ..geometry import angular_distance, compute_agent_pose, rotation33_as_yaw, transform_points
 from ..kinematic import Perturbation
@@ -16,12 +12,12 @@ from .slicing import get_future_slice, get_history_slice
 
 
 def get_agent_context(
-    state_index: int,
-    frames: np.ndarray,
-    agents: np.ndarray,
-    tl_faces: np.ndarray,
-    history_num_frames: int,
-    future_num_frames: int,
+        state_index: int,
+        frames: np.ndarray,
+        agents: np.ndarray,
+        tl_faces: np.ndarray,
+        history_num_frames: int,
+        future_num_frames: int,
 ) -> Tuple[np.ndarray, np.ndarray, List[np.ndarray], List[np.ndarray], List[np.ndarray], List[np.ndarray]]:
     """
     Slice zarr or numpy arrays to get the context around the agent onf interest (both in space and time)
@@ -69,7 +65,7 @@ def get_agent_context(
 
 
 def compute_agent_velocity(
-    history_positions_m: np.ndarray, future_positions_m: np.ndarray, step_time: float
+        history_positions_m: np.ndarray, future_positions_m: np.ndarray, step_time: float
 ) -> Tuple[np.ndarray, np.ndarray]:
     """
     Compute estimated velocities by finite differentiation on future positions as(pos(T+t) - pos(T))/t.
@@ -102,12 +98,12 @@ def compute_agent_velocity(
 
 
 def get_relative_poses(
-    num_frames: int,
-    frames: np.ndarray,
-    selected_track_id: Optional[int],
-    agents: List[np.ndarray],
-    agent_from_world: np.ndarray,
-    current_agent_yaw: float,
+        num_frames: int,
+        frames: np.ndarray,
+        selected_track_id: Optional[int],
+        agents: List[np.ndarray],
+        agent_from_world: np.ndarray,
+        current_agent_yaw: float,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
     Internal function that creates the targets and availability masks for deep prediction-type models.
@@ -163,18 +159,18 @@ def get_relative_poses(
 
 
 def generate_agent_sample(
-    state_index: int,
-    frames: np.ndarray,
-    agents: np.ndarray,
-    tl_faces: np.ndarray,
-    selected_track_id: Optional[int],
-    render_context: RenderContext,
-    history_num_frames: int,
-    future_num_frames: int,
-    step_time: float,
-    filter_agents_threshold: float,
-    rasterizer: Optional[Rasterizer] = None,
-    perturbation: Optional[Perturbation] = None,
+        state_index: int,
+        frames: np.ndarray,
+        agents: np.ndarray,
+        tl_faces: np.ndarray,
+        selected_track_id: Optional[int],
+        render_context: RenderContext,
+        history_num_frames: int,
+        future_num_frames: int,
+        step_time: float,
+        filter_agents_threshold: float,
+        rasterizer: Optional[Rasterizer] = None,
+        perturbation: Optional[Perturbation] = None,
 ) -> dict:
     """Generates the inputs and targets to train a deep prediction model. A deep prediction model takes as input
     the state of the world (here: an image we will call the "raster"), and outputs where that agent will be some
@@ -216,7 +212,7 @@ def generate_agent_sample(
         future_agents,
         history_tl_faces,
         future_tl_faces,
-    ) = get_agent_context(state_index, frames, agents, tl_faces, history_num_frames, future_num_frames,)
+    ) = get_agent_context(state_index, frames, agents, tl_faces, history_num_frames, future_num_frames, )
 
     if perturbation is not None:
         history_frames, future_frames = perturbation.perturb(

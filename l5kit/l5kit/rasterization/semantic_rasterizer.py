@@ -11,6 +11,7 @@ from ..geometry import rotation33_as_yaw, transform_point, transform_points
 from .rasterizer import Rasterizer
 from .render_context import RenderContext
 
+
 # sub-pixel drawing precision constants
 CV2_SUB_VALUES = {"shift": 9, "lineType": cv2.LINE_AA}
 CV2_SHIFT_VALUE = 2 ** CV2_SUB_VALUES["shift"]
@@ -77,7 +78,7 @@ class SemanticRasterizer(Rasterizer):
     """
 
     def __init__(
-        self, render_context: RenderContext, semantic_map_path: str, world_to_ecef: np.ndarray,
+            self, render_context: RenderContext, semantic_map_path: str, world_to_ecef: np.ndarray,
     ):
         self.render_context = render_context
         self.raster_size = render_context.raster_size_px
@@ -89,11 +90,11 @@ class SemanticRasterizer(Rasterizer):
         self.mapAPI = MapAPI(semantic_map_path, world_to_ecef)
 
     def rasterize(
-        self,
-        history_frames: np.ndarray,
-        history_agents: List[np.ndarray],
-        history_tl_faces: List[np.ndarray],
-        agent: Optional[np.ndarray] = None,
+            self,
+            history_frames: np.ndarray,
+            history_agents: List[np.ndarray],
+            history_tl_faces: List[np.ndarray],
+            agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
         if agent is None:
             ego_translation_m = history_frames[0]["ego_translation"]
@@ -113,7 +114,7 @@ class SemanticRasterizer(Rasterizer):
         return sem_im.astype(np.float32) / 255
 
     def render_semantic_map(
-        self, center_in_world: np.ndarray, raster_from_world: np.ndarray, tl_faces: np.ndarray
+            self, center_in_world: np.ndarray, raster_from_world: np.ndarray, tl_faces: np.ndarray
     ) -> np.ndarray:
         """Renders the semantic map at given x,y coordinates.
 
@@ -154,7 +155,7 @@ class SemanticRasterizer(Rasterizer):
             for tl_id in lane_tl_ids.intersection(active_tl_ids):
                 lane_type = self.mapAPI.get_color_for_face(tl_id)
 
-            lanes_mask[lane_type][idx * 2 : idx * 2 + 2] = True
+            lanes_mask[lane_type][idx * 2: idx * 2 + 2] = True
 
         if len(lanes_area):
             lanes_area = cv2_subpixel(transform_points(lanes_area.reshape((-1, 2)), raster_from_world))

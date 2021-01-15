@@ -1,14 +1,8 @@
 import numpy as np
 import pytest
 
-from l5kit.data import (
-    ChunkedDataset,
-    filter_agents_by_frames,
-    filter_agents_by_track_id,
-    get_agents_slice_from_frames,
-    get_frames_slice_from_scenes,
-    get_tl_faces_slice_from_frames,
-)
+from l5kit.data import (ChunkedDataset, filter_agents_by_frames, filter_agents_by_track_id,
+                        get_agents_slice_from_frames, get_frames_slice_from_scenes, get_tl_faces_slice_from_frames)
 
 
 @pytest.mark.parametrize("frame_bound", [0, 10, 50, 100])
@@ -57,7 +51,7 @@ def test_get_agents_slice_from_frames(slice_end: int, zarr_dataset: ChunkedDatas
     frames = zarr_dataset.frames[frame_slice]
     frame_a = frames[0]
     frame_b = frames[-1]
-    agents = zarr_dataset.agents[frame_a["agent_index_interval"][0] : frame_b["agent_index_interval"][1]]
+    agents = zarr_dataset.agents[frame_a["agent_index_interval"][0]: frame_b["agent_index_interval"][1]]
     assert np.all(agents_new == agents)
 
 
@@ -73,7 +67,7 @@ def test_get_tl_faces_slice_from_frames(slice_end: int, zarr_dataset: ChunkedDat
     frame_a = frames[0]
     frame_b = frames[-1]
     tl_faces = zarr_dataset.tl_faces[
-        frame_a["traffic_light_faces_index_interval"][0] : frame_b["traffic_light_faces_index_interval"][1]
+        frame_a["traffic_light_faces_index_interval"][0]: frame_b["traffic_light_faces_index_interval"][1]
     ]
     assert np.all(tl_faces_new == tl_faces)
 
