@@ -1,11 +1,10 @@
 import numpy as np
 import pytest
 
-from l5kit.evaluation.metrics import (_assert_shapes, average_displacement_error_mean,
-                                      average_displacement_error_oracle, final_displacement_error_mean,
-                                      final_displacement_error_oracle, neg_multi_log_likelihood, prob_true_mode, rmse,
-                                      time_displace, _ego_agent_within_range, _get_bounding_box, _get_sides,
-                                      detect_collision, CollisionType)
+from l5kit.evaluation.metrics import (_assert_shapes, _ego_agent_within_range, _get_bounding_box, _get_sides,
+                                      average_displacement_error_mean, average_displacement_error_oracle, CollisionType,
+                                      detect_collision, final_displacement_error_mean, final_displacement_error_oracle,
+                                      neg_multi_log_likelihood, prob_true_mode, rmse, time_displace)
 
 
 def test_assert_shapes() -> None:

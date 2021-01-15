@@ -1,5 +1,5 @@
-from typing import Callable, Tuple, Optional
 from enum import IntEnum
+from typing import Callable, Optional, Tuple
 
 import numpy as np
 from shapely.geometry import LineString, Polygon
