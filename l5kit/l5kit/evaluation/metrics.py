@@ -316,6 +316,7 @@ def final_displacement_error_mean(
 #  within_range = ego.within_range(agent)
 #  sides = ego.get_sides()
 
+
 def _ego_agent_within_range(ego_centroid: np.ndarray, ego_extent: np.ndarray,
                             agent_centroid: np.ndarray, agent_extent: np.ndarray) -> np.ndarray:
     """This function will check if the agent is within range of the ego. It accepts

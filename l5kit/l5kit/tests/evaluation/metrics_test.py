@@ -212,7 +212,7 @@ def test_get_sides() -> None:
     front, rear, left, right = _get_sides(bbox)
 
     # The parallel offset of s1 should be the same as s2
-    coords_parallel_s1 = np.array(front.parallel_offset(agent_extent[0], 'right').coords) 
+    coords_parallel_s1 = np.array(front.parallel_offset(agent_extent[0], 'right').coords)
     coords_s2 = np.array(rear.coords)
     assert np.allclose(coords_s2, coords_parallel_s1)
 
