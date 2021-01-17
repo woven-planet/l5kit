@@ -1,6 +1,7 @@
 from typing import Callable
 
 import numpy as np
+import torch
 
 
 metric_signature = Callable[[np.ndarray, np.ndarray, np.ndarray, np.ndarray], np.ndarray]
@@ -303,3 +304,22 @@ def final_displacement_error_mean(
     """
 
     return _final_displacement_error(ground_truth, pred, confidences, avails, "mean")
+
+
+def distance_to_reference_trajectory(pred_centroid: torch.Tensor, ref_traj: torch.Tensor) -> torch.Tensor:
+    """ Computes the distance from the predicted centroid to the closest waypoint in the reference trajectory.
+
+    :param pred_centroid: predicted centroid tensor, size: [batch_size, 2]
+    :type pred_centroid: torch.Tensor, float
+    :param ref_traj: reference trajectory tensor, size: [batch_size, num_timestamps, 2]
+    :type ref_traj: torch.Tensor, float
+    :return: closest distance between the predicted centroid and the reference trajectory, size: [batch_size,]
+    :rtype: torch.Tensor, float
+    """
+    # [batch_size, 2]
+    assert pred_centroid.dim() == 2
+    # [batch_size, num_timestamps, 2]
+    assert ref_traj.dim() == 3
+
+    error, _ = torch.min(torch.norm(pred_centroid.unsqueeze(1) - ref_traj, p=2, dim=-1), dim=1)
+    return error
