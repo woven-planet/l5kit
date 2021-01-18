@@ -2,7 +2,9 @@ from enum import IntEnum
 from typing import Callable, Optional, Tuple
 
 import numpy as np
+
 from l5kit.planning import utils
+
 
 metric_signature = Callable[[np.ndarray, np.ndarray, np.ndarray, np.ndarray], np.ndarray]
 
