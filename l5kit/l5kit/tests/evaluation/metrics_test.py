@@ -146,10 +146,10 @@ def test_ade_fde_known_results() -> None:
 
 def test_within_range() -> None:
     # Fixture: overlapping ego and agent
-    ego_centroid = np.array([10., 10.])
-    ego_extent = np.array([5.0, 2.0, 2.0])
-    agent_centroid = np.array([10.0, 10.0])
-    agent_extent = np.array([5., 2., 2.])
+    ego_centroid = np.array([[10., 10.]])
+    ego_extent = np.array([[5.0, 2.0, 2.0]])
+    agent_centroid = np.array([[10.0, 10.0]])
+    agent_extent = np.array([[5., 2., 2.]])
 
     # Ovelarpping ego and agent should be within range
     assert within_range(ego_centroid, ego_extent,
@@ -162,12 +162,6 @@ def test_within_range() -> None:
     # Agent is far from the ego, not within range
     assert not within_range(ego_centroid, ego_extent,
                             agent_centroid + 1000.0, agent_extent)
-
-    # Vectorized version (1, D)
-    ego_centroid = np.expand_dims(ego_centroid, 0)
-    ego_extent = np.expand_dims(ego_extent, 0)
-    agent_centroid = np.expand_dims(agent_centroid, 0)
-    agent_extent = np.expand_dims(agent_extent, 0)
 
     # Repeat dimension (10, D)
     num_repeat = 10

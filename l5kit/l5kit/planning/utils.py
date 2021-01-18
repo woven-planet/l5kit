@@ -66,7 +66,7 @@ def within_range(ego_centroid: np.ndarray, ego_extent: np.ndarray,
     :return: array with True if within range, False otherwise (shape: N)
     """
     distance = np.linalg.norm(ego_centroid - agent_centroid, axis=-1)
-    norm_ego = np.linalg.norm(ego_extent[..., :2], axis=-1)
-    norm_agent = np.linalg.norm(agent_extent[..., :2], axis=-1)
+    norm_ego = np.linalg.norm(ego_extent[:2])
+    norm_agent = np.linalg.norm(agent_extent[:, 2], axis=-1)
     max_range = 0.5 * (norm_ego + norm_agent)
     return distance < max_range
