@@ -1,10 +1,11 @@
 import numpy as np
 import pytest
 
-from l5kit.evaluation.metrics import (_assert_shapes, _ego_agent_within_range, _get_bounding_box, _get_sides,
+from l5kit.evaluation.metrics import (_assert_shapes,
                                       average_displacement_error_mean, average_displacement_error_oracle, CollisionType,
                                       detect_collision, final_displacement_error_mean, final_displacement_error_oracle,
                                       neg_multi_log_likelihood, prob_true_mode, rmse, time_displace)
+from l5kit.planning.utils import (within_range, _get_bounding_box, _get_sides)
 
 
 def test_assert_shapes() -> None:
@@ -143,7 +144,7 @@ def test_ade_fde_known_results() -> None:
     assert np.allclose(final_displacement_error_oracle(gt, pred, confs, avail), 0.5)
 
 
-def test_ego_agent_within_range() -> None:
+def test_within_range() -> None:
     # Fixture: overlapping ego and agent
     ego_centroid = np.array([10., 10.])
     ego_extent = np.array([5.0, 2.0, 2.0])
@@ -151,16 +152,16 @@ def test_ego_agent_within_range() -> None:
     agent_extent = np.array([5., 2., 2.])
 
     # Ovelarpping ego and agent should be within range
-    assert _ego_agent_within_range(ego_centroid, ego_extent,
-                                   agent_centroid, agent_extent)
+    assert within_range(ego_centroid, ego_extent,
+                        agent_centroid, agent_extent)
 
     # The contrary is also true
-    assert _ego_agent_within_range(agent_centroid, agent_extent,
-                                   ego_centroid, ego_extent)
+    assert within_range(agent_centroid, agent_extent,
+                        ego_centroid, ego_extent)
 
     # Agent is far from the ego, not within range
-    assert not _ego_agent_within_range(ego_centroid, ego_extent,
-                                       agent_centroid + 1000.0, agent_extent)
+    assert not within_range(ego_centroid, ego_extent,
+                            agent_centroid + 1000.0, agent_extent)
 
     # Vectorized version (1, D)
     ego_centroid = np.expand_dims(ego_centroid, 0)
@@ -172,18 +173,19 @@ def test_ego_agent_within_range() -> None:
     num_repeat = 10
     ego_centroid = ego_centroid.repeat(num_repeat, axis=0)
     ego_extent = ego_extent.repeat(num_repeat, axis=0)
+
     agent_centroid = agent_centroid.repeat(num_repeat, axis=0)
     agent_extent = agent_extent.repeat(num_repeat, axis=0)
 
-    truth_value = _ego_agent_within_range(ego_centroid, ego_extent,
-                                          agent_centroid, agent_extent)
+    truth_value = within_range(ego_centroid, ego_extent,
+                               agent_centroid, agent_extent)
     assert len(truth_value) == num_repeat
     assert truth_value.all()
 
     # Only half not within range
     ego_centroid[5:, :] += 1000.0
-    truth_value = _ego_agent_within_range(ego_centroid, ego_extent,
-                                          agent_centroid, agent_extent)
+    truth_value = within_range(ego_centroid, ego_extent,
+                               agent_centroid, agent_extent)
     assert len(truth_value) == num_repeat
     assert np.count_nonzero(truth_value) == 5
 
@@ -234,27 +236,22 @@ def test_detect_collision() -> None:
     pred_yaw = np.array([1.0])
     pred_extent = np.array([5., 2., 2.])
 
-    target_agents = [{
-        "extent": np.array([5., 2., 2.]),
-        "centroid": np.array([1000.0, 1000.0]),
-        "yaw": np.array([1.0]),
-        "track_id": 1,
-    }, {
-        "extent": np.array([5., 2., 2.]),
-        "centroid": np.array([0.0, 0.0]),
-        "yaw": np.array([1.0]),
-        "track_id": 2,
-    }]
+    target_agents_dtype = np.dtype([('centroid', '<f8', (2,)),
+                                    ('extent', '<f4', (3,)),
+                                    ('yaw', '<f4'), ('track_id', '<u8')])
+
+    target_agents = np.array([
+        ([1000.0, 1000.0], [5., 2., 2.], 1.0, 1),  # Not in range
+        ([0., 0.], [5., 2., 2.], 1.0, 2),  # In range
+        ([0., 0.], [5., 2., 2.], 1.0, 3),  # In range
+    ], dtype=target_agents_dtype)
 
     collision = detect_collision(pred_centroid, pred_yaw, pred_extent, target_agents)
     assert collision == (CollisionType.SIDE, 2)
 
-    target_agents = [{
-        "extent": np.array([5., 2., 2.]),
-        "centroid": np.array([1000.0, 1000.0]),
-        "yaw": np.array([1.0]),
-        "track_id": 1,
-    }]
+    target_agents = np.array([
+        ([1000.0, 1000.0], [5., 2., 2.], 1.0, 1),
+    ], dtype=target_agents_dtype)
 
     collision = detect_collision(pred_centroid, pred_yaw, pred_extent, target_agents)
     assert collision is None
