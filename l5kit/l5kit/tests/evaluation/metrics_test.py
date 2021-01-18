@@ -1,10 +1,11 @@
 import numpy as np
 import pytest
+import torch
 
 from l5kit.evaluation.metrics import (_assert_shapes, average_displacement_error_mean,
-                                      average_displacement_error_oracle, final_displacement_error_mean,
-                                      final_displacement_error_oracle, neg_multi_log_likelihood, prob_true_mode, rmse,
-                                      time_displace)
+                                      average_displacement_error_oracle, distance_to_reference_trajectory,
+                                      final_displacement_error_mean, final_displacement_error_oracle,
+                                      neg_multi_log_likelihood, prob_true_mode, rmse, time_displace)
 
 
 def test_assert_shapes() -> None:
@@ -141,3 +142,19 @@ def test_ade_fde_known_results() -> None:
     assert np.allclose(average_displacement_error_oracle(gt, pred, confs, avail), 0.5)
     assert np.allclose(final_displacement_error_mean(gt, pred, confs, avail), 1.5)
     assert np.allclose(final_displacement_error_oracle(gt, pred, confs, avail), 0.5)
+
+
+@pytest.mark.parametrize("device", ["cpu", "cuda"])
+def test_distance_to_reference_trajectory(device: str) -> None:
+    if device == "cuda" and not torch.cuda.is_available():
+        pytest.skip("requires CUDA")
+
+    # [batch_size, 2]
+    pred_centroid = torch.tensor([[1, 1], [1.5, 2]], dtype=torch.float32, device=device)
+    # [batch_size, num_timestamps, 2]
+    ref_traj = torch.tensor([[[0, 0], [1, 0], [2, 0], [3, 0]],
+                             [[0, 3], [1, 3], [2, 3], [3, 3]]], dtype=torch.float32, device=device)
+    # [batch_size,]
+    distance = distance_to_reference_trajectory(pred_centroid, ref_traj)
+    expected_distance = torch.tensor([1, 1.11803], dtype=torch.float32, device=device)
+    assert torch.allclose(distance, expected_distance, atol=1e-4)
