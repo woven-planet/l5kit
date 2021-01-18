@@ -156,7 +156,7 @@ This will install all dependencies (`--dev` includes dev-packages too) from the 
 If you don't care about determinist builds or you're having troubles with packages resolution (Windows, Python<3.7, etc..),
 you can install directly from the `setup.py` by running:
 ```shell
-pip install -e .[dev]
+pip install -e ."[dev]"
 ```
 
 If you run into trouble installing L5Kit on Windows, you may need to
