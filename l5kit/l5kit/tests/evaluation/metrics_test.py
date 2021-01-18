@@ -150,11 +150,12 @@ def test_distance_to_reference_trajectory(device: str) -> None:
         pytest.skip("requires CUDA")
 
     # [batch_size, 2]
-    pred_centroid = torch.tensor([[1, 1], [1.5, 2]], dtype=torch.float32, device=device)
+    pred_centroid = torch.tensor([[1, 0], [1, 1], [1.5, 2]], dtype=torch.float32, device=device)
     # [batch_size, num_timestamps, 2]
     ref_traj = torch.tensor([[[0, 0], [1, 0], [2, 0], [3, 0]],
+                             [[0, 0], [1, 0], [2, 0], [3, 0]],
                              [[0, 3], [1, 3], [2, 3], [3, 3]]], dtype=torch.float32, device=device)
     # [batch_size,]
     distance = distance_to_reference_trajectory(pred_centroid, ref_traj)
-    expected_distance = torch.tensor([1, 1.11803], dtype=torch.float32, device=device)
+    expected_distance = torch.tensor([0, 1, 1.11803], dtype=torch.float32, device=device)
     assert torch.allclose(distance, expected_distance, atol=1e-4)

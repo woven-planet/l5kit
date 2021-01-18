@@ -321,5 +321,6 @@ def distance_to_reference_trajectory(pred_centroid: torch.Tensor, ref_traj: torc
     # [batch_size, num_timestamps, 2]
     assert ref_traj.dim() == 3
 
-    error, _ = torch.min(torch.norm(pred_centroid.unsqueeze(1) - ref_traj, p=2, dim=-1), dim=1)
+    # [batch_size,]
+    error = torch.min(torch.norm(pred_centroid.unsqueeze(1) - ref_traj, p=2, dim=-1), dim=1).values
     return error
