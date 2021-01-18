@@ -4,7 +4,7 @@ from typing import Callable, Tuple
 import numpy as np
 
 from ..geometry import rotation33_as_yaw, yaw_as_rotation33
-from .ackerman_steering_model import fit_ackerman_model_approximate
+from .ackerman_steering_model import fit_ackerman_model_exact
 from .perturbation import Perturbation
 
 #  if the offset or norm val is below this, we don't apply perturbation.
@@ -111,42 +111,53 @@ class AckermanPerturbation(Perturbation):
             #  we need at least 2 frames to compute speed and steering rate.
             return history_frames.copy(), future_frames.copy()
 
-        new_trajectory_to_be_smoothed = _get_history_and_future_frames_as_joint_trajectory(
-            history_frames, future_frames
-        )
+        reference_traj_sample = _get_history_and_future_frames_as_joint_trajectory(history_frames, future_frames)
 
         # laterally move the anchor frame
         lateral_translation_offset = get_lateral_offset_at_idx(
-            new_trajectory_to_be_smoothed, num_history_frames - 1, lateral_offset_distance
+            reference_traj_sample, num_history_frames - 1, lateral_offset_distance
         )
 
-        new_trajectory_to_be_smoothed[num_history_frames - 1, :2] += lateral_translation_offset
+        trajectory_with_offset_applied = reference_traj_sample.copy()
+
+        trajectory_with_offset_applied[num_history_frames - 1, :2] += lateral_translation_offset
 
         # laterally rotate the anchor frame
-        new_trajectory_to_be_smoothed[num_history_frames - 1, 2] += yaw_offset_angle
+        trajectory_with_offset_applied[num_history_frames - 1, 2] += yaw_offset_angle
 
         #  perform ackerman steering model fitting
         #  TODO(sms): Replace the call below to a cleaned up implementation
 
-        gx = new_trajectory_to_be_smoothed[:, 0].reshape((-1,))
-        gy = new_trajectory_to_be_smoothed[:, 1].reshape((-1,))
-        gr = new_trajectory_to_be_smoothed[:, 2].reshape((-1,))
-        gv = _compute_speeds_from_positions(new_trajectory_to_be_smoothed[:, :2]).reshape((-1,))
+        gx = trajectory_with_offset_applied[:, 0].reshape((-1,))
+        gy = trajectory_with_offset_applied[:, 1].reshape((-1,))
+        gr = trajectory_with_offset_applied[:, 2].reshape((-1,))
+        gv = _compute_speeds_from_positions(trajectory_with_offset_applied[:, :2]).reshape((-1,))
 
-        wx = 5 * np.ones(total_trajectory_length)
-        wy = 5 * np.ones(total_trajectory_length)
-        wr = 5 * np.ones(total_trajectory_length)
-        wv = 5 * np.ones(total_trajectory_length)
-        wgx = np.zeros(total_trajectory_length)
-        wgx[[0, num_history_frames - 1, -1]] = 5
-        wgy = np.zeros(total_trajectory_length)
-        wgy[[0, num_history_frames - 1, -1]] = 5
+        x0 = trajectory_with_offset_applied[0, 0]
+        y0 = trajectory_with_offset_applied[0, 1]
+        r0 = trajectory_with_offset_applied[0, 2]
+        v0 = gv[0]
+
+        wgx = np.ones(total_trajectory_length)
+        wgx[num_history_frames - 1] = 5
+        wgy = np.ones(total_trajectory_length)
+        wgy[num_history_frames - 1] = 5
         wgr = np.zeros(total_trajectory_length)
-        wgr[[0, num_history_frames - 1, -1]] = 5
         wgv = np.zeros(total_trajectory_length)
 
-        new_xs, new_ys, new_yaws, new_vs = fit_ackerman_model_approximate(
-            gx, gy, gr, gv, wx, wy, wr, wv, wgx, wgy, wgr, wgv
+        new_xs, new_ys, new_yaws, new_vs, new_acc, new_steer = fit_ackerman_model_exact(
+            x0,
+            y0,
+            r0,
+            v0,
+            gx,
+            gy,
+            gr,
+            gv,
+            wgx,
+            wgy,
+            wgr,
+            wgv,
         )
 
         new_trajectory = np.array(list(zip(new_xs, new_ys, new_yaws)))

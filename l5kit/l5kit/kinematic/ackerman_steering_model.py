@@ -1,5 +1,6 @@
 from typing import Tuple
 
+import math
 import numpy as np
 from scipy import optimize
 
@@ -125,10 +126,10 @@ def fit_ackerman_model_exact(
     wgv: np.ndarray,
     ws: float = 5.0,
     wa: float = 5.0,
-    min_acc: float = -0.1,
-    max_acc: float = 0.1,
-    min_steer: float = -0.2,
-    max_steer: float = 0.2,
+    min_acc: float = -0.3,  # 3mps2
+    max_acc: float = 0.3,
+    min_steer: float = -math.radians(45) * 0.1,  # 45degrees
+    max_steer: float = math.radians(45) * 0.1,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
 Fits feasible ackerman-steering trajectory to groundtruth control points.
