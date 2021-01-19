@@ -365,7 +365,7 @@ def detect_collision(pred_centroid: np.ndarray, pred_yaw: np.ndarray,
             return collision_type, agent["track_id"]
     return None
 
-  
+
 def distance_to_reference_trajectory(pred_centroid: torch.Tensor, ref_traj: torch.Tensor) -> torch.Tensor:
     """ Computes the distance from the predicted centroid to the closest waypoint in the reference trajectory.
 

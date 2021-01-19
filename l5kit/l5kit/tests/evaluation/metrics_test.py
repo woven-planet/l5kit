@@ -268,4 +268,3 @@ def test_distance_to_reference_trajectory(device: str) -> None:
     distance = distance_to_reference_trajectory(pred_centroid, ref_traj)
     expected_distance = torch.tensor([0, 1, 1.11803], dtype=torch.float32, device=device)
     assert torch.allclose(distance, expected_distance, atol=1e-4)
-
