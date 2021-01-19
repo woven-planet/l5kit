@@ -103,10 +103,17 @@ None if not desired
         data["world_to_image"] = data["raster_from_world"]  # TODO deprecate
 
         # when rast is None, image could be None. In that case we remove the key
-        if data["image"] is not None:
-            data["image"] = data["image"].transpose(2, 0, 1)  # 0,1,C -> C,0,1
-        else:
+        if data["image"] is None:
             del data["image"]
+        elif data["image"][0] is None:
+            del data["image"]
+        else:
+            image_dim = data["image"].ndim
+            assert image_dim == 3 or image_dim == 4, "Can only handle 3D images or a sequence of 3D images"
+            if image_dim == 3:
+                data["image"] = data["image"].transpose(2, 0, 1)  # 0,1,C -> C,0,1
+            else:
+                data["image"] = data["image"].transpose(0, 3, 1, 2)
 
         return data
 
