@@ -241,6 +241,26 @@
 </dd></dl>
 
 <dl class="py function">
+<dt id="l5kit.evaluation.metrics.distance_to_reference_trajectory">
+<code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">distance_to_reference_trajectory</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pred_centroid</span><span class="p">:</span> <span class="n">torch.Tensor</span></em>, <em class="sig-param"><span class="n">ref_traj</span><span class="p">:</span> <span class="n">torch.Tensor</span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.evaluation.metrics.distance_to_reference_trajectory" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the distance from the predicted centroid to the closest waypoint in the reference trajectory.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pred_centroid</strong> (<em>torch.Tensor</em><em>, </em><em>float</em>) – predicted centroid tensor, size: [batch_size, 2]</p></li>
+<li><p><strong>ref_traj</strong> (<em>torch.Tensor</em><em>, </em><em>float</em>) – reference trajectory tensor, size: [batch_size, num_timestamps, 2]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>closest distance between the predicted centroid and the reference trajectory, size: [batch_size,]</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>torch.Tensor, float</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="l5kit.evaluation.metrics.final_displacement_error_mean">
 <code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">final_displacement_error_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">confidences</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">avails</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.evaluation.metrics.final_displacement_error_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calls _final_displacement_error() to get the mean average displacement error.</p>
