@@ -171,21 +171,24 @@
   <div class="section" id="module-l5kit.planning.utils">
 <span id="l5kit-planning-utils-module"></span><h1>l5kit.planning.utils module<a class="headerlink" href="#module-l5kit.planning.utils" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="l5kit.planning.utils.detect_collision">
-<code class="sig-prename descclassname">l5kit.planning.utils.</code><code class="sig-name descname">detect_collision</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pred_centroid</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred_yaw</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">pred_extent</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">target_agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>str<span class="p">, </span>str<span class="p">]</span><a class="headerlink" href="#l5kit.planning.utils.detect_collision" title="Permalink to this definition">¶</a></dt>
-<dd><p>Computes whether a collision occurred between ego and any another agent.
-Also computes the type of collision: rear, front, or side.
-For this, we compute the intersection of ego’s four sides with a target
-agent and measure the length of this intersection. A collision
-is classified into a class, if the corresponding length is maximal,
-i.e. a front collision exhibits the longest intersection with
-egos front edge.</p>
-</dd></dl>
-
-<dl class="py function">
 <dt id="l5kit.planning.utils.within_range">
-<code class="sig-prename descclassname">l5kit.planning.utils.</code><code class="sig-name descname">within_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ego_centroid</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ego_extent</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.planning.utils.within_range" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<code class="sig-prename descclassname">l5kit.planning.utils.</code><code class="sig-name descname">within_range</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ego_centroid</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ego_extent</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">agent_centroid</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">agent_extent</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.planning.utils.within_range" title="Permalink to this definition">¶</a></dt>
+<dd><p>This function will check if the agent is within range of the ego. It accepts
+as input a vectorized form with shapes N,D or a flat vector as well with shapes just D.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>ego_centroid</strong> – the ego centroid (shape: 2)</p></li>
+<li><p><strong>ego_extent</strong> – the ego extent (shape: 3)</p></li>
+<li><p><strong>agent_centroid</strong> – the agent centroid (shape: N, 2)</p></li>
+<li><p><strong>agent_extent</strong> – the agent extent (shape: N, 3)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>array with True if within range, False otherwise (shape: N)</p>
+</dd>
+</dl>
+</dd></dl>
 
 </div>
 

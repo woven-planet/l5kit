@@ -196,6 +196,28 @@
             
   <div class="section" id="module-l5kit.evaluation.metrics">
 <span id="l5kit-evaluation-metrics-module"></span><h1>l5kit.evaluation.metrics module<a class="headerlink" href="#module-l5kit.evaluation.metrics" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="l5kit.evaluation.metrics.CollisionType">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">CollisionType</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.evaluation.metrics.CollisionType" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<p>This enum defines the three types of collisions: front, rear and side.</p>
+<dl class="py attribute">
+<dt id="l5kit.evaluation.metrics.CollisionType.FRONT">
+<code class="sig-name descname">FRONT</code><em class="property"> = 0</em><a class="headerlink" href="#l5kit.evaluation.metrics.CollisionType.FRONT" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.evaluation.metrics.CollisionType.REAR">
+<code class="sig-name descname">REAR</code><em class="property"> = 1</em><a class="headerlink" href="#l5kit.evaluation.metrics.CollisionType.REAR" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.evaluation.metrics.CollisionType.SIDE">
+<code class="sig-name descname">SIDE</code><em class="property"> = 2</em><a class="headerlink" href="#l5kit.evaluation.metrics.CollisionType.SIDE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
 <dl class="py function">
 <dt id="l5kit.evaluation.metrics.average_displacement_error_mean">
 <code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">average_displacement_error_mean</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">ground_truth</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">confidences</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">avails</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.evaluation.metrics.average_displacement_error_mean" title="Permalink to this definition">¶</a></dt>
@@ -236,6 +258,38 @@
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.evaluation.metrics.detect_collision">
+<code class="sig-prename descclassname">l5kit.evaluation.metrics.</code><code class="sig-name descname">detect_collision</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pred_centroid</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred_yaw</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">pred_extent</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">target_agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; Optional<span class="p">[</span>Tuple<span class="p">[</span><a class="reference internal" href="#l5kit.evaluation.metrics.CollisionType" title="l5kit.evaluation.metrics.CollisionType">l5kit.evaluation.metrics.CollisionType</a><span class="p">, </span>str<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#l5kit.evaluation.metrics.detect_collision" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes whether a collision occured between ego and any another agent.
+Also computes the type of collision: rear, front, or side.
+For this, we compute the intersection of ego’s four sides with a target
+agent and measure the length of this intersection. A collision
+is classified into a class, if the corresponding length is maximal,
+i.e. a front collision exhibits the longest intersection with
+egos front edge.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>please note that this funciton will stop upon finding the first
+colision, so it won’t return all collisions but only the first
+one found.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>pred_centroid</strong> – predicted centroid</p></li>
+<li><p><strong>pred_yaw</strong> – predicted yaw</p></li>
+<li><p><strong>pred_extent</strong> – predicted extent</p></li>
+<li><p><strong>target_agents</strong> – target agents</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>None if not collision was found, and a tuple with the
+collision type and the agent track_id</p>
 </dd>
 </dl>
 </dd></dl>
