@@ -1,7 +1,10 @@
-from typing import Callable
+from enum import IntEnum
+from typing import Callable, Optional, Tuple
 
 import numpy as np
 import torch
+
+from l5kit.planning import utils
 
 
 metric_signature = Callable[[np.ndarray, np.ndarray, np.ndarray, np.ndarray], np.ndarray]
@@ -304,6 +307,63 @@ def final_displacement_error_mean(
     """
 
     return _final_displacement_error(ground_truth, pred, confidences, avails, "mean")
+
+
+class CollisionType(IntEnum):
+    """This enum defines the three types of collisions: front, rear and side."""
+    FRONT = 0
+    REAR = 1
+    SIDE = 2
+
+
+def detect_collision(pred_centroid: np.ndarray, pred_yaw: np.ndarray,
+                     pred_extent: np.ndarray, target_agents: np.ndarray) -> Optional[Tuple[CollisionType, str]]:
+    """
+    Computes whether a collision occured between ego and any another agent.
+    Also computes the type of collision: rear, front, or side.
+    For this, we compute the intersection of ego's four sides with a target
+    agent and measure the length of this intersection. A collision
+    is classified into a class, if the corresponding length is maximal,
+    i.e. a front collision exhibits the longest intersection with
+    egos front edge.
+
+    .. note:: please note that this funciton will stop upon finding the first
+              colision, so it won't return all collisions but only the first
+              one found.
+
+    :param pred_centroid: predicted centroid
+    :param pred_yaw: predicted yaw
+    :param pred_extent: predicted extent
+    :param target_agents: target agents
+    :return: None if not collision was found, and a tuple with the
+             collision type and the agent track_id
+    """
+    ego_bbox = utils._get_bounding_box(centroid=pred_centroid, yaw=pred_yaw, extent=pred_extent)
+    within_range_mask = utils.within_range(pred_centroid, pred_extent,
+                                           target_agents["centroid"], target_agents["extent"])
+    for agent in target_agents[within_range_mask]:
+        agent_bbox = utils._get_bounding_box(agent["centroid"], agent["yaw"], agent["extent"])
+
+        if ego_bbox.intersects(agent_bbox):
+            front_side, rear_side, left_side, right_side = utils._get_sides(ego_bbox)
+
+            intersection_length_per_side = np.asarray(
+                [
+                    agent_bbox.intersection(front_side).length,
+                    agent_bbox.intersection(rear_side).length,
+                    agent_bbox.intersection(left_side).length,
+                    agent_bbox.intersection(right_side).length,
+                ]
+            )
+            argmax_side = np.argmax(intersection_length_per_side)
+
+            # Remap here is needed because there are two sides that are
+            # mapped to the same collision type CollisionType.SIDE
+            max_collision_types = max(CollisionType).value
+            remap_argmax = min(argmax_side, max_collision_types)
+            collision_type = CollisionType(remap_argmax)
+            return collision_type, agent["track_id"]
+    return None
 
 
 def distance_to_reference_trajectory(pred_centroid: torch.Tensor, ref_traj: torch.Tensor) -> torch.Tensor:

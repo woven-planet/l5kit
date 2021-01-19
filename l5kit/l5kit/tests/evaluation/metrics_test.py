@@ -3,9 +3,11 @@ import pytest
 import torch
 
 from l5kit.evaluation.metrics import (_assert_shapes, average_displacement_error_mean,
-                                      average_displacement_error_oracle, distance_to_reference_trajectory,
-                                      final_displacement_error_mean, final_displacement_error_oracle,
-                                      neg_multi_log_likelihood, prob_true_mode, rmse, time_displace)
+                                      average_displacement_error_oracle, CollisionType, detect_collision,
+                                      distance_to_reference_trajectory, final_displacement_error_mean,
+                                      final_displacement_error_oracle, neg_multi_log_likelihood, prob_true_mode, rmse,
+                                      time_displace)
+from l5kit.planning.utils import _get_bounding_box, _get_sides, within_range
 
 
 def test_assert_shapes() -> None:
@@ -142,6 +144,113 @@ def test_ade_fde_known_results() -> None:
     assert np.allclose(average_displacement_error_oracle(gt, pred, confs, avail), 0.5)
     assert np.allclose(final_displacement_error_mean(gt, pred, confs, avail), 1.5)
     assert np.allclose(final_displacement_error_oracle(gt, pred, confs, avail), 0.5)
+
+
+def test_within_range() -> None:
+    # Fixture: overlapping ego and agent
+    ego_centroid = np.array([[10., 10.]])
+    ego_extent = np.array([[5.0, 2.0, 2.0]])
+    agent_centroid = np.array([[10.0, 10.0]])
+    agent_extent = np.array([[5., 2., 2.]])
+
+    # Ovelarpping ego and agent should be within range
+    assert within_range(ego_centroid, ego_extent,
+                        agent_centroid, agent_extent)
+
+    # The contrary is also true
+    assert within_range(agent_centroid, agent_extent,
+                        ego_centroid, ego_extent)
+
+    # Agent is far from the ego, not within range
+    assert not within_range(ego_centroid, ego_extent,
+                            agent_centroid + 1000.0, agent_extent)
+
+    # Repeat dimension (10, D)
+    num_repeat = 10
+    ego_centroid = ego_centroid.repeat(num_repeat, axis=0)
+    ego_extent = ego_extent.repeat(num_repeat, axis=0)
+
+    agent_centroid = agent_centroid.repeat(num_repeat, axis=0)
+    agent_extent = agent_extent.repeat(num_repeat, axis=0)
+
+    truth_value = within_range(ego_centroid, ego_extent,
+                               agent_centroid, agent_extent)
+    assert len(truth_value) == num_repeat
+    assert truth_value.all()
+
+    # Only half not within range
+    ego_centroid[5:, :] += 1000.0
+    truth_value = within_range(ego_centroid, ego_extent,
+                               agent_centroid, agent_extent)
+    assert len(truth_value) == num_repeat
+    assert np.count_nonzero(truth_value) == 5
+
+
+def test_get_bounding_box() -> None:
+    agent_centroid = np.array([10., 10.])
+    agent_extent = np.array([5.0, 2.0, 2.0])
+    agent_yaw = 1.0
+
+    bbox = _get_bounding_box(agent_centroid, agent_yaw, agent_extent)
+
+    # Check centroid coordinates and other preoperties of the polygon
+    assert np.allclose(bbox.centroid.coords, agent_centroid)
+    assert np.allclose(bbox.area, 10.0)
+    assert not bbox.is_empty
+    assert bbox.is_valid
+
+
+def test_get_sides() -> None:
+    agent_centroid = np.array([10., 10.])
+    agent_extent = np.array([5.0, 2.0, 2.0])
+    agent_yaw = 1.0
+
+    bbox = _get_bounding_box(agent_centroid, agent_yaw, agent_extent)
+    front, rear, left, right = _get_sides(bbox)
+
+    # The parallel offset of s1 should be the same as s2
+    coords_parallel_s1 = np.array(front.parallel_offset(agent_extent[0], 'right').coords)
+    coords_s2 = np.array(rear.coords)
+    assert np.allclose(coords_s2, coords_parallel_s1)
+
+    # One side shouldn't touch the other parallel side
+    assert not front.touches(rear)
+
+    # .. but should touch other ortoghonal
+    assert front.touches(left)
+    assert front.touches(right)
+
+    assert np.allclose(left.length, agent_extent[0])
+    assert np.allclose(right.length, agent_extent[0])
+
+    assert np.allclose(front.length, agent_extent[1])
+    assert np.allclose(rear.length, agent_extent[1])
+
+
+def test_detect_collision() -> None:
+    pred_centroid = np.array([0.0, 0.0])
+    pred_yaw = np.array([1.0])
+    pred_extent = np.array([5., 2., 2.])
+
+    target_agents_dtype = np.dtype([('centroid', '<f8', (2,)),
+                                    ('extent', '<f4', (3,)),
+                                    ('yaw', '<f4'), ('track_id', '<u8')])
+
+    target_agents = np.array([
+        ([1000.0, 1000.0], [5., 2., 2.], 1.0, 1),  # Not in range
+        ([0., 0.], [5., 2., 2.], 1.0, 2),  # In range
+        ([0., 0.], [5., 2., 2.], 1.0, 3),  # In range
+    ], dtype=target_agents_dtype)
+
+    collision = detect_collision(pred_centroid, pred_yaw, pred_extent, target_agents)
+    assert collision == (CollisionType.SIDE, 2)
+
+    target_agents = np.array([
+        ([1000.0, 1000.0], [5., 2., 2.], 1.0, 1),
+    ], dtype=target_agents_dtype)
+
+    collision = detect_collision(pred_centroid, pred_yaw, pred_extent, target_agents)
+    assert collision is None
 
 
 @pytest.mark.parametrize("device", ["cpu", "cuda"])
