@@ -2,6 +2,7 @@ from enum import IntEnum
 from typing import Callable, Optional, Tuple
 
 import numpy as np
+import torch
 
 from l5kit.planning import utils
 
@@ -363,3 +364,23 @@ def detect_collision(pred_centroid: np.ndarray, pred_yaw: np.ndarray,
             collision_type = CollisionType(remap_argmax)
             return collision_type, agent["track_id"]
     return None
+
+  
+def distance_to_reference_trajectory(pred_centroid: torch.Tensor, ref_traj: torch.Tensor) -> torch.Tensor:
+    """ Computes the distance from the predicted centroid to the closest waypoint in the reference trajectory.
+
+    :param pred_centroid: predicted centroid tensor, size: [batch_size, 2]
+    :type pred_centroid: torch.Tensor, float
+    :param ref_traj: reference trajectory tensor, size: [batch_size, num_timestamps, 2]
+    :type ref_traj: torch.Tensor, float
+    :return: closest distance between the predicted centroid and the reference trajectory, size: [batch_size,]
+    :rtype: torch.Tensor, float
+    """
+    # [batch_size, 2]
+    assert pred_centroid.dim() == 2
+    # [batch_size, num_timestamps, 2]
+    assert ref_traj.dim() == 3
+
+    # [batch_size,]
+    euclidean_distance = torch.linalg.norm(pred_centroid.unsqueeze(1) - ref_traj, ord=2, dim=-1)
+    return torch.amin(euclidean_distance, dim=1)
