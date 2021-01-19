@@ -59,10 +59,10 @@ def within_range(ego_centroid: np.ndarray, ego_extent: np.ndarray,
     """This function will check if the agent is within range of the ego. It accepts
     as input a vectorized form with shapes N,D or a flat vector as well with shapes just D.
 
-    :param ego_centroid: the ego centroid (shape: N, 2)
-    :param ego_extent: the ego extent (shape: N, 3)
-    :param agent_centroid: the agent centroid (shape: M, 2)
-    :param agent_extent: the agent extent (shape: M, 3)
+    :param ego_centroid: the ego centroid (shape: 2)
+    :param ego_extent: the ego extent (shape: 3)
+    :param agent_centroid: the agent centroid (shape: N, 2)
+    :param agent_extent: the agent extent (shape: N, 3)
     :return: array with True if within range, False otherwise (shape: N)
     """
     distance = np.linalg.norm(ego_centroid - agent_centroid, axis=-1)
