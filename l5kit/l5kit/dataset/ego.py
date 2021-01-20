@@ -100,6 +100,8 @@ None if not desired
         data = self.sample_function(state_index, frames, self.dataset.agents, tl_faces, track_id)
 
         # add information only, so that all data keys are always preserved
+        data["scene_id"] = scene_index
+        data["state_id"] = state_index
         data["host_id"] = convert_str_to_fixed_length_tensor(self.dataset.scenes[scene_index]["host"])
         data["timestamp"] = frames[state_index]["timestamp"]
         data["track_id"] = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
