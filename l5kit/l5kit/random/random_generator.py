@@ -55,3 +55,20 @@ class GaussianRandomGenerator:
 
     def __call__(self) -> np.ndarray:
         return self._sample()
+
+
+class UniformRandomGenerator:
+    """
+    GaussianRandomGenerator generates values by sampling from a normal distribution with specified
+    mean and standard deviation. Note that this gaussian can be multidimensional.
+    """
+
+    def __init__(self, low: np.ndarray, high: np.ndarray):
+        self.low = low
+        self.high = high
+
+    def _sample(self) -> np.ndarray:
+        return np.random.uniform(self.low, self.high)
+
+    def __call__(self) -> np.ndarray:
+        return self._sample()
