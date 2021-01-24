@@ -1,5 +1,6 @@
 from typing import Tuple
 
+import math
 import numpy as np
 from scipy import optimize
 
@@ -7,18 +8,18 @@ from l5kit.geometry import angular_distance
 
 
 def fit_ackerman_model_approximate(
-        gx: np.ndarray,
-        gy: np.ndarray,
-        gr: np.ndarray,
-        gv: np.ndarray,
-        wx: np.ndarray,
-        wy: np.ndarray,
-        wr: np.ndarray,
-        wv: np.ndarray,
-        wgx: np.ndarray,
-        wgy: np.ndarray,
-        wgr: np.ndarray,
-        wgv: np.ndarray,
+    gx: np.ndarray,
+    gy: np.ndarray,
+    gr: np.ndarray,
+    gv: np.ndarray,
+    wx: np.ndarray,
+    wy: np.ndarray,
+    wr: np.ndarray,
+    wv: np.ndarray,
+    wgx: np.ndarray,
+    wgy: np.ndarray,
+    wgr: np.ndarray,
+    wgv: np.ndarray,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
 Fits feasible ackerman-steering trajectory to groundtruth control points.
@@ -60,10 +61,10 @@ Returns:
     def residuals(xyrv: np.ndarray) -> np.ndarray:
         x, y, r, v = np.split(xyrv, 4)
 
-        x1, x2 = x[0: N - 1], x[1:N]
-        y1, y2 = y[0: N - 1], y[1:N]
-        r1, r2 = r[0: N - 1], r[1:N]
-        v1, v2 = v[0: N - 1], v[1:N]
+        x1, x2 = x[0 : N - 1], x[1:N]
+        y1, y2 = y[0 : N - 1], y[1:N]
+        r1, r2 = r[0 : N - 1], r[1:N]
+        v1, v2 = v[0 : N - 1], v[1:N]
 
         return w * np.hstack(
             [
@@ -111,24 +112,24 @@ Returns:
 
 
 def fit_ackerman_model_exact(
-        x0: np.ndarray,
-        y0: np.ndarray,
-        r0: np.ndarray,
-        v0: np.ndarray,
-        gx: np.ndarray,
-        gy: np.ndarray,
-        gr: np.ndarray,
-        gv: np.ndarray,
-        wgx: np.ndarray,
-        wgy: np.ndarray,
-        wgr: np.ndarray,
-        wgv: np.ndarray,
-        ws: float = 5.0,
-        wa: float = 5.0,
-        min_acc: float = -0.1,
-        max_acc: float = 0.1,
-        min_steer: float = -0.2,
-        max_steer: float = 0.2,
+    x0: np.ndarray,
+    y0: np.ndarray,
+    r0: np.ndarray,
+    v0: np.ndarray,
+    gx: np.ndarray,
+    gy: np.ndarray,
+    gr: np.ndarray,
+    gv: np.ndarray,
+    wgx: np.ndarray,
+    wgy: np.ndarray,
+    wgr: np.ndarray,
+    wgv: np.ndarray,
+    ws: float = 5.0,
+    wa: float = 5.0,
+    min_acc: float = -0.3,  # 3mps2
+    max_acc: float = 0.3,
+    min_steer: float = -math.radians(45) * 0.1,  # 45degrees
+    max_steer: float = math.radians(45) * 0.1,
 ) -> Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray, np.ndarray]:
     """
 Fits feasible ackerman-steering trajectory to groundtruth control points.
