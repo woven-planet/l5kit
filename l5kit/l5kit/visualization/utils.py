@@ -71,6 +71,10 @@ def draw_trajectory(
     else:
         for pos in positions:
             pred_waypoint = pos[:2]
+            pred_waypoint = np.maximum(np.minimum(pred_waypoint, 2147483640), -2147483640)
+            if np.any(pred_waypoint > 2147483640):
+                print("problem comming", pred_waypoint)
+                #import ipdb; ipdb.set_trace()
             cv2.circle(on_image, tuple(pred_waypoint.astype(np.int)), radius, rgb_color, -1)
 
 
