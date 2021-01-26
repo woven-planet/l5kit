@@ -59,7 +59,9 @@ class AckermanPerturbation(Perturbation):
             lateral_offset_m,
             longitudinal_offset_m,
             yaw_offset_rad,
+            speed_multiplier,
         ) = self.random_offset_generator()
+        speed_multiplier = max(0.2, min(speed_multiplier, 1.8))
 
         num_history_frames = len(history_frames)
         num_future_frames = len(future_frames)
@@ -89,7 +91,7 @@ class AckermanPerturbation(Perturbation):
         x0 = trajectory[curr_frame_idx, 0] + position_offset_m[0]
         y0 = trajectory[curr_frame_idx, 1] + position_offset_m[1]
         r0 = trajectory[curr_frame_idx, 2] + yaw_offset_rad
-        v0 = gv[0]
+        v0 = gv[0] * speed_multiplier
 
         wgx = np.ones(num_future_frames)
         wgy = np.ones(num_future_frames)
