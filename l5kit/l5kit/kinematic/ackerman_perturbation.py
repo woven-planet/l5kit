@@ -10,7 +10,7 @@ from .perturbation import Perturbation
 
 
 #  if the offset or norm val is below this, we don't apply perturbation.
-NUMERICAL_THRESHOLD = 0.00001
+NUMERICAL_THRESHOLD = 1e-5
 
 
 def _get_trajectory(
@@ -35,8 +35,7 @@ def _get_trajectory(
 
 
 def _compute_speed(trajectory: np.ndarray) -> np.ndarray:
-    speeds = np.linalg.norm(np.diff(trajectory[:, :2], axis=0), axis=1)
-    return speeds
+    return np.linalg.norm(np.diff(trajectory[:, :2], axis=0), axis=1)
 
 
 class AckermanPerturbation(Perturbation):
@@ -72,6 +71,11 @@ class AckermanPerturbation(Perturbation):
             return history_frames.copy(), future_frames.copy()
 
         trajectory = _get_trajectory(history_frames, future_frames)
+        speeds = _compute_speed(trajectory[:, :2])
+
+        # TODO: ackerman perturbation does not work when EGO is static
+        if np.sum(speeds) < NUMERICAL_THRESHOLD:
+            return history_frames.copy(), future_frames.copy()
 
         curr_frame_idx = num_history_frames - 1
         position_offset_m = np.matmul(yaw_as_rotation33(trajectory[curr_frame_idx, 2]) , position_offset_m)
@@ -88,10 +92,11 @@ class AckermanPerturbation(Perturbation):
         v0 = gv[0]
 
         wgx = np.ones(num_future_frames)
-        wgx[-1] = 10
+        wgx[-1] = 5
         wgy = np.ones(num_future_frames)
-        wgy[-1] = 10
+        wgy[-1] = 5
         wgr = np.zeros(num_future_frames)
+        wgr[-1] = 5
         wgv = np.zeros(num_future_frames)
 
         new_xs, new_ys, new_yaws, new_vs, new_acc, new_steer = fit_ackerman_model_exact(
