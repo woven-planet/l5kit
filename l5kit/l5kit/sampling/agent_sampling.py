@@ -276,7 +276,7 @@ def generate_agent_sample(
         "world_from_agent": world_from_agent,
         "centroid": agent_centroid_m,
         "yaw": agent_yaw_rad,
-        "speed": np.linalg.norm(future_vels_mps[0]),
+        "speed": np.linalg.norm(history_vels_mps[0]),
         "extent": agent_extent_m,
         "history_extents": history_extents,
         "future_extents": future_extents,
