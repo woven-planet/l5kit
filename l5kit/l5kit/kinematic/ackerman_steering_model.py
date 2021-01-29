@@ -61,10 +61,10 @@ Returns:
     def residuals(xyrv: np.ndarray) -> np.ndarray:
         x, y, r, v = np.split(xyrv, 4)
 
-        x1, x2 = x[0 : N - 1], x[1:N]
-        y1, y2 = y[0 : N - 1], y[1:N]
-        r1, r2 = r[0 : N - 1], r[1:N]
-        v1, v2 = v[0 : N - 1], v[1:N]
+        x1, x2 = x[0:N - 1], x[1:N]
+        y1, y2 = y[0:N - 1], y[1:N]
+        r1, r2 = r[0:N - 1], r[1:N]
+        v1, v2 = v[0:N - 1], v[1:N]
 
         return w * np.hstack(
             [
