@@ -53,7 +53,7 @@ class AckermanPerturbation(Perturbation):
         self, history_frames: np.ndarray, future_frames: np.ndarray, **kwargs: dict
     ) -> Tuple[np.ndarray, np.ndarray]:
         if np.random.rand() >= self.perturb_prob:
-            return history_frames.copy(), future_frames.copy()
+            return history_frames.copy(), future_frames.copy(), 1.0
 
         (
             lateral_offset_m,
@@ -110,4 +110,4 @@ class AckermanPerturbation(Perturbation):
         future_frames["ego_translation"][:, 1] = new_ys
         future_frames["ego_rotation"] = np.array([yaw_as_rotation33(yaw) for yaw in new_yaws])
 
-        return history_frames, future_frames
+        return history_frames, future_frames, speed_multiplier
