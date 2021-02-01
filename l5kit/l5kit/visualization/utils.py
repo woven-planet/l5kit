@@ -2,6 +2,7 @@ from typing import Optional, Tuple
 
 import cv2
 import numpy as np
+from random import randint
 
 from l5kit.geometry import transform_point, transform_points
 
@@ -103,4 +104,11 @@ def draw_path_prior_layer(shape: Tuple, positions: np.ndarray, width: float = 3)
     Returns: np.ndarray
 
     """
+    assert positions.ndim == 2
+
+    # Vary the length of reference trajectories
+    col_len = positions.shape[1]
+    random_len = randint(1,col_len)
+    positions = positions[0:,0:random_len]
+
     return cv2.polylines(np.zeros(shape, np.float32), [positions.astype(np.int32)], False, 1.0, width)
