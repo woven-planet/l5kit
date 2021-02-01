@@ -1,6 +1,6 @@
+import math
 from typing import Tuple
 
-import math
 import numpy as np
 from scipy import optimize
 

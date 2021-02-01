@@ -1,8 +1,6 @@
-from .random_generator import (
-    GaussianRandomGenerator,
-    LambdaRandomGenerator,
-    ReplayRandomGenerator,
-    UniformRandomGenerator,
-)
+from .random_generator import (GaussianRandomGenerator, LambdaRandomGenerator, RandomGenerator, ReplayRandomGenerator,
+                               UniformRandomGenerator)
 
-__all__ = ["GaussianRandomGenerator", "LambdaRandomGenerator", "ReplayRandomGenerator", "UniformRandomGenerator"]
+
+__all__ = ["GaussianRandomGenerator", "LambdaRandomGenerator",
+           "RandomGenerator", "ReplayRandomGenerator", "UniformRandomGenerator"]

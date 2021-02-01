@@ -1,37 +1,43 @@
 import warnings
-from typing import Callable, Tuple
+from typing import Tuple
 
 import numpy as np
 
 from ..geometry import rotation33_as_yaw, yaw_as_rotation33
+from ..random import RandomGenerator
 from .ackerman_steering_model import fit_ackerman_model_exact
 from .perturbation import Perturbation
 
 
-def _get_trajectory(history_frames: np.ndarray, future_frames: np.ndarray) -> np.ndarray:
-    num_frames = len(history_frames) + len(future_frames)
+def _get_trajectory(past_frames: np.ndarray, future_frames: np.ndarray) -> np.ndarray:
+    """A function that takes past & future frames, extracts ego translation & rotation from the frames, sorts them
+    based on time (from past to future) then return sorted ego translation & rotation in a trajectory array.
+    :param past_frames: a list of past frames
+    :type past_frames: np.ndarray
+    :param future_frames: a list of future frames
+    :type future_frames: np.ndarray
+    :return: a ego trajectory (position + heading) sorted from past to future
+    :rtype: np.ndarray
+    """
+    num_frames = len(past_frames) + len(future_frames)
     trajectory = np.zeros((num_frames, 3), dtype=np.float32)
 
     # Note that history frames go backward in time from the anchor frame.
     trajectory[:, :2] = np.concatenate(
-        (history_frames["ego_translation"][::-1, :2], future_frames["ego_translation"][:, :2])
+        (past_frames["ego_translation"][::-1, :2], future_frames["ego_translation"][:, :2])
     )
-    rotations = np.concatenate((history_frames["ego_rotation"][::-1], future_frames["ego_rotation"]))
+    rotations = np.concatenate((past_frames["ego_rotation"][::-1], future_frames["ego_rotation"]))
     trajectory[:, 2] = [rotation33_as_yaw(rot) for rot in rotations]
 
     return trajectory
 
 
-def _compute_displacements(trajectory: np.ndarray) -> np.ndarray:
-    return np.linalg.norm(np.diff(trajectory[:, :2], axis=0), axis=1)
-
-
 class AckermanPerturbation(Perturbation):
     def __init__(
         self,
-        random_offset_generator: Callable,
+        random_offset_generator: RandomGenerator,
         perturb_prob: float,
-        min_displacement: float,
+        min_displacement: float = 0,
     ):
         """
         Apply Ackerman to get a feasible trajectory with probability perturb_prob.
@@ -49,9 +55,7 @@ class AckermanPerturbation(Perturbation):
                 "Consider replacing this object with None if no perturbation is intended", RuntimeWarning, stacklevel=2
             )
 
-    def perturb(
-        self, history_frames: np.ndarray, future_frames: np.ndarray, **kwargs: dict
-    ) -> Tuple[np.ndarray, np.ndarray]:
+    def perturb(self, history_frames: np.ndarray, future_frames: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
         if np.random.rand() >= self.perturb_prob:
             return history_frames.copy(), future_frames.copy()
 
@@ -70,7 +74,7 @@ class AckermanPerturbation(Perturbation):
         trajectory = _get_trajectory(history_frames, future_frames)
 
         curr_frame_idx = num_history_frames - 1
-        displacements = _compute_displacements(trajectory[curr_frame_idx:, :2])
+        displacements = np.linalg.norm(np.diff(trajectory[curr_frame_idx:, :2], axis=0), axis=1)
 
         # TODO: ackerman lateral & yaw perturbation does not work when EGO slow moving
         if np.sum(displacements) < self.min_displacement:
@@ -78,7 +82,7 @@ class AckermanPerturbation(Perturbation):
             yaw_offset_rad = 0
 
         position_offset_m = np.array([longitudinal_offset_m, lateral_offset_m, 0])
-        position_offset_m = np.matmul(yaw_as_rotation33(trajectory[curr_frame_idx, 2]) , position_offset_m)
+        position_offset_m = np.matmul(yaw_as_rotation33(trajectory[curr_frame_idx, 2]), position_offset_m)
 
         #  perform ackerman steering model fitting
         gx = trajectory[curr_frame_idx + 1:, 0]
