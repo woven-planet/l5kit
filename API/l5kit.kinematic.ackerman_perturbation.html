@@ -196,11 +196,11 @@
 <span id="l5kit-kinematic-ackerman-perturbation-module"></span><h1>l5kit.kinematic.ackerman_perturbation module<a class="headerlink" href="#module-l5kit.kinematic.ackerman_perturbation" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="l5kit.kinematic.ackerman_perturbation.AckermanPerturbation">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.kinematic.ackerman_perturbation.</code><code class="sig-name descname">AckermanPerturbation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">random_offset_generator</span><span class="p">:</span> <span class="n">Callable</span></em>, <em class="sig-param"><span class="n">perturb_prob</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.kinematic.ackerman_perturbation.AckermanPerturbation" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.kinematic.ackerman_perturbation.</code><code class="sig-name descname">AckermanPerturbation</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">random_offset_generator</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.random.random_generator.html#l5kit.random.random_generator.RandomGenerator" title="l5kit.random.random_generator.RandomGenerator">l5kit.random.random_generator.RandomGenerator</a></span></em>, <em class="sig-param"><span class="n">perturb_prob</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">min_displacement</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.kinematic.ackerman_perturbation.AckermanPerturbation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="l5kit.kinematic.perturbation.html#l5kit.kinematic.perturbation.Perturbation" title="l5kit.kinematic.perturbation.Perturbation"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.kinematic.perturbation.Perturbation</span></code></a></p>
 <dl class="py method">
 <dt id="l5kit.kinematic.ackerman_perturbation.AckermanPerturbation.perturb">
-<code class="sig-name descname">perturb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">history_frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">future_frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.kinematic.ackerman_perturbation.AckermanPerturbation.perturb" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">perturb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">history_frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">future_frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; Tuple<span class="p">[</span>numpy.ndarray<span class="p">, </span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.kinematic.ackerman_perturbation.AckermanPerturbation.perturb" title="Permalink to this definition">¶</a></dt>
 <dd><dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
@@ -220,11 +220,6 @@ future_frames (np.ndarray): array of future frames with perturbation applied</p>
 </dd></dl>
 
 </dd></dl>
-
-<dl class="py function">
-<dt id="l5kit.kinematic.ackerman_perturbation.get_lateral_offset_at_idx">
-<code class="sig-prename descclassname">l5kit.kinematic.ackerman_perturbation.</code><code class="sig-name descname">get_lateral_offset_at_idx</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">input_translations</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">perturbation_idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">offset_distance</span><span class="p">:</span> <span class="n">float</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.kinematic.ackerman_perturbation.get_lateral_offset_at_idx" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
 
 </div>
 
