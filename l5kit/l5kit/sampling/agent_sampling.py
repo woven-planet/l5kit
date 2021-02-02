@@ -214,7 +214,7 @@ def generate_agent_sample(
         future_tl_faces,
     ) = get_agent_context(state_index, frames, agents, tl_faces, history_num_frames, future_num_frames, )
 
-    if perturbation is not None:
+    if perturbation is not None and len(future_frames) == future_num_frames:
         history_frames, future_frames = perturbation.perturb(
             history_frames=history_frames, future_frames=future_frames
         )

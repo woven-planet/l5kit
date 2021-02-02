@@ -18,7 +18,7 @@ def test_perturbation_is_applied(
     data_no_perturb = dataset[0]
 
     # note we cannot change the object we already have as a partial is built at init time
-    perturb = AckermanPerturbation(ReplayRandomGenerator(np.asarray([[4.0, 0.33]])), perturb_prob=perturb_prob)
+    perturb = AckermanPerturbation(ReplayRandomGenerator(np.asarray([[4.0, 1.0, 0.33]])), perturb_prob=perturb_prob)
     dataset = EgoDataset(cfg, zarr_dataset, rasterizer, perturb)  # perturb
     data_perturb = dataset[0]
 
