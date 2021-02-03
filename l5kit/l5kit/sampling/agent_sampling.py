@@ -258,7 +258,7 @@ def generate_agent_sample(
 
     history_vels_mps, future_vels_mps = compute_agent_velocity(history_positions_m, future_positions_m, step_time)
 
-    return {
+    result = {
         "frame_index": state_index,
         "image": input_im,
         "target_positions": future_positions_m,
@@ -276,8 +276,10 @@ def generate_agent_sample(
         "world_from_agent": world_from_agent,
         "centroid": agent_centroid_m,
         "yaw": agent_yaw_rad,
-        "speed": np.linalg.norm(future_vels_mps[0]),
         "extent": agent_extent_m,
         "history_extents": history_extents,
         "future_extents": future_extents,
     }
+    if len(history_vels_mps) > 0:
+        result["history_speed"] = np.linalg.norm(history_vels_mps[0])
+    return result
