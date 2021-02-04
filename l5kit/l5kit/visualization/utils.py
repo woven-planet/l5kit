@@ -94,7 +94,7 @@ def draw_reference_trajectory(on_image: np.ndarray, world_to_pixel: np.ndarray, 
         cv2.circle(on_image, tuple(np.floor(pos).astype(np.int32)), 1, REFERENCE_TRAJ_COLOR, -1)
 
 
-def draw_path_prior_layer(shape: Tuple, positions: np.ndarray, width: float = 3) -> np.ndarray:
+def draw_path_prior_layer(shape: Tuple, positions: np.ndarray, width: float = 3, vary_positions_len: bool = False) -> np.ndarray:
     """
     Return a path prior layer with a trajectory (as polyline)
     Args:
@@ -106,9 +106,10 @@ def draw_path_prior_layer(shape: Tuple, positions: np.ndarray, width: float = 3)
     """
     assert positions.ndim == 2
 
-    # Vary the length of reference trajectories
-    col_len = positions.shape[1]
-    random_len = randint(1,col_len)
-    positions = positions[0:,0:random_len]
+    if vary_positions_len:
+        # Vary the length of reference trajectories
+        col_len = positions.shape[0]
+        random_len = randint(1,col_len)
+        positions = positions[0:random_len, 0:]
 
     return cv2.polylines(np.zeros(shape, np.float32), [positions.astype(np.int32)], False, 1.0, width)
