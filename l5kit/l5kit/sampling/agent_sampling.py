@@ -214,9 +214,9 @@ def generate_agent_sample(
         future_tl_faces,
     ) = get_agent_context(state_index, frames, agents, tl_faces, history_num_frames, future_num_frames, )
 
-    speed_perturb_multiplier = 1.0
+    speed_perturb_params = (1.0, 0.0)
     if perturbation is not None and len(future_frames) == future_num_frames:
-        history_frames, future_frames, speed_perturb_multiplier = perturbation.perturb(
+        history_frames, future_frames, speed_perturb_params = perturbation.perturb(
             history_frames=history_frames, future_frames=future_frames
         )
 
@@ -277,7 +277,7 @@ def generate_agent_sample(
         "world_from_agent": world_from_agent,
         "centroid": agent_centroid_m,
         "yaw": agent_yaw_rad,
-        "speed": np.linalg.norm(history_vels_mps[0]) * speed_perturb_multiplier,
+        "speed": np.linalg.norm(history_vels_mps[0]) * speed_perturb_params[0] + speed_perturb_params[1],
         "extent": agent_extent_m,
         "history_extents": history_extents,
         "future_extents": future_extents,
