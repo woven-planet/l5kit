@@ -281,5 +281,5 @@ def generate_agent_sample(
         "future_extents": future_extents,
     }
     if len(history_vels_mps) > 0:
-        result["history_speed"] = np.linalg.norm(history_vels_mps[0])
+        result["recent_speed"] = np.linalg.norm(history_vels_mps[0])
     return result
