@@ -73,8 +73,9 @@ class AckermanPerturbation(Perturbation):
 
         trajectory = _get_trajectory(history_frames, future_frames)
 
-        curr_frame_idx = num_history_frames - 1
-        displacements = _compute_displacements(trajectory[curr_frame_idx:, :2])
+        # curr_frame_idx = num_history_frames - 1
+        curr_frame_idx = 0
+        displacements = np.linalg.norm(np.diff(trajectory[curr_frame_idx:, :2], axis=0), axis=1)
 
         # TODO: ackerman lateral & yaw perturbation does not work when EGO slow moving
         if np.sum(displacements) < self.min_displacement:
@@ -95,21 +96,21 @@ class AckermanPerturbation(Perturbation):
         r0 = trajectory[curr_frame_idx, 2] + yaw_offset_rad
         v0 = gv[0] * speed_multiplier + speed_offset
 
-        wgx = np.ones(num_future_frames)
-        wgy = np.ones(num_future_frames)
-        wgr = np.ones(num_future_frames)
-        wgv = np.zeros(num_future_frames)
+        wgx = np.ones(num_future_frames + num_history_frames - 1)
+        wgy = np.ones(num_future_frames + num_history_frames - 1)
+        wgr = np.ones(num_future_frames + num_history_frames - 1)
+        wgv = np.zeros(num_future_frames + num_history_frames - 1)
 
         new_xs, new_ys, new_yaws, new_vs, new_acc, new_steer = fit_ackerman_model_exact(
             x0, y0, r0, v0, gx, gy, gr, gv, wgx, wgy, wgr, wgv,
         )
 
-        history_frames["ego_translation"][0, 0] = x0
-        history_frames["ego_translation"][0, 1] = y0
-        history_frames["ego_rotation"][0] = yaw_as_rotation33(r0)
+        history_frames["ego_translation"][::-1, 0] = np.append([x0], new_xs[:num_history_frames - 1])
+        history_frames["ego_translation"][::-1, 1] = np.append([y0], new_ys[:num_history_frames - 1])
+        history_frames["ego_rotation"][::-1] = np.array([yaw_as_rotation33(yaw) for yaw in np.append([r0], new_yaws[:num_history_frames - 1])])
 
-        future_frames["ego_translation"][:, 0] = new_xs
-        future_frames["ego_translation"][:, 1] = new_ys
-        future_frames["ego_rotation"] = np.array([yaw_as_rotation33(yaw) for yaw in new_yaws])
+        future_frames["ego_translation"][:, 0] = new_xs[num_history_frames - 1:]
+        future_frames["ego_translation"][:, 1] = new_ys[num_history_frames - 1:]
+        future_frames["ego_rotation"] = np.array([yaw_as_rotation33(yaw) for yaw in new_yaws[num_history_frames - 1:]])
 
         return history_frames, future_frames, (speed_multiplier, speed_offset)
