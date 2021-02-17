@@ -281,5 +281,6 @@ def generate_agent_sample(
         "future_extents": future_extents,
     }
     if len(history_vels_mps) > 0:
-        result["recent_speed"] = np.linalg.norm(history_vels_mps[0])
+        # estimated current speed based on displacement between current frame at T and past frame at T-1
+        result["curr_speed"] = np.linalg.norm(history_vels_mps[0])
     return result
