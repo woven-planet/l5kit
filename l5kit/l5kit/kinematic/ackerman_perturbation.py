@@ -63,6 +63,7 @@ class AckermanPerturbation(Perturbation):
             speed_offset,
         ) = self.random_offset_generator()
         speed_multiplier = max(0.2, min(speed_multiplier, 1.8))
+        speed_offset = np.abs(speed_offset)
 
         num_history_frames = len(history_frames)
         num_future_frames = len(future_frames)
