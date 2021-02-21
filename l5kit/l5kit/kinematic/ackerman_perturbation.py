@@ -38,6 +38,7 @@ class AckermanPerturbation(Perturbation):
         random_offset_generator: RandomGenerator,
         perturb_prob: float,
         min_displacement: float = 0,
+        num_history_to_perturb: int = 1,
     ):
         """
         Apply Ackerman to get a feasible trajectory with probability perturb_prob.
@@ -49,6 +50,7 @@ class AckermanPerturbation(Perturbation):
         """
         self.perturb_prob = perturb_prob
         self.min_displacement = min_displacement
+        self.num_history_to_perturb = num_history_to_perturb
         self.random_offset_generator = random_offset_generator
         if perturb_prob == 0:
             warnings.warn(
@@ -59,21 +61,27 @@ class AckermanPerturbation(Perturbation):
         if np.random.rand() >= self.perturb_prob:
             return history_frames.copy(), future_frames.copy()
 
+        num_history_frames = len(history_frames)
+        num_future_frames = len(future_frames)
+
+        num_history_to_perturb = self.num_history_to_perturb
+        if num_history_frames <= num_history_to_perturb:
+            return history_frames.copy(), future_frames.copy()
+
         (
             lateral_offset_m,
             longitudinal_offset_m,
             yaw_offset_rad,
         ) = self.random_offset_generator()
 
-        num_history_frames = len(history_frames)
-        num_future_frames = len(future_frames)
+        # print(f"num_history_frames: {num_history_frames}, num_future_frames: {num_future_frames}")
 
         assert num_history_frames > 0, f"Number of history frames: {num_history_frames}"
         assert num_future_frames > 0, f"Number of future frames: {num_future_frames}"
 
         trajectory = _get_trajectory(history_frames, future_frames)
 
-        curr_frame_idx = num_history_frames - 1
+        curr_frame_idx = num_history_frames - 1 - num_history_to_perturb
         displacements = np.linalg.norm(np.diff(trajectory[curr_frame_idx:, :2], axis=0), axis=1)
 
         # TODO: ackerman lateral & yaw perturbation does not work when EGO slow moving
@@ -95,21 +103,21 @@ class AckermanPerturbation(Perturbation):
         r0 = trajectory[curr_frame_idx, 2] + yaw_offset_rad
         v0 = gv[0]
 
-        wgx = np.ones(num_future_frames)
-        wgy = np.ones(num_future_frames)
-        wgr = np.ones(num_future_frames)
-        wgv = np.zeros(num_future_frames)
+        wgx = np.ones(num_future_frames + num_history_to_perturb)
+        wgy = np.ones(num_future_frames + num_history_to_perturb)
+        wgr = np.ones(num_future_frames + num_history_to_perturb)
+        wgv = np.zeros(num_future_frames + num_history_to_perturb)
 
         new_xs, new_ys, new_yaws, new_vs, new_acc, new_steer = fit_ackerman_model_exact(
             x0, y0, r0, v0, gx, gy, gr, gv, wgx, wgy, wgr, wgv,
         )
 
-        history_frames["ego_translation"][0, 0] = x0
-        history_frames["ego_translation"][0, 1] = y0
-        history_frames["ego_rotation"][0] = yaw_as_rotation33(r0)
+        history_frames["ego_translation"][num_history_to_perturb::-1, 0] = np.append([x0], new_xs[:num_history_to_perturb])
+        history_frames["ego_translation"][num_history_to_perturb::-1, 1] = np.append([y0], new_ys[:num_history_to_perturb])
+        history_frames["ego_rotation"][num_history_to_perturb::-1] = np.array([yaw_as_rotation33(yaw) for yaw in np.append([r0], new_yaws[:num_history_to_perturb])])
 
-        future_frames["ego_translation"][:, 0] = new_xs
-        future_frames["ego_translation"][:, 1] = new_ys
-        future_frames["ego_rotation"] = np.array([yaw_as_rotation33(yaw) for yaw in new_yaws])
+        future_frames["ego_translation"][:, 0] = new_xs[num_history_to_perturb:]
+        future_frames["ego_translation"][:, 1] = new_ys[num_history_to_perturb:]
+        future_frames["ego_rotation"] = np.array([yaw_as_rotation33(yaw) for yaw in new_yaws[num_history_to_perturb:]])
 
         return history_frames, future_frames
