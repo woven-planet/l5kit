@@ -214,8 +214,9 @@ def generate_agent_sample(
         future_tl_faces,
     ) = get_agent_context(state_index, frames, agents, tl_faces, history_num_frames, future_num_frames, )
 
+    speed_perturb_params = (1.0, 0.0)
     if perturbation is not None and len(future_frames) == future_num_frames:
-        history_frames, future_frames = perturbation.perturb(
+        history_frames, future_frames, speed_perturb_params = perturbation.perturb(
             history_frames=history_frames, future_frames=future_frames
         )
 
@@ -282,5 +283,5 @@ def generate_agent_sample(
     }
     if len(history_vels_mps) > 0:
         # estimated current speed based on displacement between current frame at T and past frame at T-1
-        result["curr_speed"] = np.linalg.norm(history_vels_mps[0])
+        result["curr_speed"] = np.linalg.norm(history_vels_mps[0]) * speed_perturb_params[0] + speed_perturb_params[1]
     return result
