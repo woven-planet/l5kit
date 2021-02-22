@@ -294,6 +294,6 @@ def generate_agent_sample(
 
 def _render_path_prior_layer(input_im: np.ndarray, target_positions: np.ndarray, raster_from_agent: np.ndarray) ->  np.ndarray:
     target_position_in_pixels = transform_points(target_positions, raster_from_agent)
-    pp_layer = draw_path_prior_layer(np.shape(input_im)[:2], target_position_in_pixels, 3)
+    pp_layer = draw_path_prior_layer(np.shape(input_im)[:2], target_position_in_pixels, 3, True)
     pp_layer = np.expand_dims(pp_layer, 2)
     return pp_layer
