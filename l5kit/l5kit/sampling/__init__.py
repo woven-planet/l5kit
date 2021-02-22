@@ -9,4 +9,5 @@ __all__ = [
     "get_agent_context",
     "get_relative_poses",
     "compute_agent_velocity",
+    "_render_path_prior_layer",
 ]

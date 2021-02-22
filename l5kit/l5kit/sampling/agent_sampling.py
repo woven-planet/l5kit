@@ -262,7 +262,7 @@ def generate_agent_sample(
 
     raster_from_agent = raster_from_world @ world_from_agent
     if input_im is not None and render_path_prior is True:
-        input_im = np.concatenate([input_im, _render_path_prior_layer(input_im, future_positions_m, raster_from_agent)], axis=2)    
+        input_im = np.concatenate([input_im, _render_path_prior_layer(input_im, future_positions_m, raster_from_agent, True)], axis=2)    
 
     result = {
         "frame_index": state_index,
@@ -292,8 +292,8 @@ def generate_agent_sample(
     return result
 
 
-def _render_path_prior_layer(input_im: np.ndarray, target_positions: np.ndarray, raster_from_agent: np.ndarray) ->  np.ndarray:
+def _render_path_prior_layer(input_im: np.ndarray, target_positions: np.ndarray, raster_from_agent: np.ndarray, vary_positions_len: bool = False) ->  np.ndarray:
     target_position_in_pixels = transform_points(target_positions, raster_from_agent)
-    pp_layer = draw_path_prior_layer(np.shape(input_im)[:2], target_position_in_pixels, 3, True)
+    pp_layer = draw_path_prior_layer(np.shape(input_im)[:2], target_position_in_pixels, 3, vary_positions_len)
     pp_layer = np.expand_dims(pp_layer, 2)
     return pp_layer
