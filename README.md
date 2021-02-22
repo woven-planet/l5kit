@@ -22,19 +22,26 @@ You can use this framework to build systems which:
 We provide several notebooks with examples and applications.
 
 ### L5Kit Usage
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/visualisation/visualise_data.ipynb)
+
 Our [visualisation notebook](./examples/visualisation/visualise_data.ipynb) is the perfect place to start if you want to 
 know more about L5Kit.
 
 ### Agent Motion Prediction
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/agent_motion_prediction/agent_motion_prediction.ipynb)
+
 Related to our 2020 competition, we provide a [notebook to train and test](./examples/agent_motion_prediction/agent_motion_prediction.ipynb) our baseline model for predicting
 future agents trajectories.
 
 ### Planning
 We provide 3 notebooks for a deep dive into planning for a Self Driving Vehicle (SDV).
 Please refer to our [README](./examples/planning/README.md) for a full description of what you can achieve using them:
-* you can train your first ML policy for planning using our [training notebook](./examples/planning/train.ipynb);
-* you can evaluate your model in the open-loop setting using our [open-loop evaluation notebook](./examples/planning/open_loop_test.ipynb);
-* you can evaluate your model in the closed-loop setting using our [closed-loop evaluation notebook](./examples/planning/closed_loop_test.ipynb);
+* you can train your first ML policy for planning using our [training notebook](./examples/planning/train.ipynb) \
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/planning/train.ipynb)
+* you can evaluate your model in the open-loop setting using our [open-loop evaluation notebook](./examples/planning/open_loop_test.ipynb) \
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/planning/open_loop_test.ipynb)
+* you can evaluate your model in the closed-loop setting using our [closed-loop evaluation notebook](./examples/planning/closed_loop_test.ipynb) \
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/planning/closed_loop_test.ipynb)
 
 We also provide pre-trained models for this task. Please refer to the [training notebook](./examples/planning/train.ipynb). 
 
