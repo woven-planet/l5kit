@@ -1,4 +1,5 @@
 import bisect
+import random
 import warnings
 from functools import partial
 from typing import Optional
@@ -131,6 +132,8 @@ None if not desired
             state_index = index
         else:
             state_index = index - self.cumulative_sizes[scene_index - 1]
+        if state_index == 0:
+            return self.__getitem__(random.randrange(len(self)))
         return self.get_frame(scene_index, state_index)
 
     def get_scene_dataset(self, scene_index: int) -> "EgoDataset":
