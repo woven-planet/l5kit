@@ -279,7 +279,7 @@ def generate_agent_sample(
         "centroid": agent_centroid_m,
         "yaw": agent_yaw_rad,
         #"speed": np.linalg.norm(history_vels_mps[0]) * speed_perturb_params[0] + speed_perturb_params[1],
-        "speed": original_history_speed * speed_perturb_params[0] + speed_perturb_params[1],
+        "speed": original_history_speed * speed_perturb_params[0] + speed_perturb_params[1] / step_time,
         "extent": agent_extent_m,
         "history_extents": history_extents,
         "future_extents": future_extents,
