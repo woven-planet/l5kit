@@ -285,6 +285,23 @@ class MapAPI:
         traffic_el = element.element.traffic_control_element
         return traffic_el.HasField("traffic_light") is True
 
+    @lru_cache(maxsize=CACHE_SIZE)
+    def is_traffic_face(self, element_id: str) -> bool:
+        """
+        Check if the element is a traffic light face (of any color)
+
+        Args:
+            element_id (str): the id (utf-8 encode) of the element
+        Returns:
+            True if the element is a traffic light face, False otherwise
+        """
+
+        for color in TLFacesColors:
+            color_name = color.name
+            if self.is_traffic_face_color(element_id, color_name.lower()):
+                return True
+        return False
+
     def is_traffic_face_color(self, element_id: str, color: str) -> bool:
         """
         Check if the element is a traffic light face of the given color
