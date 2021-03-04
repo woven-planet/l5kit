@@ -39,3 +39,5 @@ jobs:
         working-directory: l5kit
         run: |
           ./run_tests.sh types
+      - name: Comment coverage
+        uses: coroo/pytest-coverage-commentator@v1.0.2
