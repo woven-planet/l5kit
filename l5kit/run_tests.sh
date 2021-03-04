@@ -29,7 +29,7 @@ types() {
 
 tests() {
     echo "Testing.."
-    ${PYTHON_EXECUTABLE} -m pytest --cov l5kit
+    ${PYTHON_EXECUTABLE} -m pytest --cache-clear --cov l5kit > pytest-coverage.txt
 }
 
 if [ "${TEST_TYPE}" = "lint" ] ; then

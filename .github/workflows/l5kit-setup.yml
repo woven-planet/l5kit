@@ -35,6 +35,8 @@ jobs:
         working-directory: l5kit
         run: |
           ./run_tests.sh tests
+      - name: Comment coverage
+        uses: coroo/pytest-coverage-commentator@v1.0.2          
       - name: Check types with mypy
         working-directory: l5kit
         run: |
