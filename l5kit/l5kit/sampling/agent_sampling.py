@@ -270,6 +270,7 @@ def generate_agent_sample(
         "target_positions": future_positions_m,
         "target_yaws": future_yaws_rad,
         "target_velocities": future_vels_mps,
+        "target_speed": np.linalg.norm(future_vels_mps[0], keepdims=True),
         "target_availabilities": future_availabilities,
         "history_positions": history_positions_m,
         "history_yaws": history_yaws_rad,
@@ -290,6 +291,7 @@ def generate_agent_sample(
         # estimated current speed based on displacement between current frame at T and past frame at T-1
         result["curr_speed"] = np.linalg.norm(history_vels_mps[0])
     return result
+
 
 
 def _render_path_prior_layer(input_im: np.ndarray, target_positions: np.ndarray, raster_from_agent: np.ndarray, vary_positions_len: bool = False) ->  np.ndarray:
