@@ -282,11 +282,12 @@ def generate_agent_sample(
         "world_from_agent": world_from_agent,
         "centroid": agent_centroid_m,
         "yaw": agent_yaw_rad,
-        "speed": np.linalg.norm(future_vels_mps[0]),
+        "speed": np.linalg.norm(future_vels_mps[0], keepdims=True),
         "extent": agent_extent_m,
         "history_extents": history_extents,
         "future_extents": future_extents,
     }
+
 
 def _render_path_prior_layer(input_im: np.ndarray, target_positions: np.ndarray, raster_from_agent: np.ndarray, vary_positions_len: bool = False) ->  np.ndarray:
     target_position_in_pixels = transform_points(target_positions, raster_from_agent)
