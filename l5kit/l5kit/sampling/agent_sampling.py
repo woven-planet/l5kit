@@ -216,9 +216,15 @@ def generate_agent_sample(
         future_tl_faces,
     ) = get_agent_context(state_index, frames, agents, tl_faces, history_num_frames, future_num_frames, )
 
-    if perturbation is not None and len(future_frames) == future_num_frames:
-        history_frames, future_frames = perturbation.perturb(
-            history_frames=history_frames, future_frames=future_frames
+    # if perturbation is not None and len(future_frames) == future_num_frames:
+    #     history_frames, future_frames = perturbation.perturb(
+    #         history_frames=history_frames, future_frames=future_frames
+    #     )
+    if perturbation is not None and selected_track_id is not None:
+        history_agents, future_agents = perturbation.perturb_agents(
+            agents_in_history_frames=history_agents,
+            agents_in_future_frames=future_agents,
+            selected_track_id=selected_track_id
         )
 
     # State you want to predict the future of.

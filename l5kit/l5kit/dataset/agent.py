@@ -30,7 +30,7 @@ class AgentDataset(EgoDataset):
             min_frame_future: int = MIN_FRAME_FUTURE,
             render_path_prior: bool = False,
     ):
-        assert perturbation is None, "AgentDataset does not support perturbation (yet)"
+        # assert perturbation is None, "AgentDataset does not support perturbation (yet)"
 
         super(AgentDataset, self).__init__(cfg, zarr_dataset, rasterizer, perturbation, render_path_prior)
         if agents_mask is None:  # if not provided try to load it from the zarr

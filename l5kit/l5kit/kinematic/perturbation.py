@@ -18,3 +18,17 @@ class Perturbation(ABC):
             future_frames (np.ndarray): array of future frames with perturbation applied
         """
         pass
+
+    @abstractmethod
+    def perturb_agents(self, agents_in_history_frames: np.ndarray, agents_in_future_frames: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
+        """
+        Args:
+            history_frames (np.ndarray): array of past frames
+            future_frames (np.ndarray): array of future frames
+            kwargs: optional extra arguments for the specific perturber
+
+        Returns:
+            history_frames (np.ndarray): array of past frames with perturbation applied
+            future_frames (np.ndarray): array of future frames with perturbation applied
+        """
+        pass

@@ -115,18 +115,25 @@ class AckermanPerturbation(Perturbation):
 
         return history_frames, future_frames
 
-    def perturb_agents(self, agents_in_history_frames: List[np.ndarray], agents_in_future_frames: List[np.ndarray], selected_num_frames: int = 13, selected_track_id: Optional[int] = None) -> Tuple[np.ndarray, np.ndarray]:
-        if np.random.rand() >= self.perturb_prob:
-            return agents_in_history_frames, agents_in_future_frames
+    def perturb_agents(
+        self,
+        agents_in_history_frames: List[np.ndarray],
+        agents_in_future_frames: List[np.ndarray],
+        selected_future_num_frames: int = 12,
+        selected_track_id: Optional[int] = None
+    ) -> Tuple[np.ndarray, np.ndarray]:
 
         num_history_frames = len(agents_in_history_frames)
         num_future_frames = len(agents_in_future_frames)
 
-        assert num_history_frames > 0, f"Number of history frames: {num_history_frames}"
-        assert num_future_frames >= selected_num_frames - 1, f"Number of future frames: {num_future_frames}"
+        if np.random.rand() >= self.perturb_prob or num_future_frames < selected_future_num_frames:
+            return agents_in_history_frames, agents_in_future_frames
 
-        trajectory = np.zeros((selected_num_frames, 3), dtype=np.float32)
-        selected_agents_frames = agents_in_history_frames[:1] + agents_in_future_frames[:selected_num_frames]
+        assert num_history_frames > 0, f"Number of history frames: {num_history_frames}"
+        assert num_future_frames >= selected_future_num_frames, f"Number of future frames: {num_future_frames}"
+
+        trajectory = np.zeros((selected_future_num_frames + 1, 3), dtype=np.float32)
+        selected_agents_frames = agents_in_history_frames[:1] + agents_in_future_frames[:selected_future_num_frames]
         for frame_idx, agents_frame in enumerate(selected_agents_frames):
             # it's not guaranteed the target will be in every frame
             try:
@@ -148,11 +155,6 @@ class AckermanPerturbation(Perturbation):
             yaw_offset_rad,
         ) = self.random_offset_generator()
 
-        # TODO: ackerman lateral & yaw perturbation does not work when EGO slow moving
-        if np.sum(displacements) < self.min_displacement:
-            lateral_offset_m = 0
-            yaw_offset_rad = 0
-
         position_offset_m = np.array([longitudinal_offset_m, lateral_offset_m, 0])
         position_offset_m = np.matmul(yaw_as_rotation33(trajectory[curr_frame_idx, 2]), position_offset_m)
 
@@ -167,18 +169,18 @@ class AckermanPerturbation(Perturbation):
         r0 = trajectory[curr_frame_idx, 2] + yaw_offset_rad
         v0 = gv[0]
 
-        wgx = np.ones(num_future_frames)
-        wgy = np.ones(num_future_frames)
-        wgr = np.ones(num_future_frames)
-        wgv = np.zeros(num_future_frames)
+        wgx = np.ones(selected_future_num_frames)
+        wgy = np.ones(selected_future_num_frames)
+        wgr = np.ones(selected_future_num_frames)
+        wgv = np.zeros(selected_future_num_frames)
 
         new_xs, new_ys, new_yaws, new_vs, new_acc, new_steer = fit_ackerman_model_exact(
             x0, y0, r0, v0, gx, gy, gr, gv, wgx, wgy, wgr, wgv,
         )
 
         for x, y, yaw, agents_frame in zip(new_xs, new_ys, new_yaws, selected_agents_frames):
-            agent = filter_agents_by_track_id(agents_frame, selected_track_id)[0]
-            agent_centroid_m = np.array([x, y])
-            agent_yaw_rad = np.array([yaw_as_rotation33(yaw)])
+            idx = int(np.where(agents_frame["track_id"] == selected_track_id)[0])
+            agents_frame[idx]["centroid"] = np.array([x, y])
+            agents_frame[idx]["yaw"] = yaw
 
         return agents_in_history_frames, agents_in_future_frames
