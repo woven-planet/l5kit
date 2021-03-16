@@ -268,7 +268,9 @@ def generate_agent_sample(
 
     raster_from_agent = raster_from_world @ world_from_agent
     if input_im is not None and render_path_prior is True:
-        input_im = np.concatenate([input_im, _render_path_prior_layer(input_im, future_positions_m, raster_from_agent, True)], axis=2)    
+        future_positions_avail_m = future_positions_m[future_availabilities == 1]
+        path_prior_layer = _render_path_prior_layer(input_im, future_positions_avail_m, raster_from_agent, True)
+        input_im = np.concatenate([input_im, path_prior_layer], axis=2)
 
     result = {
         "frame_index": state_index,

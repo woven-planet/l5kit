@@ -108,8 +108,9 @@ def draw_path_prior_layer(shape: Tuple, positions: np.ndarray, width: float = 3,
 
     if vary_positions_len:
         # Vary the length of reference trajectories
-        col_len = positions.shape[0]
-        random_len = randint(1,col_len)
-        positions = positions[0:random_len, 0:]
-
+        random_len = randint(1, len(positions))
+        positions = positions[:random_len]
+        if random_len == 1:
+            positions = np.concatenate([positions, positions])
+    # return cv2.polylines(np.zeros(shape, np.float32), [np.around(positions).astype(np.int32)], False, 1.0, width)
     return cv2.polylines(np.zeros(shape, np.float32), [positions.astype(np.int32)], False, 1.0, width)
