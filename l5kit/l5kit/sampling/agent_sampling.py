@@ -99,6 +99,17 @@ def compute_agent_velocity(
     return history_vels_mps, future_vels_mps
 
 
+def compute_signed_speeds(vels_mps: np.ndarray) -> np.ndarray:
+    """ Compute signed speeds by computing the 2-norm of the given velocities, the sign / direction of the speed is
+    based on the sign of longitudinal velocity.
+
+    :param vels_mps: input velocity with shape [num_timestamps, 2]
+    :return: computed signed speed with shape [num_timestamps]
+    """
+    signed_speeds_mps = np.sign(vels_mps[:, 0]) * np.linalg.norm(vels_mps, axis=1)
+    return signed_speeds_mps
+
+
 def get_relative_poses(
         num_frames: int,
         frames: np.ndarray,
@@ -262,6 +273,7 @@ def generate_agent_sample(
     )
 
     history_vels_mps, future_vels_mps = compute_agent_velocity(history_positions_m, future_positions_m, step_time)
+    future_speeds_mps = compute_signed_speeds(future_vels_mps)
 
     if input_im is not None and render_path_prior is True:
         future_positions_avail_m = future_positions_m[future_availabilities == 1]
@@ -275,6 +287,8 @@ def generate_agent_sample(
         "target_positions": future_positions_m,
         "target_yaws": future_yaws_rad,
         "target_velocities": future_vels_mps,
+        "target_speeds": future_speeds_mps,
+        "target_speed": future_speeds_mps[:1],   # TODO deprecate
         "target_availabilities": future_availabilities,
         "history_positions": history_positions_m,
         "history_yaws": history_yaws_rad,
