@@ -168,7 +168,7 @@ None if not desired
         dataset.frames = frames
         dataset.scenes = scenes
 
-        return EgoDataset(self.cfg, dataset, self.rasterizer, self.perturbation)
+        return EgoDataset(self.cfg, dataset, self.rasterizer, self.perturbation, self.render_path_prior)
 
     def get_scene_indices(self, scene_idx: int) -> np.ndarray:
         """

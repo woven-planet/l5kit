@@ -138,7 +138,8 @@ class AgentDataset(EgoDataset):
         agents_mask = self.agents_mask[start_index:end_index].copy()
 
         return AgentDataset(
-            self.cfg, new_dataset, self.rasterizer, self.perturbation, agents_mask  # overwrite the loaded one
+            self.cfg, new_dataset, self.rasterizer, self.perturbation, agents_mask,  # overwrite the loaded one
+            self.render_path_prior
         )
 
     def get_scene_indices(self, scene_idx: int) -> np.ndarray:
