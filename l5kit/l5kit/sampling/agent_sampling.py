@@ -99,9 +99,14 @@ def compute_agent_velocity(
     return history_vels_mps, future_vels_mps
 
 
-def compute_signed_speeds(velocities_mps: np.ndarray) -> np.ndarray:
-    # compute signed speed, direction is based on x
-    signed_speeds_mps = np.sign(velocities_mps[:, 0]) * np.linalg.norm(velocities_mps, axis=1)
+def compute_signed_speeds(vels_mps: np.ndarray) -> np.ndarray:
+    """ Compute signed speeds by computing the 2-norm of the given velocities, the sign / direction of the speed is
+    based on the sign of longitudinal velocity.
+
+    :param vels_mps: input velocity with shape [num_timestamps, 2]
+    :return: computed signed speed with shape [num_timestamps]
+    """
+    signed_speeds_mps = np.sign(vels_mps[:, 0]) * np.linalg.norm(vels_mps, axis=1)
     return signed_speeds_mps
 
 
