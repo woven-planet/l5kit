@@ -2,6 +2,8 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 
+from l5kit.visualization import draw_path_prior_layer
+
 from ..data import (filter_agents_by_labels, filter_tl_faces_by_frames, get_agents_slice_from_frames,
                     get_tl_faces_slice_from_frames)
 from ..data.filter import filter_agents_by_frames, filter_agents_by_track_id
@@ -171,6 +173,7 @@ def generate_agent_sample(
         filter_agents_threshold: float,
         rasterizer: Optional[Rasterizer] = None,
         perturbation: Optional[Perturbation] = None,
+        render_path_prior: bool = False,
 ) -> dict:
     """Generates the inputs and targets to train a deep prediction model. A deep prediction model takes as input
     the state of the world (here: an image we will call the "raster"), and outputs where that agent will be some
@@ -196,6 +199,7 @@ def generate_agent_sample(
         rasterizer (Optional[Rasterizer]): Rasterizer of some sort that draws a map image
         perturbation (Optional[Perturbation]): Object that perturbs the input and targets, used
         to train models that can recover from slight divergence from training set data
+        render_path_prior bool: if to draw a path prior in a new layer of image
 
     Raises:
         IndexError: An IndexError is returned if the specified ``selected_track_id`` is not present in the scene
@@ -247,6 +251,7 @@ def generate_agent_sample(
     world_from_agent = compute_agent_pose(agent_centroid_m, agent_yaw_rad)
     agent_from_world = np.linalg.inv(world_from_agent)
     raster_from_world = render_context.raster_from_world(agent_centroid_m, agent_yaw_rad)
+    raster_from_agent = raster_from_world @ world_from_agent
 
     future_positions_m, future_yaws_rad, future_extents, future_availabilities = get_relative_poses(
         future_num_frames, future_frames, selected_track_id, future_agents, agent_from_world, agent_yaw_rad,
@@ -257,6 +262,12 @@ def generate_agent_sample(
     )
 
     history_vels_mps, future_vels_mps = compute_agent_velocity(history_positions_m, future_positions_m, step_time)
+
+    if input_im is not None and render_path_prior is True:
+        future_positions_avail_m = future_positions_m[future_availabilities == 1]
+        path_prior_layer = draw_path_prior_layer(input_im.shape[:2], raster_from_agent, future_positions_avail_m,
+                                                 thickness=2, vary_positions_len=False)
+        input_im = np.concatenate([input_im, path_prior_layer[..., None]], axis=2)
 
     result = {
         "frame_index": state_index,
@@ -270,7 +281,7 @@ def generate_agent_sample(
         "history_velocities": history_vels_mps,
         "history_availabilities": history_availabilities,
         "world_to_image": raster_from_world,  # TODO deprecate
-        "raster_from_agent": raster_from_world @ world_from_agent,
+        "raster_from_agent": raster_from_agent,
         "raster_from_world": raster_from_world,
         "agent_from_world": agent_from_world,
         "world_from_agent": world_from_agent,
