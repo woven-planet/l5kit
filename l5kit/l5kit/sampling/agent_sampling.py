@@ -265,11 +265,13 @@ def generate_agent_sample(
     )
 
     history_vels_mps, future_vels_mps = compute_agent_velocity(history_positions_m, future_positions_m, step_time)
+    # compute signed fututure speed, direction is based on x
+    future_speeds_mps = np.sign(future_vels_mps[:, 0]) * np.linalg.norm(future_vels_mps, axis=1)
 
     raster_from_agent = raster_from_world @ world_from_agent
     if input_im is not None and render_path_prior is True:
         future_positions_avail_m = future_positions_m[future_availabilities == 1]
-        path_prior_layer = _render_path_prior_layer(input_im, future_positions_avail_m, raster_from_agent, True)
+        path_prior_layer = _render_path_prior_layer(input_im, future_positions_avail_m, raster_from_agent, False)
         input_im = np.concatenate([input_im, path_prior_layer], axis=2)
 
     result = {
@@ -278,7 +280,8 @@ def generate_agent_sample(
         "target_positions": future_positions_m,
         "target_yaws": future_yaws_rad,
         "target_velocities": future_vels_mps,
-        "target_speed": np.linalg.norm(future_vels_mps[0], keepdims=True),
+        "target_speed": future_speeds_mps[:1],
+        "target_speeds": future_speeds_mps,
         "target_availabilities": future_availabilities,
         "history_positions": history_positions_m,
         "history_yaws": history_yaws_rad,
