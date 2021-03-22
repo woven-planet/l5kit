@@ -95,7 +95,7 @@ def draw_reference_trajectory(on_image: np.ndarray, world_to_pixel: np.ndarray, 
 
 
 def draw_path_prior_layer(shape: Tuple[int, int], raster_from_meters: np.ndarray, positions: np.ndarray,
-                          thickness: float = 3, vary_positions_len: bool = False) -> np.ndarray:
+                          thickness: float = 2, vary_positions_len: bool = False) -> np.ndarray:
     """
     Draw a path prior on a black layer.
     NOTE: this returns a np.float32 image in [0,1]

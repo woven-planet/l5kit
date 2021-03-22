@@ -278,7 +278,7 @@ def generate_agent_sample(
     if input_im is not None and render_path_prior is True:
         future_positions_avail_m = future_positions_m[future_availabilities == 1]
         path_prior_layer = draw_path_prior_layer(input_im.shape[:2], raster_from_agent, future_positions_avail_m,
-                                                 thickness=2, vary_positions_len=False)
+                                                 thickness=2, vary_positions_len=True)
         input_im = np.concatenate([input_im, path_prior_layer[..., None]], axis=2)
 
     result = {
