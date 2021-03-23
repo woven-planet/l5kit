@@ -95,7 +95,7 @@ def draw_reference_trajectory(on_image: np.ndarray, world_to_pixel: np.ndarray, 
 
 
 def draw_path_prior_layer(shape: Tuple[int, int], raster_from_meters: np.ndarray, positions: np.ndarray,
-                          thickness: float = 2, vary_positions_len: bool = False) -> np.ndarray:
+                          thickness: float = 2, vary_positions_len: bool = False, draw_circle: bool = False) -> np.ndarray:
     """
     Draw a path prior on a black layer.
     NOTE: this returns a np.float32 image in [0,1]
@@ -120,6 +120,9 @@ def draw_path_prior_layer(shape: Tuple[int, int], raster_from_meters: np.ndarray
         random_len = randint(1, len(positions))
         positions = positions[:random_len]
 
-    if len(positions) == 1:  # ensure we have at least two points to draw the line
-        positions = np.concatenate([positions, positions])
-    return cv2.polylines(np.zeros(shape, np.float32), [np.around(positions).astype(np.int32)], False, 1.0, thickness)
+    if draw_circle:
+        return cv2.circle(np.zeros(shape, np.float32), tuple(np.around(positions[-1]).astype(np.int32)), radius=2, color=1.0, thickness=thickness)
+    else:
+        if len(positions) == 1:  # ensure we have at least two points to draw the line
+            positions = np.concatenate([positions, positions])
+        return cv2.polylines(np.zeros(shape, np.float32), [np.around(positions).astype(np.int32)], False, 1.0, thickness)
