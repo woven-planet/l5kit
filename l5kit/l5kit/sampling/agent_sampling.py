@@ -106,8 +106,7 @@ def compute_signed_speeds(vels_mps: np.ndarray) -> np.ndarray:
     :param vels_mps: input velocity with shape [num_timestamps, 2]
     :return: computed signed speed with shape [num_timestamps]
     """
-    # signed_speeds_mps = np.sign(vels_mps[:, 0]) * np.linalg.norm(vels_mps, axis=1)
-    signed_speeds_mps = np.linalg.norm(vels_mps, axis=1)
+    signed_speeds_mps = np.sign(vels_mps[:, 0]) * np.linalg.norm(vels_mps, axis=1)
     return signed_speeds_mps
 
 
