@@ -2,7 +2,7 @@ import bokeh.io
 import bokeh.plotting
 import numpy as np
 from bokeh.layouts import column
-from bokeh.models import CustomJS, HoverTool, Slider
+from bokeh.models import CustomJS, HoverTool, Slider, CheckboxGroup
 from bokeh.plotting import ColumnDataSource, output_file, save
 
 from l5kit.configs import load_config_data
@@ -130,10 +130,10 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
     f.patches("x", "y", line_width=0, alpha=0.5, color="#B5B50D", source=out[-1]["crosswalks"])
     f.patches("x", "y", line_width=2, color="#B53331", source=out[-1]["ego"])
     f.patches(xs="x", ys="y", color="color", line_width=2, name="agent", source=out[-1]["agent"])
-    f.multi_line("x", "y", alpha=0.8, color="pink", line_width=3, source=out[-1]["trajs"])
-    f.multi_line("x", "y", alpha=0.8, color="red", line_width=3, source=out[-1]["traj_ego"])
+    f.multi_line("x", "y", alpha=0.8, color="pink", line_width=3, source=out[-1]["trajs"], legend_label="trajs")
+    f.multi_line("x", "y", alpha=0.8, color="red", line_width=3, source=out[-1]["traj_ego"], legend_label="traj_ego")
 
-    callback = CustomJS(
+    slider_callback = CustomJS(
         args=dict(sources=out[-1], frames=out),
         code="""
             sources["lanes"].data = frames[cb_obj.value]["lanes"].data;
@@ -153,7 +153,11 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
     )
 
     slider = Slider(start=0, end=len(frames), value=0, step=1, title="frame")
-    slider.js_on_change("value", callback)
+    slider.js_on_change("value", slider_callback)
+
+    f.legend.location = "top_left"
+    f.legend.click_policy = "hide"
+
     layout = column(f, slider)
     save(layout)
 
