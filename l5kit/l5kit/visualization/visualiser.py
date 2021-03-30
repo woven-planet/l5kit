@@ -32,6 +32,9 @@ COLORS = {
     TLFacesColors.GREEN.name: "#33CC33",
     TLFacesColors.RED.name: "#FF3300",
     TLFacesColors.YELLOW.name: "#FFFF66",
+    "PERCEPTION_LABEL_CAR": "#1F77B4",
+    "PERCEPTION_LABEL_CYCLIST": "#CC33FF",
+    "PERCEPTION_LABEL_PEDESTRIAN": "#66CCFF",
 }
 
 
@@ -103,7 +106,12 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
     )
     f.patches("x", "y", line_width=2, color="#B53331", source=out[-1]["ego"])
     f.patches(
-        "x", "y", line_width=2, color="#1F77B4", name="agent", source=out[-1]["agent"]
+        xs="x",
+        ys="y",
+        color="color",
+        line_width=2,
+        name="agent",
+        source=out[-1]["agent"],
     )
 
     callback = CustomJS(
@@ -181,11 +189,12 @@ def get_frame_data(
     # plot ego and agent cars
 
     ego_dict = dict(x=[], y=[])
-    agents_dict = dict(x=[], y=[], name=[], p=[], id=[])
+    agents_dict = defaultdict(list)
 
     agents = filter_agents_by_labels(agents, 0.1)
     agents = np.insert(agents, 0, get_ego_as_agent(frame))
 
+    # TODO: move to a function
     corners_base_coords = (np.asarray([[-1, -1], [-1, 1], [1, 1], [1, -1]]) * 0.5)[
         None, :, :
     ]
@@ -205,13 +214,16 @@ def get_frame_data(
     box_agent_coords = box_agent_coords[1:]
 
     label_indices = np.argmax(agents["label_probabilities"], axis=1)
-    agents_dict["x"].extend(box_agent_coords[..., 0])
-    agents_dict["y"].extend(box_agent_coords[..., 1])
-    agents_dict["id"].extend(agents["track_id"])
-    agents_dict["name"].extend(np.asarray(PERCEPTION_LABELS)[label_indices])
-    agents_dict["p"].extend(
+    agents_dict["x"] = list(box_agent_coords[..., 0])
+    agents_dict["y"] = list(box_agent_coords[..., 1])
+    agents_dict["id"] = list(agents["track_id"])
+    agents_dict["name"] = list(np.asarray(PERCEPTION_LABELS)[label_indices])
+    agents_dict["p"] = list(
         agents["label_probabilities"][np.arange(len(agents)), label_indices]
     )
+    agents_dict["color"] = [
+        "#1F77B4" if n not in COLORS else COLORS[n] for n in agents_dict["name"]
+    ]
 
     return lanes_dict, crosswalks_dict, ego_dict, agents_dict
 
