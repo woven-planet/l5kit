@@ -26,7 +26,7 @@ from l5kit.rasterization import build_rasterizer
 from l5kit.rasterization.box_rasterizer import get_ego_as_agent
 from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
 from collections import defaultdict
-
+from l5kit.sampling import get_relative_poses
 
 COLORS = {
     TLFacesColors.GREEN.name: "#33CC33",
@@ -63,7 +63,7 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
     f.ygrid.grid_line_color = None
 
     # TODO: move this into a function (zarr util)
-    scenes = zarr_dataset.scenes[scene_index : scene_index + 1].copy()
+    scenes = zarr_dataset.scenes[scene_index: scene_index + 1].copy()
 
     frame_slice = get_frames_slice_from_scenes(*scenes)
     frames = zarr_dataset.frames[frame_slice].copy()
@@ -87,32 +87,51 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
         agents_frame = agents_frames[frame_idx]
         tls_frame = tls_frames[frame_idx]
 
-        lanes, crosswalks, ego, agent = get_frame_data(
-            mapAPI, frame, agents_frame, tls_frame
-        )
+        lanes, crosswalks, ego, agent = get_frame_data(mapAPI, frame, agents_frame, tls_frame)
+
+        # trajectories
+        # TODO: make function
+        # TODO: repeated
+        ego_xy = frame["ego_translation"][:2]
+        ego_yaw = rotation33_as_yaw(frame["ego_rotation"])
+        world_from_agent = compute_agent_pose(ego_xy, ego_yaw)
+        agent_from_world = np.linalg.inv(world_from_agent)
+
+        trajs = defaultdict(list)
+        # TODO: factor out future length
+        agent_traj_length = 20
+        for track_id in agent["id"]:
+            pos, *_, avail = get_relative_poses(agent_traj_length, frames[frame_idx: frame_idx + agent_traj_length],
+                                                track_id, agents_frames[frame_idx: frame_idx + agent_traj_length],
+                                                agent_from_world, ego_yaw)
+            trajs["x"].append(pos[avail > 0, 0])
+            trajs["y"].append(pos[avail > 0, 1])
+
+        traj_ego = defaultdict(list)
+        # TODO: factor out future length
+        ego_traj_length = 100
+        pos, *_, avail = get_relative_poses(ego_traj_length, frames[frame_idx: frame_idx + ego_traj_length],
+                                            None, agents_frames[frame_idx: frame_idx + ego_traj_length],
+                                            agent_from_world, ego_yaw)
+        traj_ego["x"].append(pos[avail > 0, 0])
+        traj_ego["y"].append(pos[avail > 0, 1])
+
+        trajs = ColumnDataSource(data=trajs)
+        traj_ego = ColumnDataSource(data=traj_ego)
 
         lanes = ColumnDataSource(data=lanes)
         crosswalks = ColumnDataSource(data=crosswalks)
         ego = ColumnDataSource(data=ego)
         agent = ColumnDataSource(data=agent)
 
-        out.append(dict(lanes=lanes, crosswalks=crosswalks, ego=ego, agent=agent))
+        out.append(dict(lanes=lanes, crosswalks=crosswalks, ego=ego, agent=agent, trajs=trajs, traj_ego=traj_ego))
 
-    f.patches(
-        xs="x", ys="y", color="color", line_width=0, alpha=0.5, source=out[-1]["lanes"]
-    )
-    f.patches(
-        "x", "y", line_width=0, alpha=0.5, color="#B5B50D", source=out[-1]["crosswalks"]
-    )
+    f.patches(xs="x", ys="y", color="color", line_width=0, alpha=0.5, source=out[-1]["lanes"])
+    f.patches("x", "y", line_width=0, alpha=0.5, color="#B5B50D", source=out[-1]["crosswalks"])
     f.patches("x", "y", line_width=2, color="#B53331", source=out[-1]["ego"])
-    f.patches(
-        xs="x",
-        ys="y",
-        color="color",
-        line_width=2,
-        name="agent",
-        source=out[-1]["agent"],
-    )
+    f.patches(xs="x", ys="y", color="color", line_width=2, name="agent", source=out[-1]["agent"])
+    f.multi_line("x", "y", alpha=0.8, color="pink", line_width=3, source=out[-1]["trajs"])
+    f.multi_line("x", "y", alpha=0.8, color="red", line_width=3, source=out[-1]["traj_ego"])
 
     callback = CustomJS(
         args=dict(sources=out[-1], frames=out),
@@ -121,11 +140,15 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
             sources["crosswalks"].data = frames[cb_obj.value]["crosswalks"].data;
             sources["agent"].data = frames[cb_obj.value]["agent"].data;
             sources["ego"].data = frames[cb_obj.value]["ego"].data;
+            sources["trajs"].data = frames[cb_obj.value]["trajs"].data;
+            sources["traj_ego"].data = frames[cb_obj.value]["traj_ego"].data;
 
             sources["lanes"].change.emit();
             sources["crosswalks"].change.emit();
             sources["agent"].change.emit();
             sources["ego"].change.emit();
+            sources["trajs"].change.emit();
+            sources["traj_ego"].change.emit();
         """,
     )
 
@@ -135,10 +158,7 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
     save(layout)
 
 
-def get_frame_data(
-    mapAPI: MapAPI, frame: np.ndarray, agents: np.ndarray, tls_frame: np.ndarray
-):
-
+def get_frame_data(mapAPI: MapAPI, frame: np.ndarray, agents: np.ndarray, tls_frame: np.ndarray):
     ego_xy = frame["ego_translation"][:2]
     ego_yaw = rotation33_as_yaw(frame["ego_rotation"])
     world_from_agent = compute_agent_pose(ego_xy, ego_yaw)
@@ -196,8 +216,8 @@ def get_frame_data(
 
     # TODO: move to a function
     corners_base_coords = (np.asarray([[-1, -1], [-1, 1], [1, 1], [1, -1]]) * 0.5)[
-        None, :, :
-    ]
+                          None, :, :
+                          ]
     corners_m = corners_base_coords * agents["extent"][:, None, :2]  # corners in zero
     s = np.sin(agents["yaw"])
     c = np.cos(agents["yaw"])
@@ -218,12 +238,8 @@ def get_frame_data(
     agents_dict["y"] = list(box_agent_coords[..., 1])
     agents_dict["id"] = list(agents["track_id"])
     agents_dict["name"] = list(np.asarray(PERCEPTION_LABELS)[label_indices])
-    agents_dict["p"] = list(
-        agents["label_probabilities"][np.arange(len(agents)), label_indices]
-    )
-    agents_dict["color"] = [
-        "#1F77B4" if n not in COLORS else COLORS[n] for n in agents_dict["name"]
-    ]
+    agents_dict["p"] = list(agents["label_probabilities"][np.arange(len(agents)), label_indices])
+    agents_dict["color"] = ["#1F77B4" if n not in COLORS else COLORS[n] for n in agents_dict["name"]]
 
     return lanes_dict, crosswalks_dict, ego_dict, agents_dict
 
