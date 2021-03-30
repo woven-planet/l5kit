@@ -11,14 +11,28 @@ from l5kit.data import (
     LocalDataManager,
     get_agents_slice_from_frames,
     get_frames_slice_from_scenes,
+    get_tl_faces_slice_from_frames,
 )
-from l5kit.data.filter import filter_agents_by_frames, filter_agents_by_labels
+from l5kit.data.filter import (
+    filter_agents_by_frames,
+    filter_agents_by_labels,
+    filter_tl_faces_by_frames,
+    filter_tl_faces_by_status,
+)
 from l5kit.data.labels import PERCEPTION_LABELS
-from l5kit.data.map_api import MapAPI
+from l5kit.data.map_api import MapAPI, TLFacesColors
 from l5kit.geometry import compute_agent_pose, rotation33_as_yaw, transform_points
 from l5kit.rasterization import build_rasterizer
 from l5kit.rasterization.box_rasterizer import get_ego_as_agent
 from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
+from collections import defaultdict
+
+
+COLORS = {
+    TLFacesColors.GREEN.name: "#33CC33",
+    TLFacesColors.RED.name: "#FF3300",
+    TLFacesColors.YELLOW.name: "#FFFF66",
+}
 
 
 def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapAPI):
@@ -54,17 +68,25 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
     agent_slice = get_agents_slice_from_frames(*frames[[0, -1]])
     agents = zarr_dataset.agents[agent_slice].copy()
 
+    tl_slice = get_tl_faces_slice_from_frames(*frames[[0, -1]])
+    tl_faces = zarr_dataset.tl_faces[tl_slice].copy()
+
     frames["agent_index_interval"] -= agent_slice.start
+    frames["traffic_light_faces_index_interval"] -= tl_slice.start
     scenes["frame_index_interval"] -= frame_slice.start
 
     agents_frames = filter_agents_by_frames(frames, agents)
+    tls_frames = filter_tl_faces_by_frames(frames, tl_faces)
 
     out = []
     for frame_idx in range(len(frames)):
         frame = frames[frame_idx]
         agents_frame = agents_frames[frame_idx]
+        tls_frame = tls_frames[frame_idx]
 
-        lanes, crosswalks, ego, agent = get_frame_data(mapAPI, frame, agents_frame)
+        lanes, crosswalks, ego, agent = get_frame_data(
+            mapAPI, frame, agents_frame, tls_frame
+        )
 
         lanes = ColumnDataSource(data=lanes)
         crosswalks = ColumnDataSource(data=crosswalks)
@@ -73,7 +95,9 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
 
         out.append(dict(lanes=lanes, crosswalks=crosswalks, ego=ego, agent=agent))
 
-    f.patches("x", "y", line_width=0, alpha=0.5, color="gray", source=out[-1]["lanes"])
+    f.patches(
+        xs="x", ys="y", color="color", line_width=0, alpha=0.5, source=out[-1]["lanes"]
+    )
     f.patches(
         "x", "y", line_width=0, alpha=0.5, color="#B5B50D", source=out[-1]["crosswalks"]
     )
@@ -103,7 +127,9 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
     save(layout)
 
 
-def get_frame_data(mapAPI: MapAPI, frame: np.ndarray, agents: np.ndarray):
+def get_frame_data(
+    mapAPI: MapAPI, frame: np.ndarray, agents: np.ndarray, tls_frame: np.ndarray
+):
 
     ego_xy = frame["ego_translation"][:2]
     ego_yaw = rotation33_as_yaw(frame["ego_rotation"])
@@ -113,9 +139,19 @@ def get_frame_data(mapAPI: MapAPI, frame: np.ndarray, agents: np.ndarray):
     #################
     # plot lanes
     lane_indices = indices_in_bounds(ego_xy, mapAPI.bounds_info["lanes"]["bounds"], 50)
-    lanes_dict = dict(x=[], y=[])
+    active_tl_ids = set(
+        filter_tl_faces_by_status(tls_frame, "ACTIVE")["face_id"].tolist()
+    )
+
+    lanes_dict = defaultdict(list)
     for idx, lane_idx in enumerate(lane_indices):
         lane_idx = mapAPI.bounds_info["lanes"]["ids"][lane_idx]
+
+        lane_tl_ids = set(mapAPI.get_lane_traffic_control_ids(lane_idx))
+        lane_colour = "gray"
+        for tl_id in lane_tl_ids.intersection(active_tl_ids):
+            lane_colour = COLORS[mapAPI.get_color_for_face(tl_id)]
+
         lane_coords = mapAPI.get_lane_coords(lane_idx)
         left_lane = lane_coords["xyz_left"][:, :2]
         right_lane = lane_coords["xyz_right"][::-1, :2]
@@ -125,6 +161,7 @@ def get_frame_data(mapAPI: MapAPI, frame: np.ndarray, agents: np.ndarray):
 
         lanes_dict["x"].append(np.hstack((left_lane[:, 0], right_lane[:, 0])))
         lanes_dict["y"].append(np.hstack((left_lane[:, 1], right_lane[:, 1])))
+        lanes_dict["color"].append(lane_colour)
 
     #################
     # plot crosswalks
