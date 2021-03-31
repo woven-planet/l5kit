@@ -5,6 +5,7 @@ import numpy as np
 import zarr
 from prettytable import PrettyTable
 
+from .filter import get_agents_slice_from_frames, get_frames_slice_from_scenes, get_tl_faces_slice_from_frames
 from .labels import PERCEPTION_LABELS, TL_FACE_LABELS
 
 
@@ -198,3 +199,34 @@ opened.
         table.float_format = ".2"
         table.add_row(values)
         return str(table)
+
+    def get_scene_dataset(self, scene_index: int) -> "ChunkedDataset":
+        """Get a new ChunkedDataset of a single scene.
+        This dataset lives in memory (as np.ndarray)
+
+        :param scene_index: the scene index
+        :return: a dataset with a single scene inside
+        """
+        if scene_index >= len(self.scenes):
+            raise ValueError(f"scene index {scene_index} out of bound for dataset with {len(self.scenes)} scenes")
+
+        scenes = self.scenes[scene_index: scene_index + 1].copy()
+        frame_slice = get_frames_slice_from_scenes(*scenes)
+        frames = self.frames[frame_slice].copy()
+        agent_slice = get_agents_slice_from_frames(*frames[[0, -1]])
+        tl_slice = get_tl_faces_slice_from_frames(*frames[[0, -1]])
+
+        agents = self.agents[agent_slice].copy()
+        tl_faces = self.tl_faces[tl_slice].copy()
+
+        frames["agent_index_interval"] -= agent_slice.start
+        frames["traffic_light_faces_index_interval"] -= tl_slice.start
+        scenes["frame_index_interval"] -= frame_slice.start
+
+        dataset = ChunkedDataset("")
+        dataset.agents = agents
+        dataset.tl_faces = tl_faces
+        dataset.frames = frames
+        dataset.scenes = scenes
+
+        return dataset
