@@ -126,15 +126,15 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
 
         out.append(dict(lanes=lanes, crosswalks=crosswalks, ego=ego, agent=agent, trajs=trajs, traj_ego=traj_ego))
 
-    f.patches(xs="x", ys="y", color="color", line_width=0, alpha=0.5, source=out[-1]["lanes"])
-    f.patches("x", "y", line_width=0, alpha=0.5, color="#B5B50D", source=out[-1]["crosswalks"])
-    f.patches("x", "y", line_width=2, color="#B53331", source=out[-1]["ego"])
-    f.patches(xs="x", ys="y", color="color", line_width=2, name="agent", source=out[-1]["agent"])
-    f.multi_line("x", "y", alpha=0.8, color="pink", line_width=3, source=out[-1]["trajs"], legend_label="trajs")
-    f.multi_line("x", "y", alpha=0.8, color="red", line_width=3, source=out[-1]["traj_ego"], legend_label="traj_ego")
+    f.patches(xs="x", ys="y", color="color", line_width=0, alpha=0.5, source=out[0]["lanes"])
+    f.patches("x", "y", line_width=0, alpha=0.5, color="#B5B50D", source=out[0]["crosswalks"])
+    f.patches("x", "y", line_width=2, color="#B53331", source=out[0]["ego"])
+    f.patches(xs="x", ys="y", color="color", line_width=2, name="agent", source=out[0]["agent"])
+    f.multi_line("x", "y", alpha=0.8, color="pink", line_width=3, source=out[0]["trajs"], legend_label="trajs")
+    f.multi_line("x", "y", alpha=0.8, color="red", line_width=3, source=out[0]["traj_ego"], legend_label="traj_ego")
 
     slider_callback = CustomJS(
-        args=dict(sources=out[-1], frames=out),
+        args=dict(sources=out[0], frames=out),
         code="""
             sources["lanes"].data = frames[cb_obj.value]["lanes"].data;
             sources["crosswalks"].data = frames[cb_obj.value]["crosswalks"].data;
