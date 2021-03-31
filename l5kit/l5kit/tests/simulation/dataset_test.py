@@ -9,6 +9,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from l5kit.geometry import rotation33_as_yaw
+from l5kit.data import SCENE_DTYPE, FRAME_DTYPE, AGENT_DTYPE, TL_FACE_DTYPE
 
 
 def test_simulation_ego(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict, tmp_path: Path) -> None:
@@ -61,5 +62,82 @@ def test_simulation_agents(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManag
     scene_indices = list(range(len(zarr_cat_dataset.scenes)))
 
     ego_dataset = EgoDataset(cfg, zarr_cat_dataset, rasterizer)
-    dataset = SimulationDataset(ego_dataset, scene_indices)
-    # TODO: implement here
+    dataset = SimulationDataset(ego_dataset, scene_indices, distance_th_close=30)
+
+    # nothing should be tracked
+    assert len(dataset.agents_tracked) == 0
+
+    agents_dict = dataset.rasterise_agents_frame_batch(0)
+
+    # we should have the same agents in each scene
+    for k in agents_dict:
+        assert (0, k[1]) in agents_dict
+
+    # now everything should be tracked
+    assert len(dataset.agents_tracked) == len(agents_dict)
+
+
+def test_simulation_agents_mock(dmg: LocalDataManager, cfg: dict, tmp_path: Path) -> None:
+    zarr_dataset = _mock_dataset()
+    print(zarr_dataset.agents["track_id"])
+    rasterizer = build_rasterizer(cfg, dmg)
+
+    ego_dataset = EgoDataset(cfg, zarr_dataset, rasterizer)
+    dataset = SimulationDataset(ego_dataset, [0], distance_th_close=10)
+
+    # nothing should be tracked
+    assert len(dataset.agents_tracked) == 0
+
+    agents_dict = dataset.rasterise_agents_frame_batch(0)
+
+    # only (0, 1) should be in
+    assert len(agents_dict) == 1 and (0, 1) in agents_dict
+    assert len(dataset.agents_tracked) == 1
+
+    agents_dict = dataset.rasterise_agents_frame_batch(1)
+    assert len(agents_dict) == 2
+    assert (0, 1) in agents_dict and (0, 2) in agents_dict
+    assert len(dataset.agents_tracked) == 2
+
+    agents_dict = dataset.rasterise_agents_frame_batch(2)
+    assert len(agents_dict) == 0
+    assert len(dataset.agents_tracked) == 0
+
+
+def _mock_dataset():
+    zarr_dt = ChunkedDataset("")
+    zarr_dt.scenes = np.zeros(1, dtype=SCENE_DTYPE)
+    zarr_dt.scenes["frame_index_interval"][0] = (0, 4)
+
+    zarr_dt.frames = np.zeros(3, dtype=FRAME_DTYPE)
+    zarr_dt.frames["agent_index_interval"][0] = (0, 3)
+    zarr_dt.frames["agent_index_interval"][1] = (3, 5)
+    zarr_dt.frames["agent_index_interval"][2] = (5, 6)
+
+    zarr_dt.agents = np.zeros(6, dtype=AGENT_DTYPE)
+    # all agents except the first one are valid
+    zarr_dt.agents["label_probabilities"][1:, 3] = 1
+    # FRAME 0
+    # second agent is close to ego and has id 1
+    zarr_dt.agents["track_id"][1] = 1
+    zarr_dt.agents["centroid"][1] = (1, 1)
+    # third agent is too far and has id 2
+    zarr_dt.agents["track_id"][2] = 2
+    zarr_dt.agents["centroid"][2] = (100, 100)
+
+    # FRAME 1
+    # track 1 agent is still close to ego
+    zarr_dt.agents["track_id"][3] = 1
+    zarr_dt.agents["centroid"][3] = (1, 2)
+    # track 2 is now close enough
+    zarr_dt.agents["track_id"][4] = 2
+    zarr_dt.agents["centroid"][4] = (1, 1)
+
+    # FRAME 2
+    # track 1 agent is far
+    zarr_dt.agents["track_id"][5] = 1
+    zarr_dt.agents["centroid"][5] = (100, 100)
+
+    zarr_dt.tl_faces = np.zeros(0, dtype=TL_FACE_DTYPE)
+
+    return zarr_dt
