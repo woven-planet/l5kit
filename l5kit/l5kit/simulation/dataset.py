@@ -160,10 +160,9 @@ class SimulationDataset(Dataset):
         """
         agent_track_set = set([(scene_index, int(track_id)) for track_id in agent_track_ids])
 
-        new_els = agent_track_set - self.agents_tracked
-        self.agents_tracked.update(new_els)
+        self.agents_tracked.update(agent_track_set)
 
-        remove_els = self.agents_tracked - agent_track_set
+        remove_els = set([k for k in self.agents_tracked if k[0] == scene_index]) - agent_track_set
         for indices in remove_els:
             self.agents_tracked.remove(indices)
 
