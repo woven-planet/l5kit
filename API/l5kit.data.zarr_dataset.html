@@ -208,6 +208,21 @@ writing interfaces that involves making numpy-like slices.</p>
 <p>Currently only .zarr directory stores are supported (i.e. the data will live in a folder on your
 local filesystem called &lt;something&gt;.zarr).</p>
 <dl class="py method">
+<dt id="l5kit.data.zarr_dataset.ChunkedDataset.get_scene_dataset">
+<code class="sig-name descname">get_scene_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_index</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset">l5kit.data.zarr_dataset.ChunkedDataset</a><a class="headerlink" href="#l5kit.data.zarr_dataset.ChunkedDataset.get_scene_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a new ChunkedDataset of a single scene.
+This dataset lives in memory (as np.ndarray)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scene_index</strong> – the scene index</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dataset with a single scene inside</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="l5kit.data.zarr_dataset.ChunkedDataset.initialize">
 <code class="sig-name descname">initialize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mode</span><span class="p">:</span> <span class="n">str</span> <span class="o">=</span> <span class="default_value">'w'</span></em>, <em class="sig-param"><span class="n">num_scenes</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_frames</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_agents</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_tl_faces</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset">l5kit.data.zarr_dataset.ChunkedDataset</a><a class="headerlink" href="#l5kit.data.zarr_dataset.ChunkedDataset.initialize" title="Permalink to this definition">¶</a></dt>
 <dd><p>Initializes a new zarr dataset, creating the underlying arrays.</p>
