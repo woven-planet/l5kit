@@ -144,7 +144,6 @@ None if not desired
             EgoDataset: A valid EgoDataset dataset with a copy of the data
 
         """
-        # copy everything to avoid references (scene is already detached from zarr if get_combined_scene was called)
         dataset = self.dataset.get_scene_dataset(scene_index)
         return EgoDataset(self.cfg, dataset, self.rasterizer, self.perturbation)
 

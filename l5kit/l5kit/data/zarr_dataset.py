@@ -201,13 +201,11 @@ opened.
         return str(table)
 
     def get_scene_dataset(self, scene_index: int) -> "ChunkedDataset":
-        """
-        Get a new ChunkedDataset of a single scene. This dataset lives in memory (as np.ndarray)
-        Args:
-            scene_index (int): the scene index
+        """Get a new ChunkedDataset of a single scene.
+        This dataset lives in memory (as np.ndarray)
 
-        Returns:
-            ChunkedDataset: the scene dataset
+        :param scene_index: the scene index
+        :return: a dataset with a single scene inside
         """
         if scene_index >= len(self.scenes):
             raise ValueError(f"scene index {scene_index} out of bound for dataset with {len(self.scenes)} scenes")
