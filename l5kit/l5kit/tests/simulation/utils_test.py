@@ -7,7 +7,7 @@ from l5kit.simulation.utils import disable_agents, insert_agent
 
 
 class TestAgentInsert(unittest.TestCase):
-    def _get_simple_dataset(self):
+    def _get_simple_dataset(self) -> ChunkedDataset:
         # build a simple dataset with 3 frames
         # frame 0:
         #   agent 0
@@ -30,7 +30,7 @@ class TestAgentInsert(unittest.TestCase):
         dataset.agents["track_id"] = [0, 1, 2, 0, 1, 0]
         return dataset
 
-    def test_invalid(self):
+    def test_invalid(self) -> None:
         # try to insert out of bounds
         with self.assertRaises(ValueError):
             insert_agent(np.zeros(1, dtype=AGENT_DTYPE), 100, self._get_simple_dataset())
@@ -40,7 +40,7 @@ class TestAgentInsert(unittest.TestCase):
             dataset.scenes = np.concatenate([dataset.scenes, dataset.scenes])
             insert_agent(np.zeros(1, dtype=AGENT_DTYPE), 100, dataset)
 
-    def test_update(self):
+    def test_update(self) -> None:
         # try to update agent 0 in frame 0
         dataset = self._get_simple_dataset()
         agent = np.zeros(1, dtype=AGENT_DTYPE)
@@ -63,7 +63,7 @@ class TestAgentInsert(unittest.TestCase):
             )
         )
 
-    def test_insert_1(self):
+    def test_insert_1(self) -> None:
         # try to insert agent 2 in frame 1
         dataset = self._get_simple_dataset()
         agent = np.zeros(1, dtype=AGENT_DTYPE)
@@ -105,7 +105,7 @@ class TestAgentInsert(unittest.TestCase):
             np.allclose(dataset.frames["agent_index_interval"][2:], old_dataset.frames["agent_index_interval"][2:] + 1)
         )
 
-    def test_insert_2(self):
+    def test_insert_2(self) -> None:
         # try to insert agent 1 in frame 2
         dataset = self._get_simple_dataset()
         agent = np.zeros(1, dtype=AGENT_DTYPE)
@@ -148,7 +148,7 @@ class TestAgentInsert(unittest.TestCase):
 
 
 class TestDisableAgents(unittest.TestCase):
-    def _get_simple_dataset(self):
+    def _get_simple_dataset(self) -> ChunkedDataset:
         # build a simple dataset with 3 frames
         # frame 0:
         #   agent 0
@@ -175,7 +175,7 @@ class TestDisableAgents(unittest.TestCase):
         dataset.agents["extent"] = np.random.rand(*dataset.agents["extent"].shape)
         return dataset
 
-    def test_invalid(self):
+    def test_invalid(self) -> None:
         # try to delete agents in a multi-scene dataset
         with self.assertRaises(ValueError):
             dataset = self._get_simple_dataset()
@@ -187,7 +187,7 @@ class TestDisableAgents(unittest.TestCase):
             dataset = self._get_simple_dataset()
             disable_agents(dataset, np.zeros((2, 2)))
 
-    def test_allowlist(self):
+    def test_allowlist(self) -> None:
         dataset = self._get_simple_dataset()
         original_agents = dataset.agents.copy()
 

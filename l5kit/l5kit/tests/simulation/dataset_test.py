@@ -157,7 +157,7 @@ def test_simulation_agents_mock_insert(dmg: LocalDataManager, cfg: dict, tmp_pat
         assert np.allclose(agents_dict[(0, 1)]["yaw"], -0.5)
 
 
-def _mock_dataset():
+def _mock_dataset() -> ChunkedDataset:
     zarr_dt = ChunkedDataset("")
     zarr_dt.scenes = np.zeros(1, dtype=SCENE_DTYPE)
     zarr_dt.scenes["frame_index_interval"][0] = (0, 4)
