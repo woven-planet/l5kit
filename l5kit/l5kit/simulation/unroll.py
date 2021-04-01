@@ -76,11 +76,12 @@ def unroll(
     model_ego: torch.nn.Module,
     model_agents: torch.nn.Module,
     dataset: SimulationDataset,
-    start_frame_index: int = 0
+    start_frame_index: int = 0,
+    end_frame_index: Optional[int] = None,
     ) -> None:
 
-    # TODO: enable limit unroll
-    end_frame_index = len(dataset)
+    if end_frame_index is None:
+        end_frame_index = len(dataset)
 
     for frame_index in tqdm(range(start_frame_index, end_frame_index)):
         next_frame_index = frame_index + 1
