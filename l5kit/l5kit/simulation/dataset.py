@@ -77,14 +77,14 @@ class SimulationDataset(Dataset):
         data_batch = self.scene_dataset_batch[scene_index][frame_index]
         return data_batch
 
-    def rasterise_frame_batch(self, state_index: int) -> List[np.ndarray]:
+    def rasterise_frame_batch(self, state_index: int) -> List[Dict[str, np.ndarray]]:
         """
         Get a frame from all scenes
 
         :param state_index: the frame index
         :return: a list of dict from EgoDatasets
         """
-        frame_batch = [scene_dt.dataset.frames[state_index] for scene_dt in self.scene_dataset_batch.values()]
+        frame_batch = [scene_dt[state_index] for scene_dt in self.scene_dataset_batch.values()]
         return frame_batch
 
     def set_ego_for_frame(self, state_index: int, output_index: int, ego_translations: torch.Tensor,
