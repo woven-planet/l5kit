@@ -1,7 +1,6 @@
 from typing import Dict, List, Set, Tuple
 
 import numpy as np
-import torch
 from torch.utils.data import Dataset
 
 from l5kit.data import filter_agents_by_frames, PERCEPTION_LABEL_TO_INDEX
@@ -87,8 +86,8 @@ class SimulationDataset(Dataset):
         frame_batch = [scene_dt[state_index] for scene_dt in self.scene_dataset_batch.values()]
         return frame_batch
 
-    def set_ego_for_frame(self, state_index: int, output_index: int, ego_translations: torch.Tensor,
-                          ego_yaws: torch.Tensor) -> None:
+    def set_ego_for_frame(self, state_index: int, output_index: int, ego_translations: np.ndarray,
+                          ego_yaws: np.ndarray) -> None:
         """Mutate future frame position and yaw for ego across scenes. This acts on the underlying dataset
 
         :param state_index: the frame index to mutate
@@ -108,8 +107,8 @@ class SimulationDataset(Dataset):
         if state_index >= len(self):
             raise ValueError(f"trying to mutate frame:{state_index} but length is:{len(self)}")
 
-        position_m_batch = ego_translations[:, output_index, :].detach().cpu().numpy()
-        angle_rad_batch = ego_yaws[:, output_index].detach().cpu().numpy()
+        position_m_batch = ego_translations[:, output_index, :]
+        angle_rad_batch = ego_yaws[:, output_index]
         for i, (scene_dataset, position_m, angle_rad) in enumerate(
             zip(self.scene_dataset_batch.values(), position_m_batch, angle_rad_batch)
         ):

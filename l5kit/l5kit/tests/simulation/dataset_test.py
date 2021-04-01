@@ -42,8 +42,8 @@ def test_simulation_ego(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager,
     # ensure we can set the ego in multiple frames for all scenes
     frame_indices = np.random.randint(0, len(dataset), 10)
     for frame_idx in frame_indices:
-        mock_tr = torch.rand(len(scene_indices), 12, 2)
-        mock_yaw = torch.rand(len(scene_indices), 12)
+        mock_tr = np.random.rand(len(scene_indices), 12, 2)
+        mock_yaw = np.random.rand(len(scene_indices), 12)
 
         dataset.set_ego_for_frame(frame_idx, 0, mock_tr, mock_yaw)
 
@@ -52,8 +52,8 @@ def test_simulation_ego(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager,
             ego_tr = scene_zarr.frames["ego_translation"][frame_idx]
             ego_yaw = rotation33_as_yaw(scene_zarr.frames["ego_rotation"][frame_idx])
 
-            assert np.allclose(mock_tr[scene_idx, 0].numpy(), ego_tr[:2])
-            assert np.allclose(mock_yaw[scene_idx, 0].numpy(), ego_yaw)
+            assert np.allclose(mock_tr[scene_idx, 0], ego_tr[:2])
+            assert np.allclose(mock_yaw[scene_idx, 0], ego_yaw)
 
 
 def test_simulation_agents(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict, tmp_path: Path) -> None:
