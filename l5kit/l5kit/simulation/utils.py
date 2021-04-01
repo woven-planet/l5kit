@@ -33,17 +33,17 @@ def insert_agent(agent: np.ndarray, frame_idx: int, dataset: ChunkedDataset):
         # the agent is already there and we can just update it
         # we set also label_probabilities from the current one to ensure it is high enough
         idx_set = int(idx_set[0])
-        agents_frame[idx_set : idx_set + 1] = agent
+        agents_frame[idx_set: idx_set + 1] = agent
     else:
         # CASE 2
         # we need to insert the agent and move everything
         dataset.agents = np.concatenate(
-            [dataset.agents[0 : agents_slice.stop], agent, dataset.agents[agents_slice.stop :]], 0
+            [dataset.agents[0: agents_slice.stop], agent, dataset.agents[agents_slice.stop:]], 0
         )
 
         # move end of the current frame and all other frames start and end
         dataset.frames[frame_idx]["agent_index_interval"] += (0, 1)
-        dataset.frames[frame_idx + 1 :]["agent_index_interval"] += 1
+        dataset.frames[frame_idx + 1:]["agent_index_interval"] += 1
 
 
 def disable_agents(dataset: ChunkedDataset, allowlist: np.ndarray):
