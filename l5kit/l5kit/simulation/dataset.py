@@ -3,7 +3,7 @@ from l5kit.geometry.transform import yaw_as_rotation33
 
 import numpy as np
 
-from l5kit.simulation.utils import disable_agents
+from l5kit.simulation.utils import disable_agents, insert_agent
 
 from l5kit.data import filter_agents_by_frames, PERCEPTION_LABEL_TO_INDEX
 from l5kit.dataset import EgoDataset
@@ -110,6 +110,15 @@ class SimulationDataset(Dataset):
         ):
             scene_dataset.dataset.frames[state_index]["ego_translation"][:2] = position_m
             scene_dataset.dataset.frames[state_index]["ego_rotation"] = yaw_as_rotation33(angle_rad)
+
+    def set_agents(self, state_index: int, agents_infos: Dict[Tuple[int, int], np.ndarray]) -> None:
+        """Set multiple agents in the scene datasets.
+
+        :param state_index: the frame index to set (same for all datasets)
+        :param agents_infos: a dict mapping (scene_idx, agent_idx) to the agent array
+        """
+        for (scene_idx, _), agent in agents_infos.items():
+            insert_agent(agent, state_index, self.scene_dataset_batch[scene_idx].dataset)
 
     def rasterise_agents_frame_batch(self, state_index: int) -> Dict[Tuple[int, int], Dict[str, np.ndarray]]:
         """Rasterise agents for each scene in the batch at a given frame.

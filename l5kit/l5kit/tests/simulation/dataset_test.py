@@ -79,7 +79,6 @@ def test_simulation_agents(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManag
 
 def test_simulation_agents_mock(dmg: LocalDataManager, cfg: dict, tmp_path: Path) -> None:
     zarr_dataset = _mock_dataset()
-    print(zarr_dataset.agents["track_id"])
     rasterizer = build_rasterizer(cfg, dmg)
 
     ego_dataset = EgoDataset(cfg, zarr_dataset, rasterizer)
@@ -104,15 +103,70 @@ def test_simulation_agents_mock(dmg: LocalDataManager, cfg: dict, tmp_path: Path
     assert len(dataset.agents_tracked) == 0
 
 
+def test_simulation_agents_mock_disable(dmg: LocalDataManager, cfg: dict, tmp_path: Path) -> None:
+    zarr_dataset = _mock_dataset()
+    rasterizer = build_rasterizer(cfg, dmg)
+
+    ego_dataset = EgoDataset(cfg, zarr_dataset, rasterizer)
+    dataset = SimulationDataset(ego_dataset, [0], distance_th_close=10, disable_new_agents=True)
+
+    # nothing should be tracked
+    assert len(dataset.agents_tracked) == 0
+
+    agents_dict = dataset.rasterise_agents_frame_batch(0)
+
+    # only (0, 1) should be in
+    assert len(agents_dict) == 1 and (0, 1) in agents_dict
+    assert len(dataset.agents_tracked) == 1
+
+    agents_dict = dataset.rasterise_agents_frame_batch(1)
+
+    # again, only (0, 1) should be in
+    assert len(agents_dict) == 1
+    assert (0, 1) in agents_dict
+    assert len(dataset.agents_tracked) == 1
+
+    agents_dict = dataset.rasterise_agents_frame_batch(2)
+    assert len(agents_dict) == 0
+    assert len(dataset.agents_tracked) == 0
+
+
+def test_simulation_agents_mock_insert(dmg: LocalDataManager, cfg: dict, tmp_path: Path) -> None:
+    zarr_dataset = _mock_dataset()
+    rasterizer = build_rasterizer(cfg, dmg)
+
+    ego_dataset = EgoDataset(cfg, zarr_dataset, rasterizer)
+    dataset = SimulationDataset(ego_dataset, [0], distance_th_close=10, disable_new_agents=True)
+
+    _ = dataset.rasterise_agents_frame_batch(0)
+
+    # insert (0, 1) in following frames
+    next_agent = np.zeros(1, dtype=AGENT_DTYPE)
+    next_agent["centroid"] = (-1, -1)
+    next_agent["yaw"] = -0.5
+    next_agent["track_id"] = 1
+    next_agent["extent"] = (1, 1, 1)
+    next_agent["label_probabilities"][:, 3] = 1
+
+    for frame_idx in [1, 2, 3]:
+        dataset.set_agents(frame_idx, {(0, 1): next_agent})
+
+        agents_dict = dataset.rasterise_agents_frame_batch(frame_idx)
+        assert len(agents_dict) == 1 and (0, 1) in agents_dict
+        assert np.allclose(agents_dict[(0, 1)]["centroid"], (-1, -1))
+        assert np.allclose(agents_dict[(0, 1)]["yaw"], -0.5)
+
+
 def _mock_dataset():
     zarr_dt = ChunkedDataset("")
     zarr_dt.scenes = np.zeros(1, dtype=SCENE_DTYPE)
     zarr_dt.scenes["frame_index_interval"][0] = (0, 4)
 
-    zarr_dt.frames = np.zeros(3, dtype=FRAME_DTYPE)
+    zarr_dt.frames = np.zeros(4, dtype=FRAME_DTYPE)
     zarr_dt.frames["agent_index_interval"][0] = (0, 3)
     zarr_dt.frames["agent_index_interval"][1] = (3, 5)
     zarr_dt.frames["agent_index_interval"][2] = (5, 6)
+    zarr_dt.frames["agent_index_interval"][3] = (6, 6)
 
     zarr_dt.agents = np.zeros(6, dtype=AGENT_DTYPE)
     # all agents except the first one are valid
@@ -137,6 +191,8 @@ def _mock_dataset():
     # track 1 agent is far
     zarr_dt.agents["track_id"][5] = 1
     zarr_dt.agents["centroid"][5] = (100, 100)
+
+    # FRAME 3 is empty
 
     zarr_dt.tl_faces = np.zeros(0, dtype=TL_FACE_DTYPE)
 
