@@ -13,19 +13,25 @@ from torch.utils.data import Dataset
 
 class SimulationDataset(Dataset):
     def __init__(self, dataset: EgoDataset, scene_indices: List[int], start_frame: int = 0,
-                 disable_new_agents: bool = False, distance_th_far: float = 30,
+                 disable_new_agents: bool = False, distance_th_far: float = 15,
                  distance_th_close: float = 10) -> None:
-        """This class has all the functionalities of UnrollEgoDataset,
-            but also grab and take care of agents around Ego
+        """This class allows to:
+        - rasterise the same frame across multiple scenes for ego;
+        - rasterise the same frame across multiple scenes for multiple agents;
+        - filter agents based on distance to ego;
+        - set ego in future frames;
+        - set agents in future frames;
+
+        NOTE: only vehicles (car label) are picked as agents
 
         :param dataset: the original ego dataset
         :param scene_indices: the indices of the scenes to take
         :param start_frame: the unroll start frame, use only if disable_new_agents is True
-        :param disable_new_agents: if to disable new agents coming in from frame 1, defaults to False
+        :param disable_new_agents: if to disable new agents coming in after start_frame, defaults to False
         :param distance_th_far: the distance threshold for new agents,
-            An agent will be grabbed if it's closer than this value to ego, defaults to 30
+            An agent will be grabbed if it's closer than this value to ego, defaults to 15
         :param distance_th_close: the distance threshold for already tracked agents,
-            An agent will be grabbed if it's closer than this value to ego, defaults to 30
+            An agent will be grabbed if it's closer than this value to ego, defaults to 10
         """
         self.scene_indices = scene_indices
         self.filter_agents_thr = dataset.cfg["raster_params"]["filter_agents_threshold"]
@@ -178,11 +184,13 @@ class SimulationDataset(Dataset):
     def _filter_agents(self, scene_idx: int, frame_agents: np.ndarray,
                        ego_pos: np.ndarray) -> np.ndarray:
         """Filter agents according to a set of rules:
-        if new agent (not in agents_infos) then:
+        if new agent (not in tracked_agents) then:
             - must be a car
             - must be in distance_th_close
         if tracked agent:
             - must be in distance_th_far
+
+        This is to avoid acquiring and releasing the same agents if it is on the boundary of the selection
 
         :param scene_idx: the scene index (used to check for agents_infos)
         :param frame_agents: the agents in this frame
