@@ -1,14 +1,13 @@
-from typing import Dict, List, Tuple, Set
-from l5kit.geometry.transform import yaw_as_rotation33
+from typing import Dict, List, Set, Tuple
 
 import numpy as np
-
-from l5kit.simulation.utils import disable_agents, insert_agent
+import torch
+from torch.utils.data import Dataset
 
 from l5kit.data import filter_agents_by_frames, PERCEPTION_LABEL_TO_INDEX
 from l5kit.dataset import EgoDataset
-import torch
-from torch.utils.data import Dataset
+from l5kit.geometry.transform import yaw_as_rotation33
+from l5kit.simulation.utils import disable_agents, insert_agent
 
 
 class SimulationDataset(Dataset):

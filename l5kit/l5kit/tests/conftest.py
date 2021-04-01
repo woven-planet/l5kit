@@ -1,12 +1,12 @@
 from pathlib import Path
 from shutil import rmtree
 from typing import Iterator
+from uuid import uuid4
 
 import pytest
 
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
-from uuid import uuid4
 from l5kit.data.zarr_utils import zarr_concat
 
 

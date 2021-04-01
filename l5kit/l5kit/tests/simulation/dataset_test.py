@@ -1,15 +1,15 @@
 
-import pytest
-
-from l5kit.data import ChunkedDataset, LocalDataManager
-from l5kit.simulation.dataset import SimulationDataset
-from l5kit.dataset import EgoDataset
-from l5kit.rasterization import build_rasterizer
 from pathlib import Path
+
 import numpy as np
+import pytest
 import torch
+
+from l5kit.data import AGENT_DTYPE, ChunkedDataset, FRAME_DTYPE, LocalDataManager, SCENE_DTYPE, TL_FACE_DTYPE
+from l5kit.dataset import EgoDataset
 from l5kit.geometry import rotation33_as_yaw
-from l5kit.data import SCENE_DTYPE, FRAME_DTYPE, AGENT_DTYPE, TL_FACE_DTYPE
+from l5kit.rasterization import build_rasterizer
+from l5kit.simulation.dataset import SimulationDataset
 
 
 def test_simulation_ego(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict, tmp_path: Path) -> None:

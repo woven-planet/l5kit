@@ -1,5 +1,6 @@
 import numpy as np
-from l5kit.data import get_agents_slice_from_frames, ChunkedDataset
+
+from l5kit.data import ChunkedDataset, get_agents_slice_from_frames
 
 
 def insert_agent(agent: np.ndarray, frame_idx: int, dataset: ChunkedDataset):

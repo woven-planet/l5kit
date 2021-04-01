@@ -1,7 +1,9 @@
-from l5kit.simulation.utils import insert_agent, disable_agents
-from l5kit.data import AGENT_DTYPE, FRAME_DTYPE, SCENE_DTYPE, ChunkedDataset
 import unittest
+
 import numpy as np
+
+from l5kit.data import AGENT_DTYPE, ChunkedDataset, FRAME_DTYPE, SCENE_DTYPE
+from l5kit.simulation.utils import disable_agents, insert_agent
 
 
 class TestAgentInsert(unittest.TestCase):
