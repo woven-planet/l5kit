@@ -68,16 +68,6 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
         ],
     )
 
-    f = bokeh.plotting.figure(
-        title="Scene {}".format(scene_index),
-        match_aspect=True,
-        tools=["pan", "wheel_zoom", agent_hover, "save", "reset"],
-        active_scroll="wheel_zoom",
-    )
-
-    f.xgrid.grid_line_color = None
-    f.ygrid.grid_line_color = None
-
     # get a new dataset with only that scene
     scene_dataset = zarr_dataset.get_scene_dataset(scene_index)
     frames = scene_dataset.frames
@@ -110,6 +100,18 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
 
         out.append(dict(lanes=lanes, crosswalks=crosswalks, ego=ego, agent=agent, trajs=trajs, traj_ego=traj_ego))
 
+    f = bokeh.plotting.figure(
+        title="Scene {}".format(scene_index),
+        match_aspect=True,
+        x_range=(out[0]["ego"].data["center_x"][0] - 50, out[0]["ego"].data["center_x"][0] + 50),
+        y_range=(out[0]["ego"].data["center_y"][0] - 50, out[0]["ego"].data["center_y"][0] + 50),
+        tools=["pan", "wheel_zoom", agent_hover, "save", "reset"],
+        active_scroll="wheel_zoom",
+    )
+
+    f.xgrid.grid_line_color = None
+    f.ygrid.grid_line_color = None
+
     f.patches(xs="x", ys="y", color="color", line_width=0, alpha=0.5, source=out[0]["lanes"])
     f.patches("x", "y", line_width=0, alpha=0.5, color="#B5B50D", source=out[0]["crosswalks"])
     f.patches("x", "y", line_width=2, color="#B53331", source=out[0]["ego"])
@@ -118,7 +120,7 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
     f.multi_line("x", "y", alpha=0.8, color="red", line_width=3, source=out[0]["traj_ego"], legend_label="traj_ego")
 
     slider_callback = CustomJS(
-        args=dict(sources=out[0], frames=out),
+        args=dict(figure=f, sources=out[0], frames=out),
         code="""
             sources["lanes"].data = frames[cb_obj.value]["lanes"].data;
             sources["crosswalks"].data = frames[cb_obj.value]["crosswalks"].data;
@@ -126,6 +128,9 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
             sources["ego"].data = frames[cb_obj.value]["ego"].data;
             sources["trajs"].data = frames[cb_obj.value]["trajs"].data;
             sources["traj_ego"].data = frames[cb_obj.value]["traj_ego"].data;
+
+            figure.x_range.setv({"start": frames[cb_obj.value]["ego"].data["center_x"][0]-50, "end": frames[cb_obj.value]["ego"].data["center_x"][0]+50})
+            figure.y_range.setv({"start": frames[cb_obj.value]["ego"].data["center_y"][0]-50, "end": frames[cb_obj.value]["ego"].data["center_y"][0]+50})
 
             sources["lanes"].change.emit();
             sources["crosswalks"].change.emit();
@@ -183,7 +188,7 @@ def get_frame_data(mapAPI: MapAPI, frame: np.ndarray, agents: np.ndarray, tls_fr
     #################
     # plot ego and agent cars
 
-    ego_dict = dict(x=[], y=[])
+    ego_dict = defaultdict(list)
     agents_dict = defaultdict(list)
 
     agents = np.insert(agents, 0, get_ego_as_agent(frame))
@@ -199,6 +204,8 @@ def get_frame_data(mapAPI: MapAPI, frame: np.ndarray, agents: np.ndarray, tls_fr
     # ego
     ego_dict["x"] = [box_world_coords[0, :, 0]]
     ego_dict["y"] = [box_world_coords[0, :, 1]]
+    ego_dict["center_x"] = [agents["centroid"][0, 0]]
+    ego_dict["center_y"] = [agents["centroid"][0, 1]]
 
     agents = agents[1:]
     box_world_coords = box_world_coords[1:]
