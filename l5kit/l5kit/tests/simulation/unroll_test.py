@@ -10,6 +10,12 @@ from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.unroll import SimulationConfig, SimulationLoop
 
 
+@pytest.fixture(scope="function")
+def ego_dataset(cfg: dict, dmg: LocalDataManager, zarr_cat_dataset: ChunkedDataset) -> EgoDataset:
+    rasterizer = build_rasterizer(cfg, dmg)
+    return EgoDataset(cfg, zarr_cat_dataset, rasterizer)
+
+
 class MockModel(torch.nn.Module):
     def __init__(self, advance_x: float = 0.0):
         super(MockModel, self).__init__()
@@ -27,33 +33,33 @@ class MockModel(torch.nn.Module):
         return {"positions": positions, "yaws": yaws}
 
 
-def test_unroll_invalid_input() -> None:
+def test_unroll_invalid_input(ego_dataset: ego_dataset) -> None:
     # try to use None models with wrong config
     sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=True,
                                distance_th_close=1000, distance_th_far=1000, num_simulation_steps=10)
 
     with pytest.raises(ValueError):
-        SimulationLoop(sim_cfg, MockModel(), None)
+        SimulationLoop(sim_cfg, ego_dataset, MockModel(), None)
 
     with pytest.raises(ValueError):
-        SimulationLoop(sim_cfg, None, MockModel())
+        SimulationLoop(sim_cfg, ego_dataset, None, MockModel())
 
     with pytest.raises(ValueError):
-        SimulationLoop(sim_cfg, None, None)
+        SimulationLoop(sim_cfg, ego_dataset, None, None)
 
 
 def test_unroll_none_input() -> None:
     sim_cfg = SimulationConfig(use_ego_gt=True, use_agents_gt=False, disable_new_agents=True,
                                distance_th_close=1000, distance_th_far=1000, num_simulation_steps=10)
-    SimulationLoop(sim_cfg, None, MockModel())
+    SimulationLoop(sim_cfg, ego_dataset, None, MockModel())
 
     sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=True, disable_new_agents=True,
                                distance_th_close=1000, distance_th_far=1000, num_simulation_steps=10)
-    SimulationLoop(sim_cfg, MockModel(), None)
+    SimulationLoop(sim_cfg, ego_dataset, MockModel(), None)
 
     sim_cfg = SimulationConfig(use_ego_gt=True, use_agents_gt=True, disable_new_agents=True,
                                distance_th_close=1000, distance_th_far=1000, num_simulation_steps=10)
-    SimulationLoop(sim_cfg, None, None)
+    SimulationLoop(sim_cfg, ego_dataset, None, None)
 
 
 def test_unroll(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict) -> None:
@@ -72,8 +78,8 @@ def test_unroll(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: di
     # agents will move by 0.5 each time
     agents_model = MockModel(advance_x=0.5)
 
-    sim = SimulationLoop(sim_cfg, ego_model, agents_model)
-    sim_dataset = sim.unroll(ego_dataset, scene_indices)
+    sim = SimulationLoop(sim_cfg, ego_dataset, ego_model, agents_model)
+    sim_dataset = sim.unroll(scene_indices)
 
     # check ego movement
     for dt_simulated in sim_dataset.scene_dataset_batch.values():

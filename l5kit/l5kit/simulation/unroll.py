@@ -22,8 +22,16 @@ class SimulationConfig(NamedTuple):
 
 
 class SimulationLoop:
-    def __init__(self, sim_cfg: SimulationConfig, model_ego: Optional[torch.nn.Module] = None,
+    def __init__(self, sim_cfg: SimulationConfig, dataset: EgoDataset,
+                 model_ego: Optional[torch.nn.Module] = None,
                  model_agents: Optional[torch.nn.Module] = None):
+        """
+        Create a simulation loop object capable of unrolling ego and agents
+        :param sim_cfg: configuration for unroll
+        :param dataset: EgoDataset used while unrolling
+        :param model_ego: the model to be used for ego
+        :param model_agents: the model to be used for agents
+        """
         self.sim_cfg = sim_cfg
         if not sim_cfg.use_ego_gt and model_ego is None:
             raise ValueError("ego model should not be None when simulating ego")
@@ -32,16 +40,16 @@ class SimulationLoop:
 
         self.model_ego = model_ego
         self.model_agents = model_agents
+        self.dataset = dataset
 
-    def unroll(self, dataset: EgoDataset, scene_indices: List[int]) -> SimulationDataset:
+    def unroll(self, scene_indices: List[int]) -> SimulationDataset:
         """
-        Simulate the given dataset for the given scene indices
-        :param dataset: the EgoDataset
+        Simulate the dataset for the given scene indices
         :param scene_indices: the scene indices we want to simulate
         :return: the simulated dataset
         TODO: this should probably return something else
         """
-        sim_dataset = SimulationDataset(dataset, scene_indices, self.sim_cfg.start_frame_index,
+        sim_dataset = SimulationDataset(self.dataset, scene_indices, self.sim_cfg.start_frame_index,
                                         self.sim_cfg.disable_new_agents, self.sim_cfg.distance_th_far,
                                         self.sim_cfg.distance_th_close)
 
