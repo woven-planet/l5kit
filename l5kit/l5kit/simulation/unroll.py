@@ -1,14 +1,15 @@
-from typing import Dict, List, Optional, Tuple, NamedTuple
+from copy import deepcopy
+from typing import Dict, List, NamedTuple, Optional, Tuple
 
 import numpy as np
 import torch
-from tqdm.auto import tqdm
-from l5kit.geometry import transform_points
-from l5kit.data import AGENT_DTYPE
-
-from l5kit.dataset import EgoDataset
-from l5kit.simulation.dataset import SimulationDataset
 from torch.utils.data.dataloader import default_collate
+from tqdm.auto import tqdm
+
+from l5kit.data import AGENT_DTYPE
+from l5kit.dataset import EgoDataset
+from l5kit.geometry import transform_points
+from l5kit.simulation.dataset import SimulationDataset
 
 
 class SimulationConfig(NamedTuple):
@@ -28,6 +29,48 @@ class SimulationConfig(NamedTuple):
     distance_th_close: float
     start_frame_index: int = 0
     num_simulation_steps: Optional[int] = None
+
+
+class SimulationOutputs:
+    def __init__(self, scene_id: int, recorded_ego_states: np.ndarray, simulated_ego_states: np.ndarray,
+                 recorded_agents_states: np.ndarray, simulated_agents_states: np.ndarray):
+        """An object which holds the output of a simulation loop
+
+        :param scene_id: the scene index of the simulated scene
+        :param recorded_ego_states: the recorded ego states
+        :param simulated_ego_states: the simulated ego states
+        :param recorded_agents_states: the recorded agents states
+        :param simulated_agents_states: the simulated agents states
+        """
+        self.scene_id = scene_id
+        self.recorded_ego_states = recorded_ego_states
+        self.recorded_agents_states = recorded_agents_states
+        self.simulated_ego_states = simulated_ego_states
+        self.simulated_agents_states = simulated_agents_states
+
+    def get_scene_id(self) -> int:
+        """
+        Get the scene index for this SimulationOutputs
+
+        :return: the scene index
+        """
+        return self.scene_id
+
+    @staticmethod
+    def from_ego_dataset(recorded: EgoDataset, simulated: EgoDataset, scene_id: int) -> "SimulationOutputs":
+        """
+        Build a SimulationOutputs object from a couple of EgoDatasets.
+        Assign a scene_id too.
+
+        :param recorded: the EgoDataset of the recorded state
+        :param simulated: the EgoDataset of the simulated state
+        :param scene_id: the scene index to assign to this SimulationOuputs
+        :return: the SimulationOutputs
+        """
+        if len(recorded.dataset.scenes) != 1 or len(simulated.dataset.scenes) != 1:
+            raise ValueError("can't build from non single scene datasets")
+        return SimulationOutputs(scene_id, recorded.dataset.frames, simulated.dataset.frames,
+                                 recorded.dataset.agents, simulated.dataset.agents)
 
 
 class SimulationLoop:
@@ -51,7 +94,7 @@ class SimulationLoop:
         self.model_agents = model_agents
         self.dataset = dataset
 
-    def unroll(self, scene_indices: List[int]) -> SimulationDataset:
+    def unroll(self, scene_indices: List[int]) -> List[SimulationOutputs]:
         """
         Simulate the dataset for the given scene indices
         :param scene_indices: the scene indices we want to simulate
@@ -61,6 +104,8 @@ class SimulationLoop:
         sim_dataset = SimulationDataset(self.dataset, scene_indices, self.sim_cfg.start_frame_index,
                                         self.sim_cfg.disable_new_agents, self.sim_cfg.distance_th_far,
                                         self.sim_cfg.distance_th_close)
+
+        recorded_scenes = deepcopy(sim_dataset.scene_dataset_batch)
 
         if self.sim_cfg.num_simulation_steps is None:
             range_unroll = range(self.sim_cfg.start_frame_index, len(sim_dataset))
@@ -88,7 +133,14 @@ class SimulationLoop:
                 if should_update:
                     self.update_ego(sim_dataset, next_frame_index, ego_input_dict, ego_output_dict)
 
-        return sim_dataset
+        simulated_scenes = deepcopy(sim_dataset.scene_dataset_batch)
+
+        simulated_outputs: List[SimulationOutputs] = []
+        for scene_idx in recorded_scenes:
+            simulated_outputs.append(SimulationOutputs.from_ego_dataset(recorded_scenes[scene_idx],
+                                                                        simulated_scenes[scene_idx],
+                                                                        scene_idx))
+        return simulated_outputs
 
     @staticmethod
     def update_agents(dataset: SimulationDataset, frame_idx: int, input_dict: Dict[str, torch.Tensor],
@@ -144,10 +196,10 @@ class SimulationLoop:
         dataset.set_ego_for_frame(frame_idx, 0, pred_trs, pred_yaws)
 
 
-from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.configs import load_config_data
-from l5kit.rasterization import build_rasterizer
+from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
+from l5kit.rasterization import build_rasterizer
 
 
 class MockModel(torch.nn.Module):
