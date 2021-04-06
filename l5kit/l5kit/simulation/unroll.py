@@ -1,4 +1,3 @@
-from copy import deepcopy
 from typing import Dict, List, NamedTuple, Optional, Tuple
 
 import numpy as np
@@ -32,21 +31,24 @@ class SimulationConfig(NamedTuple):
 
 
 class SimulationOutputs:
-    def __init__(self, scene_id: int, recorded_ego_states: np.ndarray, simulated_ego_states: np.ndarray,
-                 recorded_agents_states: np.ndarray, simulated_agents_states: np.ndarray):
-        """An object which holds the output of a simulation loop
+    def __init__(self, scene_id: int, sim_dataset: SimulationDataset):
+        """This object holds information about the result of the simulation loop
+        for a given scene dataset
 
-        :param scene_id: the scene index of the simulated scene
-        :param recorded_ego_states: the recorded ego states
-        :param simulated_ego_states: the simulated ego states
-        :param recorded_agents_states: the recorded agents states
-        :param simulated_agents_states: the simulated agents states
+        :param scene_id: the scene indices
+        :param sim_dataset: the simulation dataset
         """
+        if scene_id not in sim_dataset.scene_indices:
+            raise ValueError(f"scene: {scene_id} not in {sim_dataset.scene_indices}")
+
         self.scene_id = scene_id
-        self.recorded_ego_states = recorded_ego_states
-        self.recorded_agents_states = recorded_agents_states
-        self.simulated_ego_states = simulated_ego_states
-        self.simulated_agents_states = simulated_agents_states
+        self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
+        self.simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
+
+        self.recorded_ego_states = self.recorded_dataset.dataset.frames
+        self.recorded_agents_states = self.recorded_dataset.dataset.agents
+        self.simulated_ego_states = self.simulated_dataset.dataset.frames
+        self.simulated_agents_states = self.simulated_dataset.dataset.agents
 
     def get_scene_id(self) -> int:
         """
@@ -55,22 +57,6 @@ class SimulationOutputs:
         :return: the scene index
         """
         return self.scene_id
-
-    @staticmethod
-    def from_ego_dataset(recorded: EgoDataset, simulated: EgoDataset, scene_id: int) -> "SimulationOutputs":
-        """
-        Build a SimulationOutputs object from a couple of EgoDatasets.
-        Assign a scene_id too.
-
-        :param recorded: the EgoDataset of the recorded state
-        :param simulated: the EgoDataset of the simulated state
-        :param scene_id: the scene index to assign to this SimulationOuputs
-        :return: the SimulationOutputs
-        """
-        if len(recorded.dataset.scenes) != 1 or len(simulated.dataset.scenes) != 1:
-            raise ValueError("can't build from non single scene datasets")
-        return SimulationOutputs(scene_id, recorded.dataset.frames, simulated.dataset.frames,
-                                 recorded.dataset.agents, simulated.dataset.agents)
 
 
 class SimulationLoop:
@@ -105,8 +91,6 @@ class SimulationLoop:
                                         self.sim_cfg.disable_new_agents, self.sim_cfg.distance_th_far,
                                         self.sim_cfg.distance_th_close)
 
-        recorded_scenes = deepcopy(sim_dataset.scene_dataset_batch)
-
         if self.sim_cfg.num_simulation_steps is None:
             range_unroll = range(self.sim_cfg.start_frame_index, len(sim_dataset))
         else:
@@ -133,13 +117,9 @@ class SimulationLoop:
                 if should_update:
                     self.update_ego(sim_dataset, next_frame_index, ego_input_dict, ego_output_dict)
 
-        simulated_scenes = deepcopy(sim_dataset.scene_dataset_batch)
-
         simulated_outputs: List[SimulationOutputs] = []
-        for scene_idx in recorded_scenes:
-            simulated_outputs.append(SimulationOutputs.from_ego_dataset(recorded_scenes[scene_idx],
-                                                                        simulated_scenes[scene_idx],
-                                                                        scene_idx))
+        for scene_idx in scene_indices:
+            simulated_outputs.append(SimulationOutputs(scene_idx, sim_dataset))
         return simulated_outputs
 
     @staticmethod

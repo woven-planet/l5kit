@@ -1,3 +1,4 @@
+from copy import deepcopy
 from typing import Dict, List, Set, Tuple
 
 import numpy as np
@@ -38,6 +39,9 @@ class SimulationDataset(Dataset):
         for scene_idx in self.scene_indices:
             scene_dataset = dataset.get_scene_dataset(scene_idx)
             self.scene_dataset_batch[scene_idx] = scene_dataset
+
+        # keep track of original dataset
+        self.recorded_scene_dataset_batch = deepcopy(self.scene_dataset_batch)
 
         # agents stuff
         self.agents_tracked: Set[Tuple[int, int]] = set()
