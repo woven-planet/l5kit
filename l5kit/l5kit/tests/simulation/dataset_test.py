@@ -3,7 +3,6 @@ from pathlib import Path
 
 import numpy as np
 import pytest
-import torch
 
 from l5kit.data import AGENT_DTYPE, ChunkedDataset, FRAME_DTYPE, LocalDataManager, SCENE_DTYPE, TL_FACE_DTYPE
 from l5kit.dataset import EgoDataset
