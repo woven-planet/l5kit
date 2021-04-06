@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import DefaultDict, List, Tuple
+from typing import DefaultDict, List, Tuple, NamedTuple, Dict
 
 import bokeh.io
 import bokeh.plotting
@@ -56,49 +56,179 @@ def get_frame_trajectories(frames: np.ndarray, agents_frames: List[np.ndarray], 
     return traj_agents, traj_ego
 
 
-def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapAPI):
+class LaneVisualisation(NamedTuple):
+    xs: np.ndarray
+    ys: np.ndarray
+    color: str
+
+
+class CWVisualisation(NamedTuple):
+    xs: np.ndarray
+    ys: np.ndarray
+    color: str
+
+
+class AgentVisualisation(NamedTuple):
+    xs: np.ndarray
+    ys: np.ndarray
+    color: str
+    track_id: int
+    type: str
+    prob: float
+
+
+class EgoVisualisation(NamedTuple):
+    xs: np.ndarray
+    ys: np.ndarray
+    color: str
+    center_x: float
+    center_y: float
+
+
+class TrajectoryVisualisation(NamedTuple):
+    xs: np.ndarray
+    ys: np.ndarray
+    color: str
+    name: str
+
+
+class FrameVisualisation(NamedTuple):
+    ego: EgoVisualisation
+    agents: List[AgentVisualisation]
+    lanes: List[LaneVisualisation]
+    crosswalks: List[CWVisualisation]
+    trajectories: List[TrajectoryVisualisation]
+
+
+# def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapAPI):
+#     output_file("scene.html")
+#     agent_hover = HoverTool(
+#         mode="mouse",
+#         names=["agent"],
+#         tooltips=[
+#             ("Type", "@name"),
+#             ("Probability", "@p{0.00}%"),
+#             ("Track id", "@id"),
+#         ],
+#     )
+#
+#     # get a new dataset with only that scene
+#     scene_dataset = zarr_dataset.get_scene_dataset(scene_index)
+#     frames = scene_dataset.frames
+#     agents = scene_dataset.agents
+#     tl_faces = scene_dataset.tl_faces
+#
+#     agents_frames = filter_agents_by_frames(frames, agents)
+#     tls_frames = filter_tl_faces_by_frames(frames, tl_faces)
+#
+#     out = []
+#     for frame_idx in range(len(frames)):
+#         frame = frames[frame_idx]
+#         agents_frame = agents_frames[frame_idx]
+#
+#         # TODO: hardcoded threshold
+#         agents_frame = filter_agents_by_labels(agents_frame, 0.1)
+#
+#         tls_frame = tls_frames[frame_idx]
+#
+#         lanes, crosswalks, ego, agent = get_frame_data(mapAPI, frame, agents_frame, tls_frame)
+#         trajs, traj_ego = get_frame_trajectories(frames, agents_frames, agents_frame["track_id"], frame_idx)
+#
+#         trajs = ColumnDataSource(data=trajs)
+#         traj_ego = ColumnDataSource(data=traj_ego)
+#
+#         lanes = ColumnDataSource(data=lanes)
+#         crosswalks = ColumnDataSource(data=crosswalks)
+#         ego = ColumnDataSource(data=ego)
+#         agent = ColumnDataSource(data=agent)
+#
+#         out.append(dict(lanes=lanes, crosswalks=crosswalks, ego=ego, agent=agent, trajs=trajs, traj_ego=traj_ego))
+#
+#     f = bokeh.plotting.figure(
+#         title="Scene {}".format(scene_index),
+#         match_aspect=True,
+#         x_range=(out[0]["ego"].data["center_x"][0] - 50, out[0]["ego"].data["center_x"][0] + 50),
+#         y_range=(out[0]["ego"].data["center_y"][0] - 50, out[0]["ego"].data["center_y"][0] + 50),
+#         tools=["pan", "wheel_zoom", agent_hover, "save", "reset"],
+#         active_scroll="wheel_zoom",
+#     )
+#
+#     f.xgrid.grid_line_color = None
+#     f.ygrid.grid_line_color = None
+#
+#     f.patches(xs="x", ys="y", color="color", line_width=0, alpha=0.5, source=out[0]["lanes"])
+#     f.patches("x", "y", line_width=0, alpha=0.5, color="#B5B50D", source=out[0]["crosswalks"])
+#     f.patches("x", "y", line_width=2, color="#B53331", source=out[0]["ego"])
+#     f.patches(xs="x", ys="y", color="color", line_width=2, name="agent", source=out[0]["agent"])
+#     f.multi_line("x", "y", alpha=0.8, color="pink", line_width=3, source=out[0]["trajs"], legend_label="trajs")
+#     f.multi_line("x", "y", alpha=0.8, color="red", line_width=3, source=out[0]["traj_ego"], legend_label="traj_ego")
+#
+#     slider_callback = CustomJS(
+#         args=dict(figure=f, sources=out[0], frames=out),
+#         code="""
+#             sources["lanes"].data = frames[cb_obj.value]["lanes"].data;
+#             sources["crosswalks"].data = frames[cb_obj.value]["crosswalks"].data;
+#             sources["agent"].data = frames[cb_obj.value]["agent"].data;
+#             sources["ego"].data = frames[cb_obj.value]["ego"].data;
+#             sources["trajs"].data = frames[cb_obj.value]["trajs"].data;
+#             sources["traj_ego"].data = frames[cb_obj.value]["traj_ego"].data;
+#
+#             figure.x_range.setv({"start": frames[cb_obj.value]["ego"].data["center_x"][0]-50, "end": frames[cb_obj.value]["ego"].data["center_x"][0]+50})
+#             figure.y_range.setv({"start": frames[cb_obj.value]["ego"].data["center_y"][0]-50, "end": frames[cb_obj.value]["ego"].data["center_y"][0]+50})
+#
+#             sources["lanes"].change.emit();
+#             sources["crosswalks"].change.emit();
+#             sources["agent"].change.emit();
+#             sources["ego"].change.emit();
+#             sources["trajs"].change.emit();
+#             sources["traj_ego"].change.emit();
+#         """,
+#     )
+#
+#     slider = Slider(start=0, end=len(frames), value=0, step=1, title="frame")
+#     slider.js_on_change("value", slider_callback)
+#
+#     f.legend.location = "top_left"
+#     f.legend.click_policy = "hide"
+#
+#     layout = column(f, slider)
+#     save(layout)
+
+
+def visualise(scene_index: int, frames: List[FrameVisualisation]):
     output_file("scene.html")
     agent_hover = HoverTool(
         mode="mouse",
-        names=["agent"],
+        names=["agents"],
         tooltips=[
             ("Type", "@name"),
             ("Probability", "@p{0.00}%"),
             ("Track id", "@id"),
         ],
     )
-
-    # get a new dataset with only that scene
-    scene_dataset = zarr_dataset.get_scene_dataset(scene_index)
-    frames = scene_dataset.frames
-    agents = scene_dataset.agents
-    tl_faces = scene_dataset.tl_faces
-
-    agents_frames = filter_agents_by_frames(frames, agents)
-    tls_frames = filter_tl_faces_by_frames(frames, tl_faces)
-
-    out = []
+    out: List[Dict[str, ColumnDataSource]] = []
     for frame_idx in range(len(frames)):
-        frame = frames[frame_idx]
-        agents_frame = agents_frames[frame_idx]
+        ego = frames[frame_idx].ego
 
-        # TODO: hardcoded threshold
-        agents_frame = filter_agents_by_labels(agents_frame, 0.1)
+        ego_dict = {field_name: [field] for field, field_name in zip(ego, EgoVisualisation._fields)}
 
-        tls_frame = tls_frames[frame_idx]
+        agents_dict = {k: [] for k in AgentVisualisation._fields}
+        for agent in frames[frame_idx].agents:
+            for k, v in zip(AgentVisualisation._fields, agent):
+                agents_dict[k].append(v)
 
-        lanes, crosswalks, ego, agent = get_frame_data(mapAPI, frame, agents_frame, tls_frame)
-        trajs, traj_ego = get_frame_trajectories(frames, agents_frames, agents_frame["track_id"], frame_idx)
+        lanes_dict = {k: [] for k in LaneVisualisation._fields}
+        for lane in frames[frame_idx].lanes:
+            for k, v in zip(LaneVisualisation._fields, lane):
+                lanes_dict[k].append(v)
 
-        trajs = ColumnDataSource(data=trajs)
-        traj_ego = ColumnDataSource(data=traj_ego)
+        crosswalk_dict = {k: [] for k in CWVisualisation._fields}
+        for lane in frames[frame_idx].crosswalks:
+            for k, v in zip(CWVisualisation._fields, lane):
+                crosswalk_dict[k].append(v)
 
-        lanes = ColumnDataSource(data=lanes)
-        crosswalks = ColumnDataSource(data=crosswalks)
-        ego = ColumnDataSource(data=ego)
-        agent = ColumnDataSource(data=agent)
-
-        out.append(dict(lanes=lanes, crosswalks=crosswalks, ego=ego, agent=agent, trajs=trajs, traj_ego=traj_ego))
+        out.append(dict(ego=ColumnDataSource(ego_dict), agents=ColumnDataSource(agents_dict),
+                        lanes=ColumnDataSource(lanes_dict), crosswalks=ColumnDataSource(crosswalk_dict)))
 
     f = bokeh.plotting.figure(
         title="Scene {}".format(scene_index),
@@ -112,32 +242,26 @@ def visualise_scene(zarr_dataset: ChunkedDataset, scene_index: int, mapAPI: MapA
     f.xgrid.grid_line_color = None
     f.ygrid.grid_line_color = None
 
-    f.patches(xs="x", ys="y", color="color", line_width=0, alpha=0.5, source=out[0]["lanes"])
-    f.patches("x", "y", line_width=0, alpha=0.5, color="#B5B50D", source=out[0]["crosswalks"])
-    f.patches("x", "y", line_width=2, color="#B53331", source=out[0]["ego"])
-    f.patches(xs="x", ys="y", color="color", line_width=2, name="agent", source=out[0]["agent"])
-    f.multi_line("x", "y", alpha=0.8, color="pink", line_width=3, source=out[0]["trajs"], legend_label="trajs")
-    f.multi_line("x", "y", alpha=0.8, color="red", line_width=3, source=out[0]["traj_ego"], legend_label="traj_ego")
+    f.patches(line_width=0, alpha=0.5, source=out[0]["lanes"])
+    f.patches(line_width=0, alpha=0.5, color="#B5B50D", source=out[0]["crosswalks"])
+    f.patches(line_width=2, color="#B53331", source=out[0]["ego"])
+    f.patches(line_width=2, name="agents", source=out[0]["agents"])
 
     slider_callback = CustomJS(
         args=dict(figure=f, sources=out[0], frames=out),
         code="""
             sources["lanes"].data = frames[cb_obj.value]["lanes"].data;
             sources["crosswalks"].data = frames[cb_obj.value]["crosswalks"].data;
-            sources["agent"].data = frames[cb_obj.value]["agent"].data;
+            sources["agents"].data = frames[cb_obj.value]["agents"].data;
             sources["ego"].data = frames[cb_obj.value]["ego"].data;
-            sources["trajs"].data = frames[cb_obj.value]["trajs"].data;
-            sources["traj_ego"].data = frames[cb_obj.value]["traj_ego"].data;
 
             figure.x_range.setv({"start": frames[cb_obj.value]["ego"].data["center_x"][0]-50, "end": frames[cb_obj.value]["ego"].data["center_x"][0]+50})
             figure.y_range.setv({"start": frames[cb_obj.value]["ego"].data["center_y"][0]-50, "end": frames[cb_obj.value]["ego"].data["center_y"][0]+50})
 
             sources["lanes"].change.emit();
             sources["crosswalks"].change.emit();
-            sources["agent"].change.emit();
+            sources["agents"].change.emit();
             sources["ego"].change.emit();
-            sources["trajs"].change.emit();
-            sources["traj_ego"].change.emit();
         """,
     )
 
@@ -159,7 +283,8 @@ def get_frame_data(mapAPI: MapAPI, frame: np.ndarray, agents: np.ndarray, tls_fr
     lane_indices = indices_in_bounds(ego_xy, mapAPI.bounds_info["lanes"]["bounds"], 50)
     active_tl_ids = set(filter_tl_faces_by_status(tls_frame, "ACTIVE")["face_id"].tolist())
 
-    lanes_dict = defaultdict(list)
+    lanes_vis: List[LaneVisualisation] = []
+
     for idx, lane_idx in enumerate(lane_indices):
         lane_idx = mapAPI.bounds_info["lanes"]["ids"][lane_idx]
 
@@ -172,25 +297,24 @@ def get_frame_data(mapAPI: MapAPI, frame: np.ndarray, agents: np.ndarray, tls_fr
         left_lane = lane_coords["xyz_left"][:, :2]
         right_lane = lane_coords["xyz_right"][::-1, :2]
 
-        lanes_dict["x"].append(np.hstack((left_lane[:, 0], right_lane[:, 0])))
-        lanes_dict["y"].append(np.hstack((left_lane[:, 1], right_lane[:, 1])))
-        lanes_dict["color"].append(lane_colour)
+        lanes_vis.append(LaneVisualisation(xs=np.hstack((left_lane[:, 0], right_lane[:, 0])),
+                                           ys=np.hstack((left_lane[:, 1], right_lane[:, 1])),
+                                           color=lane_colour))
+
+
 
     #################
     # plot crosswalks
     crosswalk_indices = indices_in_bounds(ego_xy, mapAPI.bounds_info["crosswalks"]["bounds"], 50)
-    crosswalks_dict = dict(x=[], y=[])
+    crosswalks_vis: List[CWVisualisation] = []
+
     for idx in crosswalk_indices:
         crosswalk = mapAPI.get_crosswalk_coords(mapAPI.bounds_info["crosswalks"]["ids"][idx])
-        crosswalks_dict["x"].append(crosswalk["xyz"][:, 0])
-        crosswalks_dict["y"].append(crosswalk["xyz"][:, 1])
-
+        crosswalks_vis.append(CWVisualisation(xs=crosswalk["xyz"][:, 0],
+                                              ys=crosswalk["xyz"][:, 1],
+                                              color="yellow"))
     #################
     # plot ego and agent cars
-
-    ego_dict = defaultdict(list)
-    agents_dict = defaultdict(list)
-
     agents = np.insert(agents, 0, get_ego_as_agent(frame))
 
     # TODO: move to a function
@@ -201,24 +325,29 @@ def get_frame_data(mapAPI: MapAPI, frame: np.ndarray, agents: np.ndarray, tls_fr
     rotation_m = np.moveaxis(np.array(((c, s), (-s, c))), 2, 0)
 
     box_world_coords = corners_m @ rotation_m + agents["centroid"][:, None, :2]
-    # ego
-    ego_dict["x"] = [box_world_coords[0, :, 0]]
-    ego_dict["y"] = [box_world_coords[0, :, 1]]
-    ego_dict["center_x"] = [agents["centroid"][0, 0]]
-    ego_dict["center_y"] = [agents["centroid"][0, 1]]
 
+    # ego
+    ego_vis = EgoVisualisation(xs=box_world_coords[0, :, 0], ys=box_world_coords[0, :, 1],
+                               color="red", center_x=agents["centroid"][0, 0],
+                               center_y=agents["centroid"][0, 1])
+
+    # agents
     agents = agents[1:]
     box_world_coords = box_world_coords[1:]
 
-    label_indices = np.argmax(agents["label_probabilities"], axis=1)
-    agents_dict["x"] = list(box_world_coords[..., 0])
-    agents_dict["y"] = list(box_world_coords[..., 1])
-    agents_dict["id"] = list(agents["track_id"])
-    agents_dict["name"] = list(np.asarray(PERCEPTION_LABELS)[label_indices])
-    agents_dict["p"] = list(agents["label_probabilities"][np.arange(len(agents)), label_indices])
-    agents_dict["color"] = ["#1F77B4" if n not in COLORS else COLORS[n] for n in agents_dict["name"]]
+    agents_vis: List[AgentVisualisation] = []
+    for agent, box_coord in zip(agents, box_world_coords):
 
-    return lanes_dict, crosswalks_dict, ego_dict, agents_dict
+        label_index = np.argmax(agent["label_probabilities"])
+        agent_type = PERCEPTION_LABELS[label_index]
+        agents_vis.append(AgentVisualisation(xs=box_coord[..., 0],
+                                             ys=box_coord[..., 1],
+                                             color="#1F77B4" if agent_type not in COLORS else COLORS[agent_type],
+                                             track_id=agent["track_id"],
+                                             type=PERCEPTION_LABELS[label_index],
+                                             prob=agent["label_probabilities"][label_index]))
+
+    return lanes_vis, crosswalks_vis, ego_vis, agents_vis
 
 
 if __name__ == "__main__":
@@ -232,4 +361,34 @@ if __name__ == "__main__":
     rast = build_rasterizer(cfg, LocalDataManager("/tmp/l5kit_data"))
     mapAPI = rast.sem_rast.mapAPI
 
-    visualise_scene(zarr_dt, scene_index=0, mapAPI=mapAPI)
+    scene_dataset = zarr_dt.get_scene_dataset(0)
+    frames = scene_dataset.frames
+    agents = scene_dataset.agents
+    tl_faces = scene_dataset.tl_faces
+
+    agents_frames = filter_agents_by_frames(frames, agents)
+    tls_frames = filter_tl_faces_by_frames(frames, tl_faces)
+
+    out: List[FrameVisualisation] = []
+    for frame_idx in range(len(frames)):
+        frame = frames[frame_idx]
+        agents_frame = agents_frames[frame_idx]
+
+        # TODO: hardcoded threshold
+        agents_frame = filter_agents_by_labels(agents_frame, 0.1)
+
+        tls_frame = tls_frames[frame_idx]
+
+        lanes_vis, crosswalks_vis, ego_vis, agents_vis = get_frame_data(mapAPI, frame, agents_frame, tls_frame)
+        out.append(FrameVisualisation(ego=ego_vis,
+                                      agents=agents_vis,
+                                      lanes=lanes_vis,
+                                      crosswalks=crosswalks_vis,
+                                      trajectories=[]))
+
+        # trajs, traj_ego = get_frame_trajectories(frames, agents_frames, agents_frame["track_id"], frame_idx)
+
+
+    visualise(10, out)
+
+    #visualise_scene(zarr_dt, scene_index=0, mapAPI=mapAPI)
