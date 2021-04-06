@@ -12,6 +12,15 @@ from torch.utils.data.dataloader import default_collate
 
 
 class SimulationConfig(NamedTuple):
+    """ Defines the parameters used for the simulation of ego and agents around it.
+    :param use_ego_gt: whether to use GT annotations for ego instead of model's outputs
+    :param use_agents_gt: whether to use GT annotations for agents instead of model's outputs
+    :param disable_new_agents: whether to disable agents that are not returned at start_frame_index
+    :param distance_th_far: if a tracked agent is closed than this value to ego, it will be controlled
+    :param distance_th_close: if a new agent is closer than this value to ego, it will be controlled
+    :param start_frame_index: the start index of the simulation
+    :param num_simulation_steps: the number of step to simulate
+    """
     use_ego_gt: bool
     use_agents_gt: bool
     disable_new_agents: bool
