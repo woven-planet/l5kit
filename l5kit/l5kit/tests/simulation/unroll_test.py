@@ -1,6 +1,7 @@
 from typing import Dict
 
 import numpy as np
+import pytest
 import torch
 
 from l5kit.data import ChunkedDataset, filter_agents_by_track_id, LocalDataManager
@@ -24,6 +25,35 @@ class MockModel(torch.nn.Module):
         yaws = torch.zeros(bs, 12, device=centroids.device)
 
         return {"positions": positions, "yaws": yaws}
+
+
+def test_unroll_invalid_input() -> None:
+    # try to use None models with wrong config
+    sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=True,
+                               distance_th_close=1000, distance_th_far=1000, num_simulation_steps=10)
+
+    with pytest.raises(ValueError):
+        SimulationLoop(sim_cfg, MockModel(), None)
+
+    with pytest.raises(ValueError):
+        SimulationLoop(sim_cfg, None, MockModel())
+
+    with pytest.raises(ValueError):
+        SimulationLoop(sim_cfg, None, None)
+
+
+def test_unroll_none_input() -> None:
+    sim_cfg = SimulationConfig(use_ego_gt=True, use_agents_gt=False, disable_new_agents=True,
+                               distance_th_close=1000, distance_th_far=1000, num_simulation_steps=10)
+    SimulationLoop(sim_cfg, None, MockModel())
+
+    sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=True, disable_new_agents=True,
+                               distance_th_close=1000, distance_th_far=1000, num_simulation_steps=10)
+    SimulationLoop(sim_cfg, MockModel(), None)
+
+    sim_cfg = SimulationConfig(use_ego_gt=True, use_agents_gt=True, disable_new_agents=True,
+                               distance_th_close=1000, distance_th_far=1000, num_simulation_steps=10)
+    SimulationLoop(sim_cfg, None, None)
 
 
 def test_unroll(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict) -> None:

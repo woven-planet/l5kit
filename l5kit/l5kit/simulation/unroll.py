@@ -22,8 +22,14 @@ class SimulationConfig(NamedTuple):
 
 
 class SimulationLoop:
-    def __init__(self, sim_cfg: SimulationConfig, model_ego: torch.nn.Module, model_agents: torch.nn.Module):
+    def __init__(self, sim_cfg: SimulationConfig, model_ego: Optional[torch.nn.Module] = None,
+                 model_agents: Optional[torch.nn.Module] = None):
         self.sim_cfg = sim_cfg
+        if not sim_cfg.use_ego_gt and model_ego is None:
+            raise ValueError("ego model should not be None when simulating ego")
+        if not sim_cfg.use_agents_gt and model_agents is None:
+            raise ValueError("agents model should not be None when simulating agent")
+
         self.model_ego = model_ego
         self.model_agents = model_agents
 
@@ -47,23 +53,22 @@ class SimulationLoop:
 
         for frame_index in tqdm(range_unroll):
             next_frame_index = frame_index + 1
+            should_update = next_frame_index != range_unroll.stop
 
             # AGENTS
-            agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
-            agents_input_dict = default_collate(list(agents_input.values()))
-            agents_output_dict = self.model_agents(agents_input_dict)
+            if not self.sim_cfg.use_agents_gt:
+                agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
+                agents_input_dict = default_collate(list(agents_input.values()))
+                agents_output_dict = self.model_agents(agents_input_dict)
+                if should_update:
+                    self.update_agents(sim_dataset, next_frame_index, agents_input_dict, agents_output_dict)
 
             # EGO
-            ego_input = sim_dataset.rasterise_frame_batch(frame_index)
-            ego_input_dict = default_collate(ego_input)
-            ego_output_dict = self.model_ego(ego_input_dict)
-
-            if next_frame_index != range_unroll.stop:
-                if not self.sim_cfg.use_agents_gt:
-                    # TODO: suboptimal as we're still doing forward
-                    self.update_agents(sim_dataset, next_frame_index, agents_input_dict, agents_output_dict)
-                if not self.sim_cfg.use_ego_gt:
-                    # TODO: suboptimal as we're still doing forward
+            if not self.sim_cfg.use_ego_gt:
+                ego_input = sim_dataset.rasterise_frame_batch(frame_index)
+                ego_input_dict = default_collate(ego_input)
+                ego_output_dict = self.model_ego(ego_input_dict)
+                if should_update:
                     self.update_ego(sim_dataset, next_frame_index, ego_input_dict, ego_output_dict)
 
         return sim_dataset
@@ -166,6 +171,7 @@ if __name__ == '__main__':
                                disable_new_agents=False,
                                distance_th_far=10,
                                distance_th_close=30,
-                               start_frame_index=0)
+                               start_frame_index=0,
+                               num_simulation_steps=20)
     sim = SimulationLoop(sim_cfg, MockModel(), MockModel())
     sim.unroll(EgoDataset(cfg, zarr_dt, rast), [5, 6, 7, 8])
