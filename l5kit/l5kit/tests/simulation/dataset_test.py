@@ -44,7 +44,7 @@ def test_simulation_ego(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager,
         mock_tr = np.random.rand(len(scene_indices), 12, 2)
         mock_yaw = np.random.rand(len(scene_indices), 12)
 
-        dataset.set_ego_for_frame(frame_idx, 0, mock_tr, mock_yaw)
+        dataset.set_ego(frame_idx, 0, mock_tr, mock_yaw)
 
         for scene_idx in scene_indices:
             scene_zarr = dataset.scene_dataset_batch[scene_idx].dataset

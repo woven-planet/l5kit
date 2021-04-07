@@ -174,4 +174,4 @@ class SimulationLoop:
         pred_trs = transform_points(output_dict["positions"][:, :1], world_from_agent)
         pred_yaws = np.expand_dims(yaw, -1) + output_dict["yaws"][:, :1, 0]
 
-        dataset.set_ego_for_frame(frame_idx, 0, pred_trs, pred_yaws)
+        dataset.set_ego(frame_idx, 0, pred_trs, pred_yaws)

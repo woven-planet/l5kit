@@ -90,8 +90,8 @@ class SimulationDataset(Dataset):
         frame_batch = [scene_dt[state_index] for scene_dt in self.scene_dataset_batch.values()]
         return frame_batch
 
-    def set_ego_for_frame(self, state_index: int, output_index: int, ego_translations: np.ndarray,
-                          ego_yaws: np.ndarray) -> None:
+    def set_ego(self, state_index: int, output_index: int, ego_translations: np.ndarray,
+                ego_yaws: np.ndarray) -> None:
         """Mutate future frame position and yaw for ego across scenes. This acts on the underlying dataset
 
         :param state_index: the frame index to mutate
