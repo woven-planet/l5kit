@@ -13,6 +13,7 @@ from l5kit.simulation.dataset import SimulationDataset
 
 class SimulationConfig(NamedTuple):
     """ Defines the parameters used for the simulation of ego and agents around it.
+    
     :param use_ego_gt: whether to use GT annotations for ego instead of model's outputs
     :param use_agents_gt: whether to use GT annotations for agents instead of model's outputs
     :param disable_new_agents: whether to disable agents that are not returned at start_frame_index
