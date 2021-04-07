@@ -98,6 +98,7 @@ def test_unroll(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: di
 
         agents_tracks = [el[1] for el in sim_dataset.agents_tracked]
         for track_id in agents_tracks:
-            agents = filter_agents_by_track_id(sim_output.simulated_agents_states, track_id)[: sim_cfg.num_simulation_steps]
+            states = sim_output.simulated_agents_states
+            agents = filter_agents_by_track_id(states, track_id)[: sim_cfg.num_simulation_steps]
             agent_dist = np.linalg.norm(np.diff(agents["centroid"], axis=0), axis=-1)
             assert np.allclose(agent_dist, 0.5)
