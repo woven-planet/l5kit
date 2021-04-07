@@ -96,14 +96,11 @@ class SimulationDataset(Dataset):
 
         :param state_index: the frame index to mutate
         :param output_index: the index in ego_translations and ego_yaws to use
-        :param ego_translations: output translations
-        :param ego_yaws: output yaws
+        :param ego_translations: output translations (N, T, 2)
+        :param ego_yaws: output yaws (N, T)
         :return:
         """
 
-        """
-        Mutate future frame position and yaw. This acts on the underlying dataset
-        """
         if len(ego_translations) != len(ego_yaws):
             raise ValueError("lengths mismatch between translations and yaws")
         if len(ego_translations) != len(self.scene_indices):

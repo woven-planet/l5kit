@@ -5,7 +5,7 @@ import torch
 from torch.utils.data.dataloader import default_collate
 from tqdm.auto import tqdm
 
-from l5kit.data import AGENT_DTYPE
+from l5kit.data import AGENT_DTYPE, PERCEPTION_LABEL_TO_INDEX
 from l5kit.dataset import EgoDataset
 from l5kit.geometry import transform_points
 from l5kit.simulation.dataset import SimulationDataset
@@ -13,7 +13,7 @@ from l5kit.simulation.dataset import SimulationDataset
 
 class SimulationConfig(NamedTuple):
     """ Defines the parameters used for the simulation of ego and agents around it.
-    
+
     :param use_ego_gt: whether to use GT annotations for ego instead of model's outputs
     :param use_agents_gt: whether to use GT annotations for agents instead of model's outputs
     :param disable_new_agents: whether to disable agents that are not returned at start_frame_index
@@ -149,7 +149,8 @@ class SimulationLoop:
         next_agents["yaw"] = pred_yaws
         next_agents["track_id"] = input_dict["track_id"]
         next_agents["extent"] = input_dict["extent"]
-        next_agents["label_probabilities"][:, 3] = 1
+
+        next_agents["label_probabilities"][:, PERCEPTION_LABEL_TO_INDEX["PERCEPTION_LABEL_CAR"]] = 1
 
         for scene_idx, next_agent in zip(input_dict["scene_index"], next_agents):
             agents_update_dict[(scene_idx, next_agent["track_id"])] = np.expand_dims(next_agent, 0)
