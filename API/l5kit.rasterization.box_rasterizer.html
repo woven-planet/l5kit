@@ -172,7 +172,7 @@
 <span id="l5kit-rasterization-box-rasterizer-module"></span><h1>l5kit.rasterization.box_rasterizer module<a class="headerlink" href="#module-l5kit.rasterization.box_rasterizer" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="l5kit.rasterization.box_rasterizer.BoxRasterizer">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.rasterization.box_rasterizer.</code><code class="sig-name descname">BoxRasterizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">render_context</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.rasterization.render_context.html#l5kit.rasterization.render_context.RenderContext" title="l5kit.rasterization.render_context.RenderContext">l5kit.rasterization.render_context.RenderContext</a></span></em>, <em class="sig-param"><span class="n">filter_agents_threshold</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">history_num_frames</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.rasterization.box_rasterizer.BoxRasterizer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.rasterization.box_rasterizer.</code><code class="sig-name descname">BoxRasterizer</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">render_context</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.rasterization.render_context.html#l5kit.rasterization.render_context.RenderContext" title="l5kit.rasterization.render_context.RenderContext">l5kit.rasterization.render_context.RenderContext</a></span></em>, <em class="sig-param"><span class="n">filter_agents_threshold</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">history_num_frames</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">render_ego_history</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.rasterization.box_rasterizer.BoxRasterizer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.rasterization.rasterizer.Rasterizer</span></code></a></p>
 <dl class="py method">
 <dt id="l5kit.rasterization.box_rasterizer.BoxRasterizer.num_channels">
@@ -182,21 +182,39 @@
 <dl class="py method">
 <dt id="l5kit.rasterization.box_rasterizer.BoxRasterizer.rasterize">
 <code class="sig-name descname">rasterize</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">history_frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">history_agents</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">history_tl_faces</span><span class="p">:</span> <span class="n">List<span class="p">[</span>numpy.ndarray<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">agent</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>numpy.ndarray<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.box_rasterizer.BoxRasterizer.rasterize" title="Permalink to this definition">¶</a></dt>
-<dd></dd></dl>
+<dd><p>Generate raster image by rendering Ego &amp; Agents as bounding boxes on the raster image.
+Ego &amp; Agents from different past frame are rendered at different image channel.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>history_frames</strong> – A list of past frames to be rasterized</p></li>
+<li><p><strong>history_agents</strong> – A list of agents from past frames to be rasterized</p></li>
+<li><p><strong>history_tl_faces</strong> – A list of traffic light faces from past frames to be rasterized</p></li>
+<li><p><strong>agent</strong> – The selected agent to be rendered as Ego, if it is None the AV will be rendered as Ego</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An raster image of size [2xN] with Ego &amp; Agents rendered as bounding boxes, where N is number of
+history frames</p>
+</dd>
+</dl>
+</dd></dl>
 
 <dl class="py method">
 <dt id="l5kit.rasterization.box_rasterizer.BoxRasterizer.to_rgb">
 <code class="sig-name descname">to_rgb</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">in_im</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="n">dict</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.box_rasterizer.BoxRasterizer.to_rgb" title="Permalink to this definition">¶</a></dt>
-<dd><p>get an rgb image where agents further in the past have faded colors</p>
+<dd><p>This function is used to get an rgb image where agents further in the past have faded colors.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>in_im</strong> – the output of the rasterize function</p></li>
-<li><p><strong>kwargs</strong> – this can be used for additional customization (such as colors)</p></li>
+<li><p><strong>in_im</strong> – The output of the rasterize function</p></li>
+<li><p><strong>kwargs</strong> – This can be used for additional customization (such as colors)</p></li>
 </ul>
 </dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>An RGB image with agents and ego coloured with fading colors</p>
+</dd>
 </dl>
-<p>Returns: an RGB image with agents and ego coloured with fading colors</p>
 </dd></dl>
 
 </dd></dl>
@@ -205,22 +223,19 @@
 <dt id="l5kit.rasterization.box_rasterizer.draw_boxes">
 <code class="sig-prename descclassname">l5kit.rasterization.box_rasterizer.</code><code class="sig-name descname">draw_boxes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">raster_size</span><span class="p">:</span> <span class="n">Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">raster_from_world</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">agents</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">color</span><span class="p">:</span> <span class="n">Union<span class="p">[</span>int<span class="p">, </span>Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">, </span>int<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.box_rasterizer.draw_boxes" title="Permalink to this definition">¶</a></dt>
 <dd><p>Draw multiple boxes in one sweep over the image.
-Boxes corners are extracted from agents, and the coordinates are projected in the image plane.
+Boxes corners are extracted from agents, and the coordinates are projected on the image space.
 Finally, cv2 draws the boxes.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>raster_size</strong> (<em>Tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>]</em>) – Desired output image size</p></li>
-<li><p><strong>world_to_image_space</strong> (<em>np.ndarray</em>) – 3x3 matrix to convert from world to image coordinated</p></li>
-<li><p><strong>agents</strong> (<em>np.ndarray</em>) – array of agents to be drawn</p></li>
-<li><p><strong>color</strong> (<em>Union</em><em>[</em><em>int</em><em>, </em><em>Tuple</em><em>[</em><em>int</em><em>, </em><em>int</em><em>, </em><em>int</em><em>]</em><em>]</em>) – single int or RGB color</p></li>
+<li><p><strong>raster_size</strong> – Desired output raster image size</p></li>
+<li><p><strong>raster_from_world</strong> – Transformation matrix to transform from world to image coordinate</p></li>
+<li><p><strong>agents</strong> – An array of agents to be drawn</p></li>
+<li><p><strong>color</strong> – Single int or RGB color</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the image with agents rendered. RGB if color RGB, otherwise GRAY</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>np.ndarray</p>
+<dd class="field-even"><p>the image with agents rendered. A RGB image if using RGB color, otherwise a GRAY image</p>
 </dd>
 </dl>
 </dd></dl>
@@ -228,13 +243,13 @@ Finally, cv2 draws the boxes.</p>
 <dl class="py function">
 <dt id="l5kit.rasterization.box_rasterizer.get_ego_as_agent">
 <code class="sig-prename descclassname">l5kit.rasterization.box_rasterizer.</code><code class="sig-name descname">get_ego_as_agent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frame</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; numpy.ndarray<a class="headerlink" href="#l5kit.rasterization.box_rasterizer.get_ego_as_agent" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get a valid agent with information from the frame AV. Ford Fusion extent is used</p>
+<dd><p>Get a valid agent with information from the AV. Ford Fusion extent is used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>frame</strong> (<em>np.ndarray</em>) – the frame we’re interested in</p>
+<dd class="field-odd"><p><strong>frame</strong> – The frame from which the Ego states are extracted</p>
 </dd>
 </dl>
-<p>Returns: an agent np.ndarray of the AV</p>
+<p>:return An agent numpy array of the Ego states</p>
 </dd></dl>
 
 </div>
