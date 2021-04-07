@@ -141,7 +141,7 @@ class SimulationLoop:
         world_from_agent = input_dict["world_from_agent"]
         yaw = input_dict["yaw"]
         pred_trs = transform_points(output_dict["positions"][:, :1], world_from_agent)[:, 0]
-        pred_yaws = yaw + output_dict["yaws"][:, 0]
+        pred_yaws = yaw + output_dict["yaws"][:, 0, 0]
 
         next_agents = np.zeros(len(yaw), dtype=AGENT_DTYPE)
         next_agents["centroid"] = pred_trs
@@ -171,7 +171,7 @@ class SimulationLoop:
         world_from_agent = input_dict["world_from_agent"]
         yaw = input_dict["yaw"]
         pred_trs = transform_points(output_dict["positions"][:, :1], world_from_agent)
-        pred_yaws = yaw + output_dict["yaws"][:, :1]
+        pred_yaws = np.expand_dims(yaw, -1) + output_dict["yaws"][:, :1, 0]
 
         dataset.set_ego_for_frame(frame_idx, 0, pred_trs, pred_yaws)
 

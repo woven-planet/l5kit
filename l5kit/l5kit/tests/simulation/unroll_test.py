@@ -28,7 +28,7 @@ class MockModel(torch.nn.Module):
         positions = torch.zeros(bs, 12, 2, device=centroids.device)
         positions[..., 0] = self.advance_x
 
-        yaws = torch.zeros(bs, 12, device=centroids.device)
+        yaws = torch.zeros(bs, 12, 1, device=centroids.device)
 
         return {"positions": positions, "yaws": yaws}
 
