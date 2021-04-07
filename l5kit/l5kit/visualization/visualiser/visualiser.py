@@ -1,24 +1,35 @@
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import bokeh.io
 import bokeh.plotting
 import numpy as np
 from bokeh.layouts import column
 from bokeh.models import CustomJS, HoverTool, Slider
-from bokeh.plotting import ColumnDataSource, output_file, save
+from bokeh.plotting import ColumnDataSource, output_file, output_notebook, save, show
 
 from l5kit.visualization.visualiser.common import (AgentVisualisation, CWVisualisation, EgoVisualisation,
                                                    FrameVisualisation, LaneVisualisation, TrajectoryVisualisation)
 
 
-def visualise(scene_index: int, frames: List[FrameVisualisation]) -> None:
-    """Visualise a scene using bokeh.
+def visualise(scene_index: int, frames: List[FrameVisualisation], do_show: bool = False,
+              do_notebook: bool = False, save_path: Optional[str] = None) -> None:
+    """Visualise a scene using Bokeh.
 
     :param scene_index: the index of the scene, used only as the title
     :param frames: a list of FrameVisualisation objects (one per frame of the scene)
-    :return:
+    :param do_show: if to call the show method
+    :param do_notebook: if to call output_notebook
+    :param save_path: optional html destination file
     """
-    output_file("scene.html")
+    do_save = save_path is not None
+
+    assert not (do_save and do_notebook), "can't save and show in notebook"
+
+    if do_save:
+        output_file(do_save)
+    if do_notebook:
+        output_notebook()
+
     agent_hover = HoverTool(
         mode="mouse",
         names=["agents"],
@@ -116,4 +127,7 @@ def visualise(scene_index: int, frames: List[FrameVisualisation]) -> None:
     f.legend.click_policy = "hide"
 
     layout = column(f, slider)
-    save(layout)
+    if do_save:
+        save(layout)
+    if do_show:
+        show(layout)
