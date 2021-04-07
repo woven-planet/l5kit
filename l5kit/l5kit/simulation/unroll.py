@@ -86,7 +86,6 @@ class SimulationLoop:
         Simulate the dataset for the given scene indices
         :param scene_indices: the scene indices we want to simulate
         :return: the simulated dataset
-        TODO: this should probably return something else
         """
         sim_dataset = SimulationDataset(self.dataset, scene_indices, self.sim_cfg.start_frame_index,
                                         self.sim_cfg.disable_new_agents, self.sim_cfg.distance_th_far,
