@@ -4,10 +4,11 @@ import numpy as np
 import pytest
 import torch
 
-from l5kit.data import ChunkedDataset, filter_agents_by_track_id, LocalDataManager
+from l5kit.data import ChunkedDataset, filter_agents_by_track_id, LocalDataManager, get_frames_slice_from_scenes
 from l5kit.dataset import EgoDataset
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.unroll import SimulationConfig, SimulationLoop, SimulationDataset
+from l5kit.geometry import rotation33_as_yaw, yaw_as_rotation33
 
 
 @pytest.fixture(scope="function")
@@ -65,6 +66,13 @@ def test_unroll_none_input() -> None:
 def test_unroll(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict) -> None:
     rasterizer = build_rasterizer(cfg, dmg)
 
+    # change the first yaw of scene 1
+    # this will break if some broadcasting happens
+    zarr_cat_dataset.frames = np.asarray(zarr_cat_dataset.frames)
+    slice_frames = get_frames_slice_from_scenes(zarr_cat_dataset.scenes[1])
+    rot = zarr_cat_dataset.frames[slice_frames.start]["ego_rotation"].copy()
+    zarr_cat_dataset.frames[slice_frames.start]["ego_rotation"] = yaw_as_rotation33(rotation33_as_yaw(rot + 0.75))
+
     scene_indices = list(range(len(zarr_cat_dataset.scenes)))
     ego_dataset = EgoDataset(cfg, zarr_cat_dataset, rasterizer)
 
@@ -86,6 +94,12 @@ def test_unroll(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: di
         ego_tr = sim_output.simulated_ego_states["ego_translation"][: sim_cfg.num_simulation_steps, :2]
         ego_dist = np.linalg.norm(np.diff(ego_tr, axis=0), axis=-1)
         assert np.allclose(ego_dist, 1.0)
+
+        # all rotations should be the same as the first one as the MockModel outputs 0 for that
+        rots_sim = sim_output.simulated_ego_states["ego_rotation"][: sim_cfg.num_simulation_steps]
+        r_rep = sim_output.recorded_ego_states["ego_rotation"][0]
+        for r_sim in rots_sim:
+            assert np.allclose(rotation33_as_yaw(r_sim), rotation33_as_yaw(r_rep), atol=1e-2)
 
     # check agents movements
     for sim_output in sim_outputs:
