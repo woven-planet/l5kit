@@ -13,14 +13,10 @@ from .semantic_rasterizer import CV2_SUB_VALUES, cv2_subpixel
 
 
 def get_ego_as_agent(frame: np.ndarray) -> np.ndarray:  # TODO this can be useful to have around
-    """
-    Get a valid agent with information from the frame AV. Ford Fusion extent is used
+    """ Get a valid agent with information from the AV. Ford Fusion extent is used.
 
-    Args:
-        frame (np.ndarray): the frame we're interested in
-
-    Returns: an agent np.ndarray of the AV
-
+    :param frame: The frame from which the Ego states are extracted
+    :return An agent numpy array of the Ego states
     """
     ego_agent = np.zeros(1, dtype=AGENT_DTYPE)
     ego_agent[0]["centroid"] = frame["ego_translation"][:2]
@@ -35,19 +31,15 @@ def draw_boxes(
         agents: np.ndarray,
         color: Union[int, Tuple[int, int, int]],
 ) -> np.ndarray:
-    """
-    Draw multiple boxes in one sweep over the image.
-    Boxes corners are extracted from agents, and the coordinates are projected in the image plane.
+    """ Draw multiple boxes in one sweep over the image.
+    Boxes corners are extracted from agents, and the coordinates are projected on the image space.
     Finally, cv2 draws the boxes.
 
-    Args:
-        raster_size (Tuple[int, int]): Desired output image size
-        world_to_image_space (np.ndarray): 3x3 matrix to convert from world to image coordinated
-        agents (np.ndarray): array of agents to be drawn
-        color (Union[int, Tuple[int, int, int]]): single int or RGB color
-
-    Returns:
-        np.ndarray: the image with agents rendered. RGB if color RGB, otherwise GRAY
+    :param raster_size: Desired output raster image size
+    :param raster_from_world: Transformation matrix to transform from world to image coordinate
+    :param agents: An array of agents to be drawn
+    :param color: Single int or RGB color
+    :return: the image with agents rendered. A RGB image if using RGB color, otherwise a GRAY image
     """
     if isinstance(color, int):
         im = np.zeros((raster_size[1], raster_size[0]), dtype=np.uint8)
@@ -75,20 +67,25 @@ def draw_boxes(
 
 class BoxRasterizer(Rasterizer):
     def __init__(
-            self, render_context: RenderContext, filter_agents_threshold: float, history_num_frames: int,
-    ):
-        """
+        self,
+        render_context: RenderContext,
+        filter_agents_threshold: float,
+        history_num_frames: int,
+        render_ego_history: bool = False,
+    ) -> None:
+        """This is a rasterizer class used for rendering agents' bounding boxes on the raster image.
 
-        Args:
-            render_context (RenderContext): Render context
-            filter_agents_threshold (float): Value between 0 and 1 used to filter uncertain agent detections
-            history_num_frames (int): Number of frames to rasterise in the past
+        :param render_context: Render context
+        :param filter_agents_threshold: Value between 0 and 1 used to filter uncertain agent detections
+        :param history_num_frames: Number of past frames to be renderd on the raster
+        :param render_ego_history: Option to render past ego states on the raster image
         """
         super(BoxRasterizer, self).__init__()
         self.render_context = render_context
         self.raster_size = render_context.raster_size_px
         self.filter_agents_threshold = filter_agents_threshold
         self.history_num_frames = history_num_frames
+        self.render_ego_history = render_ego_history
 
     def rasterize(
             self,
@@ -97,6 +94,16 @@ class BoxRasterizer(Rasterizer):
             history_tl_faces: List[np.ndarray],
             agent: Optional[np.ndarray] = None,
     ) -> np.ndarray:
+        """Generate raster image by rendering Ego & Agents as bounding boxes on the raster image.
+        Ego & Agents from different past frame are rendered at different image channel.
+
+        :param history_frames: A list of past frames to be rasterized
+        :param history_agents: A list of agents from past frames to be rasterized
+        :param history_tl_faces: A list of traffic light faces from past frames to be rasterized
+        :param agent: The selected agent to be rendered as Ego, if it is None the AV will be rendered as Ego
+        :return: An raster image of size [2xN] with Ego & Agents rendered as bounding boxes, where N is number of
+         history frames
+        """
         # all frames are drawn relative to this one"
         frame = history_frames[0]
         if agent is None:
@@ -119,20 +126,16 @@ class BoxRasterizer(Rasterizer):
             av_agent = get_ego_as_agent(frame).astype(agents.dtype)
 
             if agent is None:
-                agents_image = draw_boxes(self.raster_size, raster_from_world, agents, 255)
-                ego_image = draw_boxes(self.raster_size, raster_from_world, av_agent, 255)
+                ego_agent = av_agent
             else:
-                agent_ego = filter_agents_by_track_id(agents, agent["track_id"])
-                if len(agent_ego) == 0:  # agent not in this history frame
-                    agents_image = draw_boxes(self.raster_size, raster_from_world, np.append(agents, av_agent), 255)
-                    ego_image = np.zeros_like(agents_image)
-                else:  # add av to agents and remove the agent from agents
-                    agents = agents[agents != agent_ego[0]]
-                    agents_image = draw_boxes(self.raster_size, raster_from_world, np.append(agents, av_agent), 255)
-                    ego_image = draw_boxes(self.raster_size, raster_from_world, agent_ego, 255)
+                ego_agent = filter_agents_by_track_id(agents, agent["track_id"])
+                agents = np.append(agents, av_agent)  # add av_agent to agents
+                if len(ego_agent) > 0:  # check if ego_agent is in the frame
+                    agents = agents[agents != ego_agent[0]]  # remove ego_agent from agents
 
-            agents_images[..., i] = agents_image
-            ego_images[..., i] = ego_image
+            agents_images[..., i] = draw_boxes(self.raster_size, raster_from_world, agents, 255)
+            if len(ego_agent) > 0 and (self.render_ego_history or i == 0):
+                ego_images[..., i] = draw_boxes(self.raster_size, raster_from_world, ego_agent, 255)
 
         # combine such that the image consists of [agent_t, agent_t-1, agent_t-2, ego_t, ego_t-1, ego_t-2]
         out_im = np.concatenate((agents_images, ego_images), -1)
@@ -140,14 +143,11 @@ class BoxRasterizer(Rasterizer):
         return out_im.astype(np.float32) / 255
 
     def to_rgb(self, in_im: np.ndarray, **kwargs: dict) -> np.ndarray:
-        """
-        get an rgb image where agents further in the past have faded colors
+        """This function is used to get an rgb image where agents further in the past have faded colors.
 
-        Args:
-            in_im: the output of the rasterize function
-            kwargs: this can be used for additional customization (such as colors)
-
-        Returns: an RGB image with agents and ego coloured with fading colors
+        :param in_im: The output of the rasterize function
+        :param kwargs: This can be used for additional customization (such as colors)
+        :return: An RGB image with agents and ego coloured with fading colors
         """
         hist_frames = in_im.shape[-1] // 2
         in_im = np.transpose(in_im, (2, 0, 1))

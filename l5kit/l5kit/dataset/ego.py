@@ -6,8 +6,7 @@ from typing import Optional
 import numpy as np
 from torch.utils.data import Dataset
 
-from ..data import (ChunkedDataset, get_agents_slice_from_frames, get_frames_slice_from_scenes,
-                    get_tl_faces_slice_from_frames)
+from ..data import ChunkedDataset, get_frames_slice_from_scenes
 from ..kinematic import Perturbation
 from ..rasterization import Rasterizer, RenderContext
 from ..sampling import generate_agent_sample
@@ -145,26 +144,7 @@ None if not desired
             EgoDataset: A valid EgoDataset dataset with a copy of the data
 
         """
-        # copy everything to avoid references (scene is already detached from zarr if get_combined_scene was called)
-        scenes = self.dataset.scenes[scene_index: scene_index + 1].copy()
-        frame_slice = get_frames_slice_from_scenes(*scenes)
-        frames = self.dataset.frames[frame_slice].copy()
-        agent_slice = get_agents_slice_from_frames(*frames[[0, -1]])
-        tl_slice = get_tl_faces_slice_from_frames(*frames[[0, -1]])
-
-        agents = self.dataset.agents[agent_slice].copy()
-        tl_faces = self.dataset.tl_faces[tl_slice].copy()
-
-        frames["agent_index_interval"] -= agent_slice.start
-        frames["traffic_light_faces_index_interval"] -= tl_slice.start
-        scenes["frame_index_interval"] -= frame_slice.start
-
-        dataset = ChunkedDataset("")
-        dataset.agents = agents
-        dataset.tl_faces = tl_faces
-        dataset.frames = frames
-        dataset.scenes = scenes
-
+        dataset = self.dataset.get_scene_dataset(scene_index)
         return EgoDataset(self.cfg, dataset, self.rasterizer, self.perturbation)
 
     def get_scene_indices(self, scene_idx: int) -> np.ndarray:
