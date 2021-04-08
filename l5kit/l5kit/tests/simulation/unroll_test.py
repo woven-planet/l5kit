@@ -116,7 +116,7 @@ def test_unroll(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: di
                                         sim_cfg.distance_th_close)
         sim_dataset.rasterise_agents_frame_batch(0)  # this will fill agents_tracked
 
-        agents_tracks = [el[1] for el in sim_dataset.agents_tracked]
+        agents_tracks = [el[1] for el in sim_dataset._agents_tracked]
         for track_id in agents_tracks:
             states = sim_output.simulated_agents_states
             agents = filter_agents_by_track_id(states, track_id)[: sim_cfg.num_simulation_steps]

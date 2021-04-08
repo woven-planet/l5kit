@@ -43,14 +43,15 @@ class SimulationDataset(Dataset):
         # keep track of original dataset
         self.recorded_scene_dataset_batch = deepcopy(self.scene_dataset_batch)
 
-        # agents stuff
-        self.agents_tracked: Set[Tuple[int, int]] = set()
+        # buffer used to keep track of tracked agents during unroll as tuples of scene_idx, agent_idx
+        self._agents_tracked: Set[Tuple[int, int]] = set()
 
         self.distance_th_far = distance_th_far
         self.distance_th_close = distance_th_close
         self.disable_new_agents = disable_new_agents
 
         if disable_new_agents:
+            # we disable all agents that wouldn't be picked at start_frame
             for scene_index in scene_indices:
                 dataset_zarr = self.scene_dataset_batch[scene_index].dataset
                 frame = dataset_zarr.frames[start_frame]
@@ -173,11 +174,11 @@ class SimulationDataset(Dataset):
         """
         agent_track_set = set([(scene_index, int(track_id)) for track_id in agent_track_ids])
 
-        self.agents_tracked.update(agent_track_set)
+        self._agents_tracked.update(agent_track_set)
 
-        remove_els = set([k for k in self.agents_tracked if k[0] == scene_index]) - agent_track_set
+        remove_els = set([k for k in self._agents_tracked if k[0] == scene_index]) - agent_track_set
         for indices in remove_els:
-            self.agents_tracked.remove(indices)
+            self._agents_tracked.remove(indices)
 
     def _filter_agents(self, scene_idx: int, frame_agents: np.ndarray,
                        ego_pos: np.ndarray) -> np.ndarray:
@@ -200,13 +201,13 @@ class SimulationDataset(Dataset):
         vehicle_mask = vehicle_mask > self.filter_agents_thr
         frame_agents = frame_agents[vehicle_mask]
 
-        # for distance use two thresholds
         distance_mask = np.zeros(len(frame_agents), dtype=np.bool)
         for idx_agent, agent in enumerate(frame_agents):
             track_id = int(agent["track_id"])
 
             distance = np.linalg.norm(ego_pos - agent["centroid"])
-            if (scene_idx, track_id) in self.agents_tracked:
+            # for distance use two thresholds
+            if (scene_idx, track_id) in self._agents_tracked:
                 # if we're already controlling this agent, th_far
                 distance_mask[idx_agent] = distance < self.distance_th_far
             else:

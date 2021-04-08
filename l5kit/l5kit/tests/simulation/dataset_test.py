@@ -64,7 +64,7 @@ def test_simulation_agents(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManag
     dataset = SimulationDataset(ego_dataset, scene_indices, distance_th_close=30)
 
     # nothing should be tracked
-    assert len(dataset.agents_tracked) == 0
+    assert len(dataset._agents_tracked) == 0
 
     agents_dict = dataset.rasterise_agents_frame_batch(0)
 
@@ -73,7 +73,7 @@ def test_simulation_agents(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManag
         assert (0, k[1]) in agents_dict
 
     # now everything should be tracked
-    assert len(dataset.agents_tracked) == len(agents_dict)
+    assert len(dataset._agents_tracked) == len(agents_dict)
 
 
 def test_simulation_agents_mock(dmg: LocalDataManager, cfg: dict, tmp_path: Path) -> None:
@@ -84,22 +84,22 @@ def test_simulation_agents_mock(dmg: LocalDataManager, cfg: dict, tmp_path: Path
     dataset = SimulationDataset(ego_dataset, [0], distance_th_close=10)
 
     # nothing should be tracked
-    assert len(dataset.agents_tracked) == 0
+    assert len(dataset._agents_tracked) == 0
 
     agents_dict = dataset.rasterise_agents_frame_batch(0)
 
     # only (0, 1) should be in
     assert len(agents_dict) == 1 and (0, 1) in agents_dict
-    assert len(dataset.agents_tracked) == 1
+    assert len(dataset._agents_tracked) == 1
 
     agents_dict = dataset.rasterise_agents_frame_batch(1)
     assert len(agents_dict) == 2
     assert (0, 1) in agents_dict and (0, 2) in agents_dict
-    assert len(dataset.agents_tracked) == 2
+    assert len(dataset._agents_tracked) == 2
 
     agents_dict = dataset.rasterise_agents_frame_batch(2)
     assert len(agents_dict) == 0
-    assert len(dataset.agents_tracked) == 0
+    assert len(dataset._agents_tracked) == 0
 
 
 def test_simulation_agents_mock_disable(dmg: LocalDataManager, cfg: dict, tmp_path: Path) -> None:
@@ -110,24 +110,24 @@ def test_simulation_agents_mock_disable(dmg: LocalDataManager, cfg: dict, tmp_pa
     dataset = SimulationDataset(ego_dataset, [0], distance_th_close=10, disable_new_agents=True)
 
     # nothing should be tracked
-    assert len(dataset.agents_tracked) == 0
+    assert len(dataset._agents_tracked) == 0
 
     agents_dict = dataset.rasterise_agents_frame_batch(0)
 
     # only (0, 1) should be in
     assert len(agents_dict) == 1 and (0, 1) in agents_dict
-    assert len(dataset.agents_tracked) == 1
+    assert len(dataset._agents_tracked) == 1
 
     agents_dict = dataset.rasterise_agents_frame_batch(1)
 
     # again, only (0, 1) should be in
     assert len(agents_dict) == 1
     assert (0, 1) in agents_dict
-    assert len(dataset.agents_tracked) == 1
+    assert len(dataset._agents_tracked) == 1
 
     agents_dict = dataset.rasterise_agents_frame_batch(2)
     assert len(agents_dict) == 0
-    assert len(dataset.agents_tracked) == 0
+    assert len(dataset._agents_tracked) == 0
 
 
 def test_simulation_agents_mock_insert(dmg: LocalDataManager, cfg: dict, tmp_path: Path) -> None:
