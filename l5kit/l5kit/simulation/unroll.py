@@ -62,12 +62,14 @@ class SimulationOutputs:
 
 class SimulationLoop:
     def __init__(self, sim_cfg: SimulationConfig, dataset: EgoDataset,
+                 device: torch.device,
                  model_ego: Optional[torch.nn.Module] = None,
                  model_agents: Optional[torch.nn.Module] = None):
         """
         Create a simulation loop object capable of unrolling ego and agents
         :param sim_cfg: configuration for unroll
         :param dataset: EgoDataset used while unrolling
+        :param device: a torch device. Inference will be performed here
         :param model_ego: the model to be used for ego
         :param model_agents: the model to be used for agents
         """
@@ -77,8 +79,10 @@ class SimulationLoop:
         if not sim_cfg.use_agents_gt and model_agents is None:
             raise ValueError("agents model should not be None when simulating agent")
 
-        self.model_ego = model_ego
-        self.model_agents = model_agents
+        self.model_ego = torch.nn.Sequential().to(device) if model_ego is None else model_ego.to(device)
+        self.model_agents = torch.nn.Sequential().to(device) if model_agents is None else model_agents.to(device)
+
+        self.device = device
         self.dataset = dataset
 
     def unroll(self, scene_indices: List[int]) -> List[SimulationOutputs]:
@@ -106,6 +110,7 @@ class SimulationLoop:
                 agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
                 if len(agents_input):  # agents may not be available
                     agents_input_dict = default_collate(list(agents_input.values()))
+                    agents_input_dict = {k: v.to(self.device) for k, v in agents_input_dict.items()}
                     agents_output_dict = self.model_agents(agents_input_dict)
                     if should_update:
                         self.update_agents(sim_dataset, next_frame_index, agents_input_dict, agents_output_dict)
@@ -114,6 +119,7 @@ class SimulationLoop:
             if not self.sim_cfg.use_ego_gt:
                 ego_input = sim_dataset.rasterise_frame_batch(frame_index)
                 ego_input_dict = default_collate(ego_input)
+                ego_input_dict = {k: v.to(self.device) for k, v in ego_input_dict.items()}
                 ego_output_dict = self.model_ego(ego_input_dict)
                 if should_update:
                     self.update_ego(sim_dataset, next_frame_index, ego_input_dict, ego_output_dict)
@@ -135,7 +141,7 @@ class SimulationLoop:
         :return:
         """
 
-        agents_update_dict: Dict[Tuple[int, int]: np.ndarray] = {}
+        agents_update_dict: Dict[Tuple[int, int], np.ndarray] = {}
         input_dict = {k: v.cpu().numpy() for k, v in input_dict.items()}
         output_dict = {k: v.cpu().numpy() for k, v in output_dict.items()}
 
