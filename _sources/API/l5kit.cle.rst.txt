@@ -1,0 +1,15 @@
+l5kit.cle package
+=================
+
+.. automodule:: l5kit.cle
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   l5kit.cle.metrics

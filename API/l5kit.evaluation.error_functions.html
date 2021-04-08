@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>l5kit.evaluation.chop_dataset module &mdash; L5Kit 1.2.0 documentation</title>
+  <title>l5kit.evaluation.error_functions module &mdash; L5Kit 1.2.0 documentation</title>
   
 
   
@@ -38,8 +38,8 @@
     
     <link rel="index" title="Index" href="../genindex.html" />
     <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="l5kit.evaluation.csv_utils module" href="l5kit.evaluation.csv_utils.html" />
-    <link rel="prev" title="l5kit.evaluation package" href="l5kit.evaluation.html" /> 
+    <link rel="next" title="l5kit.evaluation.extract_ground_truth module" href="l5kit.evaluation.extract_ground_truth.html" />
+    <link rel="prev" title="l5kit.evaluation.csv_utils module" href="l5kit.evaluation.csv_utils.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -98,9 +98,9 @@
 <li class="toctree-l2"><a class="reference internal" href="l5kit.dataset.html">l5kit.dataset package</a></li>
 <li class="toctree-l2 current"><a class="reference internal" href="l5kit.evaluation.html">l5kit.evaluation package</a><ul class="current">
 <li class="toctree-l3 current"><a class="reference internal" href="l5kit.evaluation.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.evaluation.chop_dataset module</a></li>
+<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.chop_dataset.html">l5kit.evaluation.chop_dataset module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.csv_utils.html">l5kit.evaluation.csv_utils module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.error_functions.html">l5kit.evaluation.error_functions module</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.evaluation.error_functions module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.extract_ground_truth.html">l5kit.evaluation.extract_ground_truth module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.extract_metrics.html">l5kit.evaluation.extract_metrics module</a></li>
 <li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.metrics.html">l5kit.evaluation.metrics module</a></li>
@@ -176,13 +176,13 @@
         
           <li><a href="l5kit.evaluation.html">l5kit.evaluation package</a> &raquo;</li>
         
-      <li>l5kit.evaluation.chop_dataset module</li>
+      <li>l5kit.evaluation.error_functions module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/API/l5kit.evaluation.chop_dataset.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/API/l5kit.evaluation.error_functions.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -195,37 +195,21 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="module-l5kit.evaluation.chop_dataset">
-<span id="l5kit-evaluation-chop-dataset-module"></span><h1>l5kit.evaluation.chop_dataset module<a class="headerlink" href="#module-l5kit.evaluation.chop_dataset" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-l5kit.evaluation.error_functions">
+<span id="l5kit-evaluation-error-functions-module"></span><h1>l5kit.evaluation.error_functions module<a class="headerlink" href="#module-l5kit.evaluation.error_functions" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
-<dt id="l5kit.evaluation.chop_dataset.create_chopped_dataset">
-<code class="sig-prename descclassname">l5kit.evaluation.chop_dataset.</code><code class="sig-name descname">create_chopped_dataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">zarr_path</span><span class="p">:</span> <span class="n">str</span></em>, <em class="sig-param"><span class="n">th_agent_prob</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">num_frames_to_copy</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">num_frames_gt</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">min_frame_future</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#l5kit.evaluation.chop_dataset.create_chopped_dataset" title="Permalink to this definition">¶</a></dt>
-<dd><p>Create a chopped version of the zarr that can be used as a test set.
-This function was used to generate the test set for the competition so that the future GT is not in the data.</p>
-<dl>
-<dt>Store:</dt><dd><ul class="simple">
-<li><p>a dataset where each scene has been chopped at <cite>num_frames_to_copy</cite> frames;</p></li>
-<li><p>a mask for agents for those final frames based on the original mask and a threshold on the future_frames;</p></li>
-<li><p>the GT csv for those agents</p></li>
-</ul>
-<p>For the competition, only the first two (dataset and mask) will be available in the notebooks</p>
-</dd>
-</dl>
+<dt id="l5kit.evaluation.error_functions.l2_error">
+<code class="sig-prename descclassname">l5kit.evaluation.error_functions.</code><code class="sig-name descname">l2_error</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">pred</span><span class="p">:</span> <span class="n">torch.Tensor</span></em>, <em class="sig-param"><span class="n">gt</span><span class="p">:</span> <span class="n">torch.Tensor</span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.evaluation.error_functions.l2_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>A function that takes pred, gt tensor and computes their L2 distance.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>zarr_path</strong> (<em>str</em>) – input zarr path to be chopped</p></li>
-<li><p><strong>th_agent_prob</strong> (<em>float</em>) – threshold over agents probabilities used in select_agents function</p></li>
-<li><p><strong>num_frames_to_copy</strong> (<em>int</em>) – number of frames to copy from the beginning of each scene, others will be discarded</p></li>
-<li><p><strong>min_frame_future</strong> (<em>int</em>) – minimum number of frames that must be available in the future for an agent</p></li>
-<li><p><strong>num_frames_gt</strong> (<em>int</em>) – number of future predictions to store in the GT file</p></li>
+<li><p><strong>pred</strong> – predicted tensor, size: [batch_size, num_dims]</p></li>
+<li><p><strong>gt</strong> – gt tensor, size: [batch_size, num_dims]</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
-<dd class="field-even"><p>the parent folder of the new datam</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>str</p>
+<dd class="field-even"><p>l2 distance between the predicted and gt tensor, size: [batch_size,]</p>
 </dd>
 </dl>
 </dd></dl>
@@ -238,8 +222,8 @@ This function was used to generate the test set for the competition so that the 
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="l5kit.evaluation.csv_utils.html" class="btn btn-neutral float-right" title="l5kit.evaluation.csv_utils module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="l5kit.evaluation.html" class="btn btn-neutral float-left" title="l5kit.evaluation package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="l5kit.evaluation.extract_ground_truth.html" class="btn btn-neutral float-right" title="l5kit.evaluation.extract_ground_truth module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="l5kit.evaluation.csv_utils.html" class="btn btn-neutral float-left" title="l5kit.evaluation.csv_utils module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

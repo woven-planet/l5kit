@@ -12,6 +12,7 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
+   l5kit.cle
    l5kit.configs
    l5kit.data
    l5kit.dataset

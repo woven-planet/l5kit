@@ -14,6 +14,7 @@ Submodules
 
    l5kit.evaluation.chop_dataset
    l5kit.evaluation.csv_utils
+   l5kit.evaluation.error_functions
    l5kit.evaluation.extract_ground_truth
    l5kit.evaluation.extract_metrics
    l5kit.evaluation.metrics
