@@ -21,7 +21,7 @@ class SimulationDataset(Dataset):
         - set ego in future frames;
         - set agents in future frames;
 
-        NOTE: only vehicles (car label) are picked as agents
+        .. note:: only vehicles (car label) are picked as agents
 
         :param dataset: the original ego dataset
         :param scene_indices: the indices of the scenes to take
@@ -98,7 +98,6 @@ class SimulationDataset(Dataset):
         :param output_index: the index in ego_translations and ego_yaws to use
         :param ego_translations: output translations (N, T, 2)
         :param ego_yaws: output yaws (N, T)
-        :return:
         """
 
         if len(ego_translations) != len(ego_yaws):
