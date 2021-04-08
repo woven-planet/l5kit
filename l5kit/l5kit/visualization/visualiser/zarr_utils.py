@@ -48,7 +48,8 @@ def _get_frame_trajectories(frames: np.ndarray, agents_frames: List[np.ndarray],
         traj_visualisation.append(TrajectoryVisualisation(xs=pos[avail > 0, 0],
                                                           ys=pos[avail > 0, 1],
                                                           color="blue",
-                                                          legend_label="agent_trajectory"))
+                                                          legend_label="agent_trajectory",
+                                                          track_id=int(track_id)))
 
     # TODO: factor out future length
     ego_traj_length = 100
@@ -58,7 +59,8 @@ def _get_frame_trajectories(frames: np.ndarray, agents_frames: List[np.ndarray],
     traj_visualisation.append(TrajectoryVisualisation(xs=pos[avail > 0, 0],
                                                       ys=pos[avail > 0, 1],
                                                       color="red",
-                                                      legend_label="ego_trajectory"))
+                                                      legend_label="ego_trajectory",
+                                                      track_id=-1))
 
     return traj_visualisation
 

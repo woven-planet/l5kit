@@ -37,6 +37,7 @@ class TrajectoryVisualisation(NamedTuple):
     ys: np.ndarray
     color: str
     legend_label: str
+    track_id: int
 
 
 class FrameVisualisation(NamedTuple):
