@@ -26,7 +26,7 @@ def visualise(scene_index: int, frames: List[FrameVisualisation], do_show: bool 
     assert not (do_save and do_notebook), "can't save and show in notebook"
 
     if do_save:
-        output_file(do_save)
+        output_file(save_path)
     if do_notebook:
         output_notebook()
 
