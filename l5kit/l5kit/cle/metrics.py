@@ -5,6 +5,7 @@ import torch
 
 from l5kit.evaluation import error_functions
 
+
 # TODO(perone): mocking the output for now
 class SimulationOutput:
     def __init__(self) -> None:
@@ -27,7 +28,7 @@ class SupportsMetricCompute(Protocol):
         raise NotImplementedError
 
 
-class DisplacementErrorMetric:
+class DisplacementErrorMetric(SupportsMetricCompute):
     """Displacement error computes the elementwise distance from the
     simulated trajectory and the observed trajectory.
 
