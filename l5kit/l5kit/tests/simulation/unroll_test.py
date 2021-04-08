@@ -4,11 +4,11 @@ import numpy as np
 import pytest
 import torch
 
-from l5kit.data import ChunkedDataset, filter_agents_by_track_id, LocalDataManager, get_frames_slice_from_scenes
+from l5kit.data import ChunkedDataset, filter_agents_by_track_id, get_frames_slice_from_scenes, LocalDataManager
 from l5kit.dataset import EgoDataset
-from l5kit.rasterization import build_rasterizer
-from l5kit.simulation.unroll import SimulationConfig, SimulationLoop, SimulationDataset
 from l5kit.geometry import rotation33_as_yaw, yaw_as_rotation33
+from l5kit.rasterization import build_rasterizer
+from l5kit.simulation.unroll import SimulationConfig, SimulationDataset, SimulationLoop
 
 
 @pytest.fixture(scope="function")
