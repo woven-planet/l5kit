@@ -163,7 +163,7 @@ class SimulationDataset(Dataset):
         self._update_agent_infos(scene_index, frame_agents["track_id"])
         return agents_dict
 
-    def _update_agent_infos(self, scene_index: int, agent_track_ids: np.ndarray):
+    def _update_agent_infos(self, scene_index: int, agent_track_ids: np.ndarray) -> None:
         """Update tracked agents object such that:
         - if agent was not there -> add it
         - if agent is not here anymore -> remove it

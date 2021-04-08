@@ -34,7 +34,7 @@ class MockModel(torch.nn.Module):
         return {"positions": positions, "yaws": yaws}
 
 
-def test_unroll_invalid_input(ego_dataset: ego_dataset) -> None:
+def test_unroll_invalid_input(ego_dataset: EgoDataset) -> None:
     # try to use None models with wrong config
     sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=True,
                                distance_th_close=1000, distance_th_far=1000, num_simulation_steps=10)
@@ -49,7 +49,7 @@ def test_unroll_invalid_input(ego_dataset: ego_dataset) -> None:
         SimulationLoop(sim_cfg, ego_dataset, torch.device("cpu"), None, None)
 
 
-def test_unroll_none_input() -> None:
+def test_unroll_none_input(ego_dataset: EgoDataset) -> None:
     sim_cfg = SimulationConfig(use_ego_gt=True, use_agents_gt=False, disable_new_agents=True,
                                distance_th_close=1000, distance_th_far=1000, num_simulation_steps=10)
     sim = SimulationLoop(sim_cfg, ego_dataset, torch.device("cpu"), None, MockModel())

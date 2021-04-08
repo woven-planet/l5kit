@@ -3,7 +3,7 @@ import numpy as np
 from l5kit.data import ChunkedDataset, get_agents_slice_from_frames
 
 
-def insert_agent(agent: np.ndarray, frame_idx: int, dataset: ChunkedDataset):
+def insert_agent(agent: np.ndarray, frame_idx: int, dataset: ChunkedDataset) -> None:
     """Insert an agent in one frame.
     Assumptions:
         the dataset has only 1 scene
@@ -47,7 +47,7 @@ def insert_agent(agent: np.ndarray, frame_idx: int, dataset: ChunkedDataset):
         dataset.frames[frame_idx + 1:]["agent_index_interval"] += 1
 
 
-def disable_agents(dataset: ChunkedDataset, allowlist: np.ndarray):
+def disable_agents(dataset: ChunkedDataset, allowlist: np.ndarray) -> None:
     """Disable all agents in dataset except for the ones in allowlist
     Assumptions:
         the dataset has only 1 scene
