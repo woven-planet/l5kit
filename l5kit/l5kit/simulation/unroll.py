@@ -104,10 +104,11 @@ class SimulationLoop:
             # AGENTS
             if not self.sim_cfg.use_agents_gt:
                 agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
-                agents_input_dict = default_collate(list(agents_input.values()))
-                agents_output_dict = self.model_agents(agents_input_dict)
-                if should_update:
-                    self.update_agents(sim_dataset, next_frame_index, agents_input_dict, agents_output_dict)
+                if len(agents_input):  # agents may not be available
+                    agents_input_dict = default_collate(list(agents_input.values()))
+                    agents_output_dict = self.model_agents(agents_input_dict)
+                    if should_update:
+                        self.update_agents(sim_dataset, next_frame_index, agents_input_dict, agents_output_dict)
 
             # EGO
             if not self.sim_cfg.use_ego_gt:
