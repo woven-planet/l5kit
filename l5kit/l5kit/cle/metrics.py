@@ -1,7 +1,7 @@
 from abc import abstractmethod
-from typing_extensions import Protocol
 
 import torch
+from typing_extensions import Protocol
 
 from l5kit.evaluation import error_functions
 
