@@ -30,6 +30,7 @@ setup(
         "ptable",
         "ipywidgets",
         "shapely",
+        "typing_extensions",
     ],
     extras_require={
         "dev": ["pytest", "mypy", "setuptools", "twine", "wheel", "pytest-cov", "flake8",
