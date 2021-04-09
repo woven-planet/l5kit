@@ -1,3 +1,4 @@
+from enum import IntEnum
 from typing import Dict, List, Optional, Tuple
 
 import numpy as np
@@ -7,8 +8,28 @@ from tqdm.auto import tqdm
 
 from l5kit.data import AGENT_DTYPE, PERCEPTION_LABEL_TO_INDEX
 from l5kit.dataset import EgoDataset
-from l5kit.geometry import transform_points
+from l5kit.geometry import rotation33_as_yaw, transform_points
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
+
+
+class TrajectoryStateIndices(IntEnum):
+    """ Defines indices for accessing trajectory states from LocalSceneBatch.
+        example: all_speeds = local_scene_batch.recorded_ego_states[:, TrajectoryStateIndices.SPEED]
+    :param X: the index for x position
+    :param Y: the index for y position
+    :param THETA: the index for the angle in radians
+    :param SPEED: the index for speed in mps
+    :param ACCELERATION: the index for acceleration in mps^2
+    :param CURVATURE: the index for curvature (1pm)
+    :param TIME: the index for time (seconds)
+    """
+    X = 0
+    Y = 1
+    THETA = 2
+    SPEED = 3
+    ACCELERATION = 4
+    CURVATURE = 5
+    TIME = 6
 
 
 class SimulationOutput:
@@ -26,10 +47,13 @@ class SimulationOutput:
         self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
         self.simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
 
-        self.recorded_ego_states = self.recorded_dataset.dataset.frames
-        self.recorded_agents_states = self.recorded_dataset.dataset.agents
-        self.simulated_ego_states = self.simulated_dataset.dataset.frames
-        self.simulated_agents_states = self.simulated_dataset.dataset.agents
+        self.simulated_agents = self.simulated_dataset.dataset.agents
+        self.recorded_agents = self.recorded_dataset.dataset.agents
+        self.recorded_ego = self.recorded_dataset.dataset.frames
+        self.simulated_ego = self.simulated_dataset.dataset.frames
+
+        self.simulated_ego_states = self.build_trajectory_states(self.simulated_ego)
+        self.recorded_ego_states = self.build_trajectory_states(self.recorded_ego)
 
     def get_scene_id(self) -> int:
         """
@@ -38,6 +62,26 @@ class SimulationOutput:
         :return: the scene index
         """
         return self.scene_id
+
+    @staticmethod
+    def build_trajectory_states(frames: np.ndarray) -> torch.Tensor:
+        """
+        Convert frames into a torch trajectory
+        :param frames: the scene frames
+        :return: the trajectory
+        """
+        trajectory_states = torch.zeros(len(frames), len(TrajectoryStateIndices.__members__), dtype=torch.float)
+        translations = frames["ego_translation"]
+        rotations = frames["ego_rotation"]
+
+        for idx_frame in range(len(frames)):
+            # TODO: there is a conversion from float64 to float32 here
+            trajectory_states[idx_frame, TrajectoryStateIndices.X] = translations[idx_frame, 0]
+            trajectory_states[idx_frame, TrajectoryStateIndices.Y] = translations[idx_frame, 1]
+            trajectory_states[idx_frame, TrajectoryStateIndices.THETA] = rotation33_as_yaw(rotations[idx_frame])
+            # TODO: we may need to fill other fields
+
+        return trajectory_states
 
 
 class ClosedLoopSimulator:
