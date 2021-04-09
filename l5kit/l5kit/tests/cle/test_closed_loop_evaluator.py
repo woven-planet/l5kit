@@ -7,10 +7,10 @@ from l5kit.cle import validators
 
 class TestEvaluationPlan(unittest.TestCase):
     def test_attributes(self) -> None:
-        metric_list = [(test_metric := Mock(metric_name="test_metric"))]
-        validator_list = [(test_validator := Mock(requires_metric=["test_metric"],
-                                                  validator_name="test_validator"))]
-        ep = ceval.EvaluationPlan(metric_list, validator_list)
+        test_metric = Mock(metric_name="test_metric")
+        test_validator = Mock(requires_metric=["test_metric"],
+                              validator_name="test_validator")
+        ep = ceval.EvaluationPlan([test_metric], [test_validator])
         self.assertDictEqual(ep.metrics_dict(),
                              {"test_metric": test_metric})
         self.assertDictEqual(ep.validators_dict(),
@@ -24,20 +24,20 @@ class TestEvaluationPlan(unittest.TestCase):
             _ = ceval.EvaluationPlan(metric_list, validator_list)
 
     def test_evaluate(self) -> None:
-        metric_list = [(test_metric := Mock(metric_name="test_metric"))]
-        validator_list = [(test_validator := Mock(requires_metric=["test_metric"],
-                                                  validator_name="test_validator"))]
-        ep = ceval.EvaluationPlan(metric_list, validator_list)
+        test_metric = Mock(metric_name="test_metric")
+        test_validator = Mock(requires_metric=["test_metric"],
+                              validator_name="test_validator")
+        ep = ceval.EvaluationPlan([test_metric], [test_validator])
         ret = ep.evaluate(Mock())
         test_metric.compute.assert_called_once()
         test_validator.validate.assert_not_called()
         self.assertIn(test_metric.metric_name, ret)
 
     def test_validate(self) -> None:
-        metric_list = [(test_metric := Mock(metric_name="test_metric"))]
-        validator_list = [(test_validator := Mock(requires_metric=["test_metric"],
-                                                  validator_name="test_validator"))]
-        ep = ceval.EvaluationPlan(metric_list, validator_list)
+        test_metric = Mock(metric_name="test_metric")
+        test_validator = Mock(requires_metric=["test_metric"],
+                              validator_name="test_validator")        
+        ep = ceval.EvaluationPlan([test_metric], [test_validator])
         ret = ep.validate({
             "test_metric": Mock(),
         }, Mock())
@@ -89,13 +89,13 @@ class TestEvaluationPlan(unittest.TestCase):
         self.assertEqual(len(res["test_validator_c"].failed_frames), 0)
 
     def test_evaluate_composite(self) -> None:
-        metric_list = [(test_metric := Mock(metric_name="test_metric"))]
-        validator_list = [(test_validator := Mock(requires_metric=["test_metric"],
-                                                  validator_name="test_validator"))]
-        cm_list = [(composite_metric := Mock(requires_metric=["test_metric"],
-                                             requires_validator=["test_validator"],
-                                             composite_metric_name="composite_metric"))]
-        ep = ceval.EvaluationPlan(metric_list, validator_list, cm_list)
+        test_metric = Mock(metric_name="test_metric")
+        test_validator = Mock(requires_metric=["test_metric"],
+                              validator_name="test_validator")
+        composite_metric = Mock(requires_metric=["test_metric"],
+                                requires_validator=["test_validator"],
+                                composite_metric_name="composite_metric")
+        ep = ceval.EvaluationPlan([test_metric], [test_validator], [composite_metric])
         ret = ep.evaluate_composite(Mock(), {
             "test_metric": Mock(),
         }, {
