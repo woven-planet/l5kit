@@ -5,14 +5,16 @@ import bokeh.plotting
 import numpy as np
 from bokeh.layouts import column
 from bokeh.models import CustomJS, HoverTool, Slider
-from bokeh.plotting import ColumnDataSource, output_file, output_notebook, save, show
+from bokeh.plotting import ColumnDataSource, output_notebook, save, show
+from bokeh.resources import Resources
 
 from l5kit.visualization.visualiser.common import (AgentVisualisation, CWVisualisation, EgoVisualisation,
                                                    FrameVisualisation, LaneVisualisation, TrajectoryVisualisation)
 
 
 def visualise(scene_index: int, frames: List[FrameVisualisation], do_show: bool = False,
-              do_notebook: bool = False, save_path: Optional[str] = None) -> None:
+              do_notebook: bool = False, save_path: Optional[str] = None,
+              resources: str = "inline") -> None:
     """Visualise a scene using Bokeh.
 
     :param scene_index: the index of the scene, used only as the title
@@ -20,13 +22,11 @@ def visualise(scene_index: int, frames: List[FrameVisualisation], do_show: bool 
     :param do_show: if to call the show method
     :param do_notebook: if to call output_notebook
     :param save_path: optional html destination file
+    :param resources: how to load js (inline will embed it, cdn will download it)
     """
-    do_save = save_path is not None
 
-    assert not (do_save and do_notebook), "can't save and show in notebook"
+    assert not (save_path is not None and do_notebook), "can't save and show in notebook"
 
-    if do_save:
-        output_file(save_path)
     if do_notebook:
         output_notebook()
 
@@ -127,7 +127,7 @@ def visualise(scene_index: int, frames: List[FrameVisualisation], do_show: bool 
     f.legend.click_policy = "hide"
 
     layout = column(f, slider)
-    if do_save:
-        save(layout)
+    if save_path is not None:
+        save(layout, filename=save_path, title=f"{scene_index}", resources=Resources(resources))
     if do_show:
         show(layout)
