@@ -1,14 +1,56 @@
-
 from pathlib import Path
+from typing import Dict
 
 import numpy as np
 import pytest
 
-from l5kit.data import AGENT_DTYPE, ChunkedDataset, FRAME_DTYPE, LocalDataManager, SCENE_DTYPE, TL_FACE_DTYPE
+from l5kit.data import (AGENT_DTYPE, ChunkedDataset, FRAME_DTYPE, get_frames_slice_from_scenes, LocalDataManager,
+                        SCENE_DTYPE, TL_FACE_DTYPE)
 from l5kit.dataset import EgoDataset
 from l5kit.geometry import rotation33_as_yaw
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
+
+
+def test_simulation_dataset_build(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager,
+                                  cfg: dict, tmp_path: Path) -> None:
+    # modify one frame to ensure everything works also when scenes are different
+    zarr_cat_dataset.frames = np.asarray(zarr_cat_dataset.frames)
+    for scene_idx in range(len(zarr_cat_dataset.scenes)):
+        frame_slice = get_frames_slice_from_scenes(zarr_cat_dataset.scenes)
+        zarr_cat_dataset.frames[frame_slice.start]["ego_translation"] += np.random.randn(3)
+
+    rasterizer = build_rasterizer(cfg, dmg)
+    ego_dataset = EgoDataset(cfg, zarr_cat_dataset, rasterizer)
+    sim_cfg = SimulationConfig(use_ego_gt=True, use_agents_gt=True, disable_new_agents=False,
+                               distance_th_far=30, distance_th_close=10)
+    # we should be able to create the same object by using both constructor and factory
+    scene_indices = list(range(len(zarr_cat_dataset.scenes)))
+
+    scene_dataset_batch: Dict[int, EgoDataset] = {}
+    for scene_idx in scene_indices:
+        scene_dataset = ego_dataset.get_scene_dataset(scene_idx)
+        scene_dataset_batch[scene_idx] = scene_dataset
+    sim_1 = SimulationDataset(scene_dataset_batch, sim_cfg)
+
+    sim_2 = SimulationDataset.from_dataset_indices(ego_dataset, scene_indices, sim_cfg)
+
+    for (k_1, v_1), (k_2, v_2) in zip(sim_1.scene_dataset_batch.items(), sim_2.scene_dataset_batch.items()):
+        assert k_1 == k_2
+        assert np.allclose(v_1.dataset.frames["ego_translation"], v_2.dataset.frames["ego_translation"])
+
+
+def test_invalid_simulation_dataset(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager,
+                                    cfg: dict, tmp_path: Path) -> None:
+    rasterizer = build_rasterizer(cfg, dmg)
+
+    scene_indices = [0, len(zarr_cat_dataset.scenes)]
+
+    ego_dataset = EgoDataset(cfg, zarr_cat_dataset, rasterizer)
+    sim_cfg = SimulationConfig(use_ego_gt=True, use_agents_gt=True, disable_new_agents=False,
+                               distance_th_far=30, distance_th_close=10)
+    with pytest.raises(ValueError):
+        SimulationDataset.from_dataset_indices(ego_dataset, scene_indices, sim_cfg)
 
 
 def test_simulation_ego(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict, tmp_path: Path) -> None:

@@ -71,6 +71,16 @@ class SimulationDataset:
     @staticmethod
     def from_dataset_indices(dataset: EgoDataset, scene_indices: List[int],
                              sim_cfg: SimulationConfig) -> "SimulationDataset":
+        """Create a SimulationDataset by picking indices from the provided dataset
+
+        :param dataset: the EgoDataset
+        :param scene_indices: scenes from the EgoDataset to pick
+        :param sim_cfg: a simulation config
+        :return: the new SimulationDataset
+        """
+        if np.any(np.asarray(scene_indices) >= len(dataset.dataset.scenes)):
+            raise ValueError(
+                f"can't pick indices {scene_indices} from dataset with length: {len(dataset.dataset.scenes)}")
 
         scene_dataset_batch: Dict[int, EgoDataset] = {}  # dicts preserve insertion order
         for scene_idx in scene_indices:
