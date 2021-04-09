@@ -8,7 +8,7 @@ from l5kit.data import ChunkedDataset, filter_agents_by_track_id, get_frames_sli
 from l5kit.dataset import EgoDataset
 from l5kit.geometry import rotation33_as_yaw, yaw_as_rotation33
 from l5kit.rasterization import build_rasterizer
-from l5kit.simulation.unroll import ClosedLoopSimulator, SimulationConfig, SimulationDataset
+from l5kit.simulation.unroll import ClosedLoopSimulator, SimulationConfig, SimulationDataset, TrajectoryStateIndices
 
 
 @pytest.fixture(scope="function")
@@ -97,15 +97,26 @@ def test_unroll(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: di
 
     # check ego movement
     for sim_output in sim_outputs:
-        ego_tr = sim_output.simulated_ego_states["ego_translation"][: sim_cfg.num_simulation_steps, :2]
+        ego_tr = sim_output.simulated_ego["ego_translation"][: sim_cfg.num_simulation_steps, :2]
         ego_dist = np.linalg.norm(np.diff(ego_tr, axis=0), axis=-1)
         assert np.allclose(ego_dist, 1.0)
 
+        ego_tr = sim_output.simulated_ego_states[: sim_cfg.num_simulation_steps,
+                                                 TrajectoryStateIndices.X: TrajectoryStateIndices.Y + 1]
+        ego_dist = np.linalg.norm(np.diff(ego_tr.numpy(), axis=0), axis=-1)
+        assert np.allclose(ego_dist, 1.0, atol=1e-3)
+
         # all rotations should be the same as the first one as the MockModel outputs 0 for that
-        rots_sim = sim_output.simulated_ego_states["ego_rotation"][: sim_cfg.num_simulation_steps]
-        r_rep = sim_output.recorded_ego_states["ego_rotation"][0]
+        rots_sim = sim_output.simulated_ego["ego_rotation"][: sim_cfg.num_simulation_steps]
+        r_rep = sim_output.recorded_ego["ego_rotation"][0]
         for r_sim in rots_sim:
             assert np.allclose(rotation33_as_yaw(r_sim), rotation33_as_yaw(r_rep), atol=1e-2)
+
+        # all rotations should be the same as the first one as the MockModel outputs 0 for that
+        rots_sim = sim_output.simulated_ego_states[: sim_cfg.num_simulation_steps, TrajectoryStateIndices.THETA]
+        r_rep = sim_output.recorded_ego_states[0, TrajectoryStateIndices.THETA]
+        for r_sim in rots_sim:
+            assert np.allclose(r_sim, r_rep, atol=1e-2)
 
     # check agents movements
     for sim_output in sim_outputs:
@@ -116,7 +127,7 @@ def test_unroll(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: di
 
         agents_tracks = [el[1] for el in sim_dataset._agents_tracked]
         for track_id in agents_tracks:
-            states = sim_output.simulated_agents_states
+            states = sim_output.simulated_agents
             agents = filter_agents_by_track_id(states, track_id)[: sim_cfg.num_simulation_steps]
             agent_dist = np.linalg.norm(np.diff(agents["centroid"], axis=0), axis=-1)
             assert np.allclose(agent_dist, 0.5)
