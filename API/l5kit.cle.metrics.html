@@ -215,6 +215,48 @@ simulated trajectory and the observed trajectory.</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="l5kit.cle.metrics.DistanceToRefTrajectoryMetric">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">DistanceToRefTrajectoryMetric</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_fraction</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.8</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.DistanceToRefTrajectoryMetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.SupportsMetricCompute" title="l5kit.cle.metrics.SupportsMetricCompute"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.SupportsMetricCompute</span></code></a></p>
+<p>Distance to reference trajectory metric. This metric will compute
+the distance from the predicted centroid to the closest waypoint
+in the reference trajectory.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please note that this metric is different than the displacement
+error because it is taking into consideration the entire
+reference trajectory at each point of the simulated trajectory.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scene_fraction</strong> – fraction of the simulated scene used to
+evaluate against the reference trajectory. This
+fraction should be between 0.0 and 1.0.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="l5kit.cle.metrics.DistanceToRefTrajectoryMetric.compute">
+<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#l5kit.cle.metrics.SimulationOutput" title="l5kit.cle.metrics.SimulationOutput">l5kit.cle.metrics.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.DistanceToRefTrajectoryMetric.compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the metric on all frames of the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>simulation_output</strong> – the output from the closed-loop simulation</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>distance to reference trajectory per
+frame [Shape: N, where N = timesteps]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.cle.metrics.DistanceToRefTrajectoryMetric.metric_name">
+<code class="sig-name descname">metric_name</code><em class="property">: str</em><em class="property"> = 'distance_to_reference_trajectory'</em><a class="headerlink" href="#l5kit.cle.metrics.DistanceToRefTrajectoryMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="l5kit.cle.metrics.SimulationOutput">
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">SimulationOutput</code><a class="headerlink" href="#l5kit.cle.metrics.SimulationOutput" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
