@@ -8,7 +8,7 @@ from l5kit.data import AGENT_DTYPE, ChunkedDataset, FRAME_DTYPE, LocalDataManage
 from l5kit.dataset import EgoDataset
 from l5kit.geometry import rotation33_as_yaw
 from l5kit.rasterization import build_rasterizer
-from l5kit.simulation.dataset import SimulationDataset
+from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 
 
 def test_simulation_ego(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict, tmp_path: Path) -> None:
@@ -17,7 +17,9 @@ def test_simulation_ego(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager,
     scene_indices = list(range(len(zarr_cat_dataset.scenes)))
 
     ego_dataset = EgoDataset(cfg, zarr_cat_dataset, rasterizer)
-    dataset = SimulationDataset.from_dataset_indices(ego_dataset, scene_indices)
+    sim_cfg = SimulationConfig(use_ego_gt=True, use_agents_gt=True, disable_new_agents=False,
+                               distance_th_far=30, distance_th_close=10)
+    dataset = SimulationDataset.from_dataset_indices(ego_dataset, scene_indices, sim_cfg)
 
     # this also ensure order is checked
     assert list(dataset.scene_dataset_batch.keys()) == scene_indices
@@ -53,7 +55,9 @@ def test_simulation_agents(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManag
     scene_indices = list(range(len(zarr_cat_dataset.scenes)))
 
     ego_dataset = EgoDataset(cfg, zarr_cat_dataset, rasterizer)
-    dataset = SimulationDataset.from_dataset_indices(ego_dataset, scene_indices, distance_th_close=30)
+    sim_cfg = SimulationConfig(use_ego_gt=True, use_agents_gt=True, disable_new_agents=False,
+                               distance_th_far=100, distance_th_close=30)
+    dataset = SimulationDataset.from_dataset_indices(ego_dataset, scene_indices, sim_cfg)
 
     # nothing should be tracked
     assert len(dataset._agents_tracked) == 0
@@ -73,7 +77,9 @@ def test_simulation_agents_mock(dmg: LocalDataManager, cfg: dict, tmp_path: Path
     rasterizer = build_rasterizer(cfg, dmg)
 
     ego_dataset = EgoDataset(cfg, zarr_dataset, rasterizer)
-    dataset = SimulationDataset.from_dataset_indices(ego_dataset, [0], distance_th_close=10)
+    sim_cfg = SimulationConfig(use_ego_gt=True, use_agents_gt=True, disable_new_agents=False,
+                               distance_th_far=100, distance_th_close=10)
+    dataset = SimulationDataset.from_dataset_indices(ego_dataset, [0], sim_cfg)
 
     # nothing should be tracked
     assert len(dataset._agents_tracked) == 0
@@ -99,7 +105,9 @@ def test_simulation_agents_mock_disable(dmg: LocalDataManager, cfg: dict, tmp_pa
     rasterizer = build_rasterizer(cfg, dmg)
 
     ego_dataset = EgoDataset(cfg, zarr_dataset, rasterizer)
-    dataset = SimulationDataset.from_dataset_indices(ego_dataset, [0], distance_th_close=10, disable_new_agents=True)
+    sim_cfg = SimulationConfig(use_ego_gt=True, use_agents_gt=True, disable_new_agents=True,
+                               distance_th_far=100, distance_th_close=10)
+    dataset = SimulationDataset.from_dataset_indices(ego_dataset, [0], sim_cfg)
 
     # nothing should be tracked
     assert len(dataset._agents_tracked) == 0
@@ -127,7 +135,9 @@ def test_simulation_agents_mock_insert(dmg: LocalDataManager, cfg: dict, tmp_pat
     rasterizer = build_rasterizer(cfg, dmg)
 
     ego_dataset = EgoDataset(cfg, zarr_dataset, rasterizer)
-    dataset = SimulationDataset.from_dataset_indices(ego_dataset, [0], distance_th_close=10, disable_new_agents=True)
+    sim_cfg = SimulationConfig(use_ego_gt=True, use_agents_gt=True, disable_new_agents=True,
+                               distance_th_far=100, distance_th_close=10)
+    dataset = SimulationDataset.from_dataset_indices(ego_dataset, [0], sim_cfg)
 
     _ = dataset.rasterise_agents_frame_batch(0)
 

@@ -1,5 +1,5 @@
 from copy import deepcopy
-from typing import Dict, List, Set, Tuple
+from typing import Dict, List, NamedTuple, Optional, Set, Tuple
 
 import numpy as np
 
@@ -9,10 +9,28 @@ from l5kit.geometry.transform import yaw_as_rotation33
 from l5kit.simulation.utils import disable_agents, insert_agent
 
 
+class SimulationConfig(NamedTuple):
+    """ Defines the parameters used for the simulation of ego and agents around it.
+
+    :param use_ego_gt: whether to use GT annotations for ego instead of model's outputs
+    :param use_agents_gt: whether to use GT annotations for agents instead of model's outputs
+    :param disable_new_agents: whether to disable agents that are not returned at start_frame_index
+    :param distance_th_far: if a tracked agent is closed than this value to ego, it will be controlled
+    :param distance_th_close: if a new agent is closer than this value to ego, it will be controlled
+    :param start_frame_index: the start index of the simulation
+    :param num_simulation_steps: the number of step to simulate
+    """
+    use_ego_gt: bool
+    use_agents_gt: bool
+    disable_new_agents: bool
+    distance_th_far: float
+    distance_th_close: float
+    start_frame_index: int = 0
+    num_simulation_steps: Optional[int] = None
+
+
 class SimulationDataset:
-    def __init__(self, scene_dataset_batch: Dict[int, EgoDataset], start_frame: int = 0,
-                 disable_new_agents: bool = False, distance_th_far: float = 15,
-                 distance_th_close: float = 10) -> None:
+    def __init__(self, scene_dataset_batch: Dict[int, EgoDataset], sim_cfg: SimulationConfig) -> None:
         """This class allows to:
         - rasterise the same frame across multiple scenes for ego;
         - rasterise the same frame across multiple scenes for multiple agents;
@@ -23,32 +41,24 @@ class SimulationDataset:
         .. note:: only vehicles (car label) are picked as agents
 
         :param scene_dataset_batch: a mapping from scene index to EgoDataset
-        :param start_frame: the unroll start frame, use only if disable_new_agents is True
-        :param disable_new_agents: if to disable new agents coming in after start_frame, defaults to False
-        :param distance_th_far: the distance threshold for new agents,
-            An agent will be grabbed if it's closer than this value to ego, defaults to 15
-        :param distance_th_close: the distance threshold for already tracked agents,
-            An agent will be grabbed if it's closer than this value to ego, defaults to 10
+        :param sim_cfg: the simulation config
         """
         if not len(scene_dataset_batch):
             raise ValueError("can't build a simulation dataset with an empty batch")
-
         self.scene_dataset_batch: Dict[int, EgoDataset] = scene_dataset_batch
 
         self._len = min([len(scene_dt.dataset.frames) for scene_dt in self.scene_dataset_batch.values()])
 
+        self.sim_cfg = sim_cfg
+
         # buffer used to keep track of tracked agents during unroll as tuples of scene_idx, agent_idx
         self._agents_tracked: Set[Tuple[int, int]] = set()
 
-        self.distance_th_far = distance_th_far
-        self.distance_th_close = distance_th_close
-        self.disable_new_agents = disable_new_agents
-
-        if disable_new_agents:
+        if self.sim_cfg.disable_new_agents:
             # we disable all agents that wouldn't be picked at start_frame
             for scene_idx, dt_ego in self.scene_dataset_batch.items():
                 dataset_zarr = dt_ego.dataset
-                frame = dataset_zarr.frames[start_frame]
+                frame = dataset_zarr.frames[self.sim_cfg.start_frame_index]
                 ego_pos = frame["ego_translation"][:2]
                 agents = dataset_zarr.agents
                 frame_agents = filter_agents_by_frames(frame, agents)[0]
@@ -59,17 +69,14 @@ class SimulationDataset:
         self.recorded_scene_dataset_batch = deepcopy(self.scene_dataset_batch)
 
     @staticmethod
-    def from_dataset_indices(dataset: EgoDataset, scene_indices: List[int], start_frame: int = 0,
-                             disable_new_agents: bool = False, distance_th_far: float = 15,
-                             distance_th_close: float = 10) -> "SimulationDataset":
+    def from_dataset_indices(dataset: EgoDataset, scene_indices: List[int],
+                             sim_cfg: SimulationConfig) -> "SimulationDataset":
 
         scene_dataset_batch: Dict[int, EgoDataset] = {}  # dicts preserve insertion order
         for scene_idx in scene_indices:
             scene_dataset = dataset.get_scene_dataset(scene_idx)
             scene_dataset_batch[scene_idx] = scene_dataset
-        return SimulationDataset(scene_dataset_batch, start_frame=start_frame,
-                                 disable_new_agents=disable_new_agents, distance_th_far=distance_th_far,
-                                 distance_th_close=distance_th_close)
+        return SimulationDataset(scene_dataset_batch, sim_cfg)
 
     def __len__(self) -> int:
         """
@@ -210,9 +217,9 @@ class SimulationDataset:
             # for distance use two thresholds
             if (scene_idx, track_id) in self._agents_tracked:
                 # if we're already controlling this agent, th_far
-                distance_mask[idx_agent] = distance < self.distance_th_far
+                distance_mask[idx_agent] = distance < self.sim_cfg.distance_th_far
             else:
                 # if not, start controlling it only if in th_close
-                distance_mask[idx_agent] = distance < self.distance_th_close
+                distance_mask[idx_agent] = distance < self.sim_cfg.distance_th_close
 
         return frame_agents[distance_mask]

@@ -111,10 +111,7 @@ def test_unroll(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: di
     for sim_output in sim_outputs:
         # we need to know which agents were controlled during simulation
         # TODO: this is not ideal, we should keep track of them through the simulation
-        sim_dataset = SimulationDataset.from_dataset_indices(ego_dataset, [sim_output.scene_id],
-                                                             sim_cfg.start_frame_index,
-                                                             sim_cfg.disable_new_agents, sim_cfg.distance_th_far,
-                                                             sim_cfg.distance_th_close)
+        sim_dataset = SimulationDataset.from_dataset_indices(ego_dataset, [sim_output.scene_id], sim_cfg)
         sim_dataset.rasterise_agents_frame_batch(0)  # this will fill agents_tracked
 
         agents_tracks = [el[1] for el in sim_dataset._agents_tracked]

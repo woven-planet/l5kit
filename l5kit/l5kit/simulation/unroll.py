@@ -1,4 +1,4 @@
-from typing import Dict, List, NamedTuple, Optional, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import numpy as np
 import torch
@@ -8,27 +8,7 @@ from tqdm.auto import tqdm
 from l5kit.data import AGENT_DTYPE, PERCEPTION_LABEL_TO_INDEX
 from l5kit.dataset import EgoDataset
 from l5kit.geometry import transform_points
-from l5kit.simulation.dataset import SimulationDataset
-
-
-class SimulationConfig(NamedTuple):
-    """ Defines the parameters used for the simulation of ego and agents around it.
-
-    :param use_ego_gt: whether to use GT annotations for ego instead of model's outputs
-    :param use_agents_gt: whether to use GT annotations for agents instead of model's outputs
-    :param disable_new_agents: whether to disable agents that are not returned at start_frame_index
-    :param distance_th_far: if a tracked agent is closed than this value to ego, it will be controlled
-    :param distance_th_close: if a new agent is closer than this value to ego, it will be controlled
-    :param start_frame_index: the start index of the simulation
-    :param num_simulation_steps: the number of step to simulate
-    """
-    use_ego_gt: bool
-    use_agents_gt: bool
-    disable_new_agents: bool
-    distance_th_far: float
-    distance_th_close: float
-    start_frame_index: int = 0
-    num_simulation_steps: Optional[int] = None
+from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 
 
 class SimulationOutputs:
@@ -91,11 +71,7 @@ class ClosedLoopSimulator:
         :param scene_indices: the scene indices we want to simulate
         :return: the simulated dataset
         """
-        sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, scene_indices,
-                                                             self.sim_cfg.start_frame_index,
-                                                             self.sim_cfg.disable_new_agents,
-                                                             self.sim_cfg.distance_th_far,
-                                                             self.sim_cfg.distance_th_close)
+        sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, scene_indices, self.sim_cfg)
 
         if self.sim_cfg.num_simulation_steps is None:
             range_unroll = range(self.sim_cfg.start_frame_index, len(sim_dataset))
