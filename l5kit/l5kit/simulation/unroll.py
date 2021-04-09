@@ -39,8 +39,8 @@ class SimulationOutputs:
         :param scene_id: the scene indices
         :param sim_dataset: the simulation dataset
         """
-        if scene_id not in sim_dataset.scene_indices:
-            raise ValueError(f"scene: {scene_id} not in {sim_dataset.scene_indices}")
+        if scene_id not in sim_dataset.scene_dataset_batch:
+            raise ValueError(f"scene: {scene_id} not in {sim_dataset.scene_dataset_batch}")
 
         self.scene_id = scene_id
         self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
@@ -91,9 +91,11 @@ class ClosedLoopSimulator:
         :param scene_indices: the scene indices we want to simulate
         :return: the simulated dataset
         """
-        sim_dataset = SimulationDataset(self.dataset, scene_indices, self.sim_cfg.start_frame_index,
-                                        self.sim_cfg.disable_new_agents, self.sim_cfg.distance_th_far,
-                                        self.sim_cfg.distance_th_close)
+        sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, scene_indices,
+                                                             self.sim_cfg.start_frame_index,
+                                                             self.sim_cfg.disable_new_agents,
+                                                             self.sim_cfg.distance_th_far,
+                                                             self.sim_cfg.distance_th_close)
 
         if self.sim_cfg.num_simulation_steps is None:
             range_unroll = range(self.sim_cfg.start_frame_index, len(sim_dataset))

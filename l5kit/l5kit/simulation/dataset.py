@@ -10,7 +10,7 @@ from l5kit.simulation.utils import disable_agents, insert_agent
 
 
 class SimulationDataset:
-    def __init__(self, dataset: EgoDataset, scene_indices: List[int], start_frame: int = 0,
+    def __init__(self, scene_dataset_batch: Dict[int, EgoDataset], start_frame: int = 0,
                  disable_new_agents: bool = False, distance_th_far: float = 15,
                  distance_th_close: float = 10) -> None:
         """This class allows to:
@@ -22,8 +22,7 @@ class SimulationDataset:
 
         .. note:: only vehicles (car label) are picked as agents
 
-        :param dataset: the original ego dataset
-        :param scene_indices: the indices of the scenes to take
+        :param scene_dataset_batch: a mapping from scene index to EgoDataset
         :param start_frame: the unroll start frame, use only if disable_new_agents is True
         :param disable_new_agents: if to disable new agents coming in after start_frame, defaults to False
         :param distance_th_far: the distance threshold for new agents,
@@ -31,18 +30,12 @@ class SimulationDataset:
         :param distance_th_close: the distance threshold for already tracked agents,
             An agent will be grabbed if it's closer than this value to ego, defaults to 10
         """
-        self.scene_indices = scene_indices
-        self.filter_agents_thr = dataset.cfg["raster_params"]["filter_agents_threshold"]
+        if not len(scene_dataset_batch):
+            raise ValueError("can't build a simulation dataset with an empty batch")
 
-        self.scene_dataset_batch: Dict[int, EgoDataset] = {}  # dicts preserve insertion order
-        for scene_idx in self.scene_indices:
-            scene_dataset = dataset.get_scene_dataset(scene_idx)
-            self.scene_dataset_batch[scene_idx] = scene_dataset
+        self.scene_dataset_batch: Dict[int, EgoDataset] = scene_dataset_batch
 
         self._len = min([len(scene_dt.dataset.frames) for scene_dt in self.scene_dataset_batch.values()])
-
-        # keep track of original dataset
-        self.recorded_scene_dataset_batch = deepcopy(self.scene_dataset_batch)
 
         # buffer used to keep track of tracked agents during unroll as tuples of scene_idx, agent_idx
         self._agents_tracked: Set[Tuple[int, int]] = set()
@@ -53,14 +46,30 @@ class SimulationDataset:
 
         if disable_new_agents:
             # we disable all agents that wouldn't be picked at start_frame
-            for scene_index in scene_indices:
-                dataset_zarr = self.scene_dataset_batch[scene_index].dataset
+            for scene_idx, dt_ego in self.scene_dataset_batch.items():
+                dataset_zarr = dt_ego.dataset
                 frame = dataset_zarr.frames[start_frame]
                 ego_pos = frame["ego_translation"][:2]
                 agents = dataset_zarr.agents
                 frame_agents = filter_agents_by_frames(frame, agents)[0]
-                frame_agents = self._filter_agents(0, frame_agents, ego_pos)
+                frame_agents = self._filter_agents(scene_idx, frame_agents, ego_pos)
                 disable_agents(dataset_zarr, allowlist=frame_agents["track_id"])
+
+        # keep track of original dataset
+        self.recorded_scene_dataset_batch = deepcopy(self.scene_dataset_batch)
+
+    @staticmethod
+    def from_dataset_indices(dataset: EgoDataset, scene_indices: List[int], start_frame: int = 0,
+                             disable_new_agents: bool = False, distance_th_far: float = 15,
+                             distance_th_close: float = 10) -> "SimulationDataset":
+
+        scene_dataset_batch: Dict[int, EgoDataset] = {}  # dicts preserve insertion order
+        for scene_idx in scene_indices:
+            scene_dataset = dataset.get_scene_dataset(scene_idx)
+            scene_dataset_batch[scene_idx] = scene_dataset
+        return SimulationDataset(scene_dataset_batch, start_frame=start_frame,
+                                 disable_new_agents=disable_new_agents, distance_th_far=distance_th_far,
+                                 distance_th_close=distance_th_close)
 
     def __len__(self) -> int:
         """
@@ -92,7 +101,7 @@ class SimulationDataset:
 
         if len(ego_translations) != len(ego_yaws):
             raise ValueError("lengths mismatch between translations and yaws")
-        if len(ego_translations) != len(self.scene_indices):
+        if len(ego_translations) != len(self.scene_dataset_batch):
             raise ValueError("lengths mismatch between scenes and predictions")
         if state_index >= len(self):
             raise ValueError(f"trying to mutate frame:{state_index} but length is:{len(self)}")
@@ -121,7 +130,7 @@ class SimulationDataset:
         :return: a dict mapping from [scene_id, track_id] to the numpy dict
         """
         ret = {}
-        for scene_index in self.scene_indices:
+        for scene_index in self.scene_dataset_batch:
             ret.update(self._rasterise_agents_frame(scene_index, state_index))
         return ret
 
@@ -188,7 +197,9 @@ class SimulationDataset:
         # keep only vehicles
         car_index = PERCEPTION_LABEL_TO_INDEX["PERCEPTION_LABEL_CAR"]
         vehicle_mask = frame_agents["label_probabilities"][:, car_index]
-        vehicle_mask = vehicle_mask > self.filter_agents_thr
+
+        dt_agents_ths = self.scene_dataset_batch[scene_idx].cfg["raster_params"]["filter_agents_threshold"]
+        vehicle_mask = vehicle_mask > dt_agents_ths
         frame_agents = frame_agents[vehicle_mask]
 
         distance_mask = np.zeros(len(frame_agents), dtype=np.bool)
