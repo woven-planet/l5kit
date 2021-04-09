@@ -1,7 +1,8 @@
 from abc import abstractmethod
-from typing import Dict, List, Protocol
+from typing import Dict, List
 
 import torch
+from typing_extensions import Protocol
 
 from l5kit.cle import validators
 from l5kit.simulation.unroll import SimulationOutput
