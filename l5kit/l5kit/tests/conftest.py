@@ -1,11 +1,13 @@
 from pathlib import Path
 from shutil import rmtree
 from typing import Iterator
+from uuid import uuid4
 
 import pytest
 
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
+from l5kit.data.zarr_utils import zarr_concat
 
 
 @pytest.fixture(scope="session")
@@ -38,6 +40,18 @@ def zarr_dataset(dmg: LocalDataManager) -> ChunkedDataset:
     zarr_dataset = ChunkedDataset(path=zarr_path)
     zarr_dataset.open()
     return zarr_dataset
+
+
+@pytest.fixture(scope="function")
+def zarr_cat_dataset(dmg: LocalDataManager, tmp_path: Path) -> ChunkedDataset:
+    concat_count = 4
+    zarr_input_path = dmg.require("single_scene.zarr")
+    zarr_output_path = str(tmp_path / f"{uuid4()}.zarr")
+
+    zarr_concat([zarr_input_path] * concat_count, zarr_output_path)
+    zarr_cat_dataset = ChunkedDataset(zarr_output_path)
+    zarr_cat_dataset.open()
+    return zarr_cat_dataset
 
 
 @pytest.fixture(scope="session", autouse=True)
