@@ -60,7 +60,7 @@ class SimulationOutputs:
         return self.scene_id
 
 
-class SimulationLoop:
+class ClosedLoopSimulator:
     def __init__(self, sim_cfg: SimulationConfig, dataset: EgoDataset,
                  device: torch.device,
                  model_ego: Optional[torch.nn.Module] = None,

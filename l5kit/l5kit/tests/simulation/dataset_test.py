@@ -22,14 +22,6 @@ def test_simulation_ego(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager,
     # this also ensure order is checked
     assert list(dataset.scene_dataset_batch.keys()) == scene_indices
 
-    # ensure we can call the getitem
-    out_0 = dataset[(0, 0)]
-    assert len(out_0) > 0
-    out_last = dataset[(0, len(dataset) - 1)]
-    assert len(out_last) > 0
-    with pytest.raises(IndexError):
-        _ = dataset[(0, len(dataset))]
-
     # ensure we can call the aggregated get frame
     out_0 = dataset.rasterise_frame_batch(0)
     assert len(out_0) == len(scene_indices)

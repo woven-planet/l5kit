@@ -2,7 +2,6 @@ from copy import deepcopy
 from typing import Dict, List, Set, Tuple
 
 import numpy as np
-from torch.utils.data import Dataset
 
 from l5kit.data import filter_agents_by_frames, PERCEPTION_LABEL_TO_INDEX
 from l5kit.dataset import EgoDataset
@@ -10,7 +9,7 @@ from l5kit.geometry.transform import yaw_as_rotation33
 from l5kit.simulation.utils import disable_agents, insert_agent
 
 
-class SimulationDataset(Dataset):
+class SimulationDataset:
     def __init__(self, dataset: EgoDataset, scene_indices: List[int], start_frame: int = 0,
                  disable_new_agents: bool = False, distance_th_far: float = 15,
                  distance_th_close: float = 10) -> None:
@@ -40,6 +39,8 @@ class SimulationDataset(Dataset):
             scene_dataset = dataset.get_scene_dataset(scene_idx)
             self.scene_dataset_batch[scene_idx] = scene_dataset
 
+        self._len = min([len(scene_dt.dataset.frames) for scene_dt in self.scene_dataset_batch.values()])
+
         # keep track of original dataset
         self.recorded_scene_dataset_batch = deepcopy(self.scene_dataset_batch)
 
@@ -67,19 +68,7 @@ class SimulationDataset(Dataset):
 
         :return: the number of frames
         """
-        num_frame_batch = [len(scene_dt.dataset.frames) for scene_dt in self.scene_dataset_batch.values()]
-        return min(num_frame_batch)
-
-    def __getitem__(self, indices: Tuple[int, int]) -> Dict[str, np.ndarray]:
-        """
-        Get a single frame from a single scene
-
-        :param indices: tuple [scene_idx, frame_idx]
-        :return: a dict from EgoDataset
-        """
-        scene_index, frame_index = indices
-        data_batch = self.scene_dataset_batch[scene_index][frame_index]
-        return data_batch
+        return self._len
 
     def rasterise_frame_batch(self, state_index: int) -> List[Dict[str, np.ndarray]]:
         """
