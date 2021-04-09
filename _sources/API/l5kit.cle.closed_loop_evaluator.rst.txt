@@ -1,0 +1,7 @@
+l5kit.cle.closed\_loop\_evaluator module
+========================================
+
+.. automodule:: l5kit.cle.closed_loop_evaluator
+   :members:
+   :undoc-members:
+   :show-inheritance:

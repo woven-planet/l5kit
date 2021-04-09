@@ -1,0 +1,7 @@
+l5kit.cle.composite\_metrics module
+===================================
+
+.. automodule:: l5kit.cle.composite_metrics
+   :members:
+   :undoc-members:
+   :show-inheritance:

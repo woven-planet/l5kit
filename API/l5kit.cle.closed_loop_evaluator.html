@@ -1,0 +1,330 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>l5kit.cle.closed_loop_evaluator module &mdash; L5Kit 1.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> L5Kit
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">ML Prediction, Planning and Simulation for Self-Driving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#examples">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#news">News</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#credits">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#contact">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coords_systems.html">Coordinate Systems in L5Kit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coords_systems.html#introduction">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coords_systems.html#coordinate-systems">Coordinate Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html">Competition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html#scoring">Scoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html#coordinates-system-for-the-competition">Coordinates System for the competition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html#additional-metrics">Additional Metrics</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">L5Kit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>l5kit.cle.closed_loop_evaluator module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/API/l5kit.cle.closed_loop_evaluator.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-l5kit.cle.closed_loop_evaluator">
+<span id="l5kit-cle-closed-loop-evaluator-module"></span><h1>l5kit.cle.closed_loop_evaluator module<a class="headerlink" href="#module-l5kit.cle.closed_loop_evaluator" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="l5kit.cle.closed_loop_evaluator.EvaluationPlan">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.closed_loop_evaluator.</code><code class="sig-name descname">EvaluationPlan</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">metrics</span><span class="p">:</span> <span class="n">Iterable<span class="p">[</span><a class="reference internal" href="l5kit.cle.metrics.html#l5kit.cle.metrics.SupportsMetricCompute" title="l5kit.cle.metrics.SupportsMetricCompute">l5kit.cle.metrics.SupportsMetricCompute</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">validators</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Iterable<span class="p">[</span><a class="reference internal" href="l5kit.cle.validators.html#l5kit.cle.validators.SupportsMetricValidate" title="l5kit.cle.validators.SupportsMetricValidate">l5kit.cle.validators.SupportsMetricValidate</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">composite_metrics</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Iterable<span class="p">[</span><a class="reference internal" href="l5kit.cle.composite_metrics.html#l5kit.cle.composite_metrics.SupportsCompositeMetricCompute" title="l5kit.cle.composite_metrics.SupportsCompositeMetricCompute">l5kit.cle.composite_metrics.SupportsCompositeMetricCompute</a><span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">intervention_validators</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>List<span class="p">[</span>str<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.closed_loop_evaluator.EvaluationPlan" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>Evaluation plan describes a plan to evaluate metrics and run
+validators. It is composed by the list of metrics that should be computed
+as well as the list of validators that will run. It checks for consistency
+of the plan (validators depend on metrics).</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Please note that the intervention_validators argument, that
+specifies a list of interventions will stop the validation
+of all other metrics if any validator specified in this list
+is triggered.</p>
+</div>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metrics</strong> – list of the metrics to compute</p></li>
+<li><p><strong>validators</strong> – list of validators to compute</p></li>
+<li><p><strong>composite_metrics</strong> – list of composite metrics to compute</p></li>
+<li><p><strong>intervention_validators</strong> – list of validators that are considered
+interventions.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="l5kit.cle.closed_loop_evaluator.EvaluationPlan.composite_metrics_dict">
+<code class="sig-name descname">composite_metrics_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="l5kit.cle.composite_metrics.html#l5kit.cle.composite_metrics.SupportsCompositeMetricCompute" title="l5kit.cle.composite_metrics.SupportsCompositeMetricCompute">l5kit.cle.composite_metrics.SupportsCompositeMetricCompute</a><span class="p">]</span><a class="headerlink" href="#l5kit.cle.closed_loop_evaluator.EvaluationPlan.composite_metrics_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the composite metric names and composite metrics from the plan.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.closed_loop_evaluator.EvaluationPlan.evaluate">
+<code class="sig-name descname">evaluate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>torch.Tensor<span class="p">]</span><a class="headerlink" href="#l5kit.cle.closed_loop_evaluator.EvaluationPlan.evaluate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the evaluation (metric computation) on the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>simulation_output</strong> – output from the closed-loop simulator</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>results from all metrics on a dictionary</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.closed_loop_evaluator.EvaluationPlan.evaluate_composite">
+<code class="sig-name descname">evaluate_composite</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em>, <em class="sig-param"><span class="n">scene_metrics</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>torch.Tensor<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">scene_validation</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="l5kit.cle.validators.html#l5kit.cle.validators.ValidatorOutput" title="l5kit.cle.validators.ValidatorOutput">l5kit.cle.validators.ValidatorOutput</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>float<span class="p">]</span><a class="headerlink" href="#l5kit.cle.closed_loop_evaluator.EvaluationPlan.evaluate_composite" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the evaluation of the composite metrics on the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>simulation_output</strong> – output from the closed-loop simulator</p></li>
+<li><p><strong>scene_metrics</strong> – metric results indexed by the metric name</p></li>
+<li><p><strong>scene_validation</strong> – outputs from validator indexed by the validation name</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>results from the composite metrics indexed by the composite metric name</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.closed_loop_evaluator.EvaluationPlan.metrics_dict">
+<code class="sig-name descname">metrics_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="l5kit.cle.metrics.html#l5kit.cle.metrics.SupportsMetricCompute" title="l5kit.cle.metrics.SupportsMetricCompute">l5kit.cle.metrics.SupportsMetricCompute</a><span class="p">]</span><a class="headerlink" href="#l5kit.cle.closed_loop_evaluator.EvaluationPlan.metrics_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the metric names and metrics from the plan.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.closed_loop_evaluator.EvaluationPlan.process_interventions">
+<code class="sig-name descname">process_interventions</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="l5kit.cle.validators.html#l5kit.cle.validators.ValidatorOutput" title="l5kit.cle.validators.ValidatorOutput">l5kit.cle.validators.ValidatorOutput</a><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="l5kit.cle.validators.html#l5kit.cle.validators.ValidatorOutput" title="l5kit.cle.validators.ValidatorOutput">l5kit.cle.validators.ValidatorOutput</a><span class="p">]</span><a class="headerlink" href="#l5kit.cle.closed_loop_evaluator.EvaluationPlan.process_interventions" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will process the the validator results accordingly
+to the validators defined as interventions. If any validator, that
+is also an intervention is triggered, it will reset all other validators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>results</strong> – resuls from the validation</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>updated the results</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.closed_loop_evaluator.EvaluationPlan.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_metrics</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>torch.Tensor<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="l5kit.cle.validators.html#l5kit.cle.validators.ValidatorOutput" title="l5kit.cle.validators.ValidatorOutput">l5kit.cle.validators.ValidatorOutput</a><span class="p">]</span><a class="headerlink" href="#l5kit.cle.closed_loop_evaluator.EvaluationPlan.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Execute the validation (validators) on all metric results.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scene_metrics</strong> – the result for the metrics computation</p></li>
+<li><p><strong>simulation_output</strong> – output from the closed-loop simulator</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the result of all validators</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.closed_loop_evaluator.EvaluationPlan.validators_dict">
+<code class="sig-name descname">validators_dict</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="l5kit.cle.validators.html#l5kit.cle.validators.SupportsMetricValidate" title="l5kit.cle.validators.SupportsMetricValidate">l5kit.cle.validators.SupportsMetricValidate</a><span class="p">]</span><a class="headerlink" href="#l5kit.cle.closed_loop_evaluator.EvaluationPlan.validators_dict" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get the validator names and validators from the plan.</p>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Lyft Level 5.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

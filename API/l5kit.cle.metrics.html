@@ -195,7 +195,7 @@ simulated trajectory and the observed trajectory.</p>
 </dl>
 <dl class="py method">
 <dt id="l5kit.cle.metrics.DisplacementErrorMetric.compute">
-<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#l5kit.cle.metrics.SimulationOutput" title="l5kit.cle.metrics.SimulationOutput">l5kit.cle.metrics.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorMetric.compute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorMetric.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the metric on all frames of the scene.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -236,7 +236,7 @@ fraction should be between 0.0 and 1.0.</p>
 </dl>
 <dl class="py method">
 <dt id="l5kit.cle.metrics.DistanceToRefTrajectoryMetric.compute">
-<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#l5kit.cle.metrics.SimulationOutput" title="l5kit.cle.metrics.SimulationOutput">l5kit.cle.metrics.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.DistanceToRefTrajectoryMetric.compute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.DistanceToRefTrajectoryMetric.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the metric on all frames of the scene.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -257,19 +257,13 @@ frame [Shape: N, where N = timesteps]</p>
 </dd></dl>
 
 <dl class="py class">
-<dt id="l5kit.cle.metrics.SimulationOutput">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">SimulationOutput</code><a class="headerlink" href="#l5kit.cle.metrics.SimulationOutput" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
-</dd></dl>
-
-<dl class="py class">
 <dt id="l5kit.cle.metrics.SupportsMetricCompute">
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">SupportsMetricCompute</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
 <p>Protocol supporting the computation method for metrics.</p>
 <dl class="py method">
 <dt id="l5kit.cle.metrics.SupportsMetricCompute.compute">
-<em class="property">abstract </em><code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#l5kit.cle.metrics.SimulationOutput" title="l5kit.cle.metrics.SimulationOutput">l5kit.cle.metrics.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute.compute" title="Permalink to this definition">¶</a></dt>
+<em class="property">abstract </em><code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>The compute method sould return the result of the metric
 computed at every frame of the scene.</p>
 <dl class="field-list simple">

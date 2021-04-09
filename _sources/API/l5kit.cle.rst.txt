@@ -12,4 +12,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   l5kit.cle.closed_loop_evaluator
+   l5kit.cle.composite_metrics
    l5kit.cle.metrics
+   l5kit.cle.validators
