@@ -5,13 +5,7 @@ from typing_extensions import Protocol
 
 from l5kit.evaluation import error_functions
 from l5kit.evaluation import metrics as l5metrics
-
-
-# TODO(perone): mocking the output for now
-class SimulationOutput:
-    def __init__(self) -> None:
-        self.simulated_ego_states = torch.ones(10)
-        self.recorded_ego_states = torch.ones(10)
+from l5kit.simulation.unroll import SimulationOutput
 
 
 class SupportsMetricCompute(Protocol):
