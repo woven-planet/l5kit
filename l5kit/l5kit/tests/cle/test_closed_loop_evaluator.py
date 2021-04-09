@@ -36,7 +36,7 @@ class TestEvaluationPlan(unittest.TestCase):
     def test_validate(self) -> None:
         test_metric = Mock(metric_name="test_metric")
         test_validator = Mock(requires_metric=["test_metric"],
-                              validator_name="test_validator")        
+                              validator_name="test_validator")
         ep = ceval.EvaluationPlan([test_metric], [test_validator])
         ret = ep.validate({
             "test_metric": Mock(),
