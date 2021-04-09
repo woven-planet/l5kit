@@ -70,7 +70,7 @@ class SimulationOutput:
         :param frames: the scene frames
         :return: the trajectory
         """
-        trajectory_states = torch.zeros(len(frames), len(TrajectoryStateIndices.__members__), dtype=torch.float)
+        trajectory_states = torch.zeros(len(frames), len(TrajectoryStateIndices), dtype=torch.float)
         translations = frames["ego_translation"]
         rotations = frames["ego_rotation"]
 
