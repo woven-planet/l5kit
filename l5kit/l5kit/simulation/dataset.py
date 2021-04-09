@@ -186,7 +186,8 @@ class SimulationDataset:
         :return: the filtered agents
         """
         # keep only vehicles
-        vehicle_mask = frame_agents["label_probabilities"][:, PERCEPTION_LABEL_TO_INDEX["PERCEPTION_LABEL_CAR"]]
+        car_index = PERCEPTION_LABEL_TO_INDEX["PERCEPTION_LABEL_CAR"]
+        vehicle_mask = frame_agents["label_probabilities"][:, car_index]
         vehicle_mask = vehicle_mask > self.filter_agents_thr
         frame_agents = frame_agents[vehicle_mask]
 
