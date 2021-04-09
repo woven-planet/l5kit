@@ -227,6 +227,14 @@
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.simulation.unroll.</code><code class="sig-name descname">SimulationOutput</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_id</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">sim_dataset</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationDataset" title="l5kit.simulation.dataset.SimulationDataset">l5kit.simulation.dataset.SimulationDataset</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.unroll.SimulationOutput" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
+<dt id="l5kit.simulation.unroll.SimulationOutput.build_trajectory_states">
+<em class="property">static </em><code class="sig-name descname">build_trajectory_states</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">frames</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.simulation.unroll.SimulationOutput.build_trajectory_states" title="Permalink to this definition">¶</a></dt>
+<dd><p>Convert frames into a torch trajectory
+:param frames: the scene frames
+:return: the trajectory</p>
+</dd></dl>
+
+<dl class="py method">
 <dt id="l5kit.simulation.unroll.SimulationOutput.get_scene_id">
 <code class="sig-name descname">get_scene_id</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#l5kit.simulation.unroll.SimulationOutput.get_scene_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the scene index for this SimulationOutput</p>
@@ -236,6 +244,64 @@
 </dd>
 </dl>
 </dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.simulation.unroll.TrajectoryStateIndices">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.simulation.unroll.</code><code class="sig-name descname">TrajectoryStateIndices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<dl class="simple">
+<dt>Defines indices for accessing trajectory states from LocalSceneBatch.</dt><dd><p>example: all_speeds = local_scene_batch.recorded_ego_states[:, TrajectoryStateIndices.SPEED]</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>X</strong> – the index for x position</p></li>
+<li><p><strong>Y</strong> – the index for y position</p></li>
+<li><p><strong>THETA</strong> – the index for the angle in radians</p></li>
+<li><p><strong>SPEED</strong> – the index for speed in mps</p></li>
+<li><p><strong>ACCELERATION</strong> – the index for acceleration in mps^2</p></li>
+<li><p><strong>CURVATURE</strong> – the index for curvature (1pm)</p></li>
+<li><p><strong>TIME</strong> – the index for time (seconds)</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.ACCELERATION">
+<code class="sig-name descname">ACCELERATION</code><em class="property"> = 4</em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.ACCELERATION" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.CURVATURE">
+<code class="sig-name descname">CURVATURE</code><em class="property"> = 5</em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.CURVATURE" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.SPEED">
+<code class="sig-name descname">SPEED</code><em class="property"> = 3</em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.SPEED" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.THETA">
+<code class="sig-name descname">THETA</code><em class="property"> = 2</em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.THETA" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.TIME">
+<code class="sig-name descname">TIME</code><em class="property"> = 6</em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.TIME" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.X">
+<code class="sig-name descname">X</code><em class="property"> = 0</em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.X" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.Y">
+<code class="sig-name descname">Y</code><em class="property"> = 1</em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.Y" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
 
 </dd></dl>
 
