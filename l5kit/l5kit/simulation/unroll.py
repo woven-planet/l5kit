@@ -11,7 +11,7 @@ from l5kit.geometry import transform_points
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 
 
-class SimulationOutputs:
+class SimulationOutput:
     def __init__(self, scene_id: int, sim_dataset: SimulationDataset):
         """This object holds information about the result of the simulation loop
         for a given scene dataset
@@ -33,7 +33,7 @@ class SimulationOutputs:
 
     def get_scene_id(self) -> int:
         """
-        Get the scene index for this SimulationOutputs
+        Get the scene index for this SimulationOutput
 
         :return: the scene index
         """
@@ -65,7 +65,7 @@ class ClosedLoopSimulator:
         self.device = device
         self.dataset = dataset
 
-    def unroll(self, scene_indices: List[int]) -> List[SimulationOutputs]:
+    def unroll(self, scene_indices: List[int]) -> List[SimulationOutput]:
         """
         Simulate the dataset for the given scene indices
         :param scene_indices: the scene indices we want to simulate
@@ -102,9 +102,9 @@ class ClosedLoopSimulator:
                 if should_update:
                     self.update_ego(sim_dataset, next_frame_index, ego_input_dict, ego_output_dict)
 
-        simulated_outputs: List[SimulationOutputs] = []
+        simulated_outputs: List[SimulationOutput] = []
         for scene_idx in scene_indices:
-            simulated_outputs.append(SimulationOutputs(scene_idx, sim_dataset))
+            simulated_outputs.append(SimulationOutput(scene_idx, sim_dataset))
         return simulated_outputs
 
     @staticmethod
