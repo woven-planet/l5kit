@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>l5kit &mdash; L5Kit 1.2.0 documentation</title>
+  <title>l5kit.simulation.utils module &mdash; L5Kit 1.2.0 documentation</title>
   
 
   
@@ -149,13 +149,13 @@
     
       <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>l5kit</li>
+      <li>l5kit.simulation.utils module</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="../_sources/API/modules.rst.txt" rel="nofollow"> View page source</a>
+            <a href="../_sources/API/l5kit.simulation.utils.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -168,71 +168,47 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="l5kit">
-<h1>l5kit<a class="headerlink" href="#l5kit" title="Permalink to this headline">¶</a></h1>
-<div class="toctree-wrapper compound">
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="l5kit.html">l5kit package</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.html#subpackages">Subpackages</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="l5kit.cle.html">l5kit.cle package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.cle.html#submodules">Submodules</a></li>
+  <div class="section" id="module-l5kit.simulation.utils">
+<span id="l5kit-simulation-utils-module"></span><h1>l5kit.simulation.utils module<a class="headerlink" href="#module-l5kit.simulation.utils" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt id="l5kit.simulation.utils.disable_agents">
+<code class="sig-prename descclassname">l5kit.simulation.utils.</code><code class="sig-name descname">disable_agents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset">l5kit.data.zarr_dataset.ChunkedDataset</a></span></em>, <em class="sig-param"><span class="n">allowlist</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.simulation.utils.disable_agents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Disable all agents in dataset except for the ones in allowlist
+Assumptions:</p>
+<blockquote>
+<div><p>the dataset has only 1 scene
+the dataset is in numpy format and not zarr anymore</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> – the single-scene dataset</p></li>
+<li><p><strong>allowlist</strong> – 1D np array of track_ids to keep</p></li>
 </ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="l5kit.configs.html">l5kit.configs package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.configs.html#submodules">Submodules</a></li>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.simulation.utils.insert_agent">
+<code class="sig-prename descclassname">l5kit.simulation.utils.</code><code class="sig-name descname">insert_agent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">agent</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">frame_idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">dataset</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset">l5kit.data.zarr_dataset.ChunkedDataset</a></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.simulation.utils.insert_agent" title="Permalink to this definition">¶</a></dt>
+<dd><p>Insert an agent in one frame.
+Assumptions:</p>
+<blockquote>
+<div><p>the dataset has only 1 scene
+the dataset is in numpy format and not zarr anymore</p>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>agent</strong> – the agent info to be inserted</p></li>
+<li><p><strong>frame_idx</strong> – the frame where we want to insert the agent</p></li>
+<li><p><strong>dataset</strong> – the single-scene dataset.</p></li>
 </ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="l5kit.data.html">l5kit.data package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.data.html#subpackages">Subpackages</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.data.html#submodules">Submodules</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="l5kit.dataset.html">l5kit.dataset package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.dataset.html#submodules">Submodules</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="l5kit.evaluation.html">l5kit.evaluation package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.html#submodules">Submodules</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="l5kit.geometry.html">l5kit.geometry package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.geometry.html#submodules">Submodules</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="l5kit.kinematic.html">l5kit.kinematic package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.kinematic.html#submodules">Submodules</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="l5kit.planning.html">l5kit.planning package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.planning.html#submodules">Submodules</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="l5kit.random.html">l5kit.random package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.random.html#submodules">Submodules</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="l5kit.rasterization.html">l5kit.rasterization package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.rasterization.html#submodules">Submodules</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="l5kit.sampling.html">l5kit.sampling package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.sampling.html#submodules">Submodules</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="l5kit.simulation.html">l5kit.simulation package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.simulation.html#submodules">Submodules</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="l5kit.visualization.html">l5kit.visualization package</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.visualization.html#submodules">Submodules</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-</div>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 

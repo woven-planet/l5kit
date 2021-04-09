@@ -1,0 +1,7 @@
+l5kit.simulation.utils module
+=============================
+
+.. automodule:: l5kit.simulation.utils
+   :members:
+   :undoc-members:
+   :show-inheritance:

@@ -258,6 +258,8 @@
         <li><a href="API/l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset">(class in l5kit.data.zarr_dataset)</a>
 </li>
       </ul></li>
+      <li><a href="API/l5kit.simulation.unroll.html#l5kit.simulation.unroll.ClosedLoopSimulator">ClosedLoopSimulator (class in l5kit.simulation.unroll)</a>
+</li>
       <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.CollisionType">CollisionType (class in l5kit.evaluation.metrics)</a>
 </li>
       <li><a href="API/l5kit.cle.metrics.html#l5kit.cle.metrics.DisplacementErrorMetric.compute">compute() (l5kit.cle.metrics.DisplacementErrorMetric method)</a>
@@ -326,14 +328,22 @@
       </ul></li>
       <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.detect_collision">detect_collision() (in module l5kit.evaluation.metrics)</a>
 </li>
+      <li><a href="API/l5kit.simulation.utils.html#l5kit.simulation.utils.disable_agents">disable_agents() (in module l5kit.simulation.utils)</a>
+</li>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationConfig.disable_new_agents">disable_new_agents (l5kit.simulation.dataset.SimulationConfig attribute)</a>
+</li>
       <li><a href="API/l5kit.cle.metrics.html#l5kit.cle.metrics.DisplacementErrorL2Metric">DisplacementErrorL2Metric (class in l5kit.cle.metrics)</a>
 </li>
       <li><a href="API/l5kit.cle.metrics.html#l5kit.cle.metrics.DisplacementErrorMetric">DisplacementErrorMetric (class in l5kit.cle.metrics)</a>
 </li>
-      <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.distance_to_reference_trajectory">distance_to_reference_trajectory() (in module l5kit.evaluation.metrics)</a>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationConfig.distance_th_close">distance_th_close (l5kit.simulation.dataset.SimulationConfig attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationConfig.distance_th_far">distance_th_far (l5kit.simulation.dataset.SimulationConfig attribute)</a>
+</li>
+      <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.distance_to_reference_trajectory">distance_to_reference_trajectory() (in module l5kit.evaluation.metrics)</a>
+</li>
       <li><a href="API/l5kit.cle.metrics.html#l5kit.cle.metrics.DistanceToRefTrajectoryMetric">DistanceToRefTrajectoryMetric (class in l5kit.cle.metrics)</a>
 </li>
       <li><a href="API/l5kit.visualization.utils.html#l5kit.visualization.utils.draw_arrowed_line">draw_arrowed_line() (in module l5kit.visualization.utils)</a>
@@ -434,6 +444,8 @@
       </ul></li>
       <li><a href="API/l5kit.planning.model.html#l5kit.planning.model.PlanningModel.forward">forward() (l5kit.planning.model.PlanningModel method)</a>
 </li>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationDataset.from_dataset_indices">from_dataset_indices() (l5kit.simulation.dataset.SimulationDataset static method)</a>
+</li>
       <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.CollisionType.FRONT">FRONT (l5kit.evaluation.metrics.CollisionType attribute)</a>
 </li>
   </ul></td>
@@ -528,10 +540,10 @@
       </ul></li>
       <li><a href="API/l5kit.rasterization.rasterizer_builder.html#l5kit.rasterization.rasterizer_builder.get_hardcoded_ecef_to_aerial">get_hardcoded_ecef_to_aerial() (in module l5kit.rasterization.rasterizer_builder)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.rasterization.rasterizer_builder.html#l5kit.rasterization.rasterizer_builder.get_hardcoded_world_to_ecef">get_hardcoded_world_to_ecef() (in module l5kit.rasterization.rasterizer_builder)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.sampling.html#l5kit.sampling.get_history_slice">get_history_slice() (in module l5kit.sampling)</a>
 
       <ul>
@@ -594,6 +606,8 @@
         <li><a href="API/l5kit.dataset.html#l5kit.dataset.EgoDataset.get_scene_dataset">(l5kit.dataset.EgoDataset method)</a>
 </li>
       </ul></li>
+      <li><a href="API/l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput.get_scene_id">get_scene_id() (l5kit.simulation.unroll.SimulationOutput method)</a>
+</li>
       <li><a href="API/l5kit.dataset.agent.html#l5kit.dataset.agent.AgentDataset.get_scene_indices">get_scene_indices() (l5kit.dataset.agent.AgentDataset method)</a>
 
       <ul>
@@ -642,12 +656,14 @@
         <li><a href="API/l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset.initialize">(l5kit.data.zarr_dataset.ChunkedDataset method)</a>
 </li>
       </ul></li>
-      <li><a href="API/l5kit.data.map_api.html#l5kit.data.map_api.InterpolationMethod.INTER_ENSURE_LEN">INTER_ENSURE_LEN (l5kit.data.map_api.InterpolationMethod attribute)</a>
+      <li><a href="API/l5kit.simulation.utils.html#l5kit.simulation.utils.insert_agent">insert_agent() (in module l5kit.simulation.utils)</a>
 </li>
-      <li><a href="API/l5kit.data.map_api.html#l5kit.data.map_api.InterpolationMethod.INTER_METER">INTER_METER (l5kit.data.map_api.InterpolationMethod attribute)</a>
+      <li><a href="API/l5kit.data.map_api.html#l5kit.data.map_api.InterpolationMethod.INTER_ENSURE_LEN">INTER_ENSURE_LEN (l5kit.data.map_api.InterpolationMethod attribute)</a>
 </li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.data.map_api.html#l5kit.data.map_api.InterpolationMethod.INTER_METER">INTER_METER (l5kit.data.map_api.InterpolationMethod attribute)</a>
+</li>
       <li><a href="API/l5kit.data.map_api.html#l5kit.data.map_api.MapAPI.interpolate">interpolate() (l5kit.data.map_api.MapAPI static method)</a>
 
       <ul>
@@ -912,8 +928,6 @@
         <li><a href="API/l5kit.geometry.voxel.html#module-l5kit.geometry.voxel">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     l5kit.kinematic
 
@@ -928,6 +942,8 @@
         <li><a href="API/l5kit.kinematic.ackerman_perturbation.html#module-l5kit.kinematic.ackerman_perturbation">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     l5kit.kinematic.ackerman_steering_model
 
@@ -1073,6 +1089,34 @@
 
       <ul>
         <li><a href="API/l5kit.sampling.slicing.html#module-l5kit.sampling.slicing">module</a>
+</li>
+      </ul></li>
+      <li>
+    l5kit.simulation
+
+      <ul>
+        <li><a href="API/l5kit.simulation.html#module-l5kit.simulation">module</a>
+</li>
+      </ul></li>
+      <li>
+    l5kit.simulation.dataset
+
+      <ul>
+        <li><a href="API/l5kit.simulation.dataset.html#module-l5kit.simulation.dataset">module</a>
+</li>
+      </ul></li>
+      <li>
+    l5kit.simulation.unroll
+
+      <ul>
+        <li><a href="API/l5kit.simulation.unroll.html#module-l5kit.simulation.unroll">module</a>
+</li>
+      </ul></li>
+      <li>
+    l5kit.simulation.utils
+
+      <ul>
+        <li><a href="API/l5kit.simulation.utils.html#module-l5kit.simulation.utils">module</a>
 </li>
       </ul></li>
       <li>
@@ -1267,6 +1311,14 @@
 </li>
         <li><a href="API/l5kit.sampling.slicing.html#module-l5kit.sampling.slicing">l5kit.sampling.slicing</a>
 </li>
+        <li><a href="API/l5kit.simulation.html#module-l5kit.simulation">l5kit.simulation</a>
+</li>
+        <li><a href="API/l5kit.simulation.dataset.html#module-l5kit.simulation.dataset">l5kit.simulation.dataset</a>
+</li>
+        <li><a href="API/l5kit.simulation.unroll.html#module-l5kit.simulation.unroll">l5kit.simulation.unroll</a>
+</li>
+        <li><a href="API/l5kit.simulation.utils.html#module-l5kit.simulation.utils">l5kit.simulation.utils</a>
+</li>
         <li><a href="API/l5kit.visualization.html#module-l5kit.visualization">l5kit.visualization</a>
 </li>
         <li><a href="API/l5kit.visualization.gif.html#module-l5kit.visualization.gif">l5kit.visualization.gif</a>
@@ -1320,6 +1372,10 @@
         <li><a href="API/l5kit.rasterization.html#l5kit.rasterization.StubRasterizer.num_channels">(l5kit.rasterization.StubRasterizer method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationConfig.num_simulation_steps">num_simulation_steps (l5kit.simulation.dataset.SimulationConfig attribute)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -1386,6 +1442,10 @@
       </ul></li>
       <li><a href="API/l5kit.rasterization.semantic_rasterizer.html#l5kit.rasterization.semantic_rasterizer.RasterEls">RasterEls (class in l5kit.rasterization.semantic_rasterizer)</a>
 </li>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationDataset.rasterise_agents_frame_batch">rasterise_agents_frame_batch() (l5kit.simulation.dataset.SimulationDataset method)</a>
+</li>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationDataset.rasterise_frame_batch">rasterise_frame_batch() (l5kit.simulation.dataset.SimulationDataset method)</a>
+</li>
       <li><a href="API/l5kit.rasterization.box_rasterizer.html#l5kit.rasterization.box_rasterizer.BoxRasterizer.rasterize">rasterize() (l5kit.rasterization.box_rasterizer.BoxRasterizer method)</a>
 
       <ul>
@@ -1416,14 +1476,14 @@
         <li><a href="API/l5kit.rasterization.html#l5kit.rasterization.StubRasterizer.rasterize">(l5kit.rasterization.StubRasterizer method)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.rasterization.html#l5kit.rasterization.Rasterizer">Rasterizer (class in l5kit.rasterization)</a>
 
       <ul>
         <li><a href="API/l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer">(class in l5kit.rasterization.rasterizer)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.evaluation.html#l5kit.evaluation.read_gt_csv">read_gt_csv() (in module l5kit.evaluation)</a>
 
       <ul>
@@ -1508,8 +1568,6 @@
         <li><a href="API/l5kit.dataset.select_agents.html#l5kit.dataset.select_agents.select_agents">(in module l5kit.dataset.select_agents)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.rasterization.html#l5kit.rasterization.SemanticRasterizer">SemanticRasterizer (class in l5kit.rasterization)</a>
 
       <ul>
@@ -1522,9 +1580,25 @@
         <li><a href="API/l5kit.rasterization.sem_box_rasterizer.html#l5kit.rasterization.sem_box_rasterizer.SemBoxRasterizer">(class in l5kit.rasterization.sem_box_rasterizer)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationDataset.set_agents">set_agents() (l5kit.simulation.dataset.SimulationDataset method)</a>
+</li>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationDataset.set_ego">set_ego() (l5kit.simulation.dataset.SimulationDataset method)</a>
+</li>
       <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.CollisionType.SIDE">SIDE (l5kit.evaluation.metrics.CollisionType attribute)</a>
 </li>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationConfig">SimulationConfig (class in l5kit.simulation.dataset)</a>
+</li>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationDataset">SimulationDataset (class in l5kit.simulation.dataset)</a>
+</li>
       <li><a href="API/l5kit.cle.metrics.html#l5kit.cle.metrics.SimulationOutput">SimulationOutput (class in l5kit.cle.metrics)</a>
+
+      <ul>
+        <li><a href="API/l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput">(class in l5kit.simulation.unroll)</a>
+</li>
+      </ul></li>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationConfig.start_frame_index">start_frame_index (l5kit.simulation.dataset.SimulationConfig attribute)</a>
 </li>
       <li><a href="API/l5kit.rasterization.html#l5kit.rasterization.StubRasterizer">StubRasterizer (class in l5kit.rasterization)</a>
 
@@ -1602,15 +1676,25 @@
         <li><a href="API/l5kit.random.random_generator.html#l5kit.random.random_generator.UniformRandomGenerator">(class in l5kit.random.random_generator)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.data.map_api.html#l5kit.data.map_api.MapAPI.unpack_deltas_cm">unpack_deltas_cm() (l5kit.data.map_api.MapAPI method)</a>
 
       <ul>
         <li><a href="API/l5kit.data.html#l5kit.data.MapAPI.unpack_deltas_cm">(l5kit.data.MapAPI method)</a>
 </li>
       </ul></li>
+      <li><a href="API/l5kit.simulation.unroll.html#l5kit.simulation.unroll.ClosedLoopSimulator.unroll">unroll() (l5kit.simulation.unroll.ClosedLoopSimulator method)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.simulation.unroll.html#l5kit.simulation.unroll.ClosedLoopSimulator.update_agents">update_agents() (l5kit.simulation.unroll.ClosedLoopSimulator static method)</a>
+</li>
+      <li><a href="API/l5kit.simulation.unroll.html#l5kit.simulation.unroll.ClosedLoopSimulator.update_ego">update_ego() (l5kit.simulation.unroll.ClosedLoopSimulator static method)</a>
+</li>
       <li><a href="API/l5kit.dataset.select_agents.html#l5kit.dataset.select_agents.update_mask">update_mask() (in module l5kit.dataset.select_agents)</a>
+</li>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationConfig.use_agents_gt">use_agents_gt (l5kit.simulation.dataset.SimulationConfig attribute)</a>
+</li>
+      <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationConfig.use_ego_gt">use_ego_gt (l5kit.simulation.dataset.SimulationConfig attribute)</a>
 </li>
   </ul></td>
 </tr></table>

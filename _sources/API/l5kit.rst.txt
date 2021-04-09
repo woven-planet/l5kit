@@ -23,4 +23,5 @@ Subpackages
    l5kit.random
    l5kit.rasterization
    l5kit.sampling
+   l5kit.simulation
    l5kit.visualization

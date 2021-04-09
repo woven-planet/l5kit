@@ -1,0 +1,363 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>l5kit.simulation.dataset module &mdash; L5Kit 1.2.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../genindex.html" />
+    <link rel="search" title="Search" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../index.html" class="icon icon-home"> L5Kit
+          
+
+          
+          </a>
+
+          
+            
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../README.html">ML Prediction, Planning and Simulation for Self-Driving</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#examples">Examples</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#news">News</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#overview">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#license">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#credits">Credits</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../README.html#contact">Contact</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset Formats</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coords_systems.html">Coordinate Systems in L5Kit</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coords_systems.html#introduction">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../coords_systems.html#coordinate-systems">Coordinate Systems</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html">Competition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html#scoring">Scoring</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html#coordinates-system-for-the-competition">Coordinates System for the competition</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../competition.html#additional-metrics">Additional Metrics</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">L5Kit</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+      <li>l5kit.simulation.dataset module</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+          
+            <a href="../_sources/API/l5kit.simulation.dataset.rst.txt" rel="nofollow"> View page source</a>
+          
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <div class="section" id="module-l5kit.simulation.dataset">
+<span id="l5kit-simulation-dataset-module"></span><h1>l5kit.simulation.dataset module<a class="headerlink" href="#module-l5kit.simulation.dataset" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt id="l5kit.simulation.dataset.SimulationConfig">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.simulation.dataset.</code><code class="sig-name descname">SimulationConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">use_ego_gt</span><span class="p">:</span> <span class="n">bool</span></em>, <em class="sig-param"><span class="n">use_agents_gt</span><span class="p">:</span> <span class="n">bool</span></em>, <em class="sig-param"><span class="n">disable_new_agents</span><span class="p">:</span> <span class="n">bool</span></em>, <em class="sig-param"><span class="n">distance_th_far</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">distance_th_close</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">start_frame_index</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_simulation_steps</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.dataset.SimulationConfig" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>Defines the parameters used for the simulation of ego and agents around it.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>use_ego_gt</strong> – whether to use GT annotations for ego instead of model’s outputs</p></li>
+<li><p><strong>use_agents_gt</strong> – whether to use GT annotations for agents instead of model’s outputs</p></li>
+<li><p><strong>disable_new_agents</strong> – whether to disable agents that are not returned at start_frame_index</p></li>
+<li><p><strong>distance_th_far</strong> – if a tracked agent is closed than this value to ego, it will be controlled</p></li>
+<li><p><strong>distance_th_close</strong> – if a new agent is closer than this value to ego, it will be controlled</p></li>
+<li><p><strong>start_frame_index</strong> – the start index of the simulation</p></li>
+<li><p><strong>num_simulation_steps</strong> – the number of step to simulate</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="l5kit.simulation.dataset.SimulationConfig.disable_new_agents">
+<code class="sig-name descname">disable_new_agents</code><em class="property">: bool</em><a class="headerlink" href="#l5kit.simulation.dataset.SimulationConfig.disable_new_agents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 2</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.simulation.dataset.SimulationConfig.distance_th_close">
+<code class="sig-name descname">distance_th_close</code><em class="property">: float</em><a class="headerlink" href="#l5kit.simulation.dataset.SimulationConfig.distance_th_close" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 4</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.simulation.dataset.SimulationConfig.distance_th_far">
+<code class="sig-name descname">distance_th_far</code><em class="property">: float</em><a class="headerlink" href="#l5kit.simulation.dataset.SimulationConfig.distance_th_far" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 3</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.simulation.dataset.SimulationConfig.num_simulation_steps">
+<code class="sig-name descname">num_simulation_steps</code><em class="property">: Optional<span class="p">[</span>int<span class="p">]</span></em><a class="headerlink" href="#l5kit.simulation.dataset.SimulationConfig.num_simulation_steps" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 6</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.simulation.dataset.SimulationConfig.start_frame_index">
+<code class="sig-name descname">start_frame_index</code><em class="property">: int</em><a class="headerlink" href="#l5kit.simulation.dataset.SimulationConfig.start_frame_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 5</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.simulation.dataset.SimulationConfig.use_agents_gt">
+<code class="sig-name descname">use_agents_gt</code><em class="property">: bool</em><a class="headerlink" href="#l5kit.simulation.dataset.SimulationConfig.use_agents_gt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.simulation.dataset.SimulationConfig.use_ego_gt">
+<code class="sig-name descname">use_ego_gt</code><em class="property">: bool</em><a class="headerlink" href="#l5kit.simulation.dataset.SimulationConfig.use_ego_gt" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.simulation.dataset.SimulationDataset">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.simulation.dataset.</code><code class="sig-name descname">SimulationDataset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_dataset_batch</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>int<span class="p">, </span><a class="reference internal" href="l5kit.dataset.ego.html#l5kit.dataset.ego.EgoDataset" title="l5kit.dataset.ego.EgoDataset">l5kit.dataset.ego.EgoDataset</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">sim_cfg</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#l5kit.simulation.dataset.SimulationConfig" title="l5kit.simulation.dataset.SimulationConfig">l5kit.simulation.dataset.SimulationConfig</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.dataset.SimulationDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<dl class="py method">
+<dt id="l5kit.simulation.dataset.SimulationDataset.from_dataset_indices">
+<em class="property">static </em><code class="sig-name descname">from_dataset_indices</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.dataset.ego.html#l5kit.dataset.ego.EgoDataset" title="l5kit.dataset.ego.EgoDataset">l5kit.dataset.ego.EgoDataset</a></span></em>, <em class="sig-param"><span class="n">scene_indices</span><span class="p">:</span> <span class="n">List<span class="p">[</span>int<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">sim_cfg</span><span class="p">:</span> <span class="n"><a class="reference internal" href="#l5kit.simulation.dataset.SimulationConfig" title="l5kit.simulation.dataset.SimulationConfig">l5kit.simulation.dataset.SimulationConfig</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#l5kit.simulation.dataset.SimulationDataset" title="l5kit.simulation.dataset.SimulationDataset">l5kit.simulation.dataset.SimulationDataset</a><a class="headerlink" href="#l5kit.simulation.dataset.SimulationDataset.from_dataset_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Create a SimulationDataset by picking indices from the provided dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> – the EgoDataset</p></li>
+<li><p><strong>scene_indices</strong> – scenes from the EgoDataset to pick</p></li>
+<li><p><strong>sim_cfg</strong> – a simulation config</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the new SimulationDataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.simulation.dataset.SimulationDataset.rasterise_agents_frame_batch">
+<code class="sig-name descname">rasterise_agents_frame_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state_index</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span><span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>numpy.ndarray<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#l5kit.simulation.dataset.SimulationDataset.rasterise_agents_frame_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Rasterise agents for each scene in the batch at a given frame.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state_index</strong> – the frame index in the scene</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dict mapping from [scene_id, track_id] to the numpy dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.simulation.dataset.SimulationDataset.rasterise_frame_batch">
+<code class="sig-name descname">rasterise_frame_batch</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state_index</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; List<span class="p">[</span>Dict<span class="p">[</span>str<span class="p">, </span>numpy.ndarray<span class="p">]</span><span class="p">]</span><a class="headerlink" href="#l5kit.simulation.dataset.SimulationDataset.rasterise_frame_batch" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a frame from all scenes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>state_index</strong> – the frame index</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a list of dict from EgoDatasets</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.simulation.dataset.SimulationDataset.set_agents">
+<code class="sig-name descname">set_agents</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state_index</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">agents_infos</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>Tuple<span class="p">[</span>int<span class="p">, </span>int<span class="p">]</span><span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.simulation.dataset.SimulationDataset.set_agents" title="Permalink to this definition">¶</a></dt>
+<dd><p>Set multiple agents in the scene datasets.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_index</strong> – the frame index to set (same for all datasets)</p></li>
+<li><p><strong>agents_infos</strong> – a dict mapping (scene_idx, agent_idx) to the agent array</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.simulation.dataset.SimulationDataset.set_ego">
+<code class="sig-name descname">set_ego</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">state_index</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">output_index</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">ego_translations</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">ego_yaws</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.simulation.dataset.SimulationDataset.set_ego" title="Permalink to this definition">¶</a></dt>
+<dd><p>Mutate future frame position and yaw for ego across scenes. This acts on the underlying dataset</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>state_index</strong> – the frame index to mutate</p></li>
+<li><p><strong>output_index</strong> – the index in ego_translations and ego_yaws to use</p></li>
+<li><p><strong>ego_translations</strong> – output translations (N, T, 2)</p></li>
+<li><p><strong>ego_yaws</strong> – output yaws (N, T)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+</div>
+
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2020, Lyft Level 5.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

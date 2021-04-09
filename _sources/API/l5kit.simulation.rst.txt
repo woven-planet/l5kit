@@ -1,0 +1,17 @@
+l5kit.simulation package
+========================
+
+.. automodule:: l5kit.simulation
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   l5kit.simulation.dataset
+   l5kit.simulation.unroll
+   l5kit.simulation.utils
