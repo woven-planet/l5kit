@@ -1,4 +1,4 @@
-from typing import Dict
+from typing import Dict, Tuple
 
 import numpy as np
 import pytest
@@ -131,3 +131,43 @@ def test_unroll(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: di
             agents = filter_agents_by_track_id(states, track_id)[: sim_cfg.num_simulation_steps]
             agent_dist = np.linalg.norm(np.diff(agents["centroid"], axis=0), axis=-1)
             assert np.allclose(agent_dist, 0.5)
+
+
+@pytest.mark.parametrize("frame_range",
+                         [(1, 10), (10, 5), (240, None), pytest.param((250, 10), marks=pytest.mark.xfail)])
+def test_unroll_subset(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict,
+                       frame_range: Tuple[int, int]) -> None:
+    rasterizer = build_rasterizer(cfg, dmg)
+
+    scene_indices = list(range(len(zarr_cat_dataset.scenes)))
+    ego_dataset = EgoDataset(cfg, zarr_cat_dataset, rasterizer)
+
+    # control only agents at T0, control them forever
+    sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=True,
+                               distance_th_close=1000, distance_th_far=1000,
+                               num_simulation_steps=frame_range[1], start_frame_index=frame_range[0])
+
+    # ego will move by 1 each time
+    ego_model = MockModel(advance_x=1.0)
+
+    # agents will move by 0.5 each time
+    agents_model = MockModel(advance_x=0.5)
+
+    sim = ClosedLoopSimulator(sim_cfg, ego_dataset, torch.device("cpu"), ego_model, agents_model)
+    sim_outputs = sim.unroll(scene_indices)
+
+    for sim_out in sim_outputs:
+        assert zarr_cat_dataset.frames[0] != sim_out.recorded_dataset.dataset.frames[0]
+        assert zarr_cat_dataset.frames[0] != sim_out.simulated_dataset.dataset.frames[0]
+
+        if None not in frame_range:
+            assert len(sim_out.recorded_dataset.dataset.frames) == frame_range[1]
+            assert len(sim_out.simulated_dataset.dataset.frames) == frame_range[1]
+            assert len(sim_out.simulated_ego_states) == frame_range[1]
+            assert len(sim_out.recorded_ego_states) == frame_range[1]
+            assert len(sim_out.recorded_ego) == frame_range[1]
+            assert len(sim_out.simulated_ego) == frame_range[1]
+
+        ego_tr = sim_out.simulated_ego["ego_translation"][: sim_cfg.num_simulation_steps, :2]
+        ego_dist = np.linalg.norm(np.diff(ego_tr, axis=0), axis=-1)
+        assert np.allclose(ego_dist, 1.0)

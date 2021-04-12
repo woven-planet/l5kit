@@ -60,6 +60,10 @@ class SimulationDataset:
             zarr_dt = self.scene_dataset_batch[scene_idx].dataset
             self.scene_dataset_batch[scene_idx].dataset = get_frames_subset(zarr_dt, start_frame_idx, end_frame_idx)
 
+            # this is the only stateful field we need to change for EgoDataset, it's used in bisect
+            frame_index_ends = self.scene_dataset_batch[scene_idx].dataset.scenes["frame_index_interval"][:, 1]
+            self.scene_dataset_batch[scene_idx].cumulative_sizes = frame_index_ends
+
         self._len = min([len(scene_dt.dataset.frames) for scene_dt in self.scene_dataset_batch.values()])
 
         # buffer used to keep track of tracked agents during unroll as tuples of scene_idx, agent_idx
