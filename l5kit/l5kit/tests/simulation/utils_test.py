@@ -1,9 +1,11 @@
 import unittest
 
 import numpy as np
+import pytest
 
-from l5kit.data import AGENT_DTYPE, ChunkedDataset, FRAME_DTYPE, SCENE_DTYPE
-from l5kit.simulation.utils import disable_agents, insert_agent
+from l5kit.data import (AGENT_DTYPE, ChunkedDataset, FRAME_DTYPE, get_agents_slice_from_frames,
+                        get_tl_faces_slice_from_frames, SCENE_DTYPE, TL_FACE_DTYPE)
+from l5kit.simulation.utils import disable_agents, get_frames_subset, insert_agent
 
 
 class TestAgentInsert(unittest.TestCase):
@@ -33,7 +35,9 @@ class TestAgentInsert(unittest.TestCase):
     def test_invalid(self) -> None:
         # try to insert out of bounds
         with self.assertRaises(ValueError):
-            insert_agent(np.zeros(1, dtype=AGENT_DTYPE), 100, self._get_simple_dataset())
+            insert_agent(
+                np.zeros(1, dtype=AGENT_DTYPE), 100, self._get_simple_dataset()
+            )
         # try to insert in a multi-scene dataset
         with self.assertRaises(ValueError):
             dataset = self._get_simple_dataset()
@@ -52,14 +56,19 @@ class TestAgentInsert(unittest.TestCase):
 
         self.assertTrue(np.allclose(agent["centroid"], dataset.agents[0]["centroid"]))
         self.assertTrue(np.allclose(agent["yaw"], dataset.agents[0]["yaw"]))
-        self.assertTrue(np.allclose(agent["label_probabilities"], dataset.agents[0]["label_probabilities"]))
+        self.assertTrue(
+            np.allclose(
+                agent["label_probabilities"], dataset.agents[0]["label_probabilities"]
+            )
+        )
 
         # the number of agents should be the same
         self.assertTrue(len(dataset.agents), len(self._get_simple_dataset().agents))
         # the boundries should be the same
         self.assertTrue(
             np.allclose(
-                dataset.frames["agent_index_interval"], self._get_simple_dataset().frames["agent_index_interval"]
+                dataset.frames["agent_index_interval"],
+                self._get_simple_dataset().frames["agent_index_interval"],
             )
         )
 
@@ -77,10 +86,17 @@ class TestAgentInsert(unittest.TestCase):
         # the new agent should be in position 5
         expected_index = 5
 
-        self.assertTrue(np.allclose(agent["centroid"], dataset.agents[expected_index]["centroid"]))
-        self.assertTrue(np.allclose(agent["yaw"], dataset.agents[expected_index]["yaw"]))
         self.assertTrue(
-            np.allclose(agent["label_probabilities"], dataset.agents[expected_index]["label_probabilities"])
+            np.allclose(agent["centroid"], dataset.agents[expected_index]["centroid"])
+        )
+        self.assertTrue(
+            np.allclose(agent["yaw"], dataset.agents[expected_index]["yaw"])
+        )
+        self.assertTrue(
+            np.allclose(
+                agent["label_probabilities"],
+                dataset.agents[expected_index]["label_probabilities"],
+            )
         )
 
         # the number of agents should be 1 more
@@ -89,20 +105,30 @@ class TestAgentInsert(unittest.TestCase):
 
         # the interval should be the same for frame 0 and 1 start
         self.assertTrue(
-            np.allclose(dataset.frames["agent_index_interval"][:1], old_dataset.frames["agent_index_interval"][:1])
+            np.allclose(
+                dataset.frames["agent_index_interval"][:1],
+                old_dataset.frames["agent_index_interval"][:1],
+            )
         )
         self.assertTrue(
-            np.allclose(dataset.frames["agent_index_interval"][1, 0], old_dataset.frames["agent_index_interval"][1, 0])
+            np.allclose(
+                dataset.frames["agent_index_interval"][1, 0],
+                old_dataset.frames["agent_index_interval"][1, 0],
+            )
         )
 
         # from 1 end to end they should be one more
         self.assertTrue(
             np.allclose(
-                dataset.frames["agent_index_interval"][1, 1], old_dataset.frames["agent_index_interval"][1, 1] + 1
+                dataset.frames["agent_index_interval"][1, 1],
+                old_dataset.frames["agent_index_interval"][1, 1] + 1,
             )
         )
         self.assertTrue(
-            np.allclose(dataset.frames["agent_index_interval"][2:], old_dataset.frames["agent_index_interval"][2:] + 1)
+            np.allclose(
+                dataset.frames["agent_index_interval"][2:],
+                old_dataset.frames["agent_index_interval"][2:] + 1,
+            )
         )
 
     def test_insert_2(self) -> None:
@@ -119,10 +145,17 @@ class TestAgentInsert(unittest.TestCase):
         # the new agent should be the last one
         expected_index = -1
 
-        self.assertTrue(np.allclose(agent["centroid"], dataset.agents[expected_index]["centroid"]))
-        self.assertTrue(np.allclose(agent["yaw"], dataset.agents[expected_index]["yaw"]))
         self.assertTrue(
-            np.allclose(agent["label_probabilities"], dataset.agents[expected_index]["label_probabilities"])
+            np.allclose(agent["centroid"], dataset.agents[expected_index]["centroid"])
+        )
+        self.assertTrue(
+            np.allclose(agent["yaw"], dataset.agents[expected_index]["yaw"])
+        )
+        self.assertTrue(
+            np.allclose(
+                agent["label_probabilities"],
+                dataset.agents[expected_index]["label_probabilities"],
+            )
         )
 
         # the number of agents should be 1 more
@@ -131,18 +164,23 @@ class TestAgentInsert(unittest.TestCase):
 
         # the interval should be the same for frame 0, 1 and 2 start
         self.assertTrue(
-            np.allclose(dataset.frames["agent_index_interval"][:-1], old_dataset.frames["agent_index_interval"][:-1])
+            np.allclose(
+                dataset.frames["agent_index_interval"][:-1],
+                old_dataset.frames["agent_index_interval"][:-1],
+            )
         )
         self.assertTrue(
             np.allclose(
-                dataset.frames["agent_index_interval"][-1, 0], old_dataset.frames["agent_index_interval"][-1, 0]
+                dataset.frames["agent_index_interval"][-1, 0],
+                old_dataset.frames["agent_index_interval"][-1, 0],
             )
         )
 
         # the very last index should be 1 more
         self.assertTrue(
             np.allclose(
-                dataset.frames["agent_index_interval"][-1, 1], old_dataset.frames["agent_index_interval"][-1, 1] + 1
+                dataset.frames["agent_index_interval"][-1, 1],
+                old_dataset.frames["agent_index_interval"][-1, 1] + 1,
             )
         )
 
@@ -198,7 +236,9 @@ class TestDisableAgents(unittest.TestCase):
             self.assertTrue(np.allclose(dataset.agents[agent_idx]["centroid"], 0))
             self.assertTrue(np.allclose(dataset.agents[agent_idx]["yaw"], 0))
             self.assertTrue(np.allclose(dataset.agents[agent_idx]["extent"], 0))
-            self.assertTrue(np.allclose(dataset.agents[agent_idx]["label_probabilities"], -1))
+            self.assertTrue(
+                np.allclose(dataset.agents[agent_idx]["label_probabilities"], -1)
+            )
 
         # those two should have been left untouched
         for agent_idx in [1, -2]:
@@ -207,4 +247,73 @@ class TestDisableAgents(unittest.TestCase):
             self.assertTrue(np.allclose(new_agent["centroid"], old_agent["centroid"]))
             self.assertTrue(np.allclose(new_agent["yaw"], old_agent["yaw"]))
             self.assertTrue(np.allclose(new_agent["extent"], old_agent["extent"]))
-            self.assertTrue(np.allclose(new_agent["label_probabilities"], old_agent["label_probabilities"]))
+            self.assertTrue(
+                np.allclose(
+                    new_agent["label_probabilities"], old_agent["label_probabilities"]
+                )
+            )
+
+
+def test_dataset_frames_subset_invalid(zarr_dataset: ChunkedDataset) -> None:
+    with pytest.raises(ValueError):
+        get_frames_subset(zarr_dataset, 0, 10)  # not in numpy
+    with pytest.raises(ValueError):
+        get_frames_subset(zarr_dataset, -1, 10)  # invalid start
+    with pytest.raises(ValueError):
+        get_frames_subset(
+            zarr_dataset, len(zarr_dataset.frames), len(zarr_dataset.frames) + 1
+        )  # invalid start
+    with pytest.raises(ValueError):
+        get_frames_subset(zarr_dataset, 10, 9)  # invalid end
+    with pytest.raises(ValueError):
+        get_frames_subset(zarr_dataset, 10, len(zarr_dataset.frames) + 1)  # invalid end
+
+
+def test_dataset_frames_subset(zarr_dataset: ChunkedDataset) -> None:
+    zarr_dataset = zarr_dataset.get_scene_dataset(0)
+    frame_start = 10
+    frame_end = 25
+    zarr_cut = get_frames_subset(zarr_dataset, frame_start, frame_end)
+
+    assert len(zarr_cut.scenes) == 1
+    assert len(zarr_cut.frames) == frame_end - frame_start
+    assert np.all(
+        zarr_cut.frames["ego_translation"]
+        == zarr_dataset.frames["ego_translation"][frame_start:frame_end]
+    )
+
+    agents_slice = get_agents_slice_from_frames(
+        *zarr_dataset.frames[[frame_start, frame_end - 1]]
+    )
+    tls_slice = get_tl_faces_slice_from_frames(
+        *zarr_dataset.frames[[frame_start, frame_end - 1]]
+    )
+
+    assert np.all(zarr_cut.agents == zarr_dataset.agents[agents_slice])
+    assert np.all(zarr_cut.tl_faces == zarr_dataset.tl_faces[tls_slice])
+
+
+def test_mock_dataset_frames_subset() -> None:
+    zarr_dataset = ChunkedDataset("")
+    zarr_dataset.scenes = np.zeros(1, dtype=SCENE_DTYPE)
+    zarr_dataset.scenes[0]["frame_index_interval"] = (0, 4)
+    zarr_dataset.frames = np.zeros(4, dtype=FRAME_DTYPE)
+    zarr_dataset.frames["agent_index_interval"] = [(0, 1), (1, 2), (2, 3), (3, 4)]
+    zarr_dataset.agents = np.zeros(4, dtype=AGENT_DTYPE)
+    zarr_dataset.agents["track_id"] = np.arange(4)
+    zarr_dataset.tl_faces = np.zeros(0, dtype=TL_FACE_DTYPE)
+
+    frame_start = 1
+    frame_end = 3
+    zarr_cut = get_frames_subset(zarr_dataset, frame_start, frame_end)
+    assert np.all(zarr_cut.agents["track_id"] == [1, 2])
+
+    frame_start = 0
+    frame_end = 3
+    zarr_cut = get_frames_subset(zarr_dataset, frame_start, frame_end)
+    assert np.all(zarr_cut.agents["track_id"] == [0, 1, 2])
+
+    frame_start = 2
+    frame_end = 4
+    zarr_cut = get_frames_subset(zarr_dataset, frame_start, frame_end)
+    assert np.all(zarr_cut.agents["track_id"] == [2, 3])

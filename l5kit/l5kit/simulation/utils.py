@@ -1,6 +1,6 @@
 import numpy as np
 
-from l5kit.data import ChunkedDataset, get_agents_slice_from_frames
+from l5kit.data import ChunkedDataset, get_agents_slice_from_frames, get_tl_faces_slice_from_frames
 
 
 def insert_agent(agent: np.ndarray, frame_idx: int, dataset: ChunkedDataset) -> None:
@@ -74,3 +74,49 @@ def disable_agents(dataset: ChunkedDataset, allowlist: np.ndarray) -> None:
     dataset.agents["yaw"][mask_disable] *= 0
     dataset.agents["extent"][mask_disable] *= 0
     dataset.agents["label_probabilities"][mask_disable] = -1
+
+
+def get_frames_subset(dataset: ChunkedDataset, frame_start_idx: int, frame_end_idx: int) -> ChunkedDataset:
+    """Get a new dataset with frames between start (included) and end (excluded).
+    Assumptions:
+        the dataset has only 1 scene
+        the dataset is in numpy format and not zarr anymore
+
+    :param dataset: the single-scene dataset.
+    :param frame_start_idx: first frame to keep.
+    :param frame_end_idx: where to stop taking frames (excluded).
+
+    """
+    if not len(dataset.scenes) == 1:
+        raise ValueError(f"dataset should have a single scene, got {len(dataset.scenes)}")
+    if not isinstance(dataset.agents, np.ndarray):
+        raise ValueError("dataset agents should be an editable np array")
+    if not isinstance(dataset.tl_faces, np.ndarray):
+        raise ValueError("dataset tls should be an editable np array")
+    if not isinstance(dataset.frames, np.ndarray):
+        raise ValueError("dataset frames should be an editable np array")
+    if frame_start_idx >= len(dataset.frames):
+        raise ValueError(f"frame start {frame_start_idx} is over the length of the dataset")
+    if frame_end_idx > len(dataset.frames):
+        raise ValueError(f"frame end {frame_end_idx} is over the length of the dataset")
+    if frame_start_idx >= frame_end_idx:
+        raise ValueError(f"end frame {frame_end_idx} should be higher than start {frame_start_idx}")
+    if frame_start_idx < 0:
+        raise ValueError(f"start frame {frame_start_idx} should be positive")
+
+    new_dataset = ChunkedDataset("")
+    new_dataset.scenes = dataset.scenes.copy()
+    new_dataset.scenes[0]["frame_index_interval"] = (frame_start_idx, frame_end_idx)
+    new_dataset.scenes[0]["start_time"] = dataset.frames[frame_start_idx]["timestamp"]
+    new_dataset.scenes[0]["end_time"] = dataset.frames[frame_end_idx - 1]["timestamp"]
+
+    new_dataset.frames = dataset.frames[frame_start_idx:frame_end_idx].copy()
+    agent_slice = get_agents_slice_from_frames(*dataset.frames[[frame_start_idx, frame_end_idx - 1]])
+    tls_slice = get_tl_faces_slice_from_frames(*dataset.frames[[frame_start_idx, frame_end_idx - 1]])
+    new_dataset.frames["agent_index_interval"] -= new_dataset.frames["agent_index_interval"][0, 0]
+    new_dataset.frames["traffic_light_faces_index_interval"] -= new_dataset.frames[
+        "traffic_light_faces_index_interval"
+    ][0, 0]
+    new_dataset.agents = dataset.agents[agent_slice].copy()
+    new_dataset.tl_faces = dataset.tl_faces[tls_slice].copy()
+    return new_dataset
