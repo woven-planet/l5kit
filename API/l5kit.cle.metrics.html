@@ -257,6 +257,70 @@ frame [Shape: N, where N = timesteps]</p>
 </dd></dl>
 
 <dl class="py class">
+<dt id="l5kit.cle.metrics.ReplayDrivenMilesMetric">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">ReplayDrivenMilesMetric</code><a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This metric will compute the driven miles per frame for the observed
+trajectory, the one in the log replay (as opposed to the one simulated).</p>
+<dl class="py attribute">
+<dt id="l5kit.cle.metrics.ReplayDrivenMilesMetric.METER_TO_MILES">
+<code class="sig-name descname">METER_TO_MILES</code><em class="property"> = 0.000621371</em><a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric.METER_TO_MILES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.metrics.ReplayDrivenMilesMetric.compute">
+<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric.compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the metric on all frames of the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>simulation_output</strong> – the output from the closed-loop simulation</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>driven miles per each frame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.cle.metrics.ReplayDrivenMilesMetric.metric_name">
+<code class="sig-name descname">metric_name</code><em class="property"> = 'replay_driven_miles'</em><a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.cle.metrics.SimulatedDrivenMilesMetric">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">SimulatedDrivenMilesMetric</code><a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This metric will compute the driven miles per frame for the simulated
+trajectory (as opposed to the one in the log replay).</p>
+<dl class="py attribute">
+<dt id="l5kit.cle.metrics.SimulatedDrivenMilesMetric.METER_TO_MILES">
+<code class="sig-name descname">METER_TO_MILES</code><em class="property"> = 0.000621371</em><a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric.METER_TO_MILES" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.metrics.SimulatedDrivenMilesMetric.compute">
+<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric.compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the metric on all frames of the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>simulation_output</strong> – the output from the closed-loop simulation</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>driven miles per each frame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.cle.metrics.SimulatedDrivenMilesMetric.metric_name">
+<code class="sig-name descname">metric_name</code><em class="property"> = 'simulated_driven_miles'</em><a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="l5kit.cle.metrics.SupportsMetricCompute">
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">SupportsMetricCompute</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>

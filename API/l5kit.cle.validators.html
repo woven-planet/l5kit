@@ -171,6 +171,97 @@
   <div class="section" id="module-l5kit.cle.validators">
 <span id="l5kit-cle-validators-module"></span><h1>l5kit.cle.validators module<a class="headerlink" href="#module-l5kit.cle.validators" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
+<dt id="l5kit.cle.validators.DurationMode">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.validators.</code><code class="sig-name descname">DurationMode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.validators.DurationMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<p>For more information about duration mode, see RangeValidator docs.</p>
+<dl class="py attribute">
+<dt id="l5kit.cle.validators.DurationMode.CONTINUOUS">
+<code class="sig-name descname">CONTINUOUS</code><em class="property"> = 1</em><a class="headerlink" href="#l5kit.cle.validators.DurationMode.CONTINUOUS" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.cle.validators.DurationMode.TOTAL">
+<code class="sig-name descname">TOTAL</code><em class="property"> = 0</em><a class="headerlink" href="#l5kit.cle.validators.DurationMode.TOTAL" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.cle.validators.RangeValidator">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.validators.</code><code class="sig-name descname">RangeValidator</code><span class="sig-paren">(</span><em class="sig-param">validator_name: str, metric: Type[l5kit.cle.metrics.SupportsMetricCompute], min_value: Optional[float] = None, max_value: Optional[float] = None, violation_duration_s: float = 0.0, duration_mode: l5kit.cle.validators.DurationMode = &lt;DurationMode.TOTAL: 0&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.validators.RangeValidator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#l5kit.cle.validators.SupportsMetricValidate" title="l5kit.cle.validators.SupportsMetricValidate"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.validators.SupportsMetricValidate</span></code></a></p>
+<p>Validates a metric based on specified range. The range validator will
+check: min_value &lt; metric_value &lt; max_value. It will also check if the
+metric violated a maximum duration (see duration_mode parameter notes).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>validator_name</strong> – name of the validator</p></li>
+<li><p><strong>metric</strong> – metric class used to validate</p></li>
+<li><p><strong>min_value</strong> – minimum value allowed (inclusive)</p></li>
+<li><p><strong>max_value</strong> – maximum value allowed (inclusive)</p></li>
+<li><p><strong>violation_duration_s</strong> – maximum allowed duration in seconds
+where the metric can be violated</p></li>
+<li><p><strong>duration_mode</strong> – the duration mode can be “total” or “continuous”. In
+“total” mode, all violations are summed per scene, and
+if they exceed the violation_duration_s parameter, then
+it will not pass the validation. In “continuous” mode,
+the violation_duration_s parameter must be exceded
+on a continuous violation of the metric in time (without
+a gap of non-violation). This parameter is ignored
+if violation_duration_s is zero.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="l5kit.cle.validators.RangeValidator.cumsum_with_reset">
+<em class="property">static </em><code class="sig-name descname">cumsum_with_reset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">timestamp_diff</span><span class="p">:</span> <span class="n">torch.Tensor</span></em>, <em class="sig-param"><span class="n">validation_mask</span><span class="p">:</span> <span class="n">torch.Tensor</span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.validators.RangeValidator.cumsum_with_reset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Cumulative sum (cumsum) that takes into consideration a valid mask.
+If the valid mask is False on a timestamp, it will reset the accumulator.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>timestamp_diff</strong> – timestamps differentiated (1D array)</p></li>
+<li><p><strong>validation_mask</strong> – a boolean mask with valid/invalid timestamps (1D array)</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>cumulative sum (1D array)</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.cle.validators.RangeValidator.requires_metric">
+<code class="sig-name descname">requires_metric</code><em class="property">: List<span class="p">[</span>str<span class="p">]</span></em><a class="headerlink" href="#l5kit.cle.validators.RangeValidator.requires_metric" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.validators.RangeValidator.validate">
+<code class="sig-name descname">validate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">metric_results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>torch.Tensor<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#l5kit.cle.validators.ValidatorOutput" title="l5kit.cle.validators.ValidatorOutput">l5kit.cle.validators.ValidatorOutput</a><a class="headerlink" href="#l5kit.cle.validators.RangeValidator.validate" title="Permalink to this definition">¶</a></dt>
+<dd><p>Apply the validator on the results of the metric computation.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metric_results</strong> – all metric results</p></li>
+<li><p><strong>simulation_output</strong> – output from the closed-loop simulator</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if validator passed, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.cle.validators.RangeValidator.validator_name">
+<code class="sig-name descname">validator_name</code><em class="property">: str</em><a class="headerlink" href="#l5kit.cle.validators.RangeValidator.validator_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="l5kit.cle.validators.SupportsMetricValidate">
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.validators.</code><code class="sig-name descname">SupportsMetricValidate</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.validators.SupportsMetricValidate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>

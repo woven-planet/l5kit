@@ -171,6 +171,127 @@
   <div class="section" id="module-l5kit.cle.composite_metrics">
 <span id="l5kit-cle-composite-metrics-module"></span><h1>l5kit.cle.composite_metrics module<a class="headerlink" href="#module-l5kit.cle.composite_metrics" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
+<dt id="l5kit.cle.composite_metrics.DrivenMilesCompositeMetric">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.composite_metrics.</code><code class="sig-name descname">DrivenMilesCompositeMetric</code><span class="sig-paren">(</span><em class="sig-param">composite_metric_name: str</em>, <em class="sig-param">driven_miles_metric: Type[l5kit.cle.metrics.SupportsMetricCompute] = &lt;class 'l5kit.cle.metrics.SimulatedDrivenMilesMetric'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.composite_metrics.DrivenMilesCompositeMetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#l5kit.cle.composite_metrics.SupportsCompositeMetricCompute" title="l5kit.cle.composite_metrics.SupportsCompositeMetricCompute"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.composite_metrics.SupportsCompositeMetricCompute</span></code></a></p>
+<p>Composite metric to accumulate the total driven miles.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>composite_metric_name</strong> – name of the composite metric</p></li>
+<li><p><strong>driven_miles_metric</strong> – the metric that should be used
+to accumulate its values, defaults
+to the simulated driven miles</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="l5kit.cle.composite_metrics.DrivenMilesCompositeMetric.composite_metric_name">
+<code class="sig-name descname">composite_metric_name</code><em class="property">: str</em><a class="headerlink" href="#l5kit.cle.composite_metrics.DrivenMilesCompositeMetric.composite_metric_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the composite metric</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.composite_metrics.DrivenMilesCompositeMetric.compute">
+<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">metric_results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>torch.Tensor<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">validation_results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="l5kit.cle.validators.html#l5kit.cle.validators.ValidatorOutput" title="l5kit.cle.validators.ValidatorOutput">l5kit.cle.validators.ValidatorOutput</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#l5kit.cle.composite_metrics.DrivenMilesCompositeMetric.compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Method that supports the computation of the composite metric. This
+metric should return a single float per scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metric_results</strong> – results of the metrics required</p></li>
+<li><p><strong>validation_results</strong> – results from the validators required</p></li>
+<li><p><strong>simulation_output</strong> – output from the closed-loop simulator</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tensor metric_results</dt>
+<dd class="field-even"><p>[N], where N is the number of frames in the scene</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>a float result</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.cle.composite_metrics.DrivenMilesCompositeMetric.requires_metric">
+<code class="sig-name descname">requires_metric</code><em class="property">: List<span class="p">[</span>str<span class="p">]</span></em><a class="headerlink" href="#l5kit.cle.composite_metrics.DrivenMilesCompositeMetric.requires_metric" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of names for metrics this composite metric depends on</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.cle.composite_metrics.DrivenMilesCompositeMetric.requires_validator">
+<code class="sig-name descname">requires_validator</code><em class="property">: List<span class="p">[</span>str<span class="p">]</span></em><a class="headerlink" href="#l5kit.cle.composite_metrics.DrivenMilesCompositeMetric.requires_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of validators that this composite metric depends on</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.cle.composite_metrics.PassedDrivenMilesCompositeMetric">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.composite_metrics.</code><code class="sig-name descname">PassedDrivenMilesCompositeMetric</code><span class="sig-paren">(</span><em class="sig-param">composite_metric_name: str, intervention_validators: List[str], driven_miles_metric: Type[l5kit.cle.metrics.SupportsMetricCompute] = &lt;class 'l5kit.cle.metrics.SimulatedDrivenMilesMetric'&gt;, ignore_entire_scene: bool = False</em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.composite_metrics.PassedDrivenMilesCompositeMetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#l5kit.cle.composite_metrics.SupportsCompositeMetricCompute" title="l5kit.cle.composite_metrics.SupportsCompositeMetricCompute"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.composite_metrics.SupportsCompositeMetricCompute</span></code></a></p>
+<p>This composite metric will compute the “passed driven miles”, which
+represents the sum of driven miles up to a first intervention frame
+that is detected based on the list of specified validators.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>intervention_validators</strong> – an intervention is a defined by any
+failed frame from any of the specified
+validators.</p></li>
+<li><p><strong>driven_miles_metric</strong> – the metric that should be used as driven
+miles (defaults to simulated driven miles),
+but can also use the driven miles by the
+log replay.</p></li>
+<li><p><strong>ignore_entire_scene</strong> – if the entire driven miles from the scene
+should be ignored when there was an intervention.</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py attribute">
+<dt id="l5kit.cle.composite_metrics.PassedDrivenMilesCompositeMetric.composite_metric_name">
+<code class="sig-name descname">composite_metric_name</code><em class="property">: str</em><a class="headerlink" href="#l5kit.cle.composite_metrics.PassedDrivenMilesCompositeMetric.composite_metric_name" title="Permalink to this definition">¶</a></dt>
+<dd><p>Name of the composite metric</p>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.composite_metrics.PassedDrivenMilesCompositeMetric.compute">
+<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">metric_results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>torch.Tensor<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">validation_results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="l5kit.cle.validators.html#l5kit.cle.validators.ValidatorOutput" title="l5kit.cle.validators.ValidatorOutput">l5kit.cle.validators.ValidatorOutput</a><span class="p">]</span></span></em>, <em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; float<a class="headerlink" href="#l5kit.cle.composite_metrics.PassedDrivenMilesCompositeMetric.compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Computes the driven miles until the first intervention
+is found (first failed frame).</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>metric_results</strong> – results of the metrics required</p></li>
+<li><p><strong>validation_results</strong> – results from the validators required</p></li>
+<li><p><strong>simulation_output</strong> – output from the closed-loop simulator</p></li>
+</ul>
+</dd>
+<dt class="field-even">Tensor metric_results</dt>
+<dd class="field-even"><p>[N], where N is the number of frames in the scene</p>
+</dd>
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>passed driven miles</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.cle.composite_metrics.PassedDrivenMilesCompositeMetric.requires_metric">
+<code class="sig-name descname">requires_metric</code><em class="property">: List<span class="p">[</span>str<span class="p">]</span></em><a class="headerlink" href="#l5kit.cle.composite_metrics.PassedDrivenMilesCompositeMetric.requires_metric" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of names for metrics this composite metric depends on</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.cle.composite_metrics.PassedDrivenMilesCompositeMetric.requires_validator">
+<code class="sig-name descname">requires_validator</code><em class="property">: List<span class="p">[</span>str<span class="p">]</span></em><a class="headerlink" href="#l5kit.cle.composite_metrics.PassedDrivenMilesCompositeMetric.requires_validator" title="Permalink to this definition">¶</a></dt>
+<dd><p>List of validators that this composite metric depends on</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="l5kit.cle.composite_metrics.SupportsCompositeMetricCompute">
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.composite_metrics.</code><code class="sig-name descname">SupportsCompositeMetricCompute</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.composite_metrics.SupportsCompositeMetricCompute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
