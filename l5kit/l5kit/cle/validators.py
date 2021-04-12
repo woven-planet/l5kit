@@ -1,6 +1,8 @@
 from abc import abstractmethod
+from collections import defaultdict
 from enum import IntEnum
-from typing import Dict, List, NamedTuple, Optional, Type
+from itertools import chain, cycle
+from typing import Any, DefaultDict, Dict, List, NamedTuple, Optional, Type
 
 import torch
 from typing_extensions import Protocol
@@ -171,3 +173,116 @@ class RangeValidator(SupportsMetricValidate):
 
         is_valid_scene = len(violation_indexes) == 0
         return ValidatorOutput(is_valid_scene, violation_indexes)
+
+
+class SupportsValidationAggregation(Protocol):
+    """Protocol supporting the validation aggregation. This aggregator
+    is responsible for aggregating results from the the validators and
+    also doing a reduction step across multiple distributed nodes.
+    """
+
+    def aggregate(self, scene_validation_results:
+                  Dict[int, Dict[str, ValidatorOutput]]) -> Dict[str, Any]:
+        """This method will aggregate scenes locally and then will
+        do the reduction step to aggregate data across distributed
+        nodes.
+
+        :param scene_validation_results: results from validator
+                                         outputs per scene
+        :returns: any result (it can be a composite object with scenes and frames
+                  or just a float value) indexed by the validator name.
+        """
+        raise NotImplementedError
+
+
+class ValidationCountingAggregator(SupportsValidationAggregation):
+    """This aggregator will count (sum) the amount of invalid scenes or
+    optionally the amount of failed frames on each scene.
+
+    :param failed_frames: if True, it will count the number of frames
+                          failed instead of scenes failed.
+    """
+
+    def __init__(self, failed_frames: bool = False):
+        self.failed_frames = failed_frames
+
+    def aggregate_scenes(self, scene_validation_results:
+                         Dict[int, Dict[str, ValidatorOutput]]) -> Dict[str, Any]:
+        """Aggregate the scenes locally on each node. This method will just
+        sum the number of invalid scenes across all scenes in the node.
+
+        :param scene_validation_results: results from validator
+                                         outputs per scene
+        :returns: a dictionary with the validation metric name as keys
+                  and the sum of invalid scenes
+        """
+        aggregation: DefaultDict[str, int] = defaultdict(int)
+        for _, validator_dict in scene_validation_results.items():
+            for validator_name, validator_output in validator_dict.items():
+                # Aggregate the number of failed frames in the scene
+                if self.failed_frames:
+                    aggregation[validator_name] += len(validator_output.failed_frames)
+                else:  # or the number of scenes
+                    aggregation[validator_name] += not validator_output.is_valid_scene
+        aggregation_torch = {k: torch.as_tensor(v) for k, v in aggregation.items()}
+        return aggregation_torch
+
+    def aggregate(self, scene_validation_results:
+                  Dict[int, Dict[str, ValidatorOutput]]) -> Dict[str, Any]:
+        """This method will aggregate scenes locally.
+
+        :param scene_validation_results: results from validator
+                                         outputs per scene
+        :returns: any result (it can be a composite object with scenes and frames
+                  or just a float value) indexed by the validator name.
+        """
+        agg_scenes = self.aggregate_scenes(scene_validation_results)
+        return agg_scenes
+
+
+# TODO(perone): add the FailedFrame object
+class ValidationFailedFramesAggregator:
+    """This aggregator will aggregate all failed frames (and scenes)."""
+
+    def aggregate_scenes(self, scene_validation_results:
+                         Dict[int, Dict[str, ValidatorOutput]]) -> Dict[str, Any]:
+        """This method will aggregate the failed scene/frame tuples locally
+        at each node and then build a 1D torch tensor with the unpacked tuples such
+        as [scene, frame, scene frame, (...)], to be able to gather them later on
+        the reduction across different nodes.
+
+        :param scene_validation_results: results from validator
+                                         outputs per scene
+        :returns: a dictionary, indexed by the validator name, with
+                  1D torch tensors containing the unpacked scene/frame
+                  tuples.
+        """
+        aggregation: DefaultDict[str, List[int]] = defaultdict(list)
+
+        for scene_id, validator_dict in scene_validation_results.items():
+            # Build an 1D array with unpacked scene/frame tuples
+            for validator_name, validator_output in validator_dict.items():
+                if len(validator_output.failed_frames) > 0:
+                    # We are cycling the scene because we need to repeat
+                    # it for each frame from that scene that failed
+                    cycle_scene = cycle([scene_id])
+                    list_unziped_scene_frame = chain.from_iterable(zip(cycle_scene,
+                                                                       validator_output.failed_frames))
+                    aggregation[validator_name].extend(list_unziped_scene_frame)
+
+        aggregation_torch = {k: torch.as_tensor(v) for k, v in aggregation.items()}
+        return aggregation_torch
+
+    def aggregate(self, scene_validation_results:
+                  Dict[int, Dict[str, ValidatorOutput]]) -> Dict[str, Any]:
+        """This method will aggregate scenes locally and then will
+        do the reduction step to aggregate data across distributed
+        nodes.
+
+        :param scene_validation_results: results from validator
+                                         outputs per scene
+        :returns: any result (it can be a composite object with scenes and frames
+                  or just a float value) indexed by the validator name.
+        """
+        agg_scenes = self.aggregate_scenes(scene_validation_results)
+        return agg_scenes

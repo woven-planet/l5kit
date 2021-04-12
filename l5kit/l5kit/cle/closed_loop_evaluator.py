@@ -197,3 +197,81 @@ class EvaluationPlan:
             results = self.process_interventions(results)
 
         return results
+
+
+class ClosedLoopEvaluator:
+    """The closed loop evaluator executes a evaluation plan and keep
+    track of histograms, failed scenes, etc.
+
+    :param evaluation_plan: the specified evaluation plan
+    """
+
+    #: Results of the metrics indexed by the scene id
+    scene_metric_results: Dict[int, Dict[str, torch.Tensor]]
+    #: Results from the validation results indexed by the scene id
+    scene_validation_results: Dict[int, Dict[str, ValidatorOutput]]
+    #: Results from the composite metrics indexed by the scene id
+    scene_composite_metric_results: Dict[int, Dict[str, float]]
+
+    def __init__(self, evaluation_plan: EvaluationPlan):
+        self.evaluation_plan = evaluation_plan
+        self.scene_validation_results = {}
+        self.scene_metric_results = {}
+        self.scene_composite_metric_results = {}
+
+    def reset(self) -> None:
+        """Resets the computed stats."""
+        self.scene_validation_results = {}
+        self.scene_metric_results = {}
+        self.scene_composite_metric_results = {}
+
+    def metric_results(self) -> Dict[int, Dict[str, torch.Tensor]]:
+        """Return the computed metric results.
+
+        :return: a dictionary indexed by scene with metric name
+                 and results.
+        """
+        return self.scene_metric_results
+
+    def validation_results(self) -> Dict[int, Dict[str, ValidatorOutput]]:
+        """Return the computed validator results.
+
+        :return: a dictionary indexed by scene with validator name
+                 and results.
+        """
+        return self.scene_validation_results
+
+    def composite_metric_results(self) -> Dict[int, Dict[str, float]]:
+        """Return the computed composite metric results.
+
+        :return: a dictionary indexed by scene with composite metric name
+                 and results.
+        """
+        return self.scene_composite_metric_results
+
+    def evaluate(self, simulation_outputs: List[SimulationOutput]) -> None:
+        """Executes the evaluation plan on all outputs from the simulator.
+
+        :param simulation_outputs: the outputs from the simulator
+        """
+        # TODO(perone): local parallelization can be done here
+        for simulation_output in simulation_outputs:
+            scene_id = simulation_output.get_scene_id()
+
+            # Run metric calculation, metrics_for_scene here is a dict
+            # where the tensor is the same size of the scene
+            metrics_for_scene: Dict[str, torch.Tensor] = \
+                self.evaluation_plan.evaluate(simulation_output)
+            self.scene_metric_results[scene_id] = metrics_for_scene
+
+            # Run validators
+            validation_for_scene = self.evaluation_plan.validate(metrics_for_scene,
+                                                                 simulation_output)
+            self.scene_validation_results[scene_id] = validation_for_scene
+
+            # Run composite metrics: these are metrics that depend on the result
+            # of validators and metrics
+            cm_for_scene = self.evaluation_plan.evaluate_composite(simulation_output,
+                                                                   metrics_for_scene,
+                                                                   validation_for_scene)
+            self.scene_composite_metric_results[scene_id] = cm_for_scene
