@@ -117,15 +117,9 @@ class ClosedLoopSimulator:
         """
         sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, scene_indices, self.sim_cfg)
 
-        if self.sim_cfg.num_simulation_steps is None:
-            range_unroll = range(self.sim_cfg.start_frame_index, len(sim_dataset))
-        else:
-            end_frame_index = min(len(sim_dataset), self.sim_cfg.num_simulation_steps + self.sim_cfg.start_frame_index)
-            range_unroll = range(self.sim_cfg.start_frame_index, end_frame_index)
-
-        for frame_index in tqdm(range_unroll):
+        for frame_index in tqdm(range(len(sim_dataset))):
             next_frame_index = frame_index + 1
-            should_update = next_frame_index != range_unroll.stop
+            should_update = next_frame_index != len(sim_dataset)
 
             # AGENTS
             if not self.sim_cfg.use_agents_gt:
