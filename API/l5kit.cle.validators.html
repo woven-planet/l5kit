@@ -188,6 +188,26 @@
 </dd></dl>
 
 <dl class="py class">
+<dt id="l5kit.cle.validators.FailedFrame">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.validators.</code><code class="sig-name descname">FailedFrame</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_id</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">frame_index</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.validators.FailedFrame" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
+<p>A named-tuple composed of the scene if and the
+frame index on that scene that caused the validator to fail.</p>
+<dl class="py attribute">
+<dt id="l5kit.cle.validators.FailedFrame.frame_index">
+<code class="sig-name descname">frame_index</code><em class="property">: int</em><a class="headerlink" href="#l5kit.cle.validators.FailedFrame.frame_index" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 1</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.cle.validators.FailedFrame.scene_id">
+<code class="sig-name descname">scene_id</code><em class="property">: int</em><a class="headerlink" href="#l5kit.cle.validators.FailedFrame.scene_id" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 0</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="l5kit.cle.validators.RangeValidator">
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.validators.</code><code class="sig-name descname">RangeValidator</code><span class="sig-paren">(</span><em class="sig-param">validator_name: str, metric: Type[l5kit.cle.metrics.SupportsMetricCompute], min_value: Optional[float] = None, max_value: Optional[float] = None, violation_duration_s: float = 0.0, duration_mode: l5kit.cle.validators.DurationMode = &lt;DurationMode.TOTAL: 0&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.validators.RangeValidator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#l5kit.cle.validators.SupportsMetricValidate" title="l5kit.cle.validators.SupportsMetricValidate"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.validators.SupportsMetricValidate</span></code></a></p>
@@ -297,6 +317,124 @@ by the evaluation plan.</p>
 <dt id="l5kit.cle.validators.SupportsMetricValidate.validator_name">
 <code class="sig-name descname">validator_name</code><em class="property">: str</em><a class="headerlink" href="#l5kit.cle.validators.SupportsMetricValidate.validator_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.cle.validators.SupportsValidationAggregation">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.validators.</code><code class="sig-name descname">SupportsValidationAggregation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.validators.SupportsValidationAggregation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<p>Protocol supporting the validation aggregation. This aggregator
+is responsible for aggregating results from the the validators and
+also doing a reduction step across multiple distributed nodes.</p>
+<dl class="py method">
+<dt id="l5kit.cle.validators.SupportsValidationAggregation.aggregate">
+<code class="sig-name descname">aggregate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_validation_results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>int<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="#l5kit.cle.validators.ValidatorOutput" title="l5kit.cle.validators.ValidatorOutput">l5kit.cle.validators.ValidatorOutput</a><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><a class="headerlink" href="#l5kit.cle.validators.SupportsValidationAggregation.aggregate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will aggregate scenes locally and then will
+do the reduction step to aggregate data across distributed
+nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scene_validation_results</strong> – results from validator
+outputs per scene</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>any result (it can be a composite object with scenes and frames
+or just a float value) indexed by the validator name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.cle.validators.ValidationCountingAggregator">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.validators.</code><code class="sig-name descname">ValidationCountingAggregator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">failed_frames</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.validators.ValidationCountingAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#l5kit.cle.validators.SupportsValidationAggregation" title="l5kit.cle.validators.SupportsValidationAggregation"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.validators.SupportsValidationAggregation</span></code></a></p>
+<p>This aggregator will count (sum) the amount of invalid scenes or
+optionally the amount of failed frames on each scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>failed_frames</strong> – if True, it will count the number of frames
+failed instead of scenes failed.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="l5kit.cle.validators.ValidationCountingAggregator.aggregate">
+<code class="sig-name descname">aggregate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_validation_results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>int<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="#l5kit.cle.validators.ValidatorOutput" title="l5kit.cle.validators.ValidatorOutput">l5kit.cle.validators.ValidatorOutput</a><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><a class="headerlink" href="#l5kit.cle.validators.ValidationCountingAggregator.aggregate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will aggregate scenes locally.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scene_validation_results</strong> – results from validator
+outputs per scene</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>any result (it can be a composite object with scenes and frames
+or just a float value) indexed by the validator name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.validators.ValidationCountingAggregator.aggregate_scenes">
+<code class="sig-name descname">aggregate_scenes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_validation_results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>int<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="#l5kit.cle.validators.ValidatorOutput" title="l5kit.cle.validators.ValidatorOutput">l5kit.cle.validators.ValidatorOutput</a><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><a class="headerlink" href="#l5kit.cle.validators.ValidationCountingAggregator.aggregate_scenes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aggregate the scenes locally on each node. This method will just
+sum the number of invalid scenes across all scenes in the node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scene_validation_results</strong> – results from validator
+outputs per scene</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dictionary with the validation metric name as keys
+and the sum of invalid scenes</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.cle.validators.ValidationFailedFramesAggregator">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.validators.</code><code class="sig-name descname">ValidationFailedFramesAggregator</code><a class="headerlink" href="#l5kit.cle.validators.ValidationFailedFramesAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
+<p>This aggregator will aggregate all failed frames (and scenes).</p>
+<dl class="py method">
+<dt id="l5kit.cle.validators.ValidationFailedFramesAggregator.aggregate">
+<code class="sig-name descname">aggregate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_validation_results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>int<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="#l5kit.cle.validators.ValidatorOutput" title="l5kit.cle.validators.ValidatorOutput">l5kit.cle.validators.ValidatorOutput</a><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><a class="headerlink" href="#l5kit.cle.validators.ValidationFailedFramesAggregator.aggregate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will aggregate scenes locally and then will
+do the reduction step to aggregate data across distributed
+nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scene_validation_results</strong> – results from validator
+outputs per scene</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>any result (it can be a composite object with scenes and frames
+or just a float value) indexed by the validator name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.validators.ValidationFailedFramesAggregator.aggregate_scenes">
+<code class="sig-name descname">aggregate_scenes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_validation_results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>int<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span><a class="reference internal" href="#l5kit.cle.validators.ValidatorOutput" title="l5kit.cle.validators.ValidatorOutput">l5kit.cle.validators.ValidatorOutput</a><span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><a class="headerlink" href="#l5kit.cle.validators.ValidationFailedFramesAggregator.aggregate_scenes" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will aggregate the failed scene/frame tuples locally
+at each node and then build a 1D torch tensor with the unpacked tuples such
+as [scene, frame, scene frame, (…)], to be able to gather them later on
+the reduction across different nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scene_validation_results</strong> – results from validator
+outputs per scene</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dictionary, indexed by the validator name, with
+FailedFrame list containing the scene/frames failed.</p>
+</dd>
+</dl>
+</dd></dl>
 
 </dd></dl>
 
