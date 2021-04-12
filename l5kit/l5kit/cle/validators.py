@@ -1,7 +1,6 @@
 from abc import abstractmethod
 from collections import defaultdict
 from enum import IntEnum
-from itertools import chain, cycle
 from typing import Any, DefaultDict, Dict, List, NamedTuple, Optional, Type
 
 import torch

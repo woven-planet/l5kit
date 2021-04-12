@@ -1,5 +1,5 @@
 import unittest
-from typing import Any, Dict
+from typing import Dict
 from unittest import mock
 
 import torch
