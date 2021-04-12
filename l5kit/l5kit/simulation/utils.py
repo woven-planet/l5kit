@@ -106,11 +106,12 @@ def get_frames_subset(dataset: ChunkedDataset, frame_start_idx: int, frame_end_i
 
     new_dataset = ChunkedDataset("")
     new_dataset.scenes = dataset.scenes.copy()
-    new_dataset.scenes[0]["frame_index_interval"] = (frame_start_idx, frame_end_idx)
     new_dataset.scenes[0]["start_time"] = dataset.frames[frame_start_idx]["timestamp"]
     new_dataset.scenes[0]["end_time"] = dataset.frames[frame_end_idx - 1]["timestamp"]
 
     new_dataset.frames = dataset.frames[frame_start_idx:frame_end_idx].copy()
+    new_dataset.scenes[0]["frame_index_interval"] = (0, len(new_dataset.frames))
+
     agent_slice = get_agents_slice_from_frames(*dataset.frames[[frame_start_idx, frame_end_idx - 1]])
     tls_slice = get_tl_faces_slice_from_frames(*dataset.frames[[frame_start_idx, frame_end_idx - 1]])
     new_dataset.frames["agent_index_interval"] -= new_dataset.frames["agent_index_interval"][0, 0]

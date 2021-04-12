@@ -291,6 +291,7 @@ def test_dataset_frames_subset(zarr_dataset: ChunkedDataset) -> None:
 
     assert np.all(zarr_cut.agents == zarr_dataset.agents[agents_slice])
     assert np.all(zarr_cut.tl_faces == zarr_dataset.tl_faces[tls_slice])
+    assert np.all(zarr_cut.scenes["frame_index_interval"] == (0, len(zarr_cut.frames)))
 
 
 def test_mock_dataset_frames_subset() -> None:
