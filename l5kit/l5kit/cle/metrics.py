@@ -107,3 +107,50 @@ class DistanceToRefTrajectoryMetric(SupportsMetricCompute):
         distance = l5metrics.distance_to_reference_trajectory(simulated_centroid_fraction,
                                                               observed_ego_states)
         return distance
+
+
+class SimulatedDrivenMilesMetric:
+    """This metric will compute the driven miles per frame for the simulated
+    trajectory (as opposed to the one in the log replay)."""
+    metric_name = "simulated_driven_miles"
+    METER_TO_MILES = 0.000621371
+
+    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+        """Compute the metric on all frames of the scene.
+
+        :param simulation_output: the output from the closed-loop simulation
+        :returns: driven miles per each frame
+        """
+        simulated_scene_ego_state = simulation_output.simulated_ego_states
+        simulated_centroid = simulated_scene_ego_state[:, :2]  # [Timesteps, 2]
+        simulated_centroid = simulated_centroid.to(torch.float64)
+
+        drive_meters = torch.linalg.norm(simulated_centroid[1:] - simulated_centroid[0:-1], dim=1)
+        pad = torch.as_tensor([0.], device=simulated_centroid.device)
+        pad_drive_meters = torch.cat((pad, drive_meters))
+        driven_miles = pad_drive_meters * self.METER_TO_MILES
+        return driven_miles
+
+
+class ReplayDrivenMilesMetric:
+    """This metric will compute the driven miles per frame for the observed
+    trajectory, the one in the log replay (as opposed to the one simulated)."""
+    metric_name = "replay_driven_miles"
+    METER_TO_MILES = 0.000621371
+
+    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+        """Compute the metric on all frames of the scene.
+
+        :param simulation_output: the output from the closed-loop simulation
+        :returns: driven miles per each frame
+        """
+        observed_ego_states_centroid = simulation_output.recorded_ego_states[:, :2]  # [Timesteps, 2]
+        observed_ego_states_centroid = observed_ego_states_centroid.to(torch.float64)
+
+        drive_meters = \
+            torch.linalg.norm(observed_ego_states_centroid[1:]
+                              - observed_ego_states_centroid[0:-1], dim=1)
+        pad = torch.as_tensor([0.], device=observed_ego_states_centroid.device)
+        pad_drive_meters = torch.cat((pad, drive_meters))
+        driven_miles = pad_drive_meters * self.METER_TO_MILES
+        return driven_miles

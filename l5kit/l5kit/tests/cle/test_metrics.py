@@ -197,3 +197,75 @@ class TestDistanceToRefTrajectory(unittest.TestCase):
         metric = metrics.DistanceToRefTrajectoryMetric()
         with self.assertRaisesRegex(ValueError, "More simulated timesteps than observed"):
             _ = metric.compute(sim_output)
+
+
+class TestSimulatedDrivenMilesMetric(unittest.TestCase):
+    def test_no_movement_trajectory(self) -> None:
+        timesteps = 20
+        attrs = {
+            "simulated_ego_states": torch.ones(timesteps, 7),
+        }
+        sim_output = mock.Mock(**attrs)
+        metric = metrics.SimulatedDrivenMilesMetric()
+        result = metric.compute(sim_output)
+        self.assertEqual(result.size(0), timesteps)
+        self.assertEqual(result.sum().item(), 0.0)
+
+    def test_one_axis_movement_trajectory(self) -> None:
+        timesteps = 20
+        attrs = {
+            "simulated_ego_states": torch.ones(timesteps, 7),
+        }
+        # Set one coordinate to always 1 and keep the other
+        # increasing
+        increasing_tensor = torch.tensor([i for i in range(timesteps)])
+        attrs["simulated_ego_states"][..., 1] += increasing_tensor
+        sim_output = mock.Mock(**attrs)
+        metric = metrics.SimulatedDrivenMilesMetric()
+        result = metric.compute(sim_output)
+        self.assertEqual(result.size(0), timesteps)
+
+        # How much is moved for each frame in miles (one meter per frame)
+        single_step_miles = 1.0 * metrics.SimulatedDrivenMilesMetric.METER_TO_MILES
+        expected_driven_miles = single_step_miles * (timesteps - 1)
+        self.assertAlmostEqual(result.sum().item(),
+                               expected_driven_miles, places=3)
+        # Should have only a zero for the first step and then
+        # the same step for other frames
+        self.assertEqual(len(result.unique()), 2)
+
+
+class TestReplayDrivenMilesMetric(unittest.TestCase):
+    def test_no_movement_trajectory(self) -> None:
+        timesteps = 20
+        attrs = {
+            "recorded_ego_states": torch.ones(timesteps, 7),
+        }
+        sim_output = mock.Mock(**attrs)
+        metric = metrics.ReplayDrivenMilesMetric()
+        result = metric.compute(sim_output)
+        self.assertEqual(result.size(0), timesteps)
+        self.assertEqual(result.sum().item(), 0.0)
+
+    def test_one_axis_movement_trajectory(self) -> None:
+        timesteps = 20
+        tensor_ego_states = torch.ones(timesteps, 7)
+        # Set one coordinate to always 1 and keep the other
+        # increasing
+        tensor_ego_states[:, 0] += torch.arange(0, timesteps)
+        attrs = {
+            "recorded_ego_states": tensor_ego_states,
+        }
+        sim_output = mock.Mock(**attrs)
+        metric = metrics.ReplayDrivenMilesMetric()
+        result = metric.compute(sim_output)
+        self.assertEqual(result.size(0), timesteps)
+
+        # How much is moved for each frame in miles (one meter per frame)
+        single_step_miles = 1.0 * metrics.ReplayDrivenMilesMetric.METER_TO_MILES
+        expected_driven_miles = single_step_miles * (timesteps - 1)
+        self.assertAlmostEqual(result.sum().item(),
+                               expected_driven_miles, places=3)
+        # Should have only a zero for the first step and then
+        # the same step for other frames
+        self.assertEqual(len(result.unique()), 2)
