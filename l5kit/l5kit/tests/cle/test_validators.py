@@ -96,11 +96,11 @@ class TestValidationFrameAggregator(unittest.TestCase):
         failed_frames.assert_called()
 
         # Size of tensor should be:
-        # 4 failed scene frames * 2 (tuple of scene/frame)
-        # Give that we have only 1 scene
-        self.assertEqual(agg_scenes["mock_validator1"].size(0), 4 * 2)
+        # 4 failed scene frames, given that we have only 1 scene
+        print(agg_scenes)
+        self.assertEqual(agg_scenes["mock_validator1"].size(0), 4)
 
         # Size of tensor should be:
-        # 4 failed scene frames * 2 (tuple of scene/frame) * 2 (scenes)
-        # Give that we have 2 scenes for this validator
-        self.assertEqual(agg_scenes["mock_validator2"].size(0), 4 * 2 * 2)
+        # 4 failed scene frames * 2 (scenes)
+        # Given that we have 2 scenes for this validator
+        self.assertEqual(agg_scenes["mock_validator2"].size(0), 4 * 2)

@@ -240,7 +240,13 @@ class ValidationCountingAggregator(SupportsValidationAggregation):
         return agg_scenes
 
 
-# TODO(perone): add the FailedFrame object
+class FailedFrame(NamedTuple):
+    """A named-tuple composed of the scene if and the
+    frame index on that scene that caused the validator to fail."""
+    scene_id: int
+    frame_index: int
+
+
 class ValidationFailedFramesAggregator:
     """This aggregator will aggregate all failed frames (and scenes)."""
 
@@ -254,21 +260,16 @@ class ValidationFailedFramesAggregator:
         :param scene_validation_results: results from validator
                                          outputs per scene
         :returns: a dictionary, indexed by the validator name, with
-                  1D torch tensors containing the unpacked scene/frame
-                  tuples.
+                  FailedFrame list containing the scene/frames failed.
         """
-        aggregation: DefaultDict[str, List[int]] = defaultdict(list)
+        aggregation: DefaultDict[str, List[FailedFrame]] = defaultdict(list)
 
         for scene_id, validator_dict in scene_validation_results.items():
-            # Build an 1D array with unpacked scene/frame tuples
             for validator_name, validator_output in validator_dict.items():
                 if len(validator_output.failed_frames) > 0:
-                    # We are cycling the scene because we need to repeat
-                    # it for each frame from that scene that failed
-                    cycle_scene = cycle([scene_id])
-                    list_unziped_scene_frame = chain.from_iterable(zip(cycle_scene,
-                                                                       validator_output.failed_frames))
-                    aggregation[validator_name].extend(list_unziped_scene_frame)
+                    failed_fames = [FailedFrame(scene_id, frame_index)
+                                    for frame_index in validator_output.failed_frames]
+                    aggregation[validator_name].extend(failed_fames)
 
         aggregation_torch = {k: torch.as_tensor(v) for k, v in aggregation.items()}
         return aggregation_torch
