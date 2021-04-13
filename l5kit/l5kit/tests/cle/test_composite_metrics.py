@@ -1,5 +1,5 @@
 import unittest
-from typing import Dict
+from typing import Any, Dict
 from unittest import mock
 
 import torch
@@ -131,3 +131,30 @@ class TestDrivenMilesCompositeMetric(unittest.TestCase):
         simulation_output.assert_not_called()
         validation_results.assert_not_called()
         self.assertEqual(result, driven_tensor_monotonic.sum())
+
+
+class TestCompositeMetricReductionAggregator(unittest.TestCase):
+    def test_aggregate_scenes(self) -> None:
+        agg = cm.CompositeMetricAggregator()
+
+        # Scenario: all zeros, 2 composite metrics, 3 scenes
+        scene_cm_mock: Dict[int, Dict[str, float]] = {
+            0: {"mock_cm_metric1": 0.0},
+            1: {"mock_cm_metric2": 0.0},
+            2: {"mock_cm_metric2": 0.0}
+        }
+        agg_scenes = agg.aggregate_scenes(scene_cm_mock)
+        self.assertEqual(len(agg_scenes), 2)
+        self.assertEqual(agg_scenes["mock_cm_metric1"].item(), 0.0)
+        self.assertEqual(agg_scenes["mock_cm_metric2"].item(), 0.0)
+
+        # Scenario: all ones, 2 composite metrics, 3 scenes
+        scene_cm_mock = {
+            0: {"mock_cm_metric1": 1.0},
+            1: {"mock_cm_metric2": 1.0},
+            2: {"mock_cm_metric2": 1.0}
+        }
+        agg_scenes = agg.aggregate_scenes(scene_cm_mock)
+        self.assertEqual(len(agg_scenes), 2)
+        self.assertEqual(agg_scenes["mock_cm_metric1"].item(), 1.0)
+        self.assertEqual(agg_scenes["mock_cm_metric2"].item(), 2.0)
