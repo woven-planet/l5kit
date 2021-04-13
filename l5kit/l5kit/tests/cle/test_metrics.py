@@ -1,10 +1,41 @@
 import unittest
+from typing import Any
 from unittest import mock
 
 import torch
 
 from l5kit.cle import metrics
 from l5kit.evaluation import error_functions
+from l5kit.evaluation import metrics as l5metrics
+
+
+class TestCollisionMetric(unittest.TestCase):
+    @staticmethod
+    def create_dummy_metric(dummy_metric_name: str = "dummy_metric") -> Any:
+        class DummyMetric(metrics.CollisionMetricBase):
+            metric_name = dummy_metric_name
+
+            def __init__(self) -> None:
+                super().__init__(l5metrics.CollisionType.FRONT)
+
+        return DummyMetric()
+
+    def test_attributes(self) -> None:
+        dummy_metric_name = "dummy_metric"
+        dummy_metric = TestCollisionMetric.create_dummy_metric(dummy_metric_name)
+        self.assertEqual(dummy_metric.collision_type,
+                         l5metrics.CollisionType.FRONT)
+        self.assertEqual(dummy_metric.metric_name,
+                         dummy_metric_name)
+
+    def test_collision_types(self) -> None:
+        collision_metric_match = {
+            l5metrics.CollisionType.FRONT: metrics.CollisionFrontMetric(),
+            l5metrics.CollisionType.SIDE: metrics.CollisionSideMetric(),
+            l5metrics.CollisionType.REAR: metrics.CollisionRearMetric(),
+        }
+        for collision_type, metric in collision_metric_match.items():
+            self.assertEqual(metric.collision_type, collision_type)
 
 
 class TestDisplacementErrorMetric(unittest.TestCase):
