@@ -176,7 +176,7 @@ class CompositeMetricAggregator(SupportsCompositeMetricAggregation):
     def __init__(self, reduce_mode: ReduceMode = ReduceMode.SUM):
         # Supporting only ReduceMode.SUM for the moment
         if reduce_mode != ReduceMode.SUM:
-            raise ValueError(f"Reduce mode {reduce_mode=} not implemented.")
+            raise ValueError(f"Reduce mode {reduce_mode} not implemented.")
         self.reduce_mode = reduce_mode
 
     def aggregate_scenes(self, scene_composite_metric_results:
