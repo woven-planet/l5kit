@@ -171,6 +171,69 @@
   <div class="section" id="module-l5kit.cle.metrics">
 <span id="l5kit-cle-metrics-module"></span><h1>l5kit.cle.metrics module<a class="headerlink" href="#module-l5kit.cle.metrics" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
+<dt id="l5kit.cle.metrics.CollisionFrontMetric">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">CollisionFrontMetric</code><a class="headerlink" href="#l5kit.cle.metrics.CollisionFrontMetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.CollisionMetricBase" title="l5kit.cle.metrics.CollisionMetricBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.CollisionMetricBase</span></code></a></p>
+<p>Computes the front collision metric.</p>
+<dl class="py attribute">
+<dt id="l5kit.cle.metrics.CollisionFrontMetric.metric_name">
+<code class="sig-name descname">metric_name</code><em class="property"> = 'collision_front'</em><a class="headerlink" href="#l5kit.cle.metrics.CollisionFrontMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.cle.metrics.CollisionMetricBase">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">CollisionMetricBase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collision_type</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.CollisionType" title="l5kit.evaluation.metrics.CollisionType">l5kit.evaluation.metrics.CollisionType</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.CollisionMetricBase" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
+<p>This is the abstract base class for the collision metric.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>collision_type</strong> – the type of collision to compute</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="l5kit.cle.metrics.CollisionMetricBase.compute">
+<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.CollisionMetricBase.compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the metric on all frames of the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>simulation_output</strong> – the output from the closed-loop simulation</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>collision per frame (a 1D array with the same size of the
+number of frames, where 1 means a colision, 0 otherwise)</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.cle.metrics.CollisionRearMetric">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">CollisionRearMetric</code><a class="headerlink" href="#l5kit.cle.metrics.CollisionRearMetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.CollisionMetricBase" title="l5kit.cle.metrics.CollisionMetricBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.CollisionMetricBase</span></code></a></p>
+<p>Computes the rear collision metric.</p>
+<dl class="py attribute">
+<dt id="l5kit.cle.metrics.CollisionRearMetric.metric_name">
+<code class="sig-name descname">metric_name</code><em class="property"> = 'collision_rear'</em><a class="headerlink" href="#l5kit.cle.metrics.CollisionRearMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.cle.metrics.CollisionSideMetric">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">CollisionSideMetric</code><a class="headerlink" href="#l5kit.cle.metrics.CollisionSideMetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.CollisionMetricBase" title="l5kit.cle.metrics.CollisionMetricBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.CollisionMetricBase</span></code></a></p>
+<p>Computes the side collision metric.</p>
+<dl class="py attribute">
+<dt id="l5kit.cle.metrics.CollisionSideMetric.metric_name">
+<code class="sig-name descname">metric_name</code><em class="property"> = 'collision_side'</em><a class="headerlink" href="#l5kit.cle.metrics.CollisionSideMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="l5kit.cle.metrics.DisplacementErrorL2Metric">
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">DisplacementErrorL2Metric</code><a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorL2Metric" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.DisplacementErrorMetric" title="l5kit.cle.metrics.DisplacementErrorMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.DisplacementErrorMetric</span></code></a></p>
