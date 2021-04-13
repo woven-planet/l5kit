@@ -4,6 +4,7 @@ import numpy as np
 import torch
 from typing_extensions import Protocol
 
+from l5kit.data import get_agents_slice_from_frames
 from l5kit.evaluation import error_functions
 from l5kit.evaluation import metrics as l5metrics
 from l5kit.rasterization import EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH
@@ -65,6 +66,7 @@ class CollisionMetricBase(ABC):
         """
         simulated_scene_ego_state = simulation_output.simulated_ego_states
         simulated_agents = simulation_output.simulated_agents
+        simulated_egos = simulation_output.simulated_ego
 
         if len(simulated_agents) < len(simulated_scene_ego_state):
             raise ValueError("More simulated timesteps than observed.")
@@ -72,9 +74,10 @@ class CollisionMetricBase(ABC):
         num_frames = simulated_scene_ego_state.size(0)
         metric_results = torch.zeros(num_frames, device=simulated_scene_ego_state.device)
         for frame_idx in range(num_frames):
-            simulated_agent_frame = simulated_agents[frame_idx]
-            simulated_frame_ego_frame = simulated_scene_ego_state[frame_idx]
-            result = self._compute_frame(simulated_agent_frame, simulated_frame_ego_frame)
+            simulated_ego_state_frame = simulated_scene_ego_state[frame_idx]
+            simulated_ego_frame = simulated_egos[frame_idx]
+            simulated_agent_frame = simulated_agents[get_agents_slice_from_frames(simulated_ego_frame)]
+            result = self._compute_frame(simulated_agent_frame, simulated_ego_state_frame)
             metric_results[frame_idx] = result
         return metric_results
 
