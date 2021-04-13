@@ -1,6 +1,6 @@
 from collections import defaultdict
 from enum import IntEnum
-from typing import Dict, List, NamedTuple, Optional, Tuple
+from typing import DefaultDict, Dict, List, NamedTuple, Optional, Tuple
 
 import numpy as np
 import torch
@@ -9,6 +9,7 @@ from tqdm.auto import tqdm
 
 from l5kit.data import AGENT_DTYPE, PERCEPTION_LABEL_TO_INDEX
 from l5kit.dataset import EgoDataset
+from l5kit.dataset.utils import move_to_device, move_to_numpy
 from l5kit.geometry import rotation33_as_yaw, transform_points
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 
@@ -141,8 +142,8 @@ class ClosedLoopSimulator:
         """
         sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, scene_indices, self.sim_cfg)
 
-        agents_ins_outs: Dict[int, List[List[UnrollInputOutput]]] = {k: [] for k in scene_indices}
-        ego_ins_outs: Dict[int, List[UnrollInputOutput]] = {k: [] for k in scene_indices}
+        agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]] = defaultdict(list)
+        ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]] = defaultdict(list)
 
         for frame_index in tqdm(range(len(sim_dataset)), disable=not self.sim_cfg.show_info):
             next_frame_index = frame_index + 1
@@ -153,12 +154,11 @@ class ClosedLoopSimulator:
                 agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
                 if len(agents_input):  # agents may not be available
                     agents_input_dict = default_collate(list(agents_input.values()))
-                    agents_input_dict = {k: v.to(self.device) for k, v in agents_input_dict.items()}
-                    agents_output_dict = self.model_agents(agents_input_dict)
+                    agents_output_dict = self.model_agents(move_to_device(agents_input_dict, self.device))
 
                     # for update we need everything as numpy
-                    agents_input_dict = {k: v.cpu().numpy() for k, v in agents_input_dict.items()}
-                    agents_output_dict = {k: v.cpu().numpy() for k, v in agents_output_dict.items()}
+                    agents_input_dict = move_to_numpy(agents_input_dict)
+                    agents_output_dict = move_to_numpy(agents_output_dict)
 
                     if should_update:
                         self.update_agents(sim_dataset, next_frame_index, agents_input_dict, agents_output_dict)
@@ -172,11 +172,10 @@ class ClosedLoopSimulator:
             if not self.sim_cfg.use_ego_gt:
                 ego_input = sim_dataset.rasterise_frame_batch(frame_index)
                 ego_input_dict = default_collate(ego_input)
-                ego_input_dict = {k: v.to(self.device) for k, v in ego_input_dict.items()}
-                ego_output_dict = self.model_ego(ego_input_dict)
+                ego_output_dict = self.model_ego(move_to_device(ego_input_dict, self.device))
 
-                ego_input_dict = {k: v.cpu().numpy() for k, v in ego_input_dict.items()}
-                ego_output_dict = {k: v.cpu().numpy() for k, v in ego_output_dict.items()}
+                ego_input_dict = move_to_numpy(ego_input_dict)
+                ego_output_dict = move_to_numpy(ego_output_dict)
 
                 if should_update:
                     self.update_ego(sim_dataset, next_frame_index, ego_input_dict, ego_output_dict)
