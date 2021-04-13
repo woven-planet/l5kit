@@ -19,7 +19,7 @@ class SimulationConfig(NamedTuple):
     :param distance_th_close: if a new agent is closer than this value to ego, it will be controlled
     :param start_frame_index: the start index of the simulation
     :param num_simulation_steps: the number of step to simulate
-    :param disable_tqdm: whether to disable tqdm during unroll
+    :param show_info: whether to show info logging during unroll
     """
     use_ego_gt: bool
     use_agents_gt: bool
@@ -28,7 +28,7 @@ class SimulationConfig(NamedTuple):
     distance_th_close: float
     start_frame_index: int = 0
     num_simulation_steps: Optional[int] = None
-    disable_tqdm: bool = True
+    show_info: bool = False
 
 
 class SimulationDataset:
