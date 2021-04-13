@@ -34,7 +34,7 @@ class CollisionMetricBase(ABC):
     def __init__(self, collision_type: l5metrics.CollisionType) -> None:
         self.collision_type = collision_type
 
-    def _compute_frame(self, recorded_agents: np.ndarray,
+    def _compute_frame(self, simulated_agent_frame: np.ndarray,
                        simulated_frame_ego_state: torch.Tensor) -> float:
         """Detects collision per frame of the scene.
 
@@ -49,7 +49,7 @@ class CollisionMetricBase(ABC):
         simulated_angle = simulated_frame_ego_state[TrajectoryStateIndices.THETA].cpu().numpy()
         simulated_extent = np.r_[EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH]
         collision_ret = l5metrics.detect_collision(simulated_centroid, simulated_angle,
-                                                   simulated_extent, recorded_agents)
+                                                   simulated_extent, simulated_agent_frame)
         if collision_ret is not None:
             if collision_ret[0] == self.collision_type:
                 return 1.0
@@ -72,9 +72,9 @@ class CollisionMetricBase(ABC):
         num_frames = simulated_scene_ego_state.size(0)
         metric_results = torch.zeros(num_frames, device=simulated_scene_ego_state.device)
         for frame_idx in range(num_frames):
-            recorded_agent_frame = simulated_agents[frame_idx]
+            simulated_agent_frame = simulated_agents[frame_idx]
             simulated_frame_ego_frame = simulated_scene_ego_state[frame_idx]
-            result = self._compute_frame(recorded_agent_frame, simulated_frame_ego_frame)
+            result = self._compute_frame(simulated_agent_frame, simulated_frame_ego_frame)
             metric_results[frame_idx] = result
         return metric_results
 
