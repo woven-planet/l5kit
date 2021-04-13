@@ -1,3 +1,4 @@
+from abc import abstractmethod
 from collections import defaultdict
 from enum import IntEnum
 from typing import Any, DefaultDict, Dict, List, Type
@@ -20,6 +21,7 @@ class SupportsCompositeMetricCompute(Protocol):
     #: List of validators that this composite metric depends on
     requires_validator: List[str]
 
+    @abstractmethod
     def compute(self, metric_results: Dict[str, torch.Tensor],
                 validation_results: Dict[str, validators.ValidatorOutput],
                 simulation_output: SimulationOutput) -> float:
