@@ -171,3 +171,35 @@ def test_unroll_subset(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, 
         ego_tr = sim_out.simulated_ego["ego_translation"][: sim_cfg.num_simulation_steps, :2]
         ego_dist = np.linalg.norm(np.diff(ego_tr, axis=0), axis=-1)
         assert np.allclose(ego_dist, 1.0)
+
+
+def test_get_in_out_mock() -> None:
+    with pytest.raises(ValueError):
+        # repeated scene not allowed
+        ClosedLoopSimulator.get_ego_in_out({"scene_index": np.ones(3)}, {"value": np.ones(3)})
+
+    input_ego_dict = {"scene_index": np.asarray([0, 1, 2]), "track_id": np.full(3, -1)}
+    output_ego_dict = {"output_value": input_ego_dict["scene_index"]}
+
+    out = ClosedLoopSimulator.get_ego_in_out(input_ego_dict, output_ego_dict)
+
+    # we should have 3 elements (one per scene)
+    assert len(out) == 3
+    for scene_index in input_ego_dict["scene_index"]:
+        assert scene_index in out
+        assert out[scene_index].track_id == -1
+        assert out[scene_index].outputs["output_value"] == scene_index
+
+    # for agents repeated scenes are allowed
+    input_agents_dict = {"scene_index": np.asarray([0, 0, 2]), "track_id": np.asarray([0, 1, 0])}
+    output_agents_dict = {"output_value_1": input_agents_dict["scene_index"],
+                          "output_value_2": input_agents_dict["track_id"]}
+    out = ClosedLoopSimulator.get_agents_in_out(input_agents_dict, output_agents_dict)
+
+    assert len(out[0]) == 2
+    assert len(out[2]) == 1
+
+    for scene_index, scene_out in out.items():
+        for agent_out in scene_out:
+            assert agent_out.outputs["output_value_1"] == scene_index
+            assert agent_out.outputs["output_value_2"] == agent_out.track_id

@@ -95,6 +95,9 @@ class SimulationDataset:
         :param sim_cfg: a simulation config
         :return: the new SimulationDataset
         """
+        if len(np.unique(scene_indices)) != len(scene_indices):
+            raise ValueError(f"can't simulate repeated scenes: {scene_indices}")
+
         if np.any(np.asarray(scene_indices) >= len(dataset.dataset.scenes)):
             raise ValueError(
                 f"can't pick indices {scene_indices} from dataset with length: {len(dataset.dataset.scenes)}")

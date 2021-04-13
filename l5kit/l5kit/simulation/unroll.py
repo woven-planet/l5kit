@@ -249,7 +249,11 @@ class ClosedLoopSimulator:
         :return: the dict mapping scene index to a single UnrollInputOutput.
         """
         ret_dict = {}
-        for idx_ego in range(len(input_dict["track_id"])):
+        scene_indices = input_dict["scene_index"]
+        if len(np.unique(scene_indices)) != len(scene_indices):
+            raise ValueError(f"repeated scene_index for ego! {scene_indices}")
+
+        for idx_ego in range(len(scene_indices)):
             ego_in = {k: v[idx_ego] for k, v in input_dict.items()}
             ego_out = {k: v[idx_ego] for k, v in output_dict.items()}
             ret_dict[ego_in["scene_index"]] = UnrollInputOutput(track_id=ego_in["track_id"],
