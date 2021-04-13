@@ -160,6 +160,17 @@ def test_unroll_subset(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, 
         assert zarr_cat_dataset.frames[0] != sim_out.recorded_dataset.dataset.frames[0]
         assert zarr_cat_dataset.frames[0] != sim_out.simulated_dataset.dataset.frames[0]
 
+        for ego_in_out in sim_out.ego_ins_outs:
+            assert "positions" in ego_in_out.outputs and "yaws" in ego_in_out.outputs
+            assert np.allclose(ego_in_out.outputs["positions"][:, 0], 1.0)
+            assert np.allclose(ego_in_out.outputs["positions"][:, 1], 0.0)
+
+        for agents_in_out in sim_out.agents_ins_outs:
+            for agent_in_out in agents_in_out:
+                assert "positions" in agent_in_out.outputs and "yaws" in agent_in_out.outputs
+                assert np.allclose(agent_in_out.outputs["positions"][:, 0], 0.5)
+                assert np.allclose(agent_in_out.outputs["positions"][:, 1], 0.0)
+
         if None not in frame_range:
             assert len(sim_out.recorded_dataset.dataset.frames) == frame_range[1]
             assert len(sim_out.simulated_dataset.dataset.frames) == frame_range[1]
@@ -167,6 +178,7 @@ def test_unroll_subset(zarr_cat_dataset: ChunkedDataset, dmg: LocalDataManager, 
             assert len(sim_out.recorded_ego_states) == frame_range[1]
             assert len(sim_out.recorded_ego) == frame_range[1]
             assert len(sim_out.simulated_ego) == frame_range[1]
+            assert len(sim_out.ego_ins_outs) == len(sim_out.agents_ins_outs) == frame_range[1]
 
         ego_tr = sim_out.simulated_ego["ego_translation"][: sim_cfg.num_simulation_steps, :2]
         ego_dist = np.linalg.norm(np.diff(ego_tr, axis=0), axis=-1)
