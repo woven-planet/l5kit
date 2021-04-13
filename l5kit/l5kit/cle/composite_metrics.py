@@ -1,10 +1,10 @@
 from abc import abstractmethod
+from collections import defaultdict
+from enum import IntEnum
 from typing import Any, DefaultDict, Dict, List, Type
 
 import torch
 from typing_extensions import Protocol
-from enum import IntEnum
-from collections import defaultdict
 
 from l5kit.cle import metrics, validators
 from l5kit.cle.metrics import SupportsMetricCompute
