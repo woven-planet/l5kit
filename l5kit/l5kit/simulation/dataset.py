@@ -127,7 +127,11 @@ class SimulationDataset:
         :param state_index: the frame index
         :return: a list of dict from EgoDatasets
         """
-        frame_batch = [scene_dt[state_index] for scene_dt in self.scene_dataset_batch.values()]
+        frame_batch = []
+        for scene_idx, scene_dt in self.scene_dataset_batch.items():
+            frame = scene_dt[state_index]
+            frame["scene_index"] = scene_idx  # set the scene to the right index
+            frame_batch.append(frame)
         return frame_batch
 
     def set_ego(self, state_index: int, output_index: int, ego_translations: np.ndarray,
