@@ -1,5 +1,7 @@
 from abc import abstractmethod
-from typing import Dict, List, Type
+from collections import defaultdict
+from enum import IntEnum
+from typing import Any, DefaultDict, Dict, List, Type
 
 import torch
 from typing_extensions import Protocol
@@ -130,3 +132,75 @@ class DrivenMilesCompositeMetric(SupportsCompositeMetricCompute):
         driven_miles = metric_results[self.driven_miles_metric_name].sum()
         driven_miles_cpu = driven_miles.cpu().item()
         return float(driven_miles_cpu)
+
+
+class SupportsCompositeMetricAggregation(Protocol):
+    """Protocol supporting the composite metric aggregation. This aggregator
+    is responsible for aggregating results from the the composite metrics and
+    also doing a reduction across multiple distributed nodes.
+    """
+
+    def aggregate(self, scene_composite_metric_results:
+                  Dict[int, Dict[str, float]]) -> Dict[str, Any]:
+        """This method will aggregate scenes locally and then will
+        do the reduction step to aggregate data across distributed
+        nodes.
+
+        :param scene_composite_metric_results: results from composite metric
+                                               outputs per scene
+        :returns: any result indexed by the composite metric name.
+        """
+        raise NotImplementedError
+
+
+class ReduceMode(IntEnum):
+    """Reduction modes supported by the composite metric aggregator."""
+    #: Summation of results locally and across nodes
+    SUM = 0
+
+
+class CompositeMetricAggregator(SupportsCompositeMetricAggregation):
+    """Aggregates composite metric results locally and across multiple
+    distributed nodes.
+
+    :param reduce_mode: the reduce operation to be applied both into
+                        local scenes and also across distributed
+                        nodes.
+    """
+    def __init__(self, reduce_mode: ReduceMode = ReduceMode.SUM):
+        # Supporting only ReduceMode.SUM for the moment
+        if reduce_mode not in set(ReduceMode):
+            raise ValueError(f"Reduce mode {reduce_mode} not implemented.")
+        self.reduce_mode = reduce_mode
+
+    def aggregate_scenes(self, scene_composite_metric_results:
+                         Dict[int, Dict[str, float]]) -> Dict[str, Any]:
+        """Aggregate the scenes locally on each node. This method will just
+        sum the number of invalid scenes across all scenes in the node.
+
+        :param scene_composite_metric_results: results from composite metric
+                                               outputs per scene
+        :returns: a dictionary with the composite metric name as keys
+                  and the reduction of the composite metrics
+        """
+        if self.reduce_mode == ReduceMode.SUM:
+            aggregation: DefaultDict[str, float] = defaultdict(float)
+            for _, cm_dict in scene_composite_metric_results.items():
+                for validator_name, cm_output in cm_dict.items():
+                    aggregation[validator_name] += cm_output
+            aggregation_torch = {k: torch.as_tensor(v) for k, v in aggregation.items()}
+            return aggregation_torch
+        return {}
+
+    def aggregate(self, scene_composite_metric_results:
+                  Dict[int, Dict[str, float]]) -> Dict[str, Any]:
+        """This method will aggregate scenes locally and then will
+        do the reduction step to aggregate data across distributed
+        nodes.
+
+        :param scene_composite_metric_results: results from composite metric
+                                               outputs per scene
+        :returns: result indexed by the composite metric name.
+        """
+        agg_scenes = self.aggregate_scenes(scene_composite_metric_results)
+        return agg_scenes
