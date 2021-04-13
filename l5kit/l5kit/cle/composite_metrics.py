@@ -167,12 +167,6 @@ class CompositeMetricAggregator(SupportsCompositeMetricAggregation):
                         local scenes and also across distributed
                         nodes.
     """
-
-    #: Mapping from ReduceMode to torch distributed ops
-    torch_reduce_mapping = {
-        ReduceMode.SUM: torch.distributed.ReduceOp.SUM
-    }
-
     def __init__(self, reduce_mode: ReduceMode = ReduceMode.SUM):
         # Supporting only ReduceMode.SUM for the moment
         if reduce_mode != ReduceMode.SUM:
