@@ -172,7 +172,7 @@
 <span id="l5kit-simulation-dataset-module"></span><h1>l5kit.simulation.dataset module<a class="headerlink" href="#module-l5kit.simulation.dataset" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="l5kit.simulation.dataset.SimulationConfig">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.simulation.dataset.</code><code class="sig-name descname">SimulationConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">use_ego_gt</span><span class="p">:</span> <span class="n">bool</span></em>, <em class="sig-param"><span class="n">use_agents_gt</span><span class="p">:</span> <span class="n">bool</span></em>, <em class="sig-param"><span class="n">disable_new_agents</span><span class="p">:</span> <span class="n">bool</span></em>, <em class="sig-param"><span class="n">distance_th_far</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">distance_th_close</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">start_frame_index</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_simulation_steps</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.dataset.SimulationConfig" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.simulation.dataset.</code><code class="sig-name descname">SimulationConfig</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">use_ego_gt</span><span class="p">:</span> <span class="n">bool</span></em>, <em class="sig-param"><span class="n">use_agents_gt</span><span class="p">:</span> <span class="n">bool</span></em>, <em class="sig-param"><span class="n">disable_new_agents</span><span class="p">:</span> <span class="n">bool</span></em>, <em class="sig-param"><span class="n">distance_th_far</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">distance_th_close</span><span class="p">:</span> <span class="n">float</span></em>, <em class="sig-param"><span class="n">start_frame_index</span><span class="p">:</span> <span class="n">int</span> <span class="o">=</span> <span class="default_value">0</span></em>, <em class="sig-param"><span class="n">num_simulation_steps</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>int<span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em>, <em class="sig-param"><span class="n">show_info</span><span class="p">:</span> <span class="n">bool</span> <span class="o">=</span> <span class="default_value">False</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.dataset.SimulationConfig" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
 <p>Defines the parameters used for the simulation of ego and agents around it.</p>
 <dl class="field-list simple">
@@ -185,6 +185,7 @@
 <li><p><strong>distance_th_close</strong> – if a new agent is closer than this value to ego, it will be controlled</p></li>
 <li><p><strong>start_frame_index</strong> – the start index of the simulation</p></li>
 <li><p><strong>num_simulation_steps</strong> – the number of step to simulate</p></li>
+<li><p><strong>show_info</strong> – whether to show info logging during unroll</p></li>
 </ul>
 </dd>
 </dl>
@@ -210,6 +211,12 @@
 <dt id="l5kit.simulation.dataset.SimulationConfig.num_simulation_steps">
 <code class="sig-name descname">num_simulation_steps</code><em class="property">: Optional<span class="p">[</span>int<span class="p">]</span></em><a class="headerlink" href="#l5kit.simulation.dataset.SimulationConfig.num_simulation_steps" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 6</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt id="l5kit.simulation.dataset.SimulationConfig.show_info">
+<code class="sig-name descname">show_info</code><em class="property">: bool</em><a class="headerlink" href="#l5kit.simulation.dataset.SimulationConfig.show_info" title="Permalink to this definition">¶</a></dt>
+<dd><p>Alias for field number 7</p>
 </dd></dl>
 
 <dl class="py attribute">
@@ -250,6 +257,17 @@
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>the new SimulationDataset</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.simulation.dataset.SimulationDataset.get_min_len">
+<code class="sig-name descname">get_min_len</code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; int<a class="headerlink" href="#l5kit.simulation.dataset.SimulationDataset.get_min_len" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return the minimum number of frames between the scenes</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the minimum number of frames</p>
 </dd>
 </dl>
 </dd></dl>

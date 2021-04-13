@@ -176,8 +176,10 @@
 <dd><p>Disable all agents in dataset except for the ones in allowlist
 Assumptions:</p>
 <blockquote>
-<div><p>the dataset has only 1 scene
-the dataset is in numpy format and not zarr anymore</p>
+<div><ul class="simple">
+<li><p>the dataset has only 1 scene</p></li>
+<li><p>the dataset is in numpy format and not zarr anymore</p></li>
+</ul>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -190,13 +192,37 @@ the dataset is in numpy format and not zarr anymore</p>
 </dd></dl>
 
 <dl class="py function">
+<dt id="l5kit.simulation.utils.get_frames_subset">
+<code class="sig-prename descclassname">l5kit.simulation.utils.</code><code class="sig-name descname">get_frames_subset</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">dataset</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset">l5kit.data.zarr_dataset.ChunkedDataset</a></span></em>, <em class="sig-param"><span class="n">frame_start_idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">frame_end_idx</span><span class="p">:</span> <span class="n">int</span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset">l5kit.data.zarr_dataset.ChunkedDataset</a><a class="headerlink" href="#l5kit.simulation.utils.get_frames_subset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get a new dataset with frames between start (included) and end (excluded).
+Assumptions:</p>
+<blockquote>
+<div><ul class="simple">
+<li><p>the dataset has only 1 scene</p></li>
+<li><p>the dataset is in numpy format and not zarr anymore</p></li>
+</ul>
+</div></blockquote>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>dataset</strong> – the single-scene dataset.</p></li>
+<li><p><strong>frame_start_idx</strong> – first frame to keep.</p></li>
+<li><p><strong>frame_end_idx</strong> – where to stop taking frames (excluded).</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt id="l5kit.simulation.utils.insert_agent">
 <code class="sig-prename descclassname">l5kit.simulation.utils.</code><code class="sig-name descname">insert_agent</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">agent</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">frame_idx</span><span class="p">:</span> <span class="n">int</span></em>, <em class="sig-param"><span class="n">dataset</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset">l5kit.data.zarr_dataset.ChunkedDataset</a></span></em><span class="sig-paren">)</span> &#x2192; None<a class="headerlink" href="#l5kit.simulation.utils.insert_agent" title="Permalink to this definition">¶</a></dt>
 <dd><p>Insert an agent in one frame.
 Assumptions:</p>
 <blockquote>
-<div><p>the dataset has only 1 scene
-the dataset is in numpy format and not zarr anymore</p>
+<div><ul class="simple">
+<li><p>the dataset has only 1 scene</p></li>
+<li><p>the dataset is in numpy format and not zarr anymore</p></li>
+</ul>
 </div></blockquote>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
