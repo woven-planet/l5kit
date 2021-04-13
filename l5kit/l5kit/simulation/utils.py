@@ -6,8 +6,8 @@ from l5kit.data import ChunkedDataset, get_agents_slice_from_frames, get_tl_face
 def insert_agent(agent: np.ndarray, frame_idx: int, dataset: ChunkedDataset) -> None:
     """Insert an agent in one frame.
     Assumptions:
-        the dataset has only 1 scene
-        the dataset is in numpy format and not zarr anymore
+        - the dataset has only 1 scene
+        - the dataset is in numpy format and not zarr anymore
 
     :param agent: the agent info to be inserted
     :param frame_idx: the frame where we want to insert the agent
@@ -50,8 +50,8 @@ def insert_agent(agent: np.ndarray, frame_idx: int, dataset: ChunkedDataset) -> 
 def disable_agents(dataset: ChunkedDataset, allowlist: np.ndarray) -> None:
     """Disable all agents in dataset except for the ones in allowlist
     Assumptions:
-        the dataset has only 1 scene
-        the dataset is in numpy format and not zarr anymore
+        - the dataset has only 1 scene
+        - the dataset is in numpy format and not zarr anymore
 
     :param dataset: the single-scene dataset
     :param allowlist: 1D np array of track_ids to keep
@@ -79,8 +79,8 @@ def disable_agents(dataset: ChunkedDataset, allowlist: np.ndarray) -> None:
 def get_frames_subset(dataset: ChunkedDataset, frame_start_idx: int, frame_end_idx: int) -> ChunkedDataset:
     """Get a new dataset with frames between start (included) and end (excluded).
     Assumptions:
-        the dataset has only 1 scene
-        the dataset is in numpy format and not zarr anymore
+        - the dataset has only 1 scene
+        - the dataset is in numpy format and not zarr anymore
 
     :param dataset: the single-scene dataset.
     :param frame_start_idx: first frame to keep.

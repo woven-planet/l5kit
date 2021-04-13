@@ -117,7 +117,7 @@ class ClosedLoopSimulator:
         """
         sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, scene_indices, self.sim_cfg)
 
-        for frame_index in tqdm(range(len(sim_dataset))):
+        for frame_index in tqdm(range(len(sim_dataset)), disable=self.sim_cfg.disable_tqdm):
             next_frame_index = frame_index + 1
             should_update = next_frame_index != len(sim_dataset)
 
