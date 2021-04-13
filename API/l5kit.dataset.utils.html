@@ -215,6 +215,37 @@
 </dl>
 </dd></dl>
 
+<dl class="py function">
+<dt id="l5kit.dataset.utils.move_to_device">
+<code class="sig-prename descclassname">l5kit.dataset.utils.</code><code class="sig-name descname">move_to_device</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>torch.Tensor<span class="p">]</span></span></em>, <em class="sig-param"><span class="n">device</span><span class="p">:</span> <span class="n">torch.device</span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>torch.Tensor<span class="p">]</span><a class="headerlink" href="#l5kit.dataset.utils.move_to_device" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move the data dict to a given torch device</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data</strong> – the torch dict</p></li>
+<li><p><strong>device</strong> – the device where to move each value of the dict</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the torch dict on the new device</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt id="l5kit.dataset.utils.move_to_numpy">
+<code class="sig-prename descclassname">l5kit.dataset.utils.</code><code class="sig-name descname">move_to_numpy</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">data</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>str<span class="p">, </span>torch.Tensor<span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>numpy.ndarray<span class="p">]</span><a class="headerlink" href="#l5kit.dataset.utils.move_to_numpy" title="Permalink to this definition">¶</a></dt>
+<dd><p>Move a torch dict into numpy (on cpu)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>data</strong> – the torch dict</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the numpy dict</p>
+</dd>
+</dl>
+</dd></dl>
+
 </div>
 
 
