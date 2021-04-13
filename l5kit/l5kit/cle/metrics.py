@@ -1,11 +1,13 @@
-from abc import abstractmethod
+from abc import ABC, abstractmethod
 
+import numpy as np
 import torch
 from typing_extensions import Protocol
 
 from l5kit.evaluation import error_functions
 from l5kit.evaluation import metrics as l5metrics
-from l5kit.simulation.unroll import SimulationOutput
+from l5kit.rasterization import EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH
+from l5kit.simulation.unroll import SimulationOutput, TrajectoryStateIndices
 
 
 class SupportsMetricCompute(Protocol):
@@ -21,6 +23,84 @@ class SupportsMetricCompute(Protocol):
         :returns: a tensor with the result of the metric per frame
         """
         raise NotImplementedError
+
+
+class CollisionMetricBase(ABC):
+    """This is the abstract base class for the collision metric.
+
+    :param collision_type: the type of collision to compute
+    """
+    @abstractmethod
+    def __init__(self, collision_type: l5metrics.CollisionType) -> None:
+        self.collision_type = collision_type
+
+    def _compute_frame(self, simulated_agent_frame: np.ndarray,
+                       simulated_frame_ego_state: torch.Tensor) -> float:
+        """Detects collision per frame of the scene.
+
+        :param observed_frame: the ground-truth frame
+        :param simulated_frame_ego_state: ego state from the simulated frame,
+                                          this is a 1D array with the frame
+                                          ego state
+        :returns: metric result for the frame, where 1 means a collision,
+                  and 0 otherwise.
+        """
+        simulated_centroid = simulated_frame_ego_state[:TrajectoryStateIndices.Y + 1].cpu().numpy()
+        simulated_angle = simulated_frame_ego_state[TrajectoryStateIndices.THETA].cpu().numpy()
+        simulated_extent = np.r_[EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH]
+        collision_ret = l5metrics.detect_collision(simulated_centroid, simulated_angle,
+                                                   simulated_extent, simulated_agent_frame)
+        if collision_ret is not None:
+            if collision_ret[0] == self.collision_type:
+                return 1.0
+
+        return 0.0
+
+    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+        """Compute the metric on all frames of the scene.
+
+        :param simulation_output: the output from the closed-loop simulation
+        :returns: collision per frame (a 1D array with the same size of the
+                  number of frames, where 1 means a colision, 0 otherwise)
+        """
+        simulated_scene_ego_state = simulation_output.simulated_ego_states
+        simulated_agents = simulation_output.simulated_agents
+
+        if len(simulated_agents) < len(simulated_scene_ego_state):
+            raise ValueError("More simulated timesteps than observed.")
+
+        num_frames = simulated_scene_ego_state.size(0)
+        metric_results = torch.zeros(num_frames, device=simulated_scene_ego_state.device)
+        for frame_idx in range(num_frames):
+            simulated_agent_frame = simulated_agents[frame_idx]
+            simulated_frame_ego_frame = simulated_scene_ego_state[frame_idx]
+            result = self._compute_frame(simulated_agent_frame, simulated_frame_ego_frame)
+            metric_results[frame_idx] = result
+        return metric_results
+
+
+class CollisionFrontMetric(CollisionMetricBase):
+    """Computes the front collision metric."""
+    metric_name = "collision_front"
+
+    def __init__(self) -> None:
+        super().__init__(l5metrics.CollisionType.FRONT)
+
+
+class CollisionRearMetric(CollisionMetricBase):
+    """Computes the rear collision metric."""
+    metric_name = "collision_rear"
+
+    def __init__(self) -> None:
+        super().__init__(l5metrics.CollisionType.REAR)
+
+
+class CollisionSideMetric(CollisionMetricBase):
+    """Computes the side collision metric."""
+    metric_name = "collision_side"
+
+    def __init__(self) -> None:
+        super().__init__(l5metrics.CollisionType.SIDE)
 
 
 class DisplacementErrorMetric(SupportsMetricCompute):
