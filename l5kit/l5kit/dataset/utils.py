@@ -1,3 +1,6 @@
+from typing import Dict
+
+import numpy as np
 import torch
 
 
@@ -25,3 +28,22 @@ def convert_str_to_fixed_length_tensor(string: str, max_length: int = kMaxStrLen
             torch.zeros(max_length - len(string), dtype=torch.uint8),
         )
     )
+
+
+def move_to_device(data: Dict[str, torch.Tensor], device: torch.device) -> Dict[str, torch.Tensor]:
+    """Move the data dict to a given torch device
+
+    :param data: the torch dict
+    :param device: the device where to move each value of the dict
+    :return: the torch dict on the new device
+    """
+    return {k: v.to(device) for k, v in data.items()}
+
+
+def move_to_numpy(data: Dict[str, torch.Tensor]) -> Dict[str, np.ndarray]:
+    """Move a torch dict into numpy (on cpu)
+
+    :param data: the torch dict
+    :return: the numpy dict
+    """
+    return {k: v.cpu().numpy() for k, v in data.items()}

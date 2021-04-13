@@ -95,6 +95,9 @@ class SimulationDataset:
         :param sim_cfg: a simulation config
         :return: the new SimulationDataset
         """
+        if len(np.unique(scene_indices)) != len(scene_indices):
+            raise ValueError(f"can't simulate repeated scenes: {scene_indices}")
+
         if np.any(np.asarray(scene_indices) >= len(dataset.dataset.scenes)):
             raise ValueError(
                 f"can't pick indices {scene_indices} from dataset with length: {len(dataset.dataset.scenes)}")
@@ -127,7 +130,11 @@ class SimulationDataset:
         :param state_index: the frame index
         :return: a list of dict from EgoDatasets
         """
-        frame_batch = [scene_dt[state_index] for scene_dt in self.scene_dataset_batch.values()]
+        frame_batch = []
+        for scene_idx, scene_dt in self.scene_dataset_batch.items():
+            frame = scene_dt[state_index]
+            frame["scene_index"] = scene_idx  # set the scene to the right index
+            frame_batch.append(frame)
         return frame_batch
 
     def set_ego(self, state_index: int, output_index: int, ego_translations: np.ndarray,
