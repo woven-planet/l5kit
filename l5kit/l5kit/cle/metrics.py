@@ -64,15 +64,15 @@ class CollisionMetricBase(ABC):
                   number of frames, where 1 means a colision, 0 otherwise)
         """
         simulated_scene_ego_state = simulation_output.simulated_ego_states
-        recorded_agents = simulation_output.recorded_agents
+        simulated_agents = simulation_output.simulated_agents
 
-        if len(recorded_agents) < len(simulated_scene_ego_state):
+        if len(simulated_agents) < len(simulated_scene_ego_state):
             raise ValueError("More simulated timesteps than observed.")
 
         num_frames = simulated_scene_ego_state.size(0)
         metric_results = torch.zeros(num_frames, device=simulated_scene_ego_state.device)
         for frame_idx in range(num_frames):
-            recorded_agent_frame = recorded_agents[frame_idx]
+            recorded_agent_frame = simulated_agents[frame_idx]
             simulated_frame_ego_frame = simulated_scene_ego_state[frame_idx]
             result = self._compute_frame(recorded_agent_frame, simulated_frame_ego_frame)
             metric_results[frame_idx] = result
