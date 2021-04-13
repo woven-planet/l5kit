@@ -6,7 +6,7 @@ import numpy as np
 from l5kit.data import filter_agents_by_frames, PERCEPTION_LABEL_TO_INDEX
 from l5kit.dataset import EgoDataset
 from l5kit.geometry.transform import yaw_as_rotation33
-from l5kit.simulation.utils import disable_agents, insert_agent
+from l5kit.simulation.utils import disable_agents, get_frames_subset, insert_agent
 
 
 class SimulationConfig(NamedTuple):
@@ -19,6 +19,7 @@ class SimulationConfig(NamedTuple):
     :param distance_th_close: if a new agent is closer than this value to ego, it will be controlled
     :param start_frame_index: the start index of the simulation
     :param num_simulation_steps: the number of step to simulate
+    :param show_info: whether to show info logging during unroll
     """
     use_ego_gt: bool
     use_agents_gt: bool
@@ -27,6 +28,7 @@ class SimulationConfig(NamedTuple):
     distance_th_close: float
     start_frame_index: int = 0
     num_simulation_steps: Optional[int] = None
+    show_info: bool = False
 
 
 class SimulationDataset:
@@ -46,19 +48,34 @@ class SimulationDataset:
         if not len(scene_dataset_batch):
             raise ValueError("can't build a simulation dataset with an empty batch")
         self.scene_dataset_batch: Dict[int, EgoDataset] = scene_dataset_batch
-
-        self._len = min([len(scene_dt.dataset.frames) for scene_dt in self.scene_dataset_batch.values()])
-
         self.sim_cfg = sim_cfg
+
+        # we must limit the scenes to the part which will be simulated
+        # we cut each scene so that it starts from there and ends after `num_simulation_steps`
+        start_frame_idx = self.sim_cfg.start_frame_index
+        if self.sim_cfg.num_simulation_steps is None:
+            end_frame_idx = self.get_min_len()
+        else:
+            end_frame_idx = start_frame_idx + self.sim_cfg.num_simulation_steps
+            if end_frame_idx > self.get_min_len():
+                raise ValueError(f"can't unroll until frame {end_frame_idx}, length is {self.get_min_len()}")
+
+        for scene_idx in scene_dataset_batch:
+            zarr_dt = self.scene_dataset_batch[scene_idx].dataset
+            self.scene_dataset_batch[scene_idx].dataset = get_frames_subset(zarr_dt, start_frame_idx, end_frame_idx)
+
+            # this is the only stateful field we need to change for EgoDataset, it's used in bisect
+            frame_index_ends = self.scene_dataset_batch[scene_idx].dataset.scenes["frame_index_interval"][:, 1]
+            self.scene_dataset_batch[scene_idx].cumulative_sizes = frame_index_ends
 
         # buffer used to keep track of tracked agents during unroll as tuples of scene_idx, agent_idx
         self._agents_tracked: Set[Tuple[int, int]] = set()
 
         if self.sim_cfg.disable_new_agents:
-            # we disable all agents that wouldn't be picked at start_frame
+            # we disable all agents that wouldn't be picked at frame 0
             for scene_idx, dt_ego in self.scene_dataset_batch.items():
                 dataset_zarr = dt_ego.dataset
-                frame = dataset_zarr.frames[self.sim_cfg.start_frame_index]
+                frame = dataset_zarr.frames[0]
                 ego_pos = frame["ego_translation"][:2]
                 agents = dataset_zarr.agents
                 frame_agents = filter_agents_by_frames(frame, agents)[0]
@@ -88,13 +105,20 @@ class SimulationDataset:
             scene_dataset_batch[scene_idx] = scene_dataset
         return SimulationDataset(scene_dataset_batch, sim_cfg)
 
+    def get_min_len(self) -> int:
+        """Return the minimum number of frames between the scenes
+
+        :return: the minimum number of frames
+        """
+        return min([len(scene_dt.dataset.frames) for scene_dt in self.scene_dataset_batch.values()])
+
     def __len__(self) -> int:
         """
         Return the minimum number of frames across scenes
 
         :return: the number of frames
         """
-        return self._len
+        return self.get_min_len()
 
     def rasterise_frame_batch(self, state_index: int) -> List[Dict[str, np.ndarray]]:
         """
