@@ -169,7 +169,7 @@ class CompositeMetricAggregator(SupportsCompositeMetricAggregation):
     """
     def __init__(self, reduce_mode: ReduceMode = ReduceMode.SUM):
         # Supporting only ReduceMode.SUM for the moment
-        if reduce_mode != ReduceMode.SUM:
+        if reduce_mode not in set(ReduceMode):
             raise ValueError(f"Reduce mode {reduce_mode} not implemented.")
         self.reduce_mode = reduce_mode
 
