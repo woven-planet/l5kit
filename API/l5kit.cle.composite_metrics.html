@@ -171,6 +171,55 @@
   <div class="section" id="module-l5kit.cle.composite_metrics">
 <span id="l5kit-cle-composite-metrics-module"></span><h1>l5kit.cle.composite_metrics module<a class="headerlink" href="#module-l5kit.cle.composite_metrics" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
+<dt id="l5kit.cle.composite_metrics.CompositeMetricAggregator">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.composite_metrics.</code><code class="sig-name descname">CompositeMetricAggregator</code><span class="sig-paren">(</span><em class="sig-param">reduce_mode: l5kit.cle.composite_metrics.ReduceMode = &lt;ReduceMode.SUM: 0&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.composite_metrics.CompositeMetricAggregator" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#l5kit.cle.composite_metrics.SupportsCompositeMetricAggregation" title="l5kit.cle.composite_metrics.SupportsCompositeMetricAggregation"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.composite_metrics.SupportsCompositeMetricAggregation</span></code></a></p>
+<p>Aggregates composite metric results locally and across multiple
+distributed nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>reduce_mode</strong> – the reduce operation to be applied both into
+local scenes and also across distributed
+nodes.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt id="l5kit.cle.composite_metrics.CompositeMetricAggregator.aggregate">
+<code class="sig-name descname">aggregate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_composite_metric_results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>int<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>float<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><a class="headerlink" href="#l5kit.cle.composite_metrics.CompositeMetricAggregator.aggregate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will aggregate scenes locally and then will
+do the reduction step to aggregate data across distributed
+nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scene_composite_metric_results</strong> – results from composite metric
+outputs per scene</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>result indexed by the composite metric name.</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt id="l5kit.cle.composite_metrics.CompositeMetricAggregator.aggregate_scenes">
+<code class="sig-name descname">aggregate_scenes</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_composite_metric_results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>int<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>float<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><a class="headerlink" href="#l5kit.cle.composite_metrics.CompositeMetricAggregator.aggregate_scenes" title="Permalink to this definition">¶</a></dt>
+<dd><p>Aggregate the scenes locally on each node. This method will just
+sum the number of invalid scenes across all scenes in the node.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scene_composite_metric_results</strong> – results from composite metric
+outputs per scene</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a dictionary with the composite metric name as keys
+and the reduction of the composite metrics</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt id="l5kit.cle.composite_metrics.DrivenMilesCompositeMetric">
 <em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.composite_metrics.</code><code class="sig-name descname">DrivenMilesCompositeMetric</code><span class="sig-paren">(</span><em class="sig-param">composite_metric_name: str</em>, <em class="sig-param">driven_miles_metric: Type[l5kit.cle.metrics.SupportsMetricCompute] = &lt;class 'l5kit.cle.metrics.SimulatedDrivenMilesMetric'&gt;</em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.composite_metrics.DrivenMilesCompositeMetric" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#l5kit.cle.composite_metrics.SupportsCompositeMetricCompute" title="l5kit.cle.composite_metrics.SupportsCompositeMetricCompute"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.composite_metrics.SupportsCompositeMetricCompute</span></code></a></p>
@@ -287,6 +336,45 @@ is found (first failed frame).</p>
 <dt id="l5kit.cle.composite_metrics.PassedDrivenMilesCompositeMetric.requires_validator">
 <code class="sig-name descname">requires_validator</code><em class="property">: List<span class="p">[</span>str<span class="p">]</span></em><a class="headerlink" href="#l5kit.cle.composite_metrics.PassedDrivenMilesCompositeMetric.requires_validator" title="Permalink to this definition">¶</a></dt>
 <dd><p>List of validators that this composite metric depends on</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.cle.composite_metrics.ReduceMode">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.composite_metrics.</code><code class="sig-name descname">ReduceMode</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">value</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.composite_metrics.ReduceMode" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
+<p>Reduction modes supported by the composite metric aggregator.</p>
+<dl class="py attribute">
+<dt id="l5kit.cle.composite_metrics.ReduceMode.SUM">
+<code class="sig-name descname">SUM</code><em class="property"> = 0</em><a class="headerlink" href="#l5kit.cle.composite_metrics.ReduceMode.SUM" title="Permalink to this definition">¶</a></dt>
+<dd><p>Summation of results locally and across nodes</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt id="l5kit.cle.composite_metrics.SupportsCompositeMetricAggregation">
+<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.composite_metrics.</code><code class="sig-name descname">SupportsCompositeMetricAggregation</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.composite_metrics.SupportsCompositeMetricAggregation" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
+<p>Protocol supporting the composite metric aggregation. This aggregator
+is responsible for aggregating results from the the composite metrics and
+also doing a reduction across multiple distributed nodes.</p>
+<dl class="py method">
+<dt id="l5kit.cle.composite_metrics.SupportsCompositeMetricAggregation.aggregate">
+<code class="sig-name descname">aggregate</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_composite_metric_results</span><span class="p">:</span> <span class="n">Dict<span class="p">[</span>int<span class="p">, </span>Dict<span class="p">[</span>str<span class="p">, </span>float<span class="p">]</span><span class="p">]</span></span></em><span class="sig-paren">)</span> &#x2192; Dict<span class="p">[</span>str<span class="p">, </span>Any<span class="p">]</span><a class="headerlink" href="#l5kit.cle.composite_metrics.SupportsCompositeMetricAggregation.aggregate" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will aggregate scenes locally and then will
+do the reduction step to aggregate data across distributed
+nodes.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scene_composite_metric_results</strong> – results from composite metric
+outputs per scene</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>any result indexed by the composite metric name.</p>
+</dd>
+</dl>
 </dd></dl>
 
 </dd></dl>
