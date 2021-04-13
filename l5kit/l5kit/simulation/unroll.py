@@ -1,5 +1,6 @@
+from collections import defaultdict
 from enum import IntEnum
-from typing import Dict, List, Optional, Tuple
+from typing import Dict, List, NamedTuple, Optional, Tuple
 
 import numpy as np
 import torch
@@ -32,16 +33,36 @@ class TrajectoryStateIndices(IntEnum):
     TIME = 6
 
 
+class UnrollInputOutput(NamedTuple):
+    """ A single input output dict for an agent/ego in a given frame
+
+    :param track_id: the agent track id
+    :param inputs: input dict
+    :param outputs: output dict
+    """
+    track_id: int
+    inputs: Dict[str, np.ndarray]
+    outputs: Dict[str, np.ndarray]
+
+
 class SimulationOutput:
-    def __init__(self, scene_id: int, sim_dataset: SimulationDataset):
+    def __init__(self, scene_id: int, sim_dataset: SimulationDataset,
+                 ego_ins_outs: Dict[int, List[UnrollInputOutput]],
+                 agents_ins_outs: Dict[int, List[List[UnrollInputOutput]]]):
         """This object holds information about the result of the simulation loop
         for a given scene dataset
 
         :param scene_id: the scene indices
         :param sim_dataset: the simulation dataset
+        :param ego_ins_outs: all inputs and outputs for ego (each frame of each scene has only one)
+        :param agents_ins_outs: all inputs and outputs for agents (multiple per frame in a scene)
         """
         if scene_id not in sim_dataset.scene_dataset_batch:
-            raise ValueError(f"scene: {scene_id} not in {sim_dataset.scene_dataset_batch}")
+            raise ValueError(f"scene: {scene_id} not in sim datasets: {sim_dataset.scene_dataset_batch}")
+        if scene_id not in ego_ins_outs:
+            raise ValueError(f"scene: {scene_id} not in ego ins: {ego_ins_outs.keys()}")
+        if scene_id not in agents_ins_outs:
+            raise ValueError(f"scene: {scene_id} not in agents ins: {agents_ins_outs.keys()}")
 
         self.scene_id = scene_id
         self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
@@ -54,6 +75,9 @@ class SimulationOutput:
 
         self.simulated_ego_states = self.build_trajectory_states(self.simulated_ego)
         self.recorded_ego_states = self.build_trajectory_states(self.recorded_ego)
+
+        self.ego_ins_outs = ego_ins_outs[scene_id]
+        self.agents_ins_outs = agents_ins_outs[scene_id]
 
     def get_scene_id(self) -> int:
         """
@@ -117,6 +141,9 @@ class ClosedLoopSimulator:
         """
         sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, scene_indices, self.sim_cfg)
 
+        agents_ins_outs: Dict[int, List[List[UnrollInputOutput]]] = {k: [] for k in scene_indices}
+        ego_ins_outs: Dict[int, List[UnrollInputOutput]] = {k: [] for k in scene_indices}
+
         for frame_index in tqdm(range(len(sim_dataset)), disable=not self.sim_cfg.show_info):
             next_frame_index = frame_index + 1
             should_update = next_frame_index != len(sim_dataset)
@@ -128,8 +155,18 @@ class ClosedLoopSimulator:
                     agents_input_dict = default_collate(list(agents_input.values()))
                     agents_input_dict = {k: v.to(self.device) for k, v in agents_input_dict.items()}
                     agents_output_dict = self.model_agents(agents_input_dict)
+
+                    # for update we need everything as numpy
+                    agents_input_dict = {k: v.cpu().numpy() for k, v in agents_input_dict.items()}
+                    agents_output_dict = {k: v.cpu().numpy() for k, v in agents_output_dict.items()}
+
                     if should_update:
                         self.update_agents(sim_dataset, next_frame_index, agents_input_dict, agents_output_dict)
+
+                    # update input and output buffers
+                    agents_frame_in_out = self.get_agents_in_out(agents_input_dict, agents_output_dict)
+                    for scene_idx in scene_indices:
+                        agents_ins_outs[scene_idx].append(agents_frame_in_out.get(scene_idx, []))
 
             # EGO
             if not self.sim_cfg.use_ego_gt:
@@ -137,17 +174,25 @@ class ClosedLoopSimulator:
                 ego_input_dict = default_collate(ego_input)
                 ego_input_dict = {k: v.to(self.device) for k, v in ego_input_dict.items()}
                 ego_output_dict = self.model_ego(ego_input_dict)
+
+                ego_input_dict = {k: v.cpu().numpy() for k, v in ego_input_dict.items()}
+                ego_output_dict = {k: v.cpu().numpy() for k, v in ego_output_dict.items()}
+
                 if should_update:
                     self.update_ego(sim_dataset, next_frame_index, ego_input_dict, ego_output_dict)
 
+                ego_frame_in_out = self.get_ego_in_out(ego_input_dict, ego_output_dict)
+                for scene_idx in scene_indices:
+                    ego_ins_outs[scene_idx].append(ego_frame_in_out[scene_idx])
+
         simulated_outputs: List[SimulationOutput] = []
         for scene_idx in scene_indices:
-            simulated_outputs.append(SimulationOutput(scene_idx, sim_dataset))
+            simulated_outputs.append(SimulationOutput(scene_idx, sim_dataset, ego_ins_outs, agents_ins_outs))
         return simulated_outputs
 
     @staticmethod
-    def update_agents(dataset: SimulationDataset, frame_idx: int, input_dict: Dict[str, torch.Tensor],
-                      output_dict: Dict[str, torch.Tensor]) -> None:
+    def update_agents(dataset: SimulationDataset, frame_idx: int, input_dict: Dict[str, np.ndarray],
+                      output_dict: Dict[str, np.ndarray]) -> None:
         """Update the agents in frame_idx (across scenes) using agents_output_dict
 
         :param dataset: the simulation dataset
@@ -158,8 +203,6 @@ class ClosedLoopSimulator:
         """
 
         agents_update_dict: Dict[Tuple[int, int], np.ndarray] = {}
-        input_dict = {k: v.cpu().numpy() for k, v in input_dict.items()}
-        output_dict = {k: v.cpu().numpy() for k, v in output_dict.items()}
 
         world_from_agent = input_dict["world_from_agent"]
         yaw = input_dict["yaw"]
@@ -179,8 +222,44 @@ class ClosedLoopSimulator:
         dataset.set_agents(frame_idx, agents_update_dict)
 
     @staticmethod
-    def update_ego(dataset: SimulationDataset, frame_idx: int, input_dict: Dict[str, torch.Tensor],
-                   output_dict: Dict[str, torch.Tensor]) -> None:
+    def get_agents_in_out(input_dict: Dict[str, np.ndarray],
+                          output_dict: Dict[str, np.ndarray]) -> Dict[int, List[UnrollInputOutput]]:
+        """Get all agents inputs and outputs as a dict mapping scene index to a list of UnrollInputOutput
+
+        :param input_dict: all agent model inputs (across scenes)
+        :param output_dict: all agent model outputs (across scenes)
+        :return: the dict mapping scene index to a list UnrollInputOutput. Some scenes may be missing
+        """
+        ret_dict = defaultdict(list)
+        for idx_agent in range(len(input_dict["track_id"])):
+            agent_in = {k: v[idx_agent] for k, v in input_dict.items()}
+            agent_out = {k: v[idx_agent] for k, v in output_dict.items()}
+            ret_dict[agent_in["scene_index"]].append(UnrollInputOutput(track_id=agent_in["track_id"],
+                                                                       inputs=agent_in,
+                                                                       outputs=agent_out))
+        return dict(ret_dict)
+
+    @staticmethod
+    def get_ego_in_out(input_dict: Dict[str, np.ndarray],
+                       output_dict: Dict[str, np.ndarray]) -> Dict[int, UnrollInputOutput]:
+        """Get all ego inputs and outputs as a dict mapping scene index to a single UnrollInputOutput
+
+        :param input_dict: all ego model inputs (across scenes)
+        :param output_dict: all ego model outputs (across scenes)
+        :return: the dict mapping scene index to a single UnrollInputOutput.
+        """
+        ret_dict = {}
+        for idx_ego in range(len(input_dict["track_id"])):
+            ego_in = {k: v[idx_ego] for k, v in input_dict.items()}
+            ego_out = {k: v[idx_ego] for k, v in output_dict.items()}
+            ret_dict[ego_in["scene_index"]] = UnrollInputOutput(track_id=ego_in["track_id"],
+                                                                inputs=ego_in,
+                                                                outputs=ego_out)
+        return ret_dict
+
+    @staticmethod
+    def update_ego(dataset: SimulationDataset, frame_idx: int, input_dict: Dict[str, np.ndarray],
+                   output_dict: Dict[str, np.ndarray]) -> None:
         """Update ego across scenes for the given frame index.
 
         :param dataset: The simulation dataset
@@ -189,9 +268,6 @@ class ClosedLoopSimulator:
         :param output_dict: the output of the ego model
         :return:
         """
-        input_dict = {k: v.cpu().numpy() for k, v in input_dict.items()}
-        output_dict = {k: v.cpu().numpy() for k, v in output_dict.items()}
-
         world_from_agent = input_dict["world_from_agent"]
         yaw = input_dict["yaw"]
         pred_trs = transform_points(output_dict["positions"][:, :1], world_from_agent)
