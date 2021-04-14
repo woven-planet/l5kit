@@ -8,6 +8,8 @@ import pytest
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.data.zarr_utils import zarr_concat
+from l5kit.dataset import EgoDataset
+from l5kit.rasterization import build_rasterizer
 
 
 @pytest.fixture(scope="session")
@@ -52,6 +54,12 @@ def zarr_cat_dataset(dmg: LocalDataManager, tmp_path: Path) -> ChunkedDataset:
     zarr_cat_dataset = ChunkedDataset(zarr_output_path)
     zarr_cat_dataset.open()
     return zarr_cat_dataset
+
+
+@pytest.fixture(scope="function")
+def ego_cat_dataset(cfg: dict, dmg: LocalDataManager, zarr_cat_dataset: ChunkedDataset) -> EgoDataset:
+    rasterizer = build_rasterizer(cfg, dmg)
+    return EgoDataset(cfg, zarr_cat_dataset, rasterizer)
 
 
 @pytest.fixture(scope="session", autouse=True)
