@@ -117,3 +117,36 @@ def test_e2e_agents(ego_cat_dataset: EgoDataset, simulation_evaluator: ClosedLoo
             assert agg[validator].item() == 4
         else:
             assert agg[validator].item() == 0
+
+
+@pytest.mark.parametrize("advance_x_ego", [2.0])
+@pytest.mark.parametrize("advance_x_agent", [2.0])
+def test_e2e_both(ego_cat_dataset: EgoDataset, simulation_evaluator: ClosedLoopEvaluator,
+                  advance_x_ego: float, advance_x_agent: float) -> None:
+    sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=False,
+                               distance_th_far=60, distance_th_close=30, num_simulation_steps=20,
+                               start_frame_index=10)  # start from 0 as leading is rotated at 0
+
+    ego_model = MockModel(advance_x=advance_x_ego)
+    agents_model = MockModel(advance_x=advance_x_agent)
+
+    sim_loop = ClosedLoopSimulator(sim_cfg, ego_cat_dataset, torch.device("cpu"),
+                                   model_ego=ego_model, model_agents=agents_model)
+
+    sim_out = sim_loop.unroll(list(range(len(ego_cat_dataset.dataset.scenes))))
+    simulation_evaluator.evaluate(sim_out)
+    validation_results = simulation_evaluator.validation_results()
+    agg = ValidationCountingAggregator().aggregate(validation_results)
+
+    validators = simulation_evaluator.evaluation_plan.validators_dict().keys()
+
+    if advance_x_ego == 2.0 and advance_x_agent == 2.0:  # distance ref trajectory
+        validator_to_trigger = "distance_ref_trajectory_validator"
+    else:
+        raise ValueError(f"advance_x_ego {advance_x_ego}  and advance_x_agents {advance_x_agent} not valid")
+
+    for validator in validators:
+        if validator == validator_to_trigger:
+            assert agg[validator].item() == 4
+        else:
+            assert agg[validator].item() == 0
