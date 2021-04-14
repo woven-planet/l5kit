@@ -48,8 +48,8 @@ class UnrollInputOutput(NamedTuple):
 
 class SimulationOutput:
     def __init__(self, scene_id: int, sim_dataset: SimulationDataset,
-                 ego_ins_outs: Dict[int, List[UnrollInputOutput]],
-                 agents_ins_outs: Dict[int, List[List[UnrollInputOutput]]]):
+                 ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]],
+                 agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]]):
         """This object holds information about the result of the simulation loop
         for a given scene dataset
 
@@ -60,10 +60,6 @@ class SimulationOutput:
         """
         if scene_id not in sim_dataset.scene_dataset_batch:
             raise ValueError(f"scene: {scene_id} not in sim datasets: {sim_dataset.scene_dataset_batch}")
-        if scene_id not in ego_ins_outs:
-            raise ValueError(f"scene: {scene_id} not in ego ins: {ego_ins_outs.keys()}")
-        if scene_id not in agents_ins_outs:
-            raise ValueError(f"scene: {scene_id} not in agents ins: {agents_ins_outs.keys()}")
 
         self.scene_id = scene_id
         self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
