@@ -13,28 +13,27 @@ from l5kit.tests.simulation.unroll_test import MockModel
 
 @pytest.fixture(scope="function")
 def simulation_evaluator() -> ClosedLoopEvaluator:
-    return ClosedLoopEvaluator(EvaluationPlan(metrics=[DisplacementErrorL2Metric(),
-                                                       DistanceToRefTrajectoryMetric(),
-                                                       CollisionFrontMetric(),
-                                                       CollisionRearMetric(),
-                                                       CollisionSideMetric()],
-                                              validators=[RangeValidator("displacement_error_l2_validator",
-                                                                         DisplacementErrorL2Metric, max_value=30),
-                                                          RangeValidator("distance_ref_trajectory_validator",
-                                                                         DistanceToRefTrajectoryMetric, max_value=4),
-                                                          RangeValidator("collision_front_validator",
-                                                                         CollisionFrontMetric, max_value=0),
-                                                          RangeValidator("collision_rear_validator",
-                                                                         CollisionRearMetric, max_value=0),
-                                                          RangeValidator("collision_side_validator",
-                                                                         CollisionSideMetric, max_value=0),
-                                                          ],
+    metrics = [DisplacementErrorL2Metric(),
+               DistanceToRefTrajectoryMetric(),
+               CollisionFrontMetric(),
+               CollisionRearMetric(),
+               CollisionSideMetric()]
+    validators = [RangeValidator("displacement_error_l2_validator", DisplacementErrorL2Metric, max_value=30),
+                  RangeValidator("distance_ref_trajectory_validator", DistanceToRefTrajectoryMetric, max_value=4),
+                  RangeValidator("collision_front_validator", CollisionFrontMetric, max_value=0),
+                  RangeValidator("collision_rear_validator", CollisionRearMetric, max_value=0),
+                  RangeValidator("collision_side_validator", CollisionSideMetric, max_value=0),
+                  ]
+    intervention_validators = ["displacement_error_l2_validator",
+                               "distance_ref_trajectory_validator",
+                               "collision_front_validator",
+                               "collision_rear_validator",
+                               "collision_side_validator"]
+
+    return ClosedLoopEvaluator(EvaluationPlan(metrics=metrics,
+                                              validators=validators,
                                               composite_metrics=[],
-                                              intervention_validators=["displacement_error_l2_validator",
-                                                                       "distance_ref_trajectory_validator",
-                                                                       "collision_front_validator",
-                                                                       "collision_rear_validator",
-                                                                       "collision_side_validator"]))
+                                              intervention_validators=intervention_validators))
 
 
 def test_e2e_no_models(ego_cat_dataset: EgoDataset, simulation_evaluator: ClosedLoopEvaluator) -> None:
@@ -66,26 +65,25 @@ def test_e2e_ego(ego_cat_dataset: EgoDataset, simulation_evaluator: ClosedLoopEv
 
     sim_out = sim_loop.unroll(list(range(len(ego_cat_dataset.dataset.scenes))))
     simulation_evaluator.evaluate(sim_out)
-    agg = ValidationCountingAggregator().aggregate(simulation_evaluator.validation_results())
+    validation_results = simulation_evaluator.validation_results()
+    agg = ValidationCountingAggregator().aggregate(validation_results)
 
-    keys = ["displacement_error_l2_validator", "distance_ref_trajectory_validator",
-            "collision_front_validator", "collision_front_validator", "collision_side_validator",
-            "collision_rear_validator"]
+    validators = simulation_evaluator.evaluation_plan.validators_dict().keys()
 
     if advance_x == 0.0:  # bumps by rear car
-        key_to_trigger = "collision_rear_validator"
+        validator_to_trigger = "collision_rear_validator"
     elif advance_x == 2.0:  # too fast
-        key_to_trigger = "distance_ref_trajectory_validator"
+        validator_to_trigger = "distance_ref_trajectory_validator"
     elif advance_x == 5.0:  # too fast bumps into leading car
-        key_to_trigger = "collision_front_validator"
+        validator_to_trigger = "collision_front_validator"
     else:
         raise ValueError(f"advance_x {advance_x} not valid")
 
-    for k in keys:
-        if k == key_to_trigger:
-            assert agg[k].item() == 4
+    for validator in validators:
+        if validator == validator_to_trigger:
+            assert agg[validator].item() == 4
         else:
-            assert agg[k].item() == 0
+            assert agg[validator].item() == 0
 
 
 @pytest.mark.parametrize("advance_x", [0.0, 2.0])
@@ -102,21 +100,20 @@ def test_e2e_agents(ego_cat_dataset: EgoDataset, simulation_evaluator: ClosedLoo
 
     sim_out = sim_loop.unroll(list(range(len(ego_cat_dataset.dataset.scenes))))
     simulation_evaluator.evaluate(sim_out)
-    agg = ValidationCountingAggregator().aggregate(simulation_evaluator.validation_results())
+    validation_results = simulation_evaluator.validation_results()
+    agg = ValidationCountingAggregator().aggregate(validation_results)
 
-    keys = ["displacement_error_l2_validator", "distance_ref_trajectory_validator",
-            "collision_front_validator", "collision_front_validator", "collision_side_validator",
-            "collision_rear_validator"]
+    validators = simulation_evaluator.evaluation_plan.validators_dict().keys()
 
     if advance_x == 0.0:  # ego bumps in leading
-        key_to_trigger = "collision_front_validator"
+        validator_to_trigger = "collision_front_validator"
     elif advance_x == 2.0:  # rear bumps in ego
-        key_to_trigger = "collision_rear_validator"
+        validator_to_trigger = "collision_rear_validator"
     else:
         raise ValueError(f"advance_x {advance_x} not valid")
 
-    for k in keys:
-        if k == key_to_trigger:
-            assert agg[k].item() == 4
+    for validator in validators:
+        if validator == validator_to_trigger:
+            assert agg[validator].item() == 4
         else:
-            assert agg[k].item() == 0
+            assert agg[validator].item() == 0
