@@ -72,12 +72,46 @@ def test_e2e_ego(ego_cat_dataset: EgoDataset, simulation_evaluator: ClosedLoopEv
             "collision_front_validator", "collision_front_validator", "collision_side_validator",
             "collision_rear_validator"]
 
-    if advance_x == 0.0:
+    if advance_x == 0.0:  # bumps by rear car
         key_to_trigger = "collision_rear_validator"
-    elif advance_x == 2.0:
+    elif advance_x == 2.0:  # too fast
         key_to_trigger = "distance_ref_trajectory_validator"
-    elif advance_x == 5.0:
+    elif advance_x == 5.0:  # too fast bumps into leading car
         key_to_trigger = "collision_front_validator"
+    else:
+        raise ValueError(f"advance_x {advance_x} not valid")
+
+    for k in keys:
+        if k == key_to_trigger:
+            assert agg[k].item() == 4
+        else:
+            assert agg[k].item() == 0
+
+
+@pytest.mark.parametrize("advance_x", [0.0, 2.0])
+def test_e2e_agents(ego_cat_dataset: EgoDataset, simulation_evaluator: ClosedLoopEvaluator,
+                    advance_x: float) -> None:
+    sim_cfg = SimulationConfig(use_ego_gt=True, use_agents_gt=False, disable_new_agents=False,
+                               distance_th_far=60, distance_th_close=30, num_simulation_steps=20,
+                               start_frame_index=10)  # start from 0 as leading is rotated at 0
+
+    agents_model = MockModel(advance_x=advance_x)
+
+    sim_loop = ClosedLoopSimulator(sim_cfg, ego_cat_dataset, torch.device("cpu"),
+                                   model_agents=agents_model)
+
+    sim_out = sim_loop.unroll(list(range(len(ego_cat_dataset.dataset.scenes))))
+    simulation_evaluator.evaluate(sim_out)
+    agg = ValidationCountingAggregator().aggregate(simulation_evaluator.validation_results())
+
+    keys = ["displacement_error_l2_validator", "distance_ref_trajectory_validator",
+            "collision_front_validator", "collision_front_validator", "collision_side_validator",
+            "collision_rear_validator"]
+
+    if advance_x == 0.0:  # ego bumps in leading
+        key_to_trigger = "collision_front_validator"
+    elif advance_x == 2.0:  # rear bumps in ego
+        key_to_trigger = "collision_rear_validator"
     else:
         raise ValueError(f"advance_x {advance_x} not valid")
 
