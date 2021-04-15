@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Tuple
 
 import numpy as np
 
@@ -11,7 +11,7 @@ from l5kit.geometry import transform_points
 from l5kit.rasterization.box_rasterizer import get_ego_as_agent
 from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
 from l5kit.sampling import get_relative_poses
-from l5kit.simulation.unroll import SimulationOutput
+from l5kit.simulation.unroll import SimulationOutput, UnrollInputOutput
 from l5kit.visualization.visualiser.common import (AgentVisualisation, CWVisualisation, EgoVisualisation,
                                                    FrameVisualisation, LaneVisualisation, TrajectoryVisualisation)
 
@@ -185,6 +185,22 @@ def zarr_to_visualizer_scene(scene_dataset: ChunkedDataset, mapAPI: MapAPI,
     return frames_vis
 
 
+def _get_in_out_as_trajectories(in_out: UnrollInputOutput) -> Tuple[np.ndarray, np.ndarray]:
+    """Convert the input (log-replayed) and output (simulated) trajectories into world space.
+    Apply availability on the log-replayed one
+
+    :param in_out: an UnrollInputOutput object
+    :return: the replayed and simulated trajectory as numpy arrays
+    """
+    replay_traj = transform_points(in_out.inputs["target_positions"],
+                                   in_out.inputs["world_from_agent"])
+    replay_traj = replay_traj[in_out.inputs["target_availabilities"] > 0]
+    sim_traj = transform_points(in_out.outputs["positions"],
+                                in_out.inputs["world_from_agent"])
+
+    return replay_traj, sim_traj
+
+
 def simulation_out_to_visualizer_scene(sim_out: SimulationOutput, mapAPI: MapAPI) -> List[FrameVisualisation]:
     """Convert a simulation output into a scene we can visualise.
     The scene will include replayed and simulated trajectories for ego and agents when these are
@@ -214,15 +230,9 @@ def simulation_out_to_visualizer_scene(sim_out: SimulationOutput, mapAPI: MapAPI
         frame_vis = _get_frame_data(mapAPI, frame, agents_frame, tls_frame)
         trajectories = []
 
-        # TODO make function
         if has_ego_info:
             ego_in_out = ego_ins_outs[frame_idx]
-            replay_traj = transform_points(ego_in_out.inputs["target_positions"],
-                                           ego_in_out.inputs["world_from_agent"])
-            replay_traj = replay_traj[ego_in_out.inputs["target_availabilities"] > 0]
-            sim_traj = transform_points(ego_in_out.outputs["positions"],
-                                        ego_in_out.inputs["world_from_agent"])
-
+            replay_traj, sim_traj = _get_in_out_as_trajectories(ego_in_out)
             trajectories.append(TrajectoryVisualisation(xs=replay_traj[:, 0], ys=replay_traj[:, 1],
                                                         color="blue", legend_label="ego_replay", track_id=-1))
             trajectories.append(TrajectoryVisualisation(xs=sim_traj[:, 0], ys=sim_traj[:, 1],
@@ -232,12 +242,7 @@ def simulation_out_to_visualizer_scene(sim_out: SimulationOutput, mapAPI: MapAPI
             agents_in_out = agents_ins_outs[frame_idx]
             for agent_in_out in agents_in_out:
                 track_id = agent_in_out.inputs["track_id"]
-                replay_traj = transform_points(agent_in_out.inputs["target_positions"],
-                                               agent_in_out.inputs["world_from_agent"])
-                replay_traj = replay_traj[agent_in_out.inputs["target_availabilities"] > 0]
-                sim_traj = transform_points(agent_in_out.outputs["positions"],
-                                            agent_in_out.inputs["world_from_agent"])
-
+                replay_traj, sim_traj = _get_in_out_as_trajectories(agent_in_out)
                 trajectories.append(TrajectoryVisualisation(xs=replay_traj[:, 0], ys=replay_traj[:, 1],
                                                             color="orange", legend_label="agent_replay",
                                                             track_id=track_id))
