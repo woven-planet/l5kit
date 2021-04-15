@@ -38,7 +38,7 @@ def visualise(scene_index: int, frames: List[FrameVisualisation]) -> LayoutDOM:
         mode="mouse",
         names=["agents"],
         tooltips=[
-            ("Type", "@type"),
+            ("Type", "@agent_type"),
             ("Probability", "@prob{0.00}%"),
             ("Track id", "@track_id"),
         ],
