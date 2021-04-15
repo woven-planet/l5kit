@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Any, DefaultDict, Dict, List, NamedTuple
+from typing import Any, DefaultDict, Dict, List, NamedTuple, Set
 
 import bokeh.io
 import bokeh.plotting
@@ -8,21 +8,27 @@ from bokeh.layouts import column, LayoutDOM
 from bokeh.models import CustomJS, HoverTool, Slider
 from bokeh.plotting import ColumnDataSource
 
-from l5kit.visualization.visualiser.common import FrameVisualisation
+from l5kit.visualization.visualiser.common import (AgentVisualisation, CWVisualisation, EgoVisualisation,
+                                                   FrameVisualisation, LaneVisualisation, TrajectoryVisualisation)
 
 
-def _visualisation_list_to_dict(visualisation_list: List[NamedTuple]) -> Dict[str, Any]:
+def _visualisation_list_to_dict(visualisation_list: List[NamedTuple], null_el: NamedTuple) -> Dict[str, Any]:
     """Convert a list of NamedTuple into a dict, where:
     - the NamedTuple fields are the dict keys;
     - the dict value are lists;
 
     :param visualisation_list: a list of NamedTuple
+    :param null_el: an element to be used as null if the list is empty (it can crash visualisation)
     :return: a dict with the same information
     """
-    # TODO: check that all els have the same fields
+    visualisation_list = visualisation_list if len(visualisation_list) else [null_el]
     visualisation_dict: DefaultDict[str, Any] = defaultdict(list)
+
+    keys_set: Set[str] = set(visualisation_list[0]._asdict().keys())
     for el in visualisation_list:
         for k, v in el._asdict().items():
+            if k not in keys_set:
+                raise ValueError("keys set is not consistent between elements in the list")
             visualisation_dict[k].append(v)
     return dict(visualisation_dict)
 
@@ -48,16 +54,31 @@ def visualise(scene_index: int, frames: List[FrameVisualisation]) -> LayoutDOM:
     trajectories_labels = np.unique([traj.legend_label for frame in frames for traj in frame.trajectories])
 
     for frame_idx, frame in enumerate(frames):
-        ego_dict = _visualisation_list_to_dict([frame.ego])
-        agents_dict = _visualisation_list_to_dict(frame.agents)
-        lanes_dict = _visualisation_list_to_dict(frame.lanes)
-        crosswalk_dict = _visualisation_list_to_dict(frame.crosswalks)
+        # we need to ensure we have something otherwise js crashes
+        ego_dict = _visualisation_list_to_dict([frame.ego], EgoVisualisation(xs=np.empty(0), ys=np.empty(0),
+                                                                             color="black", center_x=0,
+                                                                             center_y=0))
+
+        agents_dict = _visualisation_list_to_dict(frame.agents, AgentVisualisation(xs=np.empty(0), ys=np.empty(0),
+                                                                                   color="black", track_id=-2,
+                                                                                   agent_type="", prob=0.))
+
+        lanes_dict = _visualisation_list_to_dict(frame.lanes, LaneVisualisation(xs=np.empty(0), ys=np.empty(0),
+                                                                                color="black"))
+
+        crosswalk_dict = _visualisation_list_to_dict(frame.crosswalks, CWVisualisation(xs=np.empty(0), ys=np.empty(0),
+                                                                                       color="black"))
 
         # for trajectory we extract the labels so that we can show them in the legend
         trajectory_dict: Dict[str, Dict[str, Any]] = {}
         for trajectory_label in trajectories_labels:
-            trajectories_list = [el for el in frame.trajectories if el.legend_label == trajectory_label]
-            trajectory_dict[trajectory_label] = _visualisation_list_to_dict(trajectories_list)
+            trajectories = [el for el in frame.trajectories if el.legend_label == trajectory_label]
+            trajectory_dict[trajectory_label] = _visualisation_list_to_dict(trajectories,
+                                                                            TrajectoryVisualisation(xs=np.empty(0),
+                                                                                                    ys=np.empty(0),
+                                                                                                    color="black",
+                                                                                                    legend_label="none",
+                                                                                                    track_id=-2))
 
         frame_dict = dict(ego=ColumnDataSource(ego_dict), agents=ColumnDataSource(agents_dict),
                           lanes=ColumnDataSource(lanes_dict),
@@ -89,8 +110,11 @@ def visualise(scene_index: int, frames: List[FrameVisualisation]) -> LayoutDOM:
             sources["agents"].data = frames[cb_obj.value]["agents"].data;
             sources["ego"].data = frames[cb_obj.value]["ego"].data;
 
-            figure.x_range.setv({"start": frames[cb_obj.value]["ego"].data["center_x"][0]-50, "end": frames[cb_obj.value]["ego"].data["center_x"][0]+50})
-            figure.y_range.setv({"start": frames[cb_obj.value]["ego"].data["center_y"][0]-50, "end": frames[cb_obj.value]["ego"].data["center_y"][0]+50})
+            var center_x = frames[cb_obj.value]["ego"].data["center_x"][0];
+            var center_y = frames[cb_obj.value]["ego"].data["center_y"][0];
+
+            figure.x_range.setv({"start": center_x-50, "end": center_x+50})
+            figure.y_range.setv({"start": center_y-50, "end": center_y+50})
 
             sources["lanes"].change.emit();
             sources["crosswalks"].change.emit();
