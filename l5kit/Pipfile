@@ -14,6 +14,7 @@ sphinx-rtd-theme = "*"
 recommonmark = "*"
 pre-commit = "*"
 importlib-metadata = "*"  # required for python 3.8
+typing-extensions = "*"
 
 [packages]
 l5kit = {editable = true, path = "."}
@@ -31,7 +32,7 @@ notebook = "*"
 ptable = "*"
 ipywidgets = "*"
 protobuf = ">=3.12.2"
-torch = ">=1.5.0,<2.0.0"
-torchvision = ">=0.6.0,<1.0.0"
+torch = ">=1.5.0,<=1.7.1"
+torchvision = ">=0.6.0,<=0.8.2"
 shapely = "*"
 bokeh = "*"
