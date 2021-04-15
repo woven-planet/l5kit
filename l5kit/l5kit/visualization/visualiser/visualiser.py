@@ -46,7 +46,7 @@ def visualise(scene_index: int, frames: List[FrameVisualisation], do_show: bool 
     for frame_idx in range(len(frames)):
         ego = frames[frame_idx].ego
 
-        ego_dict = {field_name: [field] for field, field_name in zip(ego, EgoVisualisation._fields)}
+        ego_dict = {k:[v] for k, v in ego._asdict().items()}
 
         agents_dict = {k: [] for k in AgentVisualisation._fields}
         for agent in frames[frame_idx].agents:
