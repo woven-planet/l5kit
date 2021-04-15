@@ -3,7 +3,7 @@ from typing import List, NamedTuple
 import numpy as np
 
 
-class LaneVisualisation(NamedTuple):
+class LaneVisualization(NamedTuple):
     """Hold information about a single lane
 
     :param xs: 1D array of x coordinates
@@ -15,7 +15,7 @@ class LaneVisualisation(NamedTuple):
     color: str
 
 
-class CWVisualisation(NamedTuple):
+class CWVisualization(NamedTuple):
     """Hold information about a single crosswalk
 
     :param xs: 1D array of x coordinates
@@ -27,7 +27,7 @@ class CWVisualisation(NamedTuple):
     color: str
 
 
-class AgentVisualisation(NamedTuple):
+class AgentVisualization(NamedTuple):
     """Hold information about a single agent
 
     :param xs: 1D array of x coordinates
@@ -45,7 +45,7 @@ class AgentVisualisation(NamedTuple):
     prob: float
 
 
-class EgoVisualisation(NamedTuple):
+class EgoVisualization(NamedTuple):
     """Hold information about a single ego annotation
 
     :param xs: 1D array of x coordinates
@@ -61,7 +61,7 @@ class EgoVisualisation(NamedTuple):
     center_y: float
 
 
-class TrajectoryVisualisation(NamedTuple):
+class TrajectoryVisualization(NamedTuple):
     """Hold information about a single trajectory annotation
 
     :param xs: 1D array of x coordinates
@@ -77,7 +77,7 @@ class TrajectoryVisualisation(NamedTuple):
     track_id: int
 
 
-class FrameVisualisation(NamedTuple):
+class FrameVisualization(NamedTuple):
     """Hold information about a frame (the state of a scene at a given time)
 
     :param ego: a single ego annotation
@@ -86,8 +86,8 @@ class FrameVisualisation(NamedTuple):
     :param crosswalks: a list of crosswalks
     :param trajectories: a list of trajectories
     """
-    ego: EgoVisualisation
-    agents: List[AgentVisualisation]
-    lanes: List[LaneVisualisation]
-    crosswalks: List[CWVisualisation]
-    trajectories: List[TrajectoryVisualisation]
+    ego: EgoVisualization
+    agents: List[AgentVisualization]
+    lanes: List[LaneVisualization]
+    crosswalks: List[CWVisualization]
+    trajectories: List[TrajectoryVisualization]

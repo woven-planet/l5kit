@@ -8,9 +8,9 @@ from l5kit.data import (AGENT_DTYPE, filter_agents_by_frames, FRAME_DTYPE, get_a
 from l5kit.dataset import EgoDataset
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.simulation.unroll import SimulationOutput, UnrollInputOutput
-from l5kit.visualization.visualiser.common import FrameVisualisation
-from l5kit.visualization.visualiser.visualiser import visualise
-from l5kit.visualization.visualiser.zarr_utils import (_get_frame_data, _get_frame_trajectories,
+from l5kit.visualization.visualizer.common import FrameVisualization
+from l5kit.visualization.visualizer.visualizer import visualize
+from l5kit.visualization.visualizer.zarr_utils import (_get_frame_data, _get_frame_trajectories,
                                                        _get_in_out_as_trajectories, simulation_out_to_visualizer_scene)
 
 
@@ -67,7 +67,7 @@ def test_get_frame_data(ego_cat_dataset: EgoDataset, frame_index: int) -> None:
     tls = ego_cat_dataset.dataset.tl_faces[tls_slice]
 
     frame_out = _get_frame_data(mapAPI, frame, agents, tls)
-    assert isinstance(frame_out, FrameVisualisation)
+    assert isinstance(frame_out, FrameVisualization)
     assert len(frame_out.agents) > 0
     assert len(frame_out.trajectories) == 0
 
@@ -80,5 +80,5 @@ def test_visualise(ego_cat_dataset: EgoDataset) -> None:
     sim_out = SimulationOutput(0, sim_dataset, ego_ins_outs=defaultdict(list),
                                agents_ins_outs=defaultdict(list))
 
-    # ensure we can call the visualise
-    visualise(0, simulation_out_to_visualizer_scene(sim_out, mapAPI))
+    # ensure we can call the visualize
+    visualize(0, simulation_out_to_visualizer_scene(sim_out, mapAPI))

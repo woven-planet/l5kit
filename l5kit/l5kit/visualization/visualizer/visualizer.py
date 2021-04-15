@@ -8,11 +8,11 @@ from bokeh.layouts import column, LayoutDOM
 from bokeh.models import CustomJS, HoverTool, Slider
 from bokeh.plotting import ColumnDataSource
 
-from l5kit.visualization.visualiser.common import (AgentVisualisation, CWVisualisation, EgoVisualisation,
-                                                   FrameVisualisation, LaneVisualisation, TrajectoryVisualisation)
+from l5kit.visualization.visualizer.common import (AgentVisualization, CWVisualization, EgoVisualization,
+                                                   FrameVisualization, LaneVisualization, TrajectoryVisualization)
 
 
-def _visualisation_list_to_dict(visualisation_list: List[NamedTuple], null_el: NamedTuple) -> Dict[str, Any]:
+def _visualization_list_to_dict(visualisation_list: List[NamedTuple], null_el: NamedTuple) -> Dict[str, Any]:
     """Convert a list of NamedTuple into a dict, where:
     - the NamedTuple fields are the dict keys;
     - the dict value are lists;
@@ -33,11 +33,11 @@ def _visualisation_list_to_dict(visualisation_list: List[NamedTuple], null_el: N
     return dict(visualisation_dict)
 
 
-def visualise(scene_index: int, frames: List[FrameVisualisation]) -> LayoutDOM:
+def visualize(scene_index: int, frames: List[FrameVisualization]) -> LayoutDOM:
     """Visualise a scene using Bokeh.
 
     :param scene_index: the index of the scene, used only as the title
-    :param frames: a list of FrameVisualisation objects (one per frame of the scene)
+    :param frames: a list of FrameVisualization objects (one per frame of the scene)
     """
 
     agent_hover = HoverTool(
@@ -55,26 +55,26 @@ def visualise(scene_index: int, frames: List[FrameVisualisation]) -> LayoutDOM:
 
     for frame_idx, frame in enumerate(frames):
         # we need to ensure we have something otherwise js crashes
-        ego_dict = _visualisation_list_to_dict([frame.ego], EgoVisualisation(xs=np.empty(0), ys=np.empty(0),
+        ego_dict = _visualization_list_to_dict([frame.ego], EgoVisualization(xs=np.empty(0), ys=np.empty(0),
                                                                              color="black", center_x=0,
                                                                              center_y=0))
 
-        agents_dict = _visualisation_list_to_dict(frame.agents, AgentVisualisation(xs=np.empty(0), ys=np.empty(0),
+        agents_dict = _visualization_list_to_dict(frame.agents, AgentVisualization(xs=np.empty(0), ys=np.empty(0),
                                                                                    color="black", track_id=-2,
                                                                                    agent_type="", prob=0.))
 
-        lanes_dict = _visualisation_list_to_dict(frame.lanes, LaneVisualisation(xs=np.empty(0), ys=np.empty(0),
+        lanes_dict = _visualization_list_to_dict(frame.lanes, LaneVisualization(xs=np.empty(0), ys=np.empty(0),
                                                                                 color="black"))
 
-        crosswalk_dict = _visualisation_list_to_dict(frame.crosswalks, CWVisualisation(xs=np.empty(0), ys=np.empty(0),
+        crosswalk_dict = _visualization_list_to_dict(frame.crosswalks, CWVisualization(xs=np.empty(0), ys=np.empty(0),
                                                                                        color="black"))
 
         # for trajectory we extract the labels so that we can show them in the legend
         trajectory_dict: Dict[str, Dict[str, Any]] = {}
         for trajectory_label in trajectories_labels:
             trajectories = [el for el in frame.trajectories if el.legend_label == trajectory_label]
-            trajectory_dict[trajectory_label] = _visualisation_list_to_dict(trajectories,
-                                                                            TrajectoryVisualisation(xs=np.empty(0),
+            trajectory_dict[trajectory_label] = _visualization_list_to_dict(trajectories,
+                                                                            TrajectoryVisualization(xs=np.empty(0),
                                                                                                     ys=np.empty(0),
                                                                                                     color="black",
                                                                                                     legend_label="none",
