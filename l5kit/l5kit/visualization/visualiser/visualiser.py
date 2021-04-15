@@ -1,34 +1,38 @@
-from typing import Dict, List, Optional
+from collections import defaultdict
+from typing import Any, DefaultDict, Dict, List, NamedTuple
 
 import bokeh.io
 import bokeh.plotting
 import numpy as np
-from bokeh.layouts import column
+from bokeh.layouts import column, LayoutDOM
 from bokeh.models import CustomJS, HoverTool, Slider
-from bokeh.plotting import ColumnDataSource, output_notebook, save, show
-from bokeh.resources import Resources
+from bokeh.plotting import ColumnDataSource
 
-from l5kit.visualization.visualiser.common import (AgentVisualisation, CWVisualisation, EgoVisualisation,
-                                                   FrameVisualisation, LaneVisualisation, TrajectoryVisualisation)
+from l5kit.visualization.visualiser.common import FrameVisualisation
 
 
-def visualise(scene_index: int, frames: List[FrameVisualisation], do_show: bool = False,
-              do_notebook: bool = False, save_path: Optional[str] = None,
-              resources: str = "inline") -> None:
+def _visualisation_list_to_dict(visualisation_list: List[NamedTuple]) -> Dict[str, Any]:
+    """Convert a list of NamedTuple into a dict, where:
+    - the NamedTuple fields are the dict keys;
+    - the dict value are lists;
+
+    :param visualisation_list: a list of NamedTuple
+    :return: a dict with the same information
+    """
+    # TODO: check that all els have the same fields
+    visualisation_dict: DefaultDict[str, Any] = defaultdict(list)
+    for el in visualisation_list:
+        for k, v in el._asdict().items():
+            visualisation_dict[k].append(v)
+    return dict(visualisation_dict)
+
+
+def visualise(scene_index: int, frames: List[FrameVisualisation]) -> LayoutDOM:
     """Visualise a scene using Bokeh.
 
     :param scene_index: the index of the scene, used only as the title
     :param frames: a list of FrameVisualisation objects (one per frame of the scene)
-    :param do_show: if to call the show method
-    :param do_notebook: if to call output_notebook
-    :param save_path: optional html destination file
-    :param resources: how to load js (inline will embed it, cdn will download it)
     """
-
-    assert not (save_path is not None and do_notebook), "can't save and show in notebook"
-
-    if do_notebook:
-        output_notebook()
 
     agent_hover = HoverTool(
         mode="mouse",
@@ -43,37 +47,22 @@ def visualise(scene_index: int, frames: List[FrameVisualisation], do_show: bool 
 
     trajectories_labels = np.unique([traj.legend_label for frame in frames for traj in frame.trajectories])
 
-    for frame_idx in range(len(frames)):
-        ego = frames[frame_idx].ego
-
-        ego_dict = {k:[v] for k, v in ego._asdict().items()}
-
-        agents_dict = {k: [] for k in AgentVisualisation._fields}
-        for agent in frames[frame_idx].agents:
-            for k, v in zip(AgentVisualisation._fields, agent):
-                agents_dict[k].append(v)
-
-        lanes_dict = {k: [] for k in LaneVisualisation._fields}
-        for lane in frames[frame_idx].lanes:
-            for k, v in zip(LaneVisualisation._fields, lane):
-                lanes_dict[k].append(v)
-
-        crosswalk_dict = {k: [] for k in CWVisualisation._fields}
-        for crosswalk in frames[frame_idx].crosswalks:
-            for k, v in zip(CWVisualisation._fields, crosswalk):
-                crosswalk_dict[k].append(v)
+    for frame_idx, frame in enumerate(frames):
+        ego_dict = _visualisation_list_to_dict([frame.ego])
+        agents_dict = _visualisation_list_to_dict(frame.agents)
+        lanes_dict = _visualisation_list_to_dict(frame.lanes)
+        crosswalk_dict = _visualisation_list_to_dict(frame.crosswalks)
 
         # for trajectory we extract the labels so that we can show them in the legend
-        trajectory_super_dict = {label: {k: [] for k in TrajectoryVisualisation._fields}
-                                 for label in trajectories_labels}
-        for trajectory in frames[frame_idx].trajectories:
-            for k, v in zip(TrajectoryVisualisation._fields, trajectory):
-                trajectory_super_dict[trajectory.legend_label][k].append(v)
+        trajectory_dict: Dict[str, Dict[str, Any]] = {}
+        for trajectory_label in trajectories_labels:
+            trajectories_list = [el for el in frame.trajectories if el.legend_label == trajectory_label]
+            trajectory_dict[trajectory_label] = _visualisation_list_to_dict(trajectories_list)
 
         frame_dict = dict(ego=ColumnDataSource(ego_dict), agents=ColumnDataSource(agents_dict),
                           lanes=ColumnDataSource(lanes_dict),
                           crosswalks=ColumnDataSource(crosswalk_dict))
-        frame_dict.update({k: ColumnDataSource(v) for k, v in trajectory_super_dict.items()})
+        frame_dict.update({k: ColumnDataSource(v) for k, v in trajectory_dict.items()})
 
         out.append(frame_dict)
 
@@ -127,7 +116,4 @@ def visualise(scene_index: int, frames: List[FrameVisualisation], do_show: bool 
     f.legend.click_policy = "hide"
 
     layout = column(f, slider)
-    if save_path is not None:
-        save(layout, filename=save_path, title=f"{scene_index}", resources=Resources(resources))
-    if do_show:
-        show(layout)
+    return layout

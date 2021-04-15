@@ -139,7 +139,7 @@ def _get_frame_data(mapAPI: MapAPI, frame: np.ndarray, agents_frame: np.ndarray,
                                              ys=box_coord[..., 1],
                                              color="#1F77B4" if agent_type not in COLORS else COLORS[agent_type],
                                              track_id=agent["track_id"],
-                                             type=PERCEPTION_LABELS[label_index],
+                                             agent_type=PERCEPTION_LABELS[label_index],
                                              prob=agent["label_probabilities"][label_index]))
 
     return FrameVisualisation(ego=ego_vis, agents=agents_vis, lanes=lanes_vis,
