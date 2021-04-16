@@ -172,19 +172,19 @@
 <span id="l5kit-cle-metrics-module"></span><h1>l5kit.cle.metrics module<a class="headerlink" href="#module-l5kit.cle.metrics" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="l5kit.cle.metrics.CollisionFrontMetric">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">CollisionFrontMetric</code><a class="headerlink" href="#l5kit.cle.metrics.CollisionFrontMetric" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></code><code class="sig-name descname"><span class="pre">CollisionFrontMetric</span></code><a class="headerlink" href="#l5kit.cle.metrics.CollisionFrontMetric" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.CollisionMetricBase" title="l5kit.cle.metrics.CollisionMetricBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.CollisionMetricBase</span></code></a></p>
 <p>Computes the front collision metric.</p>
 <dl class="py attribute">
 <dt id="l5kit.cle.metrics.CollisionFrontMetric.metric_name">
-<code class="sig-name descname">metric_name</code><em class="property"> = 'collision_front'</em><a class="headerlink" href="#l5kit.cle.metrics.CollisionFrontMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">metric_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'collision_front'</span></em><a class="headerlink" href="#l5kit.cle.metrics.CollisionFrontMetric.metric_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="l5kit.cle.metrics.CollisionMetricBase">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">CollisionMetricBase</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">collision_type</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.CollisionType" title="l5kit.evaluation.metrics.CollisionType">l5kit.evaluation.metrics.CollisionType</a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.CollisionMetricBase" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></code><code class="sig-name descname"><span class="pre">CollisionMetricBase</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">collision_type</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.CollisionType" title="l5kit.evaluation.metrics.CollisionType"><span class="pre">l5kit.evaluation.metrics.CollisionType</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.CollisionMetricBase" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <p>This is the abstract base class for the collision metric.</p>
 <dl class="field-list simple">
@@ -194,7 +194,7 @@
 </dl>
 <dl class="py method">
 <dt id="l5kit.cle.metrics.CollisionMetricBase.compute">
-<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.CollisionMetricBase.compute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">compute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">torch.Tensor</span><a class="headerlink" href="#l5kit.cle.metrics.CollisionMetricBase.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the metric on all frames of the scene.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -211,43 +211,43 @@ number of frames, where 1 means a colision, 0 otherwise)</p>
 
 <dl class="py class">
 <dt id="l5kit.cle.metrics.CollisionRearMetric">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">CollisionRearMetric</code><a class="headerlink" href="#l5kit.cle.metrics.CollisionRearMetric" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></code><code class="sig-name descname"><span class="pre">CollisionRearMetric</span></code><a class="headerlink" href="#l5kit.cle.metrics.CollisionRearMetric" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.CollisionMetricBase" title="l5kit.cle.metrics.CollisionMetricBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.CollisionMetricBase</span></code></a></p>
 <p>Computes the rear collision metric.</p>
 <dl class="py attribute">
 <dt id="l5kit.cle.metrics.CollisionRearMetric.metric_name">
-<code class="sig-name descname">metric_name</code><em class="property"> = 'collision_rear'</em><a class="headerlink" href="#l5kit.cle.metrics.CollisionRearMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">metric_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'collision_rear'</span></em><a class="headerlink" href="#l5kit.cle.metrics.CollisionRearMetric.metric_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="l5kit.cle.metrics.CollisionSideMetric">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">CollisionSideMetric</code><a class="headerlink" href="#l5kit.cle.metrics.CollisionSideMetric" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></code><code class="sig-name descname"><span class="pre">CollisionSideMetric</span></code><a class="headerlink" href="#l5kit.cle.metrics.CollisionSideMetric" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.CollisionMetricBase" title="l5kit.cle.metrics.CollisionMetricBase"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.CollisionMetricBase</span></code></a></p>
 <p>Computes the side collision metric.</p>
 <dl class="py attribute">
 <dt id="l5kit.cle.metrics.CollisionSideMetric.metric_name">
-<code class="sig-name descname">metric_name</code><em class="property"> = 'collision_side'</em><a class="headerlink" href="#l5kit.cle.metrics.CollisionSideMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">metric_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'collision_side'</span></em><a class="headerlink" href="#l5kit.cle.metrics.CollisionSideMetric.metric_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="l5kit.cle.metrics.DisplacementErrorL2Metric">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">DisplacementErrorL2Metric</code><a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorL2Metric" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></code><code class="sig-name descname"><span class="pre">DisplacementErrorL2Metric</span></code><a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorL2Metric" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.DisplacementErrorMetric" title="l5kit.cle.metrics.DisplacementErrorMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.DisplacementErrorMetric</span></code></a></p>
 <p>Displacement error calculated with euclidean distance.</p>
 <dl class="py attribute">
 <dt id="l5kit.cle.metrics.DisplacementErrorL2Metric.metric_name">
-<code class="sig-name descname">metric_name</code><em class="property">: str</em><em class="property"> = 'displacement_error_l2'</em><a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorL2Metric.metric_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">metric_name</span></code><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><em class="property"> <span class="pre">=</span> <span class="pre">'displacement_error_l2'</span></em><a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorL2Metric.metric_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="l5kit.cle.metrics.DisplacementErrorMetric">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">DisplacementErrorMetric</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">error_function</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">[</span>torch.Tensor<span class="p">, </span>torch.Tensor<span class="p">]</span><span class="p">, </span>torch.Tensor<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorMetric" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></code><code class="sig-name descname"><span class="pre">DisplacementErrorMetric</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">error_function</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorMetric" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.SupportsMetricCompute" title="l5kit.cle.metrics.SupportsMetricCompute"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.SupportsMetricCompute</span></code></a></p>
 <p>Displacement error computes the elementwise distance from the
 simulated trajectory and the observed trajectory.</p>
@@ -258,7 +258,7 @@ simulated trajectory and the observed trajectory.</p>
 </dl>
 <dl class="py method">
 <dt id="l5kit.cle.metrics.DisplacementErrorMetric.compute">
-<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorMetric.compute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">compute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">torch.Tensor</span><a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorMetric.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the metric on all frames of the scene.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -272,14 +272,14 @@ simulated trajectory and the observed trajectory.</p>
 
 <dl class="py attribute">
 <dt id="l5kit.cle.metrics.DisplacementErrorMetric.metric_name">
-<code class="sig-name descname">metric_name</code><em class="property">: str</em><em class="property"> = 'displacement_error'</em><a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">metric_name</span></code><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><em class="property"> <span class="pre">=</span> <span class="pre">'displacement_error'</span></em><a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorMetric.metric_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="l5kit.cle.metrics.DistanceToRefTrajectoryMetric">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">DistanceToRefTrajectoryMetric</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">scene_fraction</span><span class="p">:</span> <span class="n">float</span> <span class="o">=</span> <span class="default_value">0.8</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.DistanceToRefTrajectoryMetric" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></code><code class="sig-name descname"><span class="pre">DistanceToRefTrajectoryMetric</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_fraction</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.8</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.DistanceToRefTrajectoryMetric" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.SupportsMetricCompute" title="l5kit.cle.metrics.SupportsMetricCompute"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.SupportsMetricCompute</span></code></a></p>
 <p>Distance to reference trajectory metric. This metric will compute
 the distance from the predicted centroid to the closest waypoint
@@ -299,7 +299,7 @@ fraction should be between 0.0 and 1.0.</p>
 </dl>
 <dl class="py method">
 <dt id="l5kit.cle.metrics.DistanceToRefTrajectoryMetric.compute">
-<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.DistanceToRefTrajectoryMetric.compute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">compute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">torch.Tensor</span><a class="headerlink" href="#l5kit.cle.metrics.DistanceToRefTrajectoryMetric.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the metric on all frames of the scene.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -314,25 +314,25 @@ frame [Shape: N, where N = timesteps]</p>
 
 <dl class="py attribute">
 <dt id="l5kit.cle.metrics.DistanceToRefTrajectoryMetric.metric_name">
-<code class="sig-name descname">metric_name</code><em class="property">: str</em><em class="property"> = 'distance_to_reference_trajectory'</em><a class="headerlink" href="#l5kit.cle.metrics.DistanceToRefTrajectoryMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">metric_name</span></code><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><em class="property"> <span class="pre">=</span> <span class="pre">'distance_to_reference_trajectory'</span></em><a class="headerlink" href="#l5kit.cle.metrics.DistanceToRefTrajectoryMetric.metric_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="l5kit.cle.metrics.ReplayDrivenMilesMetric">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">ReplayDrivenMilesMetric</code><a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></code><code class="sig-name descname"><span class="pre">ReplayDrivenMilesMetric</span></code><a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This metric will compute the driven miles per frame for the observed
 trajectory, the one in the log replay (as opposed to the one simulated).</p>
 <dl class="py attribute">
 <dt id="l5kit.cle.metrics.ReplayDrivenMilesMetric.METER_TO_MILES">
-<code class="sig-name descname">METER_TO_MILES</code><em class="property"> = 0.000621371</em><a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric.METER_TO_MILES" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">METER_TO_MILES</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0.000621371</span></em><a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric.METER_TO_MILES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="l5kit.cle.metrics.ReplayDrivenMilesMetric.compute">
-<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric.compute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">compute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">torch.Tensor</span><a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the metric on all frames of the scene.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -346,25 +346,25 @@ trajectory, the one in the log replay (as opposed to the one simulated).</p>
 
 <dl class="py attribute">
 <dt id="l5kit.cle.metrics.ReplayDrivenMilesMetric.metric_name">
-<code class="sig-name descname">metric_name</code><em class="property"> = 'replay_driven_miles'</em><a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">metric_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'replay_driven_miles'</span></em><a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric.metric_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="l5kit.cle.metrics.SimulatedDrivenMilesMetric">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">SimulatedDrivenMilesMetric</code><a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></code><code class="sig-name descname"><span class="pre">SimulatedDrivenMilesMetric</span></code><a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>This metric will compute the driven miles per frame for the simulated
 trajectory (as opposed to the one in the log replay).</p>
 <dl class="py attribute">
 <dt id="l5kit.cle.metrics.SimulatedDrivenMilesMetric.METER_TO_MILES">
-<code class="sig-name descname">METER_TO_MILES</code><em class="property"> = 0.000621371</em><a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric.METER_TO_MILES" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">METER_TO_MILES</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0.000621371</span></em><a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric.METER_TO_MILES" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
 <dt id="l5kit.cle.metrics.SimulatedDrivenMilesMetric.compute">
-<code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric.compute" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">compute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">torch.Tensor</span><a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the metric on all frames of the scene.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -378,19 +378,19 @@ trajectory (as opposed to the one in the log replay).</p>
 
 <dl class="py attribute">
 <dt id="l5kit.cle.metrics.SimulatedDrivenMilesMetric.metric_name">
-<code class="sig-name descname">metric_name</code><em class="property"> = 'simulated_driven_miles'</em><a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">metric_name</span></code><em class="property"> <span class="pre">=</span> <span class="pre">'simulated_driven_miles'</span></em><a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric.metric_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="l5kit.cle.metrics.SupportsMetricCompute">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.cle.metrics.</code><code class="sig-name descname">SupportsMetricCompute</code><span class="sig-paren">(</span><em class="sig-param"><span class="o">*</span><span class="n">args</span></em>, <em class="sig-param"><span class="o">**</span><span class="n">kwargs</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></code><code class="sig-name descname"><span class="pre">SupportsMetricCompute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>
 <p>Protocol supporting the computation method for metrics.</p>
 <dl class="py method">
 <dt id="l5kit.cle.metrics.SupportsMetricCompute.compute">
-<em class="property">abstract </em><code class="sig-name descname">compute</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">simulation_output</span><span class="p">:</span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput">l5kit.simulation.unroll.SimulationOutput</a></span></em><span class="sig-paren">)</span> &#x2192; torch.Tensor<a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute.compute" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">compute</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">torch.Tensor</span><a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>The compute method sould return the result of the metric
 computed at every frame of the scene.</p>
 <dl class="field-list simple">
@@ -405,7 +405,7 @@ computed at every frame of the scene.</p>
 
 <dl class="py attribute">
 <dt id="l5kit.cle.metrics.SupportsMetricCompute.metric_name">
-<code class="sig-name descname">metric_name</code><em class="property">: str</em><a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute.metric_name" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">metric_name</span></code><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute.metric_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

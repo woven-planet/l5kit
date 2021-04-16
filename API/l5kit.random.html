@@ -192,7 +192,7 @@
 <span id="l5kit-random-package"></span><h1>l5kit.random package<a class="headerlink" href="#module-l5kit.random" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="l5kit.random.GaussianRandomGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.random.</code><code class="sig-name descname">GaussianRandomGenerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">mean</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">std</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.random.GaussianRandomGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.random.</span></code><code class="sig-name descname"><span class="pre">GaussianRandomGenerator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.random.GaussianRandomGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="l5kit.random.random_generator.html#l5kit.random.random_generator.RandomGenerator" title="l5kit.random.random_generator.RandomGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.random.random_generator.RandomGenerator</span></code></a></p>
 <p>GaussianRandomGenerator draws samples from a normal distribution with specified mean and standard deviation.
 Note that this gaussian can be multidimensional.</p>
@@ -200,7 +200,7 @@ Note that this gaussian can be multidimensional.</p>
 
 <dl class="py class">
 <dt id="l5kit.random.LambdaRandomGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.random.</code><code class="sig-name descname">LambdaRandomGenerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">sampling_function</span><span class="p">:</span> <span class="n">Callable<span class="p">[</span><span class="p">]</span><span class="p">, </span>numpy.ndarray<span class="p">]</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.random.LambdaRandomGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.random.</span></code><code class="sig-name descname"><span class="pre">LambdaRandomGenerator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sampling_function</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.random.LambdaRandomGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="l5kit.random.random_generator.html#l5kit.random.random_generator.RandomGenerator" title="l5kit.random.random_generator.RandomGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.random.random_generator.RandomGenerator</span></code></a></p>
 <p>LambdaRandomGenerator generates values by calling the supplied function.
 Note that instead of this you could also just use this supplied function itself.</p>
@@ -208,13 +208,13 @@ Note that instead of this you could also just use this supplied function itself.
 
 <dl class="py class">
 <dt id="l5kit.random.RandomGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.random.</code><code class="sig-name descname">RandomGenerator</code><a class="headerlink" href="#l5kit.random.RandomGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.random.</span></code><code class="sig-name descname"><span class="pre">RandomGenerator</span></code><a class="headerlink" href="#l5kit.random.RandomGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 </dd></dl>
 
 <dl class="py class">
 <dt id="l5kit.random.ReplayRandomGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.random.</code><code class="sig-name descname">ReplayRandomGenerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">values</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.random.ReplayRandomGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.random.</span></code><code class="sig-name descname"><span class="pre">ReplayRandomGenerator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">values</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.random.ReplayRandomGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="l5kit.random.random_generator.html#l5kit.random.random_generator.RandomGenerator" title="l5kit.random.random_generator.RandomGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.random.random_generator.RandomGenerator</span></code></a></p>
 <p>ReplayRandomGenerator generates values by sequentially returning the values in the supplied
 array. It does not loop or reset automatically.</p>
@@ -222,7 +222,7 @@ array. It does not loop or reset automatically.</p>
 
 <dl class="py class">
 <dt id="l5kit.random.UniformRandomGenerator">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.random.</code><code class="sig-name descname">UniformRandomGenerator</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">low</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em>, <em class="sig-param"><span class="n">high</span><span class="p">:</span> <span class="n">numpy.ndarray</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.random.UniformRandomGenerator" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.random.</span></code><code class="sig-name descname"><span class="pre">UniformRandomGenerator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">low</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">high</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.random.UniformRandomGenerator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="l5kit.random.random_generator.html#l5kit.random.random_generator.RandomGenerator" title="l5kit.random.random_generator.RandomGenerator"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.random.random_generator.RandomGenerator</span></code></a></p>
 <p>UniformRandomGenerator draws samples from a uniform distribution over the half-open interval [low, high).</p>
 </dd></dl>

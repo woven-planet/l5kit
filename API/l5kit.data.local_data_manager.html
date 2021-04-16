@@ -201,18 +201,18 @@
 <span id="l5kit-data-local-data-manager-module"></span><h1>l5kit.data.local_data_manager module<a class="headerlink" href="#module-l5kit.data.local_data_manager" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
 <dt id="l5kit.data.local_data_manager.DataManager">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.data.local_data_manager.</code><code class="sig-name descname">DataManager</code><a class="headerlink" href="#l5kit.data.local_data_manager.DataManager" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.data.local_data_manager.</span></code><code class="sig-name descname"><span class="pre">DataManager</span></code><a class="headerlink" href="#l5kit.data.local_data_manager.DataManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">abc.ABC</span></code></p>
 <dl class="py method">
 <dt id="l5kit.data.local_data_manager.DataManager.require">
-<em class="property">abstract </em><code class="sig-name descname">require</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#l5kit.data.local_data_manager.DataManager.require" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span> </em><code class="sig-name descname"><span class="pre">require</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#l5kit.data.local_data_manager.DataManager.require" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
 <dt id="l5kit.data.local_data_manager.LocalDataManager">
-<em class="property">class </em><code class="sig-prename descclassname">l5kit.data.local_data_manager.</code><code class="sig-name descname">LocalDataManager</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">local_data_folder</span><span class="p">:</span> <span class="n">Optional<span class="p">[</span>Union<span class="p">[</span>str<span class="p">, </span>pathlib.Path<span class="p">]</span><span class="p">]</span></span> <span class="o">=</span> <span class="default_value">None</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.data.local_data_manager.LocalDataManager" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.data.local_data_manager.</span></code><code class="sig-name descname"><span class="pre">LocalDataManager</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">local_data_folder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Union</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">pathlib.Path</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.data.local_data_manager.LocalDataManager" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#l5kit.data.local_data_manager.DataManager" title="l5kit.data.local_data_manager.DataManager"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.data.local_data_manager.DataManager</span></code></a></p>
 <p>LocalDataManager allows you to require data to be present in the subpath of a specific folder.</p>
 <p>Example:
@@ -229,7 +229,7 @@ call <code class="docutils literal notranslate"><span class="pre">local_data_man
 </dl>
 <dl class="py method">
 <dt id="l5kit.data.local_data_manager.LocalDataManager.require">
-<code class="sig-name descname">require</code><span class="sig-paren">(</span><em class="sig-param"><span class="n">key</span><span class="p">:</span> <span class="n">str</span></em><span class="sig-paren">)</span> &#x2192; str<a class="headerlink" href="#l5kit.data.local_data_manager.LocalDataManager.require" title="Permalink to this definition">¶</a></dt>
+<code class="sig-name descname"><span class="pre">require</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">key</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#l5kit.data.local_data_manager.LocalDataManager.require" title="Permalink to this definition">¶</a></dt>
 <dd><p>Require checks whether the file with the given key is present in the local data folder, if it is not it
 raises an error. Returns the path to the file otherwise.</p>
 <dl class="field-list simple">
