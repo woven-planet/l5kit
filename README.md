@@ -45,7 +45,13 @@ Please refer to our [README](./examples/planning/README.md) for a full descripti
 
 We also provide pre-trained models for this task. Please refer to the [training notebook](./examples/planning/train.ipynb). 
 
+### Simulation
+We provide a simulation notebook to test interaction between agents and the SDV when they are both controlled by a ML policy.
+* test your ML policy for simulation using our [simulation evaluation notebook](./examples/simulation/simulation_test.ipynb) \
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/simulation/simulation_test.ipynb)
+
 # News
+- 04-16-2021: We've just released a new notebook for the ML simulation task!
 - 12-03-2020: We've just released a series of notebooks to train and evaluate an ML planning model. We've also included pre-trained models! Learn more about this in the dedicated [README](./examples/planning/README.md)
 - 11-26-2020: [2020 Kaggle Lyft Motion Prediction for Autonomous Vehicles Competition](https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview) ended. We had more than 900 teams taking part in it!
 - 11-16-2020: [Dataset paper](https://corlconf.github.io/paper_86/) presented at CoRL 2020  
