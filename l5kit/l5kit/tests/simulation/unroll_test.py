@@ -184,8 +184,8 @@ def test_get_in_out_mock() -> None:
         # repeated scene not allowed
         ClosedLoopSimulator.get_ego_in_out({"scene_index": np.ones(3)}, {"value": np.ones(3)})
 
-    input_ego_dict = {"scene_index": np.asarray([0, 1, 2]), "track_id": np.full(3, -1)}
-    output_ego_dict = {"output_value": input_ego_dict["scene_index"]}
+    input_ego_dict = {"scene_index": np.asarray([0, 1, 2]), "track_id": np.full(3, -1), "mock": np.zeros(3)}
+    output_ego_dict = {"output_value": input_ego_dict["scene_index"], "mock_out": np.zeros(3)}
 
     out = ClosedLoopSimulator.get_ego_in_out(input_ego_dict, output_ego_dict)
 
@@ -195,6 +195,14 @@ def test_get_in_out_mock() -> None:
         assert scene_index in out
         assert out[scene_index].track_id == -1
         assert out[scene_index].outputs["output_value"] == scene_index
+
+    # we can test with exclude_keys also
+    no_keys = {"mock", "mock_out"}
+    out = ClosedLoopSimulator.get_ego_in_out(input_ego_dict, output_ego_dict, keys_to_exclude=no_keys)
+    assert len(out) == 3
+    for out_el in out.values():
+        assert len(no_keys.intersection(out_el.inputs.keys())) == 0
+        assert len(no_keys.intersection(out_el.outputs.keys())) == 0
 
     # for agents repeated scenes are allowed
     input_agents_dict = {"scene_index": np.asarray([0, 0, 2]), "track_id": np.asarray([0, 1, 0])}

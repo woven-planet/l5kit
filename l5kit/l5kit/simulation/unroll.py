@@ -1,6 +1,6 @@
 from collections import defaultdict
 from enum import IntEnum
-from typing import DefaultDict, Dict, List, NamedTuple, Optional, Tuple
+from typing import DefaultDict, Dict, List, NamedTuple, Optional, Set, Tuple
 
 import numpy as np
 import torch
@@ -109,7 +109,8 @@ class ClosedLoopSimulator:
     def __init__(self, sim_cfg: SimulationConfig, dataset: EgoDataset,
                  device: torch.device,
                  model_ego: Optional[torch.nn.Module] = None,
-                 model_agents: Optional[torch.nn.Module] = None):
+                 model_agents: Optional[torch.nn.Module] = None,
+                 keys_to_exclude: Tuple[str] = ("image",)):
         """
         Create a simulation loop object capable of unrolling ego and agents
         :param sim_cfg: configuration for unroll
@@ -117,6 +118,7 @@ class ClosedLoopSimulator:
         :param device: a torch device. Inference will be performed here
         :param model_ego: the model to be used for ego
         :param model_agents: the model to be used for agents
+        :param keys_to_exclude: keys to exclude from input/output (e.g. huge blobs)
         """
         self.sim_cfg = sim_cfg
         if not sim_cfg.use_ego_gt and model_ego is None:
@@ -129,6 +131,8 @@ class ClosedLoopSimulator:
 
         self.device = device
         self.dataset = dataset
+
+        self.keys_to_exclude = set(keys_to_exclude)
 
     def unroll(self, scene_indices: List[int]) -> List[SimulationOutput]:
         """
@@ -160,7 +164,8 @@ class ClosedLoopSimulator:
                         self.update_agents(sim_dataset, next_frame_index, agents_input_dict, agents_output_dict)
 
                     # update input and output buffers
-                    agents_frame_in_out = self.get_agents_in_out(agents_input_dict, agents_output_dict)
+                    agents_frame_in_out = self.get_agents_in_out(agents_input_dict, agents_output_dict,
+                                                                 self.keys_to_exclude)
                     for scene_idx in scene_indices:
                         agents_ins_outs[scene_idx].append(agents_frame_in_out.get(scene_idx, []))
 
@@ -176,7 +181,7 @@ class ClosedLoopSimulator:
                 if should_update:
                     self.update_ego(sim_dataset, next_frame_index, ego_input_dict, ego_output_dict)
 
-                ego_frame_in_out = self.get_ego_in_out(ego_input_dict, ego_output_dict)
+                ego_frame_in_out = self.get_ego_in_out(ego_input_dict, ego_output_dict, self.keys_to_exclude)
                 for scene_idx in scene_indices:
                     ego_ins_outs[scene_idx].append(ego_frame_in_out[scene_idx])
 
@@ -218,17 +223,27 @@ class ClosedLoopSimulator:
 
     @staticmethod
     def get_agents_in_out(input_dict: Dict[str, np.ndarray],
-                          output_dict: Dict[str, np.ndarray]) -> Dict[int, List[UnrollInputOutput]]:
+                          output_dict: Dict[str, np.ndarray],
+                          keys_to_exclude: Optional[Set[str]] = None) -> Dict[int, List[UnrollInputOutput]]:
         """Get all agents inputs and outputs as a dict mapping scene index to a list of UnrollInputOutput
 
         :param input_dict: all agent model inputs (across scenes)
         :param output_dict: all agent model outputs (across scenes)
+        :param keys_to_exclude: if to drop keys from input/output (e.g. huge blobs)
         :return: the dict mapping scene index to a list UnrollInputOutput. Some scenes may be missing
         """
+        key_required = {"track_id", "scene_index"}
+        if len(key_required.intersection(input_dict.keys())) != len(key_required):
+            raise ValueError(f"track_id and scene_index not found in keys {input_dict.keys()}")
+
+        keys_to_exclude = keys_to_exclude if keys_to_exclude is not None else set()
+        if len(key_required.intersection(keys_to_exclude)) != 0:
+            raise ValueError(f"can't drop required keys: {keys_to_exclude}")
+
         ret_dict = defaultdict(list)
         for idx_agent in range(len(input_dict["track_id"])):
-            agent_in = {k: v[idx_agent] for k, v in input_dict.items()}
-            agent_out = {k: v[idx_agent] for k, v in output_dict.items()}
+            agent_in = {k: v[idx_agent] for k, v in input_dict.items() if k not in keys_to_exclude}
+            agent_out = {k: v[idx_agent] for k, v in output_dict.items() if k not in keys_to_exclude}
             ret_dict[agent_in["scene_index"]].append(UnrollInputOutput(track_id=agent_in["track_id"],
                                                                        inputs=agent_in,
                                                                        outputs=agent_out))
@@ -236,21 +251,31 @@ class ClosedLoopSimulator:
 
     @staticmethod
     def get_ego_in_out(input_dict: Dict[str, np.ndarray],
-                       output_dict: Dict[str, np.ndarray]) -> Dict[int, UnrollInputOutput]:
+                       output_dict: Dict[str, np.ndarray],
+                       keys_to_exclude: Optional[Set[str]] = None) -> Dict[int, UnrollInputOutput]:
         """Get all ego inputs and outputs as a dict mapping scene index to a single UnrollInputOutput
 
         :param input_dict: all ego model inputs (across scenes)
         :param output_dict: all ego model outputs (across scenes)
+        :param keys_to_exclude: if to drop keys from input/output (e.g. huge blobs)
         :return: the dict mapping scene index to a single UnrollInputOutput.
         """
+        key_required = {"track_id", "scene_index"}
+        if len(key_required.intersection(input_dict.keys())) != len(key_required):
+            raise ValueError(f"track_id and scene_index not found in keys {input_dict.keys()}")
+
+        keys_to_exclude = keys_to_exclude if keys_to_exclude is not None else set()
+        if len(key_required.intersection(keys_to_exclude)) != 0:
+            raise ValueError(f"can't drop required keys: {keys_to_exclude}")
+
         ret_dict = {}
         scene_indices = input_dict["scene_index"]
         if len(np.unique(scene_indices)) != len(scene_indices):
             raise ValueError(f"repeated scene_index for ego! {scene_indices}")
 
         for idx_ego in range(len(scene_indices)):
-            ego_in = {k: v[idx_ego] for k, v in input_dict.items()}
-            ego_out = {k: v[idx_ego] for k, v in output_dict.items()}
+            ego_in = {k: v[idx_ego] for k, v in input_dict.items() if k not in keys_to_exclude}
+            ego_out = {k: v[idx_ego] for k, v in output_dict.items() if k not in keys_to_exclude}
             ret_dict[ego_in["scene_index"]] = UnrollInputOutput(track_id=ego_in["track_id"],
                                                                 inputs=ego_in,
                                                                 outputs=ego_out)
