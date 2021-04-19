@@ -78,6 +78,27 @@ def test_agent_as_ego(hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> Non
         assert out[..., -1].sum() > 0
 
 
+@pytest.mark.parametrize("render_ego_history", [True, False])
+def test_render_ego_history(hist_data: tuple, dmg: LocalDataManager, cfg: dict, render_ego_history: bool) -> None:
+    hist_length = 5
+    cfg["raster_params"]["map_type"] = "box_debug"
+    cfg["model_params"]["history_num_frames"] = hist_length
+    cfg["model_params"]["render_ego_history"] = render_ego_history
+
+    rasterizer = build_rasterizer(cfg, dmg)
+
+    out = rasterizer.rasterize(hist_data[0][: hist_length + 1], hist_data[1][: hist_length + 1], [])
+    ego_indices = range(hist_length + 1, out.shape[-1])
+    for ego_idx in ego_indices:
+        if render_ego_history:
+            assert out[..., ego_idx].sum() > 0
+        else:
+            if ego_idx == ego_indices.start:
+                assert out[..., ego_idx].sum() > 0
+            else:
+                assert out[..., ego_idx].sum() == 0
+
+
 def test_out_shape(hist_data: tuple, dmg: LocalDataManager, cfg: dict) -> None:
     hist_length = 5
     cfg["raster_params"]["map_type"] = "box_debug"
