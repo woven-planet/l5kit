@@ -21,6 +21,7 @@ class SatBoxRasterizer(Rasterizer):
             map_im: np.ndarray,
             world_to_aerial: np.ndarray,
             interpolation: int = cv2.INTER_LINEAR,
+            render_ego_history: bool = True,
     ):
         super(SatBoxRasterizer, self).__init__()
         self.render_context = render_context
@@ -34,7 +35,7 @@ class SatBoxRasterizer(Rasterizer):
         self.world_to_aerial = world_to_aerial
         self.interpolation = interpolation
 
-        self.box_rast = BoxRasterizer(render_context, filter_agents_threshold, history_num_frames)
+        self.box_rast = BoxRasterizer(render_context, filter_agents_threshold, history_num_frames, render_ego_history)
         self.sat_rast = SatelliteRasterizer(render_context, map_im, world_to_aerial, interpolation)
 
     def rasterize(

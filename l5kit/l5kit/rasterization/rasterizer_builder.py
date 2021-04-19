@@ -131,6 +131,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
 
     filter_agents_threshold = raster_cfg["filter_agents_threshold"]
     history_num_frames = cfg["model_params"]["history_num_frames"]
+    render_ego_history = cfg["model_params"]["render_ego_history"]
 
     if map_type in ["py_satellite", "satellite_debug"]:
         sat_image = _load_satellite_map(raster_cfg["satellite_map_key"], data_manager)
@@ -148,6 +149,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         if map_type == "py_satellite":
             return SatBoxRasterizer(
                 render_context, filter_agents_threshold, history_num_frames, sat_image, world_to_aerial,
+                render_ego_history=render_ego_history
             )
         else:
             return SatelliteRasterizer(render_context, sat_image, world_to_aerial)
@@ -162,12 +164,14 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         if map_type == "py_semantic":
             return SemBoxRasterizer(
                 render_context, filter_agents_threshold, history_num_frames, semantic_map_filepath, world_to_ecef,
+                render_ego_history=render_ego_history
             )
         else:
             return SemanticRasterizer(render_context, semantic_map_filepath, world_to_ecef)
 
     elif map_type == "box_debug":
-        return BoxRasterizer(render_context, filter_agents_threshold, history_num_frames)
+        return BoxRasterizer(render_context, filter_agents_threshold, history_num_frames,
+                             render_ego_history=render_ego_history)
     elif map_type == "stub_debug":
         return StubRasterizer(render_context)
     else:
