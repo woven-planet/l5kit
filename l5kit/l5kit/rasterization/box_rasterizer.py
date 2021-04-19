@@ -83,7 +83,7 @@ class BoxRasterizer(Rasterizer):
         render_context: RenderContext,
         filter_agents_threshold: float,
         history_num_frames: int,
-        render_ego_history: bool = False,
+        render_ego_history: bool = True,
     ) -> None:
         """This is a rasterizer class used for rendering agents' bounding boxes on the raster image.
 

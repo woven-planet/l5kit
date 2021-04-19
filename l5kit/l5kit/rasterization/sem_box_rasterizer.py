@@ -19,6 +19,7 @@ class SemBoxRasterizer(Rasterizer):
             history_num_frames: int,
             semantic_map_path: str,
             world_to_ecef: np.ndarray,
+            render_ego_history: bool = True,
     ):
         super(SemBoxRasterizer, self).__init__()
         self.render_context = render_context
@@ -28,7 +29,7 @@ class SemBoxRasterizer(Rasterizer):
         self.filter_agents_threshold = filter_agents_threshold
         self.history_num_frames = history_num_frames
 
-        self.box_rast = BoxRasterizer(render_context, filter_agents_threshold, history_num_frames)
+        self.box_rast = BoxRasterizer(render_context, filter_agents_threshold, history_num_frames, render_ego_history)
         self.sem_rast = SemanticRasterizer(render_context, semantic_map_path, world_to_ecef)
 
     def rasterize(
