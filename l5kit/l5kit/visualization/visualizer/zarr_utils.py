@@ -8,7 +8,7 @@ from l5kit.data.filter import (filter_agents_by_frames, filter_agents_by_labels,
 from l5kit.data.labels import PERCEPTION_LABELS
 from l5kit.data.map_api import MapAPI, TLFacesColors
 from l5kit.geometry import transform_points
-from l5kit.rasterization.box_rasterizer import get_ego_as_agent
+from l5kit.rasterization.box_rasterizer import get_box_world_coords, get_ego_as_agent
 from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
 from l5kit.sampling import get_relative_poses
 from l5kit.simulation.unroll import SimulationOutput, UnrollInputOutput
@@ -114,15 +114,7 @@ def _get_frame_data(mapAPI: MapAPI, frame: np.ndarray, agents_frame: np.ndarray,
     #################
     # plot ego and agents
     agents_frame = np.insert(agents_frame, 0, get_ego_as_agent(frame))
-
-    # TODO: move to a function
-    corners_base_coords = (np.asarray([[-1, -1], [-1, 1], [1, 1], [1, -1]]) * 0.5)[None, :, :]
-    corners_m = corners_base_coords * agents_frame["extent"][:, None, :2]  # corners in zero
-    s = np.sin(agents_frame["yaw"])
-    c = np.cos(agents_frame["yaw"])
-    rotation_m = np.moveaxis(np.array(((c, s), (-s, c))), 2, 0)
-
-    box_world_coords = corners_m @ rotation_m + agents_frame["centroid"][:, None, :2]
+    box_world_coords = get_box_world_coords(agents_frame)
 
     # ego
     ego_vis = EgoVisualization(xs=box_world_coords[0, :, 0], ys=box_world_coords[0, :, 1],
