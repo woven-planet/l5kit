@@ -25,6 +25,25 @@ def get_ego_as_agent(frame: np.ndarray) -> np.ndarray:  # TODO this can be usefu
     return ego_agent
 
 
+def get_box_world_coords(agents: np.ndarray) -> np.ndarray:
+    """Get world coordinates of the 4 corners of the bounding boxes
+
+    :param agents: agents array of size N with centroid (world coord), yaw and extent
+    :return: array of shape (N, 4, 2) with the four corners of each agent
+    """
+    corners_base_coords = (np.asarray([[-1, -1], [-1, 1], [1, 1], [1, -1]]) * 0.5)[None, :, :]
+
+    # compute the corner in world-space (start in origin, rotate and then translate)
+    corners_m = corners_base_coords * agents["extent"][:, None, :2]  # corners in zero
+    s = np.sin(agents["yaw"])
+    c = np.cos(agents["yaw"])
+    # note this is clockwise because it's right-multiplied and not left-multiplied later,
+    # and therefore we're still rotating counterclockwise.
+    rotation_m = np.moveaxis(np.array(((c, s), (-s, c))), 2, 0)
+    box_world_coords = corners_m @ rotation_m + agents["centroid"][:, None, :2]
+    return box_world_coords
+
+
 def draw_boxes(
         raster_size: Tuple[int, int],
         raster_from_world: np.ndarray,
@@ -46,17 +65,7 @@ def draw_boxes(
     else:
         im = np.zeros((raster_size[1], raster_size[0], 3), dtype=np.uint8)
 
-    corners_base_coords = (np.asarray([[-1, -1], [-1, 1], [1, 1], [1, -1]]) * 0.5)[None, :, :]
-
-    # compute the corner in world-space (start in origin, rotate and then translate)
-    corners_m = corners_base_coords * agents["extent"][:, None, :2]  # corners in zero
-    s = np.sin(agents["yaw"])
-    c = np.cos(agents["yaw"])
-    # note this is clockwise because it's right-multiplied and not left-multiplied later,
-    # and therefore we're still rotating counterclockwise.
-    rotation_m = np.moveaxis(np.array(((c, s), (-s, c))), 2, 0)
-    box_world_coords = corners_m @ rotation_m + agents["centroid"][:, None, :2]
-
+    box_world_coords = get_box_world_coords(agents)
     box_raster_coords = transform_points(box_world_coords.reshape((-1, 2)), raster_from_world)
 
     # fillPoly wants polys in a sequence with points inside as (x,y)
