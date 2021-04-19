@@ -479,6 +479,20 @@ INTER_ENSURE_LEN: interpolate using a variable step such that we always get step
 </dd></dl>
 
 <dl class="py method">
+<dt id="l5kit.data.MapAPI.is_traffic_face">
+<code class="sig-name descname"><span class="pre">is_traffic_face</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#l5kit.data.MapAPI.is_traffic_face" title="Permalink to this definition">¶</a></dt>
+<dd><p>Check if the element is a traffic light face (of any color)</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>element_id</strong> (<em>str</em>) – the id (utf-8 encode) of the element</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>True if the element is a traffic light face, False otherwise</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="l5kit.data.MapAPI.is_traffic_face_color">
 <code class="sig-name descname"><span class="pre">is_traffic_face_color</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#l5kit.data.MapAPI.is_traffic_face_color" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the element is a traffic light face of the given color</p>
