@@ -5,6 +5,9 @@ from typing import Iterator, no_type_check, Sequence, Union
 import numpy as np
 import pymap3d as pm
 
+from l5kit.configs.config import load_metadata
+from l5kit.data import DataManager
+
 from ..geometry import transform_points
 from .proto.road_network_pb2 import GeoFrame, GlobalId, MapElement, MapFragment
 
@@ -47,6 +50,23 @@ class MapAPI:
         self.ids_to_el = {self.id_as_str(el.id): idx for idx, el in enumerate(self.elements)}  # store a look-up table
 
         self.bounds_info = self.get_bounds()  # store bound for semantic elements for fast look-up
+
+    @staticmethod
+    def from_cfg(data_manager: DataManager, cfg: dict) -> "MapAPI":
+        """Build a MapAPI object starting from a config file and a data manager
+
+        :param data_manager: a data manager object ot resolve paths
+        :param cfg: the config dict
+        :return: a MapAPI object
+        """
+        raster_cfg = cfg["raster_params"]
+        dataset_meta_key = raster_cfg["dataset_meta_key"]
+
+        semantic_map_filepath = data_manager.require(raster_cfg["semantic_map_key"])
+        dataset_meta = load_metadata(data_manager.require(dataset_meta_key))
+        world_to_ecef = np.array(dataset_meta["world_to_ecef"], dtype=np.float64)
+
+        return MapAPI(semantic_map_filepath, world_to_ecef)
 
     @staticmethod
     @no_type_check
