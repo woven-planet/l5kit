@@ -1,8 +1,9 @@
-import json
 import warnings
 
 import cv2
 import numpy as np
+
+from l5kit.configs.config import load_metadata
 
 from ..data import DataManager
 from .box_rasterizer import BoxRasterizer
@@ -13,23 +14,6 @@ from .satellite_rasterizer import SatelliteRasterizer
 from .sem_box_rasterizer import SemBoxRasterizer
 from .semantic_rasterizer import SemanticRasterizer
 from .stub_rasterizer import StubRasterizer
-
-
-def _load_metadata(meta_key: str, data_manager: DataManager) -> dict:
-    """
-    Load a json metadata file
-
-    Args:
-        meta_key (str): relative key to the metadata
-        data_manager (DataManager): DataManager used for requiring files
-
-    Returns:
-        dict: metadata as a dict
-    """
-    metadata_path = data_manager.require(meta_key)
-    with open(metadata_path, "r") as f:
-        metadata: dict = json.load(f)
-    return metadata
 
 
 def _load_satellite_map(image_key: str, data_manager: DataManager) -> np.ndarray:
@@ -137,7 +121,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
         sat_image = _load_satellite_map(raster_cfg["satellite_map_key"], data_manager)
 
         try:
-            dataset_meta = _load_metadata(dataset_meta_key, data_manager)
+            dataset_meta = load_metadata(data_manager.require(dataset_meta_key))
             world_to_ecef = np.array(dataset_meta["world_to_ecef"], dtype=np.float64)
             ecef_to_aerial = np.array(dataset_meta["ecef_to_aerial"], dtype=np.float64)
 
@@ -157,7 +141,7 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
     elif map_type in ["py_semantic", "semantic_debug"]:
         semantic_map_filepath = data_manager.require(raster_cfg["semantic_map_key"])
         try:
-            dataset_meta = _load_metadata(dataset_meta_key, data_manager)
+            dataset_meta = load_metadata(data_manager.require(dataset_meta_key))
             world_to_ecef = np.array(dataset_meta["world_to_ecef"], dtype=np.float64)
         except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
             world_to_ecef = get_hardcoded_world_to_ecef()
