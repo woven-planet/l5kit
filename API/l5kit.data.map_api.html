@@ -221,6 +221,23 @@
 <em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.data.map_api.</span></code><code class="sig-name descname"><span class="pre">MapAPI</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protobuf_map_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">world_to_ecef</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
+<dt id="l5kit.data.map_api.MapAPI.from_cfg">
+<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">from_cfg</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_manager</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.data.local_data_manager.html#l5kit.data.local_data_manager.DataManager" title="l5kit.data.local_data_manager.DataManager"><span class="pre">l5kit.data.local_data_manager.DataManager</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#l5kit.data.map_api.MapAPI" title="l5kit.data.map_api.MapAPI"><span class="pre">l5kit.data.map_api.MapAPI</span></a><a class="headerlink" href="#l5kit.data.map_api.MapAPI.from_cfg" title="Permalink to this definition">¶</a></dt>
+<dd><p>Build a MapAPI object starting from a config file and a data manager</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>data_manager</strong> – a data manager object ot resolve paths</p></li>
+<li><p><strong>cfg</strong> – the config dict</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a MapAPI object</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
 <dt id="l5kit.data.map_api.MapAPI.get_bounds">
 <code class="sig-name descname"><span class="pre">get_bounds</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each elements of interest returns bounds [[min_x, min_y],[max_x, max_y]] and proto ids
