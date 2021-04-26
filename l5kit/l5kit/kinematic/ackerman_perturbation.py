@@ -42,10 +42,9 @@ class AckermanPerturbation(Perturbation):
         """
         Apply Ackerman to get a feasible trajectory with probability perturb_prob.
 
-        Args:
-            random_offset_generator (RandomGenerator): a callable that yields 2 values
-            perturb_prob (float): probability between 0 and 1 of applying the perturbation
-            min_displacement (float): minimum displacement required to apply lateral & yaw perturbation
+        :param random_offset_generator: a callable that yields 3 values (lat, long, yaw offsets)
+        :param perturb_prob: probability between 0 and 1 of applying the perturbation
+        :param min_displacement: minimum displacement required to apply lateral & yaw perturbation
         """
         self.perturb_prob = perturb_prob
         self.min_displacement = min_displacement
