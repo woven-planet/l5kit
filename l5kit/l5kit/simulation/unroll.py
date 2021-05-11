@@ -47,12 +47,13 @@ class UnrollInputOutput(NamedTuple):
 
 
 class SimulationOutput:
-    def __init__(self, scene_id: int, sim_dataset: SimulationDataset,
+    def __init__(self, sim_cfg: SimulationConfig, scene_id: int, sim_dataset: SimulationDataset,
                  ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]],
                  agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]]):
         """This object holds information about the result of the simulation loop
         for a given scene dataset
 
+        :param sim_cfg: the simulation config
         :param scene_id: the scene indices
         :param sim_dataset: the simulation dataset
         :param ego_ins_outs: all inputs and outputs for ego (each frame of each scene has only one)
@@ -61,6 +62,7 @@ class SimulationOutput:
         if scene_id not in sim_dataset.scene_dataset_batch:
             raise ValueError(f"scene: {scene_id} not in sim datasets: {sim_dataset.scene_dataset_batch}")
 
+        self.sim_cfg = sim_cfg
         self.scene_id = scene_id
         self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
         self.simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
@@ -152,6 +154,7 @@ class ClosedLoopSimulator:
             # AGENTS
             if not self.sim_cfg.use_agents_gt:
                 agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
+                agents_frame_in_out: Dict[int, List[UnrollInputOutput]] = {}
                 if len(agents_input):  # agents may not be available
                     agents_input_dict = default_collate(list(agents_input.values()))
                     agents_output_dict = self.model_agents(move_to_device(agents_input_dict, self.device))
@@ -166,8 +169,8 @@ class ClosedLoopSimulator:
                     # update input and output buffers
                     agents_frame_in_out = self.get_agents_in_out(agents_input_dict, agents_output_dict,
                                                                  self.keys_to_exclude)
-                    for scene_idx in scene_indices:
-                        agents_ins_outs[scene_idx].append(agents_frame_in_out.get(scene_idx, []))
+                for scene_idx in scene_indices:
+                    agents_ins_outs[scene_idx].append(agents_frame_in_out.get(scene_idx, []))
 
             # EGO
             if not self.sim_cfg.use_ego_gt:
@@ -187,7 +190,8 @@ class ClosedLoopSimulator:
 
         simulated_outputs: List[SimulationOutput] = []
         for scene_idx in scene_indices:
-            simulated_outputs.append(SimulationOutput(scene_idx, sim_dataset, ego_ins_outs, agents_ins_outs))
+            simulated_outputs.append(SimulationOutput(self.sim_cfg, scene_idx, sim_dataset,
+                                                      ego_ins_outs, agents_ins_outs))
         return simulated_outputs
 
     @staticmethod
