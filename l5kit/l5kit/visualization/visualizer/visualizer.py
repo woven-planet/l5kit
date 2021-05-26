@@ -1,5 +1,5 @@
 from collections import defaultdict
-from typing import Any, DefaultDict, Dict, List, NamedTuple, Set
+from typing import Any, DefaultDict, Dict, List, Set
 
 import bokeh.io
 import bokeh.plotting
@@ -12,7 +12,7 @@ from l5kit.visualization.visualizer.common import (AgentVisualization, CWVisuali
                                                    FrameVisualization, LaneVisualization, TrajectoryVisualization)
 
 
-def _visualization_list_to_dict(visualisation_list: List[NamedTuple], null_el: NamedTuple) -> Dict[str, Any]:
+def _visualization_list_to_dict(visualisation_list: List[Any], null_el: Any) -> Dict[str, Any]:
     """Convert a list of NamedTuple into a dict, where:
     - the NamedTuple fields are the dict keys;
     - the dict value are lists;
