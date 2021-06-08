@@ -83,14 +83,15 @@ def compute_agent_velocity(
     """
     assert step_time > np.finfo(float).eps, f"step_time must be greater then eps, got {step_time}"
 
+    # sorted from current to future frame
     # [future_num_frames, 2]
     future_positions_diff_m = np.concatenate((future_positions_m[:1], np.diff(future_positions_m, axis=0)))
     # [future_num_frames, 2]
     future_vels_mps = np.float32(future_positions_diff_m / step_time)
 
-    # current position is included in history positions
+    # sorted from current to past frame, current position is included in history positions
     # [history_num_frames, 2]
-    history_positions_diff_m = np.diff(history_positions_m, axis=0)
+    history_positions_diff_m = -np.diff(history_positions_m, axis=0)
     # [history_num_frames, 2]
     history_vels_mps = np.float32(history_positions_diff_m / step_time)
 
