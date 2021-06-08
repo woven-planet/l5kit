@@ -6,6 +6,14 @@ l5kit.visualization package
    :undoc-members:
    :show-inheritance:
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   l5kit.visualization.visualizer
+
 Submodules
 ----------
 

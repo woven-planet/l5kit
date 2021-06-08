@@ -1,0 +1,7 @@
+l5kit.visualization.visualizer.visualizer module
+================================================
+
+.. automodule:: l5kit.visualization.visualizer.visualizer
+   :members:
+   :undoc-members:
+   :show-inheritance:
