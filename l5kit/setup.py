@@ -35,8 +35,8 @@ setup(
         "bokeh"
     ],
     extras_require={
-        "dev": ["pytest", "mypy", "setuptools", "twine", "wheel", "pytest-cov", "flake8",
-                "isort", "Sphinx", "sphinx-rtd-theme", "recommonmark",
+        "dev": ["pytest", "mypy", "types-PyYAML", "setuptools", "twine", "wheel", "pytest-cov",
+                "flake8", "isort", "Sphinx", "sphinx-rtd-theme", "recommonmark",
                 "pre-commit"]
     },
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),

@@ -47,6 +47,9 @@ We also provide pre-trained models for this task. Please refer to the [training 
 
 ### Simulation
 We provide a simulation notebook to test interaction between agents and the SDV when they are both controlled by a ML policy.
+
+* train your ML policy for simulation using our [simulation training notebook](./examples/simulation/train.ipynb) \
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/simulation/train.ipynb)
 * test your ML policy for simulation using our [simulation evaluation notebook](./examples/simulation/simulation_test.ipynb) \
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/simulation/simulation_test.ipynb)
 
