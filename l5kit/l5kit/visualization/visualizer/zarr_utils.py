@@ -1,4 +1,4 @@
-from typing import List, Tuple, no_type_check, NamedTuple
+from typing import List, no_type_check, NamedTuple
 
 import numpy as np
 
@@ -7,13 +7,10 @@ from l5kit.data.filter import (filter_agents_by_frames, filter_agents_by_labels,
                                filter_tl_faces_by_status)
 from l5kit.data.labels import PERCEPTION_LABELS
 from l5kit.data.map_api import MapAPI, TLFacesColors
-from l5kit.geometry import transform_points
 from l5kit.rasterization.box_rasterizer import get_box_world_coords, get_ego_as_agent
 from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
-from l5kit.sampling import get_relative_poses
-from l5kit.simulation.unroll import SimulationOutput, UnrollInputOutput
 from l5kit.visualization.visualizer.common import (AgentVisualization, EgoVisualization, FrameVisualization,
-                                                   MapElementVisualization, TrajectoryVisualization)
+                                                   MapElementVisualization)
 
 
 # TODO: this should not be here (maybe a config?)
@@ -27,46 +24,6 @@ COLORS = {
     "PERCEPTION_LABEL_CYCLIST": "#CC33FF",
     "PERCEPTION_LABEL_PEDESTRIAN": "#66CCFF",
 }
-
-
-def _get_frame_trajectories(frames: np.ndarray, agents_frames: List[np.ndarray], track_ids: np.ndarray,
-                            frame_index: int, ego_length: int, agent_length: int) -> List[TrajectoryVisualization]:
-    """Get trajectories (ego and agents) starting at frame_index.
-    Ego's trajectory will be named ego_trajectory while agents' agent_trajectory
-
-    :param frames: all frames from the scene
-    :param agents_frames: all agents from the scene as a list of array (one per frame)
-    :param track_ids: allowed tracks ids we want to build trajectory for
-    :param frame_index: index of the frame (trajectory will start from this frame)
-    :param ego_length: length of ego trajectory to extract
-    :param agent_length: length of agent trajectory to extract
-    :return: a list of trajectory for visualisation
-    """
-
-    traj_visualisation: List[TrajectoryVisualization] = []
-    if agent_length > 0:
-        for track_id in track_ids:
-            # Note (@lberg): this is not making it relative (note eye and 0 yaw)
-            pos, *_, avail = get_relative_poses(agent_length, frames[frame_index: frame_index + agent_length],
-                                                track_id, agents_frames[frame_index: frame_index + agent_length],
-                                                np.eye(3), 0)
-            traj_visualisation.append(TrajectoryVisualization(xs=pos[avail > 0, 0],
-                                                              ys=pos[avail > 0, 1],
-                                                              color=COLORS["AGENT_DEFAULT"],
-                                                              legend_label="agent_trajectory",
-                                                              track_id=int(track_id)))
-
-    if ego_length > 0:
-        pos, *_, avail = get_relative_poses(ego_length, frames[frame_index: frame_index + ego_length],
-                                            None, agents_frames[frame_index: frame_index + ego_length],
-                                            np.eye(3), 0)
-        traj_visualisation.append(TrajectoryVisualization(xs=pos[avail > 0, 0],
-                                                          ys=pos[avail > 0, 1],
-                                                          color="red",
-                                                          legend_label="ego_trajectory",
-                                                          track_id=-1))
-
-    return traj_visualisation
 
 
 @no_type_check
@@ -192,12 +149,8 @@ def _get_frame_data(mapAPI: MapAPI, frame: np.ndarray, agents_frame: np.ndarray,
 class VisualizerZarrConfig(NamedTuple):
     """Visualizer configuration when converting a Zarr
 
-    :param ego_trajectory_length: length of the trajectory for ego, 0 to disable
-    :param agents_trajectory_length: length of the trajectory for agents, 0 to disable
     :param agents_threshold: threshold over agents
     """
-    ego_trajectory_length: int
-    agents_trajectory_length: int
     agents_threshold: float
 
 
@@ -228,84 +181,10 @@ def zarr_to_visualizer_scene(scene_dataset: ChunkedDataset, mapAPI: MapAPI,
 
         frame_vis = _get_frame_data(mapAPI, frame, agents_frame, tls_frame)
 
-        traj_vis = _get_frame_trajectories(frames, agents_frames, agents_frame["track_id"], frame_idx,
-                                           ego_length=visualizer_config.ego_trajectory_length,
-                                           agent_length=visualizer_config.agents_trajectory_length)
         frame_vis = FrameVisualization(ego=frame_vis.ego, agents=frame_vis.agents,
                                        map_patches=frame_vis.map_patches,
                                        map_lines=frame_vis.map_lines,
-                                       trajectories=traj_vis)
-        frames_vis.append(frame_vis)
-
-    return frames_vis
-
-
-def _get_in_out_as_trajectories(in_out: UnrollInputOutput) -> Tuple[np.ndarray, np.ndarray]:
-    """Convert the input (log-replayed) and output (simulated) trajectories into world space.
-    Apply availability on the log-replayed one
-
-    :param in_out: an UnrollInputOutput object
-    :return: the replayed and simulated trajectory as numpy arrays
-    """
-    replay_traj = transform_points(in_out.inputs["target_positions"],
-                                   in_out.inputs["world_from_agent"])
-    replay_traj = replay_traj[in_out.inputs["target_availabilities"] > 0]
-    sim_traj = transform_points(in_out.outputs["positions"],
-                                in_out.inputs["world_from_agent"])
-
-    return replay_traj, sim_traj
-
-
-def simulation_out_to_visualizer_scene(sim_out: SimulationOutput, mapAPI: MapAPI) -> List[FrameVisualization]:
-    """Convert a simulation output into a scene we can visualize.
-    The scene will be created out of the simulated dataset, and will feature trajectories if available.
-
-    :param sim_out: the simulation output
-    :param mapAPI: a MapAPI object
-    :return: a list of FrameVisualization for the scene
-    """
-    # sim info
-    frames_sim = sim_out.simulated_ego
-    agents_frames_sim = filter_agents_by_frames(frames_sim, sim_out.simulated_agents)
-    tls_frames_sim = filter_tl_faces_by_frames(frames_sim, sim_out.simulated_dataset.dataset.tl_faces)
-    agents_th = sim_out.simulated_dataset.cfg["raster_params"]["filter_agents_threshold"]
-
-    agents_ins_outs = sim_out.agents_ins_outs
-    ego_ins_outs = sim_out.ego_ins_outs
-
-    frames_vis: List[FrameVisualization] = []
-    for frame_idx in range(len(frames_sim)):
-        trajectories = []
-
-        # simulation
-        frame_sim = frames_sim[frame_idx]
-        tls_frame_sim = tls_frames_sim[frame_idx]
-        agents_frame_sim = agents_frames_sim[frame_idx]
-        agents_frame_sim = filter_agents_by_labels(agents_frame_sim, agents_th)
-
-        frame_vis_sim = _get_frame_data(mapAPI, frame_sim, agents_frame_sim, tls_frame_sim)
-
-        if not sim_out.sim_cfg.use_ego_gt:
-            _, sim_traj = _get_in_out_as_trajectories(ego_ins_outs[frame_idx])
-            trajectories.append(TrajectoryVisualization(xs=sim_traj[:, 0], ys=sim_traj[:, 1],
-                                                        color="#B53331",
-                                                        legend_label="ego_simulated",
-                                                        track_id=-1))
-        if not sim_out.sim_cfg.use_agents_gt:
-            agents_in_out = agents_ins_outs[frame_idx]
-            for agent_in_out in agents_in_out:
-                track_id = agent_in_out.inputs["track_id"]
-                _, sim_traj = _get_in_out_as_trajectories(agent_in_out)
-                trajectories.append(TrajectoryVisualization(xs=sim_traj[:, 0], ys=sim_traj[:, 1],
-                                                            color=COLORS["AGENT_DEFAULT"],
-                                                            legend_label="agent_simulated",
-                                                            track_id=track_id))
-
-        frame_vis = FrameVisualization(ego=frame_vis_sim.ego, agents=frame_vis_sim.agents,
-                                       map_patches=frame_vis_sim.map_patches,
-                                       map_lines=frame_vis_sim.map_lines,
-                                       trajectories=trajectories)
-
+                                       trajectories=[])
         frames_vis.append(frame_vis)
 
     return frames_vis
