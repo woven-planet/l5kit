@@ -70,7 +70,7 @@ Returns:
             [
                 x - gx,
                 y - gy,
-                r - gr,
+                angular_distance(r, gr),
                 v - gv,
                 np.append(x1 + np.cos(r1) * v1 - x2, 0),
                 np.append(y1 + np.sin(r1) * v1 - y2, 0),
@@ -179,7 +179,15 @@ Returns:
 
     def residuals(steer_acc: np.ndarray) -> np.ndarray:
         x, y, r, v = control2position(steer_acc)
-        return np.hstack([wgx * (x - gx), wgy * (y - gy), wgr * (r - gr), wgv * (v - gv), wsteer_acc * steer_acc])
+        return np.hstack(
+            [
+                wgx * (x - gx),
+                wgy * (y - gy),
+                wgr * angular_distance(r, gr),
+                wgv * (v - gv),
+                wsteer_acc * steer_acc,
+            ]
+        )
 
     def jacobian(steer_acc: np.ndarray) -> np.ndarray:
         x, y, r, v = control2position(steer_acc)
