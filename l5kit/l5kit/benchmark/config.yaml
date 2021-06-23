@@ -16,8 +16,8 @@ model_params:
 raster_params:
   # raster image size [pixels]
   raster_size:
-    - 112
-    - 112
+    - 224
+    - 224
   # raster's spatial resolution [meters per pixel]: the size in the real world one pixel corresponds to.
   pixel_size:
     - 0.5
@@ -59,7 +59,11 @@ train_data_loader:
 ###################
 ## Gym params
 gym_params:
-  num_samples: 10000
+  total_steps: 10000
+  total_eps: 100
+  monitor_eps: True 
   warm_up: True
   num_envs: 2
   atari_id: "PongNoFrameskip-v4"
+  # atari_id: "SpaceInvadersNoFrameskip-v4"
+  load_samples: True
