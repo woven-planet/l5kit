@@ -62,13 +62,24 @@ class SimulationOutput:
             raise ValueError(f"scene: {scene_id} not in sim datasets: {sim_dataset.scene_dataset_batch}")
 
         self.scene_id = scene_id
-        self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
-        self.simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
+        # self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
+        # self.simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
 
-        self.simulated_agents = self.simulated_dataset.dataset.agents
-        self.recorded_agents = self.recorded_dataset.dataset.agents
-        self.recorded_ego = self.recorded_dataset.dataset.frames
-        self.simulated_ego = self.simulated_dataset.dataset.frames
+        # self.simulated_agents = self.simulated_dataset.dataset.agents
+        # self.recorded_agents = self.recorded_dataset.dataset.agents
+        # self.recorded_ego = self.recorded_dataset.dataset.frames
+        # self.simulated_ego = self.simulated_dataset.dataset.frames
+
+        # self.simulated_ego_states = self.build_trajectory_states(self.simulated_ego)
+        # self.recorded_ego_states = self.build_trajectory_states(self.recorded_ego)
+
+        recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
+        simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
+
+        self.simulated_agents = simulated_dataset.dataset.agents
+        self.recorded_agents = recorded_dataset.dataset.agents
+        self.recorded_ego = recorded_dataset.dataset.frames
+        self.simulated_ego = simulated_dataset.dataset.frames
 
         self.simulated_ego_states = self.build_trajectory_states(self.simulated_ego)
         self.recorded_ego_states = self.build_trajectory_states(self.recorded_ego)
@@ -122,7 +133,8 @@ class ClosedLoopSimulator:
         """
         self.sim_cfg = sim_cfg
         if not sim_cfg.use_ego_gt and model_ego is None:
-            raise ValueError("ego model should not be None when simulating ego")
+            print("ego model should not be None when simulating ego")
+            # raise ValueError("ego model should not be None when simulating ego")
         if not sim_cfg.use_agents_gt and model_agents is None:
             raise ValueError("agents model should not be None when simulating agent")
 
@@ -173,7 +185,11 @@ class ClosedLoopSimulator:
             if not self.sim_cfg.use_ego_gt:
                 ego_input = sim_dataset.rasterise_frame_batch(frame_index)
                 ego_input_dict = default_collate(ego_input)
+                import pdb
+                pdb.set_trace()
                 ego_output_dict = self.model_ego(move_to_device(ego_input_dict, self.device))
+                import pdb
+                pdb.set_trace()
 
                 ego_input_dict = move_to_numpy(ego_input_dict)
                 ego_output_dict = move_to_numpy(ego_output_dict)
