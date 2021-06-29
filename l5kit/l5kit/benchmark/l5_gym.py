@@ -18,8 +18,10 @@ from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
 from l5kit.rasterization import build_rasterizer, Rasterizer
-from l5kit.benchmark import L5RasterEnvFull
 from l5kit.dataset.utils import move_to_device, move_to_numpy
+from l5kit.simulation.unroll import SimulationOutput
+from l5kit.benchmark import L5Env
+from l5kit.benchmark.cle_utils import calculate_cle_metrics
 
 def get_dummy_action(n_envs: int, future_num_frames: int) -> List[Dict[str, np.ndarray]]:
     """This function outputs dummy action for the gym envt.
@@ -62,11 +64,11 @@ def get_model_action(obs: Dict[str, np.ndarray],
     return action_list
 
 
-def rollout(env: VecEnv, n_envs: int, total_eps: int = 10, total_steps: int = 10000, 
+def rollout(env: VecEnv, n_envs: int, total_eps: int = 10, total_steps: int = 10000,
             monitor_eps: bool = True, future_num_frames: int = 12,
             use_ego_model: bool = False,
             ego_model: Optional[torch.nn.Module] = None,
-            device: Optional[torch.device] = None)-> Tuple[int, int]:
+            device: Optional[torch.device] = None)-> Tuple[int, int, List[SimulationOutput]]:
     """Collect experiences using the current policy and fill a ``RolloutBuffer`` (TBD).
        The term rollout here refers to the model-free notion and should not
        be used with the concept of rollout used in model-based RL or planning.
@@ -85,7 +87,8 @@ def rollout(env: VecEnv, n_envs: int, total_eps: int = 10, total_steps: int = 10
     obs = env.reset()
     num_eps = 0
     num_steps = 0
-    
+    sim_logs = []
+
     device = device if not None else torch.device("cpu") 
     if not use_ego_model:
         ego_model = None
@@ -103,9 +106,9 @@ def rollout(env: VecEnv, n_envs: int, total_eps: int = 10, total_steps: int = 10
         if ego_model is not None:
             act = get_model_action(obs, ego_model, device, n_envs)
 
-        # if sum(dones) > 0:
-        #     print("Done Done:", dones)
-        #     return info[0]["info"], None 
+        if dones[0] and env.get_attr("det_roll")[0]:
+            print("Done Done:", dones)
+            sim_logs.append(info[0]["info"][0])
 
         if monitor_eps and (num_eps >= total_eps): 
             break
@@ -113,7 +116,7 @@ def rollout(env: VecEnv, n_envs: int, total_eps: int = 10, total_steps: int = 10
         if (not monitor_eps) and (num_steps >= total_steps): 
             break
 
-    return num_steps, num_eps
+    return num_steps, num_eps, sim_logs
 
 
 if __name__=="__main__":
@@ -122,7 +125,7 @@ if __name__=="__main__":
 
     dm = LocalDataManager(None)
     # get config
-    cfg = load_config_data("./config.yaml")
+    cfg = load_config_data("./config_nb.yaml")
 
     # rasterisation
     rasterizer = build_rasterizer(cfg, dm)
@@ -145,89 +148,54 @@ if __name__=="__main__":
     # init environment
     future_num_frames = ego_model.model.fc.out_features // 3 # X, Y, Yaw
     num_simulation_steps = cfg["gym_params"]["num_simulation_steps"]
-    env = L5RasterEnvFull(train_dataset, rasterizer, future_num_frames, num_simulation_steps)
+    det_roll = cfg["gym_params"]["deterministic_rollout"]
+    env = L5Env(train_dataset, rasterizer, future_num_frames, num_simulation_steps, det_roll)
 
     # If the environment don't follow the interface, an error will be thrown
-    # check_env(env, warn=False)
-    # print("Custom Gym Environment Check Passed")
+    if cfg["gym_params"]["check_env"]:
+        check_env(env, warn=False)
+        print("Custom Gym Environment Check Passed")
+        exit()
 
     # wrap it in vecEnv
     n_envs = cfg["gym_params"]["num_envs"]
-    print("Number of Parallel Enviroments: ", n_envs)
+    env_class = cfg["gym_params"]["env_class"]
+    print("Number of Parallel Enviroments: ", n_envs, " ", env_class)
+
+    if det_roll:
+        assert n_envs == 1, "Number of Envts should be 1 for deterministic rollout"
+        assert env_class == "Dummy", "Envt Class should be Dummy for deterministic rollout"
+
     # SubProcVecEnv
-    env = make_vec_env(lambda: env, n_envs=n_envs, \
-                       vec_env_cls=SubprocVecEnv, vec_env_kwargs=dict(start_method='fork'))
+    if env_class == 'SubProc':
+        env = make_vec_env(lambda: env, n_envs=n_envs, \
+                           vec_env_cls=SubprocVecEnv, vec_env_kwargs=dict(start_method='fork'))
     # DummyVecEnv
-    # env = make_vec_env(lambda: env, n_envs=n_envs)
+    elif env_class == 'Dummy':
+        env = make_vec_env(lambda: env, n_envs=n_envs)
+    else:
+        raise NotImplementedError
 
     # rollout params
     total_eps = cfg["gym_params"]["total_eps"]
     total_steps = cfg["gym_params"]["total_steps"]
     monitor_eps = cfg["gym_params"]["monitor_eps"]
 
-    # WarmUp
-    _, _ = rollout(env, n_envs, total_eps, total_steps, monitor_eps, future_num_frames,
-                   use_ego_model, ego_model, device)
-    print("Warm Up Done")
+    # WarmUp. No Warm Up for deterministic rollout
+    if cfg["gym_params"]["warm_up"] and (not det_roll):
+        print("Warm Up")
+        _, _, _ = rollout(env, n_envs, total_eps, total_steps, monitor_eps, future_num_frames,
+                       use_ego_model, ego_model, device)
 
     # Benchmark
     print("Benchmark")
     start = time.time()
-    num_steps, num_eps = rollout(env, n_envs, total_eps, total_steps, monitor_eps, future_num_frames,
-                                 use_ego_model, ego_model, device)
-    # sim_outs_log, _ = rollout(env, n_envs, total_eps, total_steps, monitor_eps, future_num_frames,
-    #                           use_ego_model, ego_model, device)
+    num_steps, num_eps, sim_outs_log = rollout(env, n_envs, total_eps, total_steps, monitor_eps, future_num_frames,
+                                               use_ego_model, ego_model, device)
     time_comp = time.time() - start
     print("Eps: ", num_eps, "Steps: ", num_steps)
     print(f"Compute Time: {time_comp}")
-    import pdb
-    pdb.set_trace()
 
-    from l5kit.cle.closed_loop_evaluator import ClosedLoopEvaluator, EvaluationPlan
-    from l5kit.cle.metrics import (CollisionFrontMetric, CollisionRearMetric, CollisionSideMetric,
-                                DisplacementErrorL2Metric, DistanceToRefTrajectoryMetric)
-    from l5kit.cle.validators import RangeValidator, ValidationCountingAggregator
-    from prettytable import PrettyTable
-
-    metrics = [DisplacementErrorL2Metric(),
-            DistanceToRefTrajectoryMetric(),
-            CollisionFrontMetric(),
-            CollisionRearMetric(),
-            CollisionSideMetric()]
-
-    validators = [RangeValidator("displacement_error_l2_validator", DisplacementErrorL2Metric, max_value=30),
-                RangeValidator("distance_ref_trajectory_validator", DistanceToRefTrajectoryMetric, max_value=4),
-                RangeValidator("collision_front_validator", CollisionFrontMetric, max_value=0),
-                RangeValidator("collision_rear_validator", CollisionRearMetric, max_value=0),
-                RangeValidator("collision_side_validator", CollisionSideMetric, max_value=0),
-                ]
-
-    intervention_validators = ["displacement_error_l2_validator",
-                            "distance_ref_trajectory_validator",
-                            "collision_front_validator",
-                            "collision_rear_validator",
-                            "collision_side_validator"]
-
-    cle_evaluator = ClosedLoopEvaluator(EvaluationPlan(metrics=metrics,
-                                        validators=validators,
-                                        composite_metrics=[],
-                                        intervention_validators=intervention_validators))
-    print("Metric Setup Done")
-    import pdb
-    pdb.set_trace()
-
-    cle_evaluator.evaluate(sim_outs_log)
-    validation_results_log = cle_evaluator.validation_results()
-    agg_log = ValidationCountingAggregator().aggregate(validation_results_log)
-    cle_evaluator.reset()
-
-    import pdb
-    pdb.set_trace()
-
-    # fields = ["metric", "log_replayed agents", "simulated agents"]
-    fields = ["metric", "log_replayed agents"]
-    table = PrettyTable(field_names=fields)
-    for metric_name in agg_log:
-        # table.add_row([metric_name, agg_log[metric_name].item(), agg[metric_name].item()])
-        table.add_row([metric_name, agg_log[metric_name].item()])
-    print(table)
+    # Calculate CLE metrics if deterministic rollout
+    if det_roll:
+        calculate_cle_metrics(sim_outs_log)

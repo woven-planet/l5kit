@@ -185,11 +185,7 @@ class ClosedLoopSimulator:
             if not self.sim_cfg.use_ego_gt:
                 ego_input = sim_dataset.rasterise_frame_batch(frame_index)
                 ego_input_dict = default_collate(ego_input)
-                import pdb
-                pdb.set_trace()
                 ego_output_dict = self.model_ego(move_to_device(ego_input_dict, self.device))
-                import pdb
-                pdb.set_trace()
 
                 ego_input_dict = move_to_numpy(ego_input_dict)
                 ego_output_dict = move_to_numpy(ego_output_dict)

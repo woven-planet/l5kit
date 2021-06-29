@@ -1,2 +1,2 @@
-from .gym_envs import L5RasterEnv1, L5RasterEnv2, L5RasterEnv3
-from .gym_envs import L5RasterEnvFull
+from .gym_envs import L5RasterBaseEnv, L5RasterCacheEnv, L5DatasetCacheEnv
+from .gym_envs import L5Env

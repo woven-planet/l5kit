@@ -1,27 +1,43 @@
 import os
 import time
 import random
+import pickle
+from typing import List, Dict, Optional, Tuple
 
 import gym
 import numpy as np
 from gym import spaces
 from stable_baselines3.common.env_checker import check_env
 from stable_baselines3.common.env_util import make_vec_env
-from stable_baselines3.common.vec_env import SubprocVecEnv
+from stable_baselines3.common.vec_env import VecEnv, SubprocVecEnv
 
 # Verify the Environment
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
 from l5kit.rasterization import build_rasterizer
-from l5kit.benchmark import L5RasterEnv1, L5RasterEnv2
+from l5kit.benchmark import L5RasterBaseEnv, L5RasterCacheEnv, L5DatasetCacheEnv
 
-def rollout(env, n_envs, total_eps=10, total_steps=10000, monitor_eps=True):
+def rollout(env: VecEnv, n_envs: int, total_eps: int = 10, total_steps: int = 10000,
+            monitor_eps: bool = True)-> Tuple[int, int]:
+    """Collect experiences using the current policy. Dummy actions used.
+       The term rollout here refers to the model-free notion and should not
+       be used with the concept of rollout used in model-based RL or planning.
+    
+    :param env: The training environment
+    :param n_envs: the number of parallel gym envts
+    :param total_steps: Number of experiences (in terms of steps) to collect per environment
+    :param total_eps: Number of experiences (in terms of episodes) to collect per environment
+    :param monitor_eps: flag to terminate rollout based on total_steps or total_eps.
+    :return: the tuple of [num steps rolled out, num episodes rolled out]
+    """
     _ = env.reset()
     num_eps = 0
     num_steps = 0
+
+    dummy_act = n_envs * [1]
     while True:
-        obs, rewards, dones, info = env.step(n_envs * [1])
+        obs, rewards, dones, info = env.step(dummy_act)
         num_steps += n_envs
         num_eps += sum(dones)
 
@@ -32,63 +48,109 @@ def rollout(env, n_envs, total_eps=10, total_steps=10000, monitor_eps=True):
             break
 
     return num_steps, num_eps
-  
 
-# set env variable for data
-os.environ["L5KIT_DATA_FOLDER"] = "/home/ubuntu/level5_data/"
 
-dm = LocalDataManager(None)
-# get config
-cfg = load_config_data("./config.yaml")
+if __name__=="__main__":
+    # set env variable for data
+    os.environ["L5KIT_DATA_FOLDER"] = "/home/ubuntu/level5_data/"
 
-# rasterisation
-rasterizer = build_rasterizer(cfg, dm)
-raster_size = cfg["raster_params"]["raster_size"][0]
-print("Raster Size: ", raster_size)
+    dm = LocalDataManager(None)
+    # get config
+    cfg = load_config_data("./config.yaml")
 
-# ===== INIT DATASET
-train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
-train_dataset = EgoDataset(cfg, train_zarr, rasterizer)
+    # rasterisation
+    rasterizer = build_rasterizer(cfg, dm)
+    raster_size = cfg["raster_params"]["raster_size"][0]
+    print("Raster Size: ", raster_size)
 
-if cfg["gym_params"]["load_samples"]:
-    loaded_scene_dict = {}
-    print("Loading 1000 sample scenes")
-    for i in range(1000):
-        dataset_i = train_dataset.get_scene_dataset(i)
-        loaded_scene_dict[i] = {"frames": dataset_i.dataset.frames,
-                                "agents": dataset_i.dataset.agents,
-                                "tl_faces": dataset_i.dataset.tl_faces}
-    sample_function = train_dataset.sample_function
-    env = L5RasterEnv1(loaded_scene_dict, sample_function, \
-                       n_channels=5, raster_size=raster_size)
-else:
-    env = L5RasterEnv2(train_dataset, \
-                       n_channels=5, raster_size=raster_size)
+    # init dataset
+    train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
+    train_dataset = EgoDataset(cfg, train_zarr, rasterizer)
 
-# If the environment don't follow the interface, an error will be thrown
-check_env(env, warn=False)
-print("Gym Env Check Passed")
+    # init gym environment
+    # Pre-compute rasters and save to cache
+    if cfg["gym_params"]["pre_compute_rasters"]:
+        try:
+            # open already saved rasters
+            with open('raster_dict.pkl', 'rb') as f:
+                loaded_scene_dict = pickle.load(f)
+        except:
+            loaded_scene_dict = {}
+            sample_function = train_dataset.sample_function
+            print("Pre-computing 100 sample scene rasters")
+            print("This may take some time...............")
+            for i in range(100):
+                dataset_i = train_dataset.get_scene_dataset(i)
+                loaded_scene_dict[i] = {"frames": dataset_i.dataset.frames,
+                                        "agents": dataset_i.dataset.agents,
+                                        "tl_faces": dataset_i.dataset.tl_faces}
+                # generate raster for all the frames
+                raster_data = {}
+                for frame_id in range(len(loaded_scene_dict[i]["frames"])):
+                    data = sample_function(frame_id, loaded_scene_dict[i]["frames"], \
+                                        loaded_scene_dict[i]["agents"], \
+                                        loaded_scene_dict[i]["tl_faces"], None)
+                    raster_data[frame_id] = data["image"].transpose(2, 0, 1)
+                loaded_scene_dict[i]["rasters"] = raster_data
+            # Save generated rasters
+            with open('raster_dict.pkl', 'wb') as f:
+                pickle.dump(loaded_scene_dict, f, pickle.HIGHEST_PROTOCOL)
 
-# wrap it in vecEnv
-n_envs = cfg["gym_params"]["num_envs"]
-env = make_vec_env(lambda: env, n_envs=n_envs, \
-                   vec_env_cls=SubprocVecEnv, vec_env_kwargs=dict(start_method='fork'))
-# env = make_vec_env(lambda: env, n_envs=n_envs)
+        # initial Gym envt with cached rasters
+        env = L5RasterCacheEnv(loaded_scene_dict, rasterizer)
 
-# rollout params
-total_eps = cfg["gym_params"]["total_eps"]
-total_steps = cfg["gym_params"]["total_steps"]
-monitor_eps = cfg["gym_params"]["monitor_eps"]
+    # Pre-load dataset into cache
+    elif cfg["gym_params"]["pre_load_dataset"]:
+        loaded_scene_dict = {}
+        print("Loading 100 sample scenes")
+        for i in range(100):
+            dataset_i = train_dataset.get_scene_dataset(i)
+            loaded_scene_dict[i] = {"frames": dataset_i.dataset.frames,
+                                    "agents": dataset_i.dataset.agents,
+                                    "tl_faces": dataset_i.dataset.tl_faces}
 
-# Warm Up
-if cfg["gym_params"]["warm_up"]:
-    print("Warm Up")
-    _, _ = rollout(env, n_envs, total_eps, total_steps, monitor_eps)
+        # initial Gym envt with cached dataset
+        env = L5DatasetCacheEnv(loaded_scene_dict, rasterizer)
+        env.sample_function = train_dataset.sample_function
 
-# Benchmark
-print("Benchmarking")
-start = time.time()
-num_steps, num_eps = rollout(env, n_envs, total_eps, total_steps, monitor_eps)
-time_comp = time.time() - start
-print("Eps: ", num_eps, "Steps: ", num_steps)
-print(f"Compute Time: {time_comp}")
+    else:
+        # initial Base Gym envt 
+        env = L5RasterBaseEnv(train_dataset, rasterizer)
+
+    # If the environment don't follow the interface, an error will be thrown
+    if cfg["gym_params"]["check_env"]:
+        check_env(env, warn=False)
+        print("Custom Gym Environment Check Passed")
+        exit()
+
+    # wrap it in vecEnv
+    n_envs = cfg["gym_params"]["num_envs"]
+    env_class = cfg["gym_params"]["env_class"]
+    print("Number of Parallel Enviroments: ", n_envs, env_class)
+    # SubProcVecEnv
+    if env_class == 'SubProc':
+        env = make_vec_env(lambda: env, n_envs=n_envs, \
+                           vec_env_cls=SubprocVecEnv, vec_env_kwargs=dict(start_method='fork'))
+    # DummyVecEnv
+    elif env_class == 'Dummy':
+        env = make_vec_env(lambda: env, n_envs=n_envs)
+    else:
+        raise NotImplementedError
+
+    # rollout params
+    total_eps = cfg["gym_params"]["total_eps"]
+    total_steps = cfg["gym_params"]["total_steps"]
+    monitor_eps = cfg["gym_params"]["monitor_eps"]
+
+    # Warm Up
+    if cfg["gym_params"]["warm_up"]:
+        print("Warm Up")
+        _, _ = rollout(env, n_envs, total_eps, total_steps, monitor_eps)
+
+    # Benchmark
+    print("Benchmarking")
+    start = time.time()
+    num_steps, num_eps = rollout(env, n_envs, total_eps, total_steps, monitor_eps)
+    time_comp = time.time() - start
+    print("Eps: ", num_eps, "Steps: ", num_steps)
+    print(f"Compute Time: {time_comp}")
