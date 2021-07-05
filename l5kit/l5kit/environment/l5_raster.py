@@ -3,6 +3,7 @@ import time
 import random
 import pickle
 from typing import List, Dict, Optional, Tuple
+import argparse
 
 import gym
 import numpy as np
@@ -36,10 +37,21 @@ def rollout(env: VecEnv, n_envs: int, total_eps: int = 10, total_steps: int = 10
     num_steps = 0
 
     dummy_act = n_envs * [1]
+    if n_envs == 0:
+        dummy_act = 1
+
     while True:
         obs, rewards, dones, info = env.step(dummy_act)
         num_steps += n_envs
+        if n_envs == 0:
+            dones = [dones]
+
         num_eps += sum(dones)
+        if sum(dones):
+            if num_eps % 10 == 0:
+                print(num_eps)
+            if n_envs == 0:
+                obs = env.reset()
 
         if monitor_eps and (num_eps >= total_eps): 
             break
@@ -51,12 +63,22 @@ def rollout(env: VecEnv, n_envs: int, total_eps: int = 10, total_steps: int = 10
 
 
 if __name__=="__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--n_envs', default=None, type=int,
+                        help='Number of parallel envts')
+    parser.add_argument('--env_class', default=None, type=str,
+                        choices=('Dummy', 'SubProc', 'Main'),
+                        help='env_class')
+    parser.add_argument('--use_ego_model', action='store_true',
+                        help='Use ego model for actions')
+    args = parser.parse_args()
+
     # set env variable for data
     os.environ["L5KIT_DATA_FOLDER"] = "/home/ubuntu/level5_data/"
 
     dm = LocalDataManager(None)
     # get config
-    cfg = load_config_data("./config.yaml")
+    cfg = load_config_data("./config_nb.yaml")
 
     # rasterisation
     rasterizer = build_rasterizer(cfg, dm)
@@ -114,8 +136,9 @@ if __name__=="__main__":
         env.sample_function = train_dataset.sample_function
 
     else:
-        # initial Base Gym envt 
-        env = L5RasterBaseEnv(train_dataset, rasterizer)
+        num_simulation_steps = cfg["gym_params"]["num_simulation_steps"]
+        # initial Base Gym envt
+        env = L5RasterBaseEnv(train_dataset, rasterizer, num_simulation_steps)
 
     # If the environment don't follow the interface, an error will be thrown
     if cfg["gym_params"]["check_env"]:
@@ -124,9 +147,9 @@ if __name__=="__main__":
         exit()
 
     # wrap it in vecEnv
-    n_envs = cfg["gym_params"]["num_envs"]
-    env_class = cfg["gym_params"]["env_class"]
-    print("Number of Parallel Enviroments: ", n_envs, env_class)
+    n_envs = args.n_envs if args.n_envs is not None else cfg["gym_params"]["num_envs"]
+    env_class = args.env_class if args.env_class is not None else cfg["gym_params"]["env_class"]
+    print("Number of Parallel Enviroments: ", n_envs, " ", env_class)
     # SubProcVecEnv
     if env_class == 'SubProc':
         env = make_vec_env(lambda: env, n_envs=n_envs, \
@@ -134,8 +157,10 @@ if __name__=="__main__":
     # DummyVecEnv
     elif env_class == 'Dummy':
         env = make_vec_env(lambda: env, n_envs=n_envs)
+    # No VecEnv
     else:
-        raise NotImplementedError
+        assert n_envs == 0, "VecEnvironment Not Implemented"
+        # raise NotImplementedError
 
     # rollout params
     total_eps = cfg["gym_params"]["total_eps"]
@@ -145,7 +170,7 @@ if __name__=="__main__":
     # Warm Up
     if cfg["gym_params"]["warm_up"]:
         print("Warm Up")
-        _, _ = rollout(env, n_envs, total_eps, total_steps, monitor_eps)
+        _, _ = rollout(env, n_envs, 20, total_steps, monitor_eps)
 
     # Benchmark
     print("Benchmarking")

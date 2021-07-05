@@ -62,20 +62,22 @@ gym_params:
 
   # Setting environment 
   num_envs: 1
-  env_class: "Dummy"
-  # env_class: "SubProc"
+  # env_class: "Dummy"
+  env_class: "SubProc"
+  # env_class: "Main"
   atari_id: "PongNoFrameskip-v4"
   # atari_id: "SpaceInvadersNoFrameskip-v4"
   check_env: False
 
   # Setting the environment rollout params
   total_steps: 10000
-  total_eps: 3
+  total_eps: 100
   monitor_eps: True
   warm_up: True
-  num_simulation_steps: 50
+  num_simulation_steps: 245
   use_ego_model: True
-  deterministic_rollout: True
+  deterministic_rollout: False
+  raster_out_size: 224
 
   # L5 Environment Selection
   pre_load_dataset: False

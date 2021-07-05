@@ -75,8 +75,8 @@ gym_params:
   monitor_eps: True
   warm_up: True
   num_simulation_steps: 50
-  use_ego_model: True
-  deterministic_rollout: True
+  use_ego_model: False
+  deterministic_rollout: False
 
   # L5 Environment Selection
   pre_load_dataset: False

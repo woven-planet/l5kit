@@ -62,30 +62,28 @@ class SimulationOutput:
             raise ValueError(f"scene: {scene_id} not in sim datasets: {sim_dataset.scene_dataset_batch}")
 
         self.scene_id = scene_id
-        # self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
-        # self.simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
+        self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
+        self.simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
 
-        # self.simulated_agents = self.simulated_dataset.dataset.agents
-        # self.recorded_agents = self.recorded_dataset.dataset.agents
-        # self.recorded_ego = self.recorded_dataset.dataset.frames
-        # self.simulated_ego = self.simulated_dataset.dataset.frames
-
-        # self.simulated_ego_states = self.build_trajectory_states(self.simulated_ego)
-        # self.recorded_ego_states = self.build_trajectory_states(self.recorded_ego)
-
-        recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
-        simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
-
-        self.simulated_agents = simulated_dataset.dataset.agents
-        self.recorded_agents = recorded_dataset.dataset.agents
-        self.recorded_ego = recorded_dataset.dataset.frames
-        self.simulated_ego = simulated_dataset.dataset.frames
+        self.simulated_agents = self.simulated_dataset.dataset.agents
+        self.recorded_agents = self.recorded_dataset.dataset.agents
+        self.recorded_ego = self.recorded_dataset.dataset.frames
+        self.simulated_ego = self.simulated_dataset.dataset.frames
 
         self.simulated_ego_states = self.build_trajectory_states(self.simulated_ego)
         self.recorded_ego_states = self.build_trajectory_states(self.recorded_ego)
 
         self.ego_ins_outs = ego_ins_outs[scene_id]
         self.agents_ins_outs = agents_ins_outs[scene_id]
+
+        # Edit
+        # # Required for Bokeh Visualizer
+        # self.tls_frames = self.simulated_dataset.dataset.tl_faces
+        # self.agents_th = self.simulated_dataset.cfg["raster_params"]["filter_agents_threshold"]
+
+        # # Remove Dataset attributes
+        # self.recorded_dataset = None
+        # self.simulated_dataset = None
 
     def get_scene_id(self) -> int:
         """

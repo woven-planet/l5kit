@@ -15,6 +15,8 @@ from l5kit.dataset.utils import move_to_device, move_to_numpy
 from l5kit.geometry import rotation33_as_yaw, transform_points
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.simulation.unroll import ClosedLoopSimulator, UnrollInputOutput, SimulationOutput
+from l5kit.cle.closed_loop_evaluator import ClosedLoopEvaluator
+from .cle_utils import SimulationOutputGym
 from .utils import default_collate_numpy
 
 class L5Env(gym.Env):
@@ -27,12 +29,14 @@ class L5Env(gym.Env):
     """
 
     def __init__(self, dataset: EgoDataset, rasterizer: Rasterizer, future_num_frames: int,
-                 num_simulation_steps: int, det_roll: bool) -> None:
+                 num_simulation_steps: int, cle_evaluator: ClosedLoopEvaluator, det_roll: bool,
+                 raster_out_size: Optional[int] = None) -> None:
         """
         :param dataset: The dataset to sample scenes to be rolled out
         :param rasterizer: The dataset rasterizer to generate observations
         :param future_num_frames: the number of frames to predict
         :param num_simulation_steps: the number of steps to rollout per scene
+        :param cle_evaluator: the close loop evaluator object
         :param det_roll: flag for deterministic rollout, i.e., select the scenes
                          in a deterministic manner (sequentially from 0)
         """
@@ -55,6 +59,7 @@ class L5Env(gym.Env):
                                     shape=(n_channels, raster_size, raster_size), dtype=np.float32)})
 
         # Define Close-Loop Simulator
+        # num_simulation_steps = None
         self.sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=True, disable_new_agents=False,
                                         distance_th_far=30, distance_th_close=15,
                                         num_simulation_steps=num_simulation_steps,
@@ -63,10 +68,18 @@ class L5Env(gym.Env):
         # self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.device = torch.device("cpu")
         self.simulator = ClosedLoopSimulator(self.sim_cfg, self.dataset, self.device)
+        self.cle_evaluator = cle_evaluator
 
         # deterministic rollout
         self.det_roll = det_roll
         self.det_scene_idx = 0
+
+        # IPC ablation
+        self.raster_out_size = raster_out_size if raster_out_size is not None else raster_size
+        print("Raster Out Size: ", self.raster_out_size)
+        self.observation_space = spaces.Dict({
+                                    'image': spaces.Box(low=0, high=1,
+                                    shape=(n_channels, self.raster_out_size, self.raster_out_size), dtype=np.float32)})
 
     def reset(self, max_scene_id: int = 99) -> gym.spaces.Dict:
         """
@@ -92,7 +105,7 @@ class L5Env(gym.Env):
         self.ego_input_dict = default_collate_numpy(ego_input[0])
 
         # Only output the image attribute
-        obs = {'image': ego_input[0]["image"]}
+        obs = {'image': ego_input[0]["image"][:, :self.raster_out_size, :self.raster_out_size]}
         # print("FI: ", self.frame_index, "SI: ", self.scene_indices)
         return obs
 
@@ -125,20 +138,21 @@ class L5Env(gym.Env):
             self.frame_index += 1
             ego_input = self.sim_dataset.rasterise_frame_batch(self.frame_index)
             self.ego_input_dict = default_collate_numpy(ego_input[0])
-            obs = {"image": ego_input[0]["image"]}
+            obs = {"image": ego_input[0]["image"][:, :self.raster_out_size, :self.raster_out_size]}
             # print("FI: ", self.frame_index, "SI: ", self.scene_indices, "Update: ", should_update)
         else:
             # Dummy final obs (when done is True)
             ego_input = self.sim_dataset.rasterise_frame_batch(0)
-            obs = {"image": ego_input[0]["image"]}
+            obs = {"image": ego_input[0]["image"][:, :self.raster_out_size, :self.raster_out_size]}
 
         # done is True when episode ends
         done = not should_update
         if done:
             # generate simulated_outputs
-            simulated_outputs: List[SimulationOutput] = []
+            simulated_outputs: List[SimulationOutputGym] = []
             for scene_idx in self.scene_indices:
-                simulated_outputs.append(SimulationOutput(scene_idx, self.sim_dataset, self.ego_ins_outs, self.agents_ins_outs))
+                simulated_outputs.append(SimulationOutputGym(scene_idx, self.sim_dataset, self.ego_ins_outs, self.agents_ins_outs))
+            self.cle_evaluator.evaluate(simulated_outputs)
 
         # reward set to 1 when done
         reward = 0
@@ -168,16 +182,18 @@ class L5RasterBaseEnv(gym.Env):
     Action has no effect on the next frame.
     """
 
-    def __init__(self, dataset: EgoDataset, rasterizer: Rasterizer) -> None:
+    def __init__(self, dataset: EgoDataset, rasterizer: Rasterizer, num_simulation_steps: int) -> None:
         """
         :param dataset: The dataset to sample scenes to be rolled out
         :param rasterizer: The dataset rasterizer to generate observations
+        :param num_simulation_steps: the number of steps to rollout per scene
         """
         super(L5RasterBaseEnv, self).__init__()
         print("Initializing Base Environment")
         self.dataset = dataset
         n_channels = rasterizer.num_channels()
         raster_size = rasterizer.raster_size[0]
+        self.num_simulation_steps = num_simulation_steps
 
         # Define action and observation space
         # Dummy Action Space
@@ -195,7 +211,7 @@ class L5RasterBaseEnv(gym.Env):
         """
         self.frame_id = random.randint(0, max_frame_id)
         # In L5Kit, each scene usually consists of 248 frames
-        self.max_frame_id = self.frame_id + 248
+        self.max_frame_id = self.frame_id + self.num_simulation_steps
 
         obs = self.dataset[self.frame_id]["image"]
         return obs
