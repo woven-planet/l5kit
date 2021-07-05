@@ -17,7 +17,7 @@ from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
 from l5kit.rasterization import build_rasterizer
-from l5kit.benchmark import L5RasterBaseEnv, L5RasterCacheEnv, L5DatasetCacheEnv
+from l5kit.environment import L5RasterBaseEnv, L5RasterCacheEnv, L5DatasetCacheEnv
 
 def rollout(env: VecEnv, n_envs: int, total_eps: int = 10, total_steps: int = 10000,
             monitor_eps: bool = True)-> Tuple[int, int]:

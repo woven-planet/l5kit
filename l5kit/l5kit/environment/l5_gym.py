@@ -20,8 +20,8 @@ from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
 from l5kit.rasterization import build_rasterizer, Rasterizer
 from l5kit.dataset.utils import move_to_device, move_to_numpy
-from l5kit.benchmark import L5Env
-from l5kit.benchmark.cle_utils import get_cle, calculate_cle_metrics, SimulationOutputGym, aggregate_cle_metrics
+from l5kit.environment import L5Env
+from l5kit.environment.cle_utils import get_cle, calculate_cle_metrics, SimulationOutputGym, aggregate_cle_metrics
 
 
 def get_dummy_action(n_envs: int, future_num_frames: int) -> List[Dict[str, np.ndarray]]:
