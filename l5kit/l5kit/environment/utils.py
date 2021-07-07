@@ -19,3 +19,17 @@ def default_collate_numpy(data):
             print(k, v, type(v))
             raise NotImplementedError
     return output_data
+
+def convert_to_dict(data, future_num_frames):
+    """Convert vector into numpy dict
+
+    :param data: numpy array
+    :return: the numpy dict with 'positions' and 'yaws'
+    """
+    # [batch_size=1, num_steps, (X, Y, yaw)]
+    data = data.reshape(1, future_num_frames, 3)
+    pred_positions = data[:, :, :2]
+    # [batch_size, num_steps, 1->(yaw)]
+    pred_yaws = data[:, :, 2:3]
+    data_dict = {"positions": pred_positions, "yaws": pred_yaws}
+    return data_dict
