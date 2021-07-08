@@ -54,7 +54,7 @@ We provide a simulation notebook to test interaction between agents and the SDV 
 [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/simulation/simulation_test.ipynb)
 
 # News
-- 06-19-2021: We've held a [AV2.0 tutoral](https://www.self-driving-cars.org/tutorial) at CVPR 2021 including a introduction to L5Kit!
+- 06-19-2021: We've held a [AV2.0 tutorial](https://www.self-driving-cars.org/tutorial) at CVPR 2021 including a introduction to L5Kit!
 - 05-19-2021: We've presented two papers \[[Data for AV Planner](https://www.self-driving-cars.org/papers/icra2021-lfd), [SimNet](https://www.self-driving-cars.org/papers/icra2021-simnet)\] that used L5Kit for planning and simulation at ICRA 2021.
 - 04-16-2021: We've just released a new notebook for the ML simulation task!
 - 12-03-2020: We've just released a series of notebooks to train and evaluate an ML planning model. We've also included pre-trained models! Learn more about this in the dedicated [README](./examples/planning/README.md)
