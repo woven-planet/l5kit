@@ -9,29 +9,44 @@ from l5kit.simulation.dataset import SimulationDataset
 from prettytable import PrettyTable
 
 def get_cle() -> ClosedLoopEvaluator:
+    # metrics = [DisplacementErrorL2Metric(),
+    #         DistanceToRefTrajectoryMetric(),
+    #         CollisionFrontMetric(),
+    #         CollisionRearMetric(),
+    #         CollisionSideMetric()]
+
+    # validators = [RangeValidator("displacement_error_l2_validator", DisplacementErrorL2Metric, max_value=5),
+    #             RangeValidator("distance_ref_trajectory_validator", DistanceToRefTrajectoryMetric, max_value=1),
+    #             RangeValidator("collision_front_validator", CollisionFrontMetric, max_value=0),
+    #             RangeValidator("collision_rear_validator", CollisionRearMetric, max_value=0),
+    #             RangeValidator("collision_side_validator", CollisionSideMetric, max_value=0),
+    #             ]
+
+    # intervention_validators = ["displacement_error_l2_validator",
+    #                         "distance_ref_trajectory_validator",
+    #                         "collision_front_validator",
+    #                         "collision_rear_validator",
+    #                         "collision_side_validator"]
+
     metrics = [DisplacementErrorL2Metric(),
             DistanceToRefTrajectoryMetric(),
-            CollisionFrontMetric(),
-            CollisionRearMetric(),
-            CollisionSideMetric()]
+            ]
 
     validators = [RangeValidator("displacement_error_l2_validator", DisplacementErrorL2Metric, max_value=5),
                 RangeValidator("distance_ref_trajectory_validator", DistanceToRefTrajectoryMetric, max_value=1),
-                RangeValidator("collision_front_validator", CollisionFrontMetric, max_value=0),
-                RangeValidator("collision_rear_validator", CollisionRearMetric, max_value=0),
-                RangeValidator("collision_side_validator", CollisionSideMetric, max_value=0),
                 ]
 
     intervention_validators = ["displacement_error_l2_validator",
-                            "distance_ref_trajectory_validator",
-                            "collision_front_validator",
-                            "collision_rear_validator",
-                            "collision_side_validator"]
+                            "distance_ref_trajectory_validator"]
 
+    # cle_evaluator = ClosedLoopEvaluator(EvaluationPlan(metrics=metrics,
+    #                                     validators=validators,
+    #                                     composite_metrics=[],
+    #                                     intervention_validators=intervention_validators))
     cle_evaluator = ClosedLoopEvaluator(EvaluationPlan(metrics=metrics,
-                                        validators=validators,
+                                        validators=[],
                                         composite_metrics=[],
-                                        intervention_validators=intervention_validators))
+                                        intervention_validators=[]))
     return cle_evaluator
 
 def calculate_cle_metrics(sim_outs_log: List[SimulationOutput]) -> None:
