@@ -9,8 +9,8 @@ from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.monitor import Monitor
 from stable_baselines3.common.callbacks import EvalCallback
 
-from l5kit.environment.feature_extractor import ResNetCNN
-from l5kit.environment.callbacks import VizCallback
+from l5kit.environment.feature_extractor import ResNetCNN, SimpleCNN
+from l5kit.environment.callbacks import VizCallback, TrajectoryCallback
 
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
@@ -30,17 +30,20 @@ if __name__=="__main__":
                         help='load TRAINED model')
     parser.add_argument('--eval', action='store_true',
                         help='Eval model at end of training')
+    parser.add_argument('--clt', action='store_true',
+                        help='Closed Loop training')
     args = parser.parse_args()
 
     # Defining callbacks
-    viz_callback = VizCallback(save_freq=500, save_path='./logs/', verbose=2)
+    # viz_callback = VizCallback(save_freq=500, save_path='./logs/', verbose=2)
+    traj_callback = TrajectoryCallback(save_path='./logs/', verbose=2)
     # eval_callback = EvalCallback(eval_env,log_path='./logs/', eval_freq=500,
     #                              deterministic=True, render=False)
     # event_callback = EveryNTimesteps(n_steps=500, callback=checkpoint_on_event)
 
     # Custom Feature Extractor with ResNet backbone
     policy_kwargs = dict(
-        features_extractor_class=ResNetCNN,
+        features_extractor_class=SimpleCNN, #ResNetCNN
         features_extractor_kwargs=dict(features_dim=128),
         normalize_images=False
     )
@@ -48,21 +51,32 @@ if __name__=="__main__":
     # make gym env
     if not args.use_subProc:
         env = gym.make("L5-v0")
+        env.clt = args.clt
     # custom wrap env into VecEnv
     else:
         env = make_vec_env("L5-v0", n_envs=2, vec_env_cls=SubprocVecEnv,
                            vec_env_kwargs=dict(start_method='fork'))
+        env.set_attr("clt", args.clt)
 
     # define model
     model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, n_steps=args.num_rollout_steps,
                 learning_rate=3e-4, gamma=args.gamma, tensorboard_log=args.tb_log)
     print("Model created.....")
 
+    # make eval env at start itself. if required
+    print("Creating Eval env.....")
+    eval_env = gym.make("L5-v0")
+    # Logs will be saved in log_dir/monitor.csv
+    eval_env = Monitor(eval_env, './monitor')
+    eval_env.clt = args.clt
+    model.eval_env = eval_env 
 
     # train only when not loading saved model
     if not args.load:
         start = time.time()
-        model.learn(args.n_steps, callback=viz_callback)
+        # model.learn(args.n_steps, callback=viz_callback)
+        # model.learn(args.n_steps)
+        model.learn(args.n_steps, callback=traj_callback)
         print("Training Time: ", time.time() - start)
 
     # Save
@@ -80,9 +94,6 @@ if __name__=="__main__":
     # Eval
     if args.eval:
         print("Deterministic=True Eval")
-        eval_env = gym.make("L5-v0")
-        # Logs will be saved in log_dir/monitor.csv
-        eval_env = Monitor(eval_env, './monitor')
         mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=5, deterministic=True)
         print(f"mean_reward={mean_reward:.2f} +/- {std_reward}")
         print("Done")

@@ -6,8 +6,8 @@ format_version: 4
 model_params:
   model_architecture: "resnet50"
 
-  history_num_frames: 5
-  future_num_frames: 6
+  history_num_frames: 1
+  future_num_frames: 1
   step_time: 0.1
   render_ego_history: True
   load_pretrained: False
@@ -63,5 +63,6 @@ gym_params:
   num_simulation_steps: 245
   deterministic_rollout: False
   raster_out_size: 112
+  use_cle: False
 
 

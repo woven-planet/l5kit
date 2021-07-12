@@ -72,7 +72,7 @@ class L5Env(gym.Env):
 
         # num_simulation_steps = cfg["gym_params"]["num_simulation_steps"]
         # num_simulation_steps = None  # !!
-        num_simulation_steps = 16  # Stop after Frame 16!!
+        self.num_simulation_steps = 10  # Stop after Frame 16!!
 
         # Define action and observation space
         # Continuous Action Space: gym.spaces.Box (X, Y, Yaw * number of future states)
@@ -83,10 +83,9 @@ class L5Env(gym.Env):
                                               shape=(n_channels, raster_size, raster_size), dtype=np.float32)})
 
         # Define Close-Loop Simulator
-        # num_simulation_steps = None
         self.sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=True, disable_new_agents=False,
                                         distance_th_far=30, distance_th_close=15,
-                                        num_simulation_steps=num_simulation_steps,
+                                        num_simulation_steps=self.num_simulation_steps,
                                         start_frame_index=0, show_info=True)
 
         # self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
@@ -105,7 +104,7 @@ class L5Env(gym.Env):
         self.observation_space = spaces.Dict({'image': spaces.Box(low=0, high=1,
                                               shape=(n_channels, self.raster_out_size, self.raster_out_size),
                                               dtype=np.float32)})
-        self.clt = False
+        self.clt = cfg["gym_params"]["use_cle"]
 
     def reset(self, max_scene_id: int = 99) -> Dict[str, np.ndarray]:
         """
@@ -150,7 +149,7 @@ class L5Env(gym.Env):
 
         frame_index = self.frame_index
         next_frame_index = frame_index + 1
-        should_update = next_frame_index != len(self.sim_dataset)
+        should_update = next_frame_index != (len(self.sim_dataset) - self.future_num_frames) # Note !!
 
         # EGO
         if not self.sim_cfg.use_ego_gt:
@@ -164,18 +163,6 @@ class L5Env(gym.Env):
                                                              self.simulator.keys_to_exclude)
             for scene_idx in self.scene_indices:
                 self.ego_ins_outs[scene_idx].append(ego_frame_in_out[scene_idx])
-
-        # Prepare next obs
-        if should_update:
-            self.frame_index += 1
-            ego_input = self.sim_dataset.rasterise_frame_batch(self.frame_index)
-            self.ego_input_dict = default_collate_numpy(ego_input[0])
-            obs = {"image": ego_input[0]["image"][:, :self.raster_out_size, :self.raster_out_size]}
-            # print("FI: ", self.frame_index, "SI: ", self.scene_indices, "Update: ", should_update)
-        else:
-            # Dummy final obs (when done is True)
-            ego_input = self.sim_dataset.rasterise_frame_batch(0)
-            obs = {"image": ego_input[0]["image"][:, :self.raster_out_size, :self.raster_out_size]}
 
         # reward calculation
         reward, self.dist2ref_error = self.get_reward()
@@ -192,6 +179,19 @@ class L5Env(gym.Env):
         if done:
             info = {"info": self.get_info()}
 
+        # Prepare next obs
+        if should_update:
+            self.frame_index += 1
+            ego_input = self.sim_dataset.rasterise_frame_batch(self.frame_index)
+            self.ego_input_dict = default_collate_numpy(ego_input[0])
+            obs = {"image": ego_input[0]["image"][:, :self.raster_out_size, :self.raster_out_size]}
+            # print("FI: ", self.frame_index, "SI: ", self.scene_indices, "Update: ", should_update)
+        else:
+            # Dummy final obs (when done is True)
+            ego_input = self.sim_dataset.rasterise_frame_batch(0)
+            self.ego_input_dict = default_collate_numpy(ego_input[0])
+            obs = {"image": ego_input[0]["image"][:, :self.raster_out_size, :self.raster_out_size]}
+
         # return obs, reward, done, info
         return GymStepOutput(obs, reward, done, info)
 
@@ -207,7 +207,8 @@ class L5Env(gym.Env):
             self.cle_evaluator.evaluate(simulated_outputs)
             dist_error = self.cle_evaluator.scene_metric_results[scene_idx]['displacement_error_l2'][self.frame_index]
             dist2ref_error = self.cle_evaluator.scene_metric_results[scene_idx]['distance_to_reference_trajectory'][self.frame_index]
-            # print(self.cle_evaluator.scene_metric_results[scene_idx]['displacement_error_l2'][:15])
+            driven_miles = self.cle_evaluator.scene_metric_results[scene_idx]['simulated_driven_miles']
+            # print(self.cle_evaluator.scene_metric_results[scene_idx]['simulated_driven_miles'])
             reward = - dist_error.item()
             dist2ref_error = dist2ref_error.item()
         else:
@@ -215,7 +216,10 @@ class L5Env(gym.Env):
             reward = - penalty
         return reward, dist2ref_error
 
-    def check_done_status(self, mode: Optional[str] = None, dist2ref_thresh: Optional[float] = 4.0) -> bool:
+    def check_done_status(self, mode: Optional[str] = None, dist2ref_thresh: Optional[float] = 200.0) -> bool:
+        # if self.clt:
+        #     return self.dist2ref_error > dist2ref_thresh
+
         if mode is None:  # do nothing, continue
             return False
 

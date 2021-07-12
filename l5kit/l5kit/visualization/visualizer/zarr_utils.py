@@ -224,11 +224,27 @@ def simulation_out_to_visualizer_scene(sim_out: SimulationOutput, mapAPI: MapAPI
 
         if has_ego_info:
             ego_in_out = ego_ins_outs[frame_idx]
+            ego_centroid = ego_in_out[1]['centroid'][np.newaxis, :]
             replay_traj, sim_traj = _get_in_out_as_trajectories(ego_in_out)
             trajectories.append(TrajectoryVisualization(xs=replay_traj[:, 0], ys=replay_traj[:, 1],
                                                         color="blue", legend_label="ego_replay", track_id=-1))
             trajectories.append(TrajectoryVisualization(xs=sim_traj[:, 0], ys=sim_traj[:, 1],
                                                         color="red", legend_label="ego_simulated", track_id=-1))
+
+            # Ego Direction
+            # scale = 4
+            # ego_centroid = ego_in_out[1]['centroid'][np.newaxis, :]
+            # print("Ego Rep: ", ego_centroid, replay_traj[0:1], len(replay_traj))
+            # ego_next_step_replay = ego_centroid + scale * (replay_traj[0:1] - ego_centroid)
+            # ego_next_step_sim = ego_centroid + scale * (sim_traj[0:1] - ego_centroid)
+            # single_step_replay = np.concatenate([ego_centroid, ego_next_step_replay])
+            # single_step_sim = np.concatenate([ego_centroid, ego_next_step_sim])
+
+            # # import pdb; pdb.set_trace()
+            # trajectories.append(TrajectoryVisualization(xs=single_step_replay[:, 0], ys=single_step_replay[:, 1],
+            #                                             color="yellow", legend_label="ego_big_replay", track_id=-1))
+            # trajectories.append(TrajectoryVisualization(xs=single_step_sim[:, 0], ys=single_step_sim[:, 1],
+            #                                             color="green", legend_label="ego_big_simulated", track_id=-1))
 
         if has_agents_info:
             agents_in_out = agents_ins_outs[frame_idx]

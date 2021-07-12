@@ -2,7 +2,7 @@ from typing import List, DefaultDict
 
 from l5kit.cle.closed_loop_evaluator import ClosedLoopEvaluator, EvaluationPlan
 from l5kit.cle.metrics import (CollisionFrontMetric, CollisionRearMetric, CollisionSideMetric,
-                            DisplacementErrorL2Metric, DistanceToRefTrajectoryMetric)
+                            DisplacementErrorL2Metric, DistanceToRefTrajectoryMetric, SimulatedDrivenMilesMetric)
 from l5kit.cle.validators import RangeValidator, ValidationCountingAggregator
 from l5kit.simulation.unroll import SimulationOutput, UnrollInputOutput
 from l5kit.simulation.dataset import SimulationDataset
@@ -29,7 +29,8 @@ def get_cle() -> ClosedLoopEvaluator:
     #                         "collision_side_validator"]
 
     metrics = [DisplacementErrorL2Metric(),
-            DistanceToRefTrajectoryMetric(),
+            DistanceToRefTrajectoryMetric(scene_fraction=1.0),
+            SimulatedDrivenMilesMetric()
             ]
 
     validators = [RangeValidator("displacement_error_l2_validator", DisplacementErrorL2Metric, max_value=5),
