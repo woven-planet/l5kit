@@ -1,8 +1,6 @@
 ML Prediction, Planning and Simulation for Self-Driving
 ===
 
-![ML prediction, planning and simulation for self-driving](/images/av.jpg)
-
 This repository and the associated datasets constitute a framework for developing learning-based solutions to prediction, planning and simulation problems in self-driving. State-of-the-art solutions to these problems still require significant amounts of hand-engineering and unlike, for example, perception systems, have not benefited much from deep learning and the vast amount of driving data available.
 
 The purpose of this framework is to enable engineers and researchers to experiment with data-driven approaches to planning and simulation problems using real world driving data and contribute to state-of-the-art solutions.
@@ -215,7 +213,7 @@ The framework was developed at Lyft Level 5 and is maintained by the following a
 ## Citation
 If you are using L5Kit or dataset in your work please cite the following [whitepaper](https://arxiv.org/abs/2006.14480):
 ```
-@misc{lyft2020,
+@misc{wovenplanetholdings2020,
     title={One Thousand and One Hours: Self-driving Motion Prediction Dataset},
     author={John Houston and Guido Zuidhof and Luca Bergamini and Yawei Ye and Long Chen and Ashesh Jain and Sammy Omari and Vladimir Iglovikov and Peter Ondruska},
     year={2020},
@@ -224,8 +222,6 @@ If you are using L5Kit or dataset in your work please cite the following [whitep
     primaryClass={cs.CV}
 }
 ```
-
-![Lyft Level 5](/images/lyft.jpg)
 
 
 # Contact
