@@ -1,12 +1,15 @@
 import os
 import pickle
+from typing import Any, Dict
 
 import numpy as np
 import torch
 from PIL import Image
 
+from l5kit.rasterization import Rasterizer
 
-def default_collate_numpy(data):
+
+def default_collate_numpy(data: Dict[str, Any]) -> Dict[str, np.ndarray]:
     """Move a torch dict into numpy (on cpu)
 
     :param data: the dict with both torch and numpy entries
@@ -25,10 +28,12 @@ def default_collate_numpy(data):
             raise NotImplementedError
     return output_data
 
-def convert_to_dict(data, future_num_frames):
+
+def convert_to_dict(data: np.ndarray, future_num_frames: int) -> Dict[str, np.ndarray]:
     """Convert vector into numpy dict
 
     :param data: numpy array
+    :param future_num_frames: number of frames predicted
     :return: the numpy dict with 'positions' and 'yaws'
     """
     # [batch_size=1, num_steps, (X, Y, yaw)]
@@ -39,9 +44,11 @@ def convert_to_dict(data, future_num_frames):
     data_dict = {"positions": pred_positions, "yaws": pred_yaws}
     return data_dict
 
-def visualize_input_raster(rasterizer, image):
+
+def visualize_input_raster(rasterizer: Rasterizer, image: torch.Tensor) -> None:
     """Visualize the input raster image
 
+    :param rasterizer: the rasterizer
     :param image: numpy array
     :return: the numpy dict with 'positions' and 'yaws'
     """
@@ -57,7 +64,12 @@ def visualize_input_raster(rasterizer, image):
     print("Saving Raster RGB Image")
     im.save("imgs/test%s.png" % i)
 
-def error_stats(path):
+
+def error_stats(path: str) -> None:
+    """L2 error between groundtruth and prediction during Openloop training
+
+    :param path: the path to pkl file containing the groundtruth and predictions
+    """
     with open(path + ".pkl", 'rb') as f:
         [gt_action_list, action_list] = pickle.load(f)
         error = gt_action_list - action_list

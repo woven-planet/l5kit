@@ -16,7 +16,7 @@ from l5kit.environment.utils import convert_to_dict, default_collate_numpy
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.simulation.unroll import ClosedLoopSimulator, UnrollInputOutput
-from l5kit.cle.metrics import DisplacementErrorL2Metric
+
 
 class GymStepOutput(NamedTuple):
     """ The output dict of gym env.step
@@ -36,10 +36,11 @@ class GymStepOutput(NamedTuple):
 class L5Env(gym.Env):
     """
     Custom Gym Environment of L5 Kit.
-    This is a full implemented env where a random scene is rolled out.
-    Each frame sequentially is returned as observation.
-    An action is taken (dummy/predicted).
-    The raster is updated according to predicted ego positions
+    This is a full implemented env which can be registered in OpenAI Gym.
+    If closed loop training:
+        The raster is updated according to predicted ego positions
+    else (open loop training):
+        The raster is based on the ground truth ego positions (i.e. no update)
     """
 
     def __init__(self) -> None:
@@ -70,10 +71,6 @@ class L5Env(gym.Env):
             ego_model_path = "/home/ubuntu/models/planning_model_20210421_5steps.pt"
             self.future_num_frames = torch.load(ego_model_path).model.fc.out_features // 3   # X, Y, Yaw
 
-        # num_simulation_steps = cfg["gym_params"]["num_simulation_steps"]
-        # num_simulation_steps = None  # !!
-        self.num_simulation_steps = 10  # Stop after Frame 16!!
-
         # Define action and observation space
         # Continuous Action Space: gym.spaces.Box (X, Y, Yaw * number of future states)
         self.action_space = spaces.Box(low=-1000, high=1000, shape=(self.future_num_frames * 3, ))
@@ -83,42 +80,31 @@ class L5Env(gym.Env):
                                               shape=(n_channels, raster_size, raster_size), dtype=np.float32)})
 
         # Define Close-Loop Simulator
+        self.num_simulation_steps = cfg["gym_params"]["num_simulation_steps"]
         self.sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=True, disable_new_agents=False,
                                         distance_th_far=30, distance_th_close=15,
                                         num_simulation_steps=self.num_simulation_steps,
                                         start_frame_index=0, show_info=True)
 
-        # self.device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
         self.device = torch.device("cpu")
         self.simulator = ClosedLoopSimulator(self.sim_cfg, self.dataset, self.device)
         self.cle_evaluator = get_cle()
 
-        # deterministic rollout
-        self.det_roll = cfg["gym_params"]["deterministic_rollout"]
-        self.det_scene_idx = 0
-
-        # IPC ablation
-        raster_out_size = cfg["gym_params"]["raster_out_size"]
-        self.raster_out_size = raster_out_size if raster_out_size is not None else raster_size
-        print("Raster Out Size: ", self.raster_out_size)
-        self.observation_space = spaces.Dict({'image': spaces.Box(low=0, high=1,
-                                              shape=(n_channels, self.raster_out_size, self.raster_out_size),
-                                              dtype=np.float32)})
+        # To CLE or not to CLE
         self.clt = cfg["gym_params"]["use_cle"]
+
+    def set_clt(self, clt: bool) -> None:
+        self.clt = clt
 
     def reset(self, max_scene_id: int = 99) -> Dict[str, np.ndarray]:
         """
         :param max_scene_id: the maximum scene index to sample from dataset
         :return: the observation of first frame of sampled scene index
         """
-        if self.det_roll:
-            # Deterministic episode selection
-            self.scene_indices = [self.det_scene_idx]
-            self.det_scene_idx += 1
-        else:
-            # Sample a episode randomly
-            self.scene_indices = [random.randint(0, max_scene_id)]
-            self.scene_indices = [0]
+
+        # Sample a episode randomly
+        self.scene_indices = [random.randint(0, max_scene_id)]
+        self.scene_indices = [0]  # Overfit
         self.sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, self.scene_indices, self.sim_cfg)
 
         # Define in / outs for given scene
@@ -134,7 +120,7 @@ class L5Env(gym.Env):
         self.ego_input_dict = default_collate_numpy(ego_input[0])
 
         # Only output the image attribute
-        obs = {'image': ego_input[0]["image"][:, :self.raster_out_size, :self.raster_out_size]}
+        obs = {'image': ego_input[0]["image"]}
         # print("FI: ", self.frame_index, "SI: ", self.scene_indices)
         return obs
 
@@ -149,7 +135,7 @@ class L5Env(gym.Env):
 
         frame_index = self.frame_index
         next_frame_index = frame_index + 1
-        should_update = next_frame_index != (len(self.sim_dataset) - self.future_num_frames) # Note !!
+        should_update = next_frame_index != (len(self.sim_dataset) - self.future_num_frames)  # Note !!
 
         # EGO
         if not self.sim_cfg.use_ego_gt:
@@ -157,6 +143,7 @@ class L5Env(gym.Env):
             self.ego_output_dict = action
 
             if should_update and self.clt:
+                # Update raster according to predicted ego ONLY IF clt
                 self.simulator.update_ego(self.sim_dataset, next_frame_index, self.ego_input_dict, self.ego_output_dict)
 
             ego_frame_in_out = self.simulator.get_ego_in_out(self.ego_input_dict, self.ego_output_dict,
@@ -167,14 +154,11 @@ class L5Env(gym.Env):
         # reward calculation
         reward, self.dist2ref_error = self.get_reward()
 
-        # done is True when episode ends or error gets too high
+        # done is True when episode ends or error gets too high (optional)
         done = not should_update or self.check_done_status()
 
-        # if not done:
-        #     reward = 0
-        # print("Reward: ", done, reward, self.dist2ref_error)
-
-        # Optionally we can pass additional info, we are using that to output simulated outputs
+        # Optionally we can pass additional info
+        # We are using "info" to output simulated outputs
         info = {}
         if done:
             info = {"info": self.get_info()}
@@ -184,18 +168,23 @@ class L5Env(gym.Env):
             self.frame_index += 1
             ego_input = self.sim_dataset.rasterise_frame_batch(self.frame_index)
             self.ego_input_dict = default_collate_numpy(ego_input[0])
-            obs = {"image": ego_input[0]["image"][:, :self.raster_out_size, :self.raster_out_size]}
+            obs = {"image": ego_input[0]["image"]}
             # print("FI: ", self.frame_index, "SI: ", self.scene_indices, "Update: ", should_update)
         else:
             # Dummy final obs (when done is True)
             ego_input = self.sim_dataset.rasterise_frame_batch(0)
             self.ego_input_dict = default_collate_numpy(ego_input[0])
-            obs = {"image": ego_input[0]["image"][:, :self.raster_out_size, :self.raster_out_size]}
+            obs = {"image": ego_input[0]["image"]}
 
         # return obs, reward, done, info
         return GymStepOutput(obs, reward, done, info)
 
     def get_reward(self) -> Tuple[float, float]:
+        """ Gets the reward for the given step.
+
+        :return: [the reward in form of L2 distance, distance_to_reference_traj]
+        """
+
         dist2ref_error = 0.0
         if self.clt:
             assert len(self.scene_indices) == 1
@@ -203,12 +192,13 @@ class L5Env(gym.Env):
             simulated_outputs: List[SimulationOutputGym] = []
             for scene_idx in self.scene_indices:
                 simulated_outputs.append(SimulationOutputGym(scene_idx, self.sim_dataset,
-                                                            self.ego_ins_outs, self.agents_ins_outs))
+                                                             self.ego_ins_outs, self.agents_ins_outs))
             self.cle_evaluator.evaluate(simulated_outputs)
-            dist_error = self.cle_evaluator.scene_metric_results[scene_idx]['displacement_error_l2'][self.frame_index]
-            dist2ref_error = self.cle_evaluator.scene_metric_results[scene_idx]['distance_to_reference_trajectory'][self.frame_index]
-            driven_miles = self.cle_evaluator.scene_metric_results[scene_idx]['simulated_driven_miles']
-            # print(self.cle_evaluator.scene_metric_results[scene_idx]['simulated_driven_miles'])
+            scene_metrics = self.cle_evaluator.scene_metric_results[scene_idx]
+            dist_error = scene_metrics['displacement_error_l2'][self.frame_index]
+            dist2ref_error = scene_metrics['distance_to_reference_trajectory'][self.frame_index]
+            # driven_miles = scene_metrics['simulated_driven_miles']
+            # print(scene_metrics['simulated_driven_miles'])
             reward = - dist_error.item()
             dist2ref_error = dist2ref_error.item()
         else:
@@ -217,9 +207,6 @@ class L5Env(gym.Env):
         return reward, dist2ref_error
 
     def check_done_status(self, mode: Optional[str] = None, dist2ref_thresh: Optional[float] = 200.0) -> bool:
-        # if self.clt:
-        #     return self.dist2ref_error > dist2ref_thresh
-
         if mode is None:  # do nothing, continue
             return False
 

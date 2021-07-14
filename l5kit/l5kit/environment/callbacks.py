@@ -1,13 +1,14 @@
 import os
 import pickle
-from stable_baselines3.common.callbacks import BaseCallback
-import gym
+
 import numpy as np
+from stable_baselines3.common.callbacks import BaseCallback
+
 
 class VizCallback(BaseCallback):
     """
-    Callback for visualizing current model every ``save_freq`` calls
-    to ``env.step()``.
+    Callback for saving SimulationOutputs of current model state every ``save_freq`` calls
+    to ``env.step()``. The SimulationOutputs will then be used for visualization.
 
     .. warning::
 
@@ -27,8 +28,6 @@ class VizCallback(BaseCallback):
         self.save_path = save_path
         self.name_prefix = name_prefix
 
-        self.eval_env = gym.make("L5-v0")
-
     def _init_callback(self) -> None:
         # Create folder if needed
         if self.save_path is not None:
@@ -36,27 +35,28 @@ class VizCallback(BaseCallback):
 
     def _on_step(self) -> bool:
         if self.n_calls % self.save_freq == 0:
+            print("CLT: ", self.model.eval_env.clt)
             path = os.path.join(self.save_path, f"{self.name_prefix}_{self.num_timesteps}_steps")
-            obs = self.eval_env.reset()
+            obs = self.model.eval_env.reset()
             for i in range(350):
                 action, _ = self.model.predict(obs, deterministic=True)
-                obs, _, done, info = self.eval_env.step(action)
-                # print(i)
+                obs, _, done, info = self.model.eval_env.step(action)
                 if done:
                     break
 
-            # print("Loop Done")
             if self.verbose > 1:
-                print(f"Saving viz to {path}")
-            
+                print(f"Saving SimulationOutputGym to {path}")
+
             with open(path + ".pkl", 'wb') as f:
                 pickle.dump(info["info"], f)
 
         return True
 
+
 class TrajectoryCallback(BaseCallback):
     """
-    Callback for saving trajectory at end of training.
+    Callback for saving trajectory at end of training. This trajectory will be used for L2 error calculation.
+    Used only for OpenLoop training.
 
     :param save_freq:
     :param save_path: Path to the folder where the viz will be saved.
@@ -84,7 +84,6 @@ class TrajectoryCallback(BaseCallback):
         gt_action_list = []
         done = False
         for i in range(350):
-            # print(i, done, self.eval_env.frame_index, self.eval_env.ego_input_dict["target_positions"])
             gt_action_list.append(self.model.eval_env.ego_input_dict["target_positions"][0, 0])
 
             action, _ = self.model.predict(obs, deterministic=True)
