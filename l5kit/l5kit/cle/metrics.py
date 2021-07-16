@@ -237,3 +237,42 @@ class ReplayDrivenMilesMetric:
         pad_drive_meters = torch.cat((pad, drive_meters))
         driven_miles = pad_drive_meters * self.METER_TO_MILES
         return driven_miles
+
+
+class YawErrorMetric(SupportsMetricCompute):
+    """Yaw error computes the difference between the
+    simulated trajectory yaw and the observed trajectory yaw.
+
+    :param error_function: error function to compute distance
+    """
+    metric_name = "yaw_error"
+
+    def __init__(self, error_function: error_functions.ErrorFunction) -> None:
+        self.error_function = error_function
+
+    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+        """Compute the metric on all frames of the scene.
+
+        :param simulation_output: the output from the closed-loop simulation
+        :returns: distance per frame [Shape: N, where N = timesteps]
+        """
+        simulated_scene_ego_state = simulation_output.simulated_ego_states
+        simulated_yaws = simulated_scene_ego_state[:, 2]  # [Timesteps,]
+        observed_ego_yaws = simulation_output.recorded_ego_states[:, 2]  # [Timesteps,]
+
+        if len(observed_ego_yaws) < len(simulated_yaws):
+            raise ValueError("More simulated timesteps than observed.")
+
+        # Don't have simulation for all steps, have to clip it
+        observed_ego_yaws_fraction = observed_ego_yaws[:len(simulated_yaws)]
+
+        error = self.error_function(simulated_yaws, observed_ego_yaws_fraction)
+        return error
+
+
+class YawErrorCAMetric(YawErrorMetric):
+    """Yaw error calculated with closest angle."""
+    metric_name = "yaw_error_ca"
+
+    def __init__(self) -> None:
+        super().__init__(error_functions.closest_angle)

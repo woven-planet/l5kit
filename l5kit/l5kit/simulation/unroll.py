@@ -76,6 +76,15 @@ class SimulationOutput:
         self.ego_ins_outs = ego_ins_outs[scene_id]
         self.agents_ins_outs = agents_ins_outs[scene_id]
 
+        # Edit
+        # # Required for Bokeh Visualizer
+        # self.tls_frames = self.simulated_dataset.dataset.tl_faces
+        # self.agents_th = self.simulated_dataset.cfg["raster_params"]["filter_agents_threshold"]
+
+        # # Remove Dataset attributes
+        # self.recorded_dataset = None
+        # self.simulated_dataset = None
+
     def get_scene_id(self) -> int:
         """
         Get the scene index for this SimulationOutput
@@ -122,7 +131,8 @@ class ClosedLoopSimulator:
         """
         self.sim_cfg = sim_cfg
         if not sim_cfg.use_ego_gt and model_ego is None:
-            raise ValueError("ego model should not be None when simulating ego")
+            print("ego model should not be None when simulating ego")
+            # raise ValueError("ego model should not be None when simulating ego")
         if not sim_cfg.use_agents_gt and model_agents is None:
             raise ValueError("agents model should not be None when simulating agent")
 
