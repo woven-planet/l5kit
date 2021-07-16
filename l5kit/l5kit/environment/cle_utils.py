@@ -6,15 +6,20 @@ from prettytable import PrettyTable
 
 from l5kit.cle.closed_loop_evaluator import ClosedLoopEvaluator, EvaluationPlan
 from l5kit.cle.metrics import DisplacementErrorL2Metric, DistanceToRefTrajectoryMetric, SimulatedDrivenMilesMetric
+from l5kit.cle.metrics import YawErrorCAMetric
 from l5kit.cle.validators import ValidationCountingAggregator
 from l5kit.simulation.dataset import SimulationDataset
 from l5kit.simulation.unroll import SimulationOutput, UnrollInputOutput
 
 
 def get_cle() -> ClosedLoopEvaluator:
+    """ Get the Closed Loop Evaluator for L5 Gym environment
+    :return: the closed loop evaluator
+    """
+
     metrics = [DisplacementErrorL2Metric(),
                DistanceToRefTrajectoryMetric(scene_fraction=1.0),
-               SimulatedDrivenMilesMetric()]
+               YawErrorCAMetric()]
 
     cle_evaluator = ClosedLoopEvaluator(EvaluationPlan(metrics=metrics,
                                         validators=[],
@@ -47,12 +52,12 @@ class SimulationOutputGym(SimulationOutput):
         :param ego_ins_outs: all inputs and outputs for ego (each frame of each scene has only one)
         :param agents_ins_outs: all inputs and outputs for agents (multiple per frame in a scene)
         """
-        SimulationOutput.__init__(self, scene_id, sim_dataset, ego_ins_outs, agents_ins_outs)
+        super(SimulationOutputGym, self).__init__(scene_id, sim_dataset, ego_ins_outs, agents_ins_outs)
 
         # Required for Bokeh Visualizer
         self.tls_frames = self.simulated_dataset.dataset.tl_faces
         self.agents_th = self.simulated_dataset.cfg["raster_params"]["filter_agents_threshold"]
 
         # Remove Dataset attributes
-        self.recorded_dataset = None
-        self.simulated_dataset = None
+        del self.recorded_dataset
+        del self.simulated_dataset

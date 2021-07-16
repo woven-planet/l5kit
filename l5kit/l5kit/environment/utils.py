@@ -66,7 +66,7 @@ def visualize_input_raster(rasterizer: Rasterizer, image: torch.Tensor) -> None:
 
 
 def error_stats(path: str) -> None:
-    """L2 error between groundtruth and prediction during Openloop training
+    """L2 error between groundtruth and prediction during Open loop training
 
     :param path: the path to pkl file containing the groundtruth and predictions
     """
