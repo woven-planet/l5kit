@@ -53,6 +53,8 @@ if __name__ == "__main__":
                         help='Number of time steps')
     parser.add_argument('--num_rollout_steps', default=64, type=int,
                         help='Number of rollout steps per update')
+    parser.add_argument('--n_epochs', default=10, type=int,
+                        help='Number of model epochs per update')
     parser.add_argument('--gamma', default=0.99, type=float,
                         help='Discount factor')
     parser.add_argument('--tb_log', default=None, type=str,
@@ -63,6 +65,8 @@ if __name__ == "__main__":
                         help='Closed Loop training')
     parser.add_argument('--ckpt_prefix', default=None, type=str,
                         help='Ckpt prefix for saving model')
+    parser.add_argument('--device', default="auto", type=str,
+                        help='Device for running model')
     args = parser.parse_args()
 
     # make gym env
@@ -87,7 +91,8 @@ if __name__ == "__main__":
     # define model
     print("Creating Model.....")
     model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, n_steps=args.num_rollout_steps,
-                learning_rate=3e-4, gamma=args.gamma, tensorboard_log=args.tb_log)
+                learning_rate=3e-4, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
+                device=args.device)
 
     # make eval env at start itself
     print("Creating Eval env.....")

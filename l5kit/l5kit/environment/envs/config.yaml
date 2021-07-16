@@ -60,9 +60,9 @@ train_data_loader:
 ###################
 ## Gym params
 gym_params:
-  num_simulation_steps: 16
-  deterministic_rollout: False
-  raster_out_size: 112
+  num_simulation_steps: 32
   use_cle: False
-
+  use_yaw: True
+  clip_rew: True
+  stop_criterion: False
 
