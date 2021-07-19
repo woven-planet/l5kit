@@ -1,6 +1,6 @@
 import argparse
 import time
-from typing import Optional
+from typing import Any, Optional
 
 import gym
 from stable_baselines3 import PPO
@@ -9,12 +9,12 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.vec_env import SubprocVecEnv
 
-from l5kit.environment.callbacks import TrajectoryCallback, VizCallback
+from l5kit.environment.callbacks import TrajectoryCallback, VizCallback, LoggingCallback
 from l5kit.environment.feature_extractor import ResNetCNN, SimpleCNN
 
 
 def get_callback_list(output_prefix: str, n_envs: int, clt: bool, save_freq: Optional[int] = 50000,
-                      ckpt_prefix: Optional[str] = None) -> CallbackList:
+                      args: Optional[Any] = None, ckpt_prefix: Optional[str] = None) -> CallbackList:
 
     callback_list = []
     # Define callbacks
@@ -31,6 +31,10 @@ def get_callback_list(output_prefix: str, n_envs: int, clt: bool, save_freq: Opt
     checkpoint_callback = CheckpointCallback(save_freq=(save_freq // n_envs), save_path='./logs/',
                                              name_prefix=ckpt_prefix, verbose=2)
     callback_list.append(checkpoint_callback)
+
+    # Save Model Config
+    log_callback = LoggingCallback(args)
+    callback_list.append(log_callback)
 
     # Print Error at end of OpenLoop training
     if not clt:
@@ -67,6 +71,8 @@ if __name__ == "__main__":
                         help='Ckpt prefix for saving model')
     parser.add_argument('--device', default="auto", type=str,
                         help='Device for running model')
+    parser.add_argument('--rew_clip', default=15, type=float,
+                        help='Reward Clipping Threshold')
     args = parser.parse_args()
 
     # make gym env
@@ -74,12 +80,15 @@ if __name__ == "__main__":
         print("Using 1 envt")
         env = gym.make("L5-v0")
         env.clt = args.clt
+        env.clip_thresh = args.rew_clip
+
     # custom wrap env into VecEnv
     else:
         print(f"Using {args.n_envs} parallel envts")
         env = make_vec_env("L5-v0", n_envs=args.n_envs, vec_env_cls=SubprocVecEnv,
                            vec_env_kwargs=dict(start_method='fork'))
         env.env_method("set_clt", args.clt)
+        env.env_method("set_rew_clip", args.rew_clip)
 
     # Custom Feature Extractor backbone
     policy_kwargs = dict(
@@ -98,10 +107,11 @@ if __name__ == "__main__":
     print("Creating Eval env.....")
     eval_env = gym.make("L5-v0")
     eval_env.clt = args.clt
+    eval_env.clip_thresh = args.rew_clip
     model.eval_env = eval_env
 
     # init callback list
-    callback = get_callback_list(args.output_prefix, args.n_envs, args.clt, args.save_freq)
+    callback = get_callback_list(args.output_prefix, args.n_envs, args.clt, args.save_freq, args)
 
     # train
     start = time.time()

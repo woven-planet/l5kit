@@ -1,0 +1,40 @@
+tb_log/PPO_53tb_log/PPO_54del
+ 
+ 
+tb_log/PPO_55	 	 	del
+ 
+ 
+tb_log/PPO_56	 	 	del
+ 
+tb_log/PPO_57	 	 	hyp_g95_rollout_steps64
+ 
+tb_log/PPO_58	 	 	hyp_g95_rs32_num_epoch5
+ 
+tb_log/PPO_59	 	 	hyp_g95_rs32_num_epoch15
+ 
+tb_log/PPO_60	 	 	hyp_g95_rollout_steps128
+ 
+tb_log/PPO_61	 	 	hyp_g95_rollout_steps256
+ 
+tb_log/PPO_62	 	 	hyp_g95_rs128_num_epoch5
+ 
+tb_log/PPO_63	 	 	hyp_g95_rs128_num_epoch15
+ 
+tb_log/PPO_64	 	 	t64_hyp_g95_rollout_steps128
+ 
+tb_log/PPO_65	 	 	t64_hyp_g99_rollout_steps256
+ 
+tb_log/PPO_66	 	 	t64_hyp_g95_rs256_num_epoch15
+ 
+tb_log/PPO_67	 	 	t64_hyp_g95_rollout_steps256
+ 
+/tmp/SB3-2021-07-18-16-32-40-169766	 	 	check_rc
+ 
+tb_log/PPO_68	 	 	t64_hyp_g95_rollout_steps256_rc10
+ 
+tb_log/PPO_69	 	 	t64_hyp_g90_rollout_steps256
+ 
+tb_log/PPO_70	 	 	t64_hyp_g95_rollout_steps512
+ 
+tb_log/PPO_71	 	 	t64_hyp_g90_rollout_steps256_rc10
+ 

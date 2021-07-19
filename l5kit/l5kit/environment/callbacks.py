@@ -102,3 +102,28 @@ class TrajectoryCallback(BaseCallback):
             pickle.dump([gt_action_list, action_list], f)
 
         return True
+
+class LoggingCallback(BaseCallback):
+    """
+    Callback for logging model config at start of training.
+
+    :param verbose:
+    """
+
+    def __init__(self, args, verbose: int = 0):
+        super(LoggingCallback, self).__init__(verbose)
+        self.args = args
+
+    def _init_callback(self) -> None:
+        pass
+
+    def _on_step(self) -> bool:
+        pass
+
+    def _on_training_start(self) -> bool:
+        with open('model_runs.txt', 'a') as f:
+            f.write(self.model.logger.dir)
+            f.write('\t \t \t')
+            f.write(self.args.output_prefix)
+            f.write('\n \n')
+        return True

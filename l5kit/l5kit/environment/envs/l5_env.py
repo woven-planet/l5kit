@@ -105,6 +105,10 @@ class L5Env(gym.Env):
     def set_clt(self, clt: bool) -> None:
         self.clt = clt
 
+    def set_rew_clip(self, rew_clip: float) -> None:
+        self.clip_thresh = rew_clip
+        print("Clipping Reward at ", self.clip_thresh)
+
     def reset(self, max_scene_id: int = 99) -> Dict[str, np.ndarray]:
         """
         :param max_scene_id: the maximum scene index to sample from dataset
