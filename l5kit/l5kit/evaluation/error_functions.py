@@ -20,7 +20,7 @@ def l2_error(pred: torch.Tensor, gt: torch.Tensor) -> torch.Tensor:
 
 def closest_angle(angle_a: torch.Tensor, angle_b: torch.Tensor) -> torch.Tensor:
     """ Finds the closest angle between angle_b - angle_a in radians.
-        Returns an angle between [-pi, pi]
+
     :param angle_a: a Tensor of angles in radians
     :param angle_b: a Tensor of angles in radians
     :return: The relative angle between A and B between [-pi, pi]

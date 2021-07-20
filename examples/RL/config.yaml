@@ -65,4 +65,7 @@ gym_params:
   use_yaw: True
   clip_rew: True
   stop_criterion: False
+  max_scene_id: 99
+  overfit: True
+  open_loop: False
 

@@ -65,7 +65,7 @@ class ResNetCNN(BaseFeaturesExtractor):
 
         # dm = LocalDataManager(None)
         # # get config
-        # cfg = load_config_data("/home/ubuntu/src/l5kit/l5kit/l5kit/environment/envs/config.yaml")
+        # cfg = load_config_data("/home/ubuntu/src/l5kit/examples/RL/config.yaml")
         # # rasterisation
         # self.rasterizer = build_rasterizer(cfg, dm)
 
@@ -73,6 +73,7 @@ class ResNetCNN(BaseFeaturesExtractor):
         encoded_tensor_list = []
 
         # # Visualization (Debugging)
+        # from l5kit.environment.utils import visualize_input_raster
         # out_im = visualize_input_raster(self.rasterizer, observations['image'][0])
 
         # self.extractors contain nn.Modules that do all the processing.

@@ -76,15 +76,6 @@ class SimulationOutput:
         self.ego_ins_outs = ego_ins_outs[scene_id]
         self.agents_ins_outs = agents_ins_outs[scene_id]
 
-        # Edit
-        # # Required for Bokeh Visualizer
-        # self.tls_frames = self.simulated_dataset.dataset.tl_faces
-        # self.agents_th = self.simulated_dataset.cfg["raster_params"]["filter_agents_threshold"]
-
-        # # Remove Dataset attributes
-        # self.recorded_dataset = None
-        # self.simulated_dataset = None
-
     def get_scene_id(self) -> int:
         """
         Get the scene index for this SimulationOutput
@@ -119,7 +110,8 @@ class ClosedLoopSimulator:
                  device: torch.device,
                  model_ego: Optional[torch.nn.Module] = None,
                  model_agents: Optional[torch.nn.Module] = None,
-                 keys_to_exclude: Tuple[str] = ("image",)):
+                 keys_to_exclude: Tuple[str] = ("image",),
+                 verify_model: Optional[bool] = True):
         """
         Create a simulation loop object capable of unrolling ego and agents
         :param sim_cfg: configuration for unroll
@@ -128,12 +120,12 @@ class ClosedLoopSimulator:
         :param model_ego: the model to be used for ego
         :param model_agents: the model to be used for agents
         :param keys_to_exclude: keys to exclude from input/output (e.g. huge blobs)
+        :param verify_model: flag to verify the ego/agent model when use_ego_gt/use_agent_gt is False
         """
         self.sim_cfg = sim_cfg
-        if not sim_cfg.use_ego_gt and model_ego is None:
-            print("ego model should not be None when simulating ego")
-            # raise ValueError("ego model should not be None when simulating ego")
-        if not sim_cfg.use_agents_gt and model_agents is None:
+        if not sim_cfg.use_ego_gt and model_ego is None and verify_model:
+            raise ValueError("ego model should not be None when simulating ego")
+        if not sim_cfg.use_agents_gt and model_agents is None and verify_model:
             raise ValueError("agents model should not be None when simulating agent")
 
         self.model_ego = torch.nn.Sequential().to(device) if model_ego is None else model_ego.to(device)

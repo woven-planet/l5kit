@@ -59,5 +59,5 @@ class SimulationOutputGym(SimulationOutput):
         self.agents_th = self.simulated_dataset.cfg["raster_params"]["filter_agents_threshold"]
 
         # Remove Dataset attributes
-        del self.recorded_dataset
-        del self.simulated_dataset
+        self.recorded_dataset = None
+        self.simulated_dataset = None

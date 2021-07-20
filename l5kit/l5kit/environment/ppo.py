@@ -1,4 +1,5 @@
 import argparse
+import os
 import time
 from typing import Any, Optional
 
@@ -9,11 +10,12 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.vec_env import SubprocVecEnv
 
-from l5kit.environment.callbacks import TrajectoryCallback, VizCallback, LoggingCallback
+from l5kit.environment.callbacks import LoggingCallback, TrajectoryCallback, VizCallback
 from l5kit.environment.feature_extractor import ResNetCNN, SimpleCNN
+from l5kit.environment.register_l5_env import create_l5_env
 
 
-def get_callback_list(output_prefix: str, n_envs: int, clt: bool, save_freq: Optional[int] = 50000,
+def get_callback_list(output_prefix: str, n_envs: int, save_freq: Optional[int] = 50000,
                       args: Optional[Any] = None, ckpt_prefix: Optional[str] = None) -> CallbackList:
 
     callback_list = []
@@ -37,9 +39,9 @@ def get_callback_list(output_prefix: str, n_envs: int, clt: bool, save_freq: Opt
     callback_list.append(log_callback)
 
     # Print Error at end of OpenLoop training
-    if not clt:
-        traj_callback = TrajectoryCallback(save_path='./logs/', verbose=2)
-        callback_list.append(traj_callback)
+    # if not clt:
+    #     traj_callback = TrajectoryCallback(save_path='./logs/', verbose=2)
+    #     callback_list.append(traj_callback)
 
     callback = CallbackList(callback_list)
     return callback
@@ -49,10 +51,16 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--output_prefix', required=True, type=str,
                         help='Output prefix for tracking model outputs during training')
+    parser.add_argument('--data_path', type=str, default='/home/ubuntu/level5_data/',
+                        help='Environment configuration file')
+    parser.add_argument('--env_config_path', type=str, default='/home/ubuntu/src/l5kit/examples/RL/config.yaml',
+                        help='Environment configuration file')
     parser.add_argument('--save_freq', default=50000, type=int,
                         help='Frequency to save model states')
     parser.add_argument('--n_envs', default=4, type=int,
                         help='Number of parallel envts')
+    parser.add_argument('--eps_length', default=16, type=int,
+                        help='Number of time steps')
     parser.add_argument('--n_steps', default=3000, type=int,
                         help='Number of time steps')
     parser.add_argument('--num_rollout_steps', default=64, type=int,
@@ -65,8 +73,6 @@ if __name__ == "__main__":
                         help='Tensorboard Log folder')
     parser.add_argument('--eval', action='store_true',
                         help='Eval model at end of training')
-    parser.add_argument('--clt', action='store_true',
-                        help='Closed Loop training')
     parser.add_argument('--ckpt_prefix', default=None, type=str,
                         help='Ckpt prefix for saving model')
     parser.add_argument('--device', default="auto", type=str,
@@ -75,20 +81,23 @@ if __name__ == "__main__":
                         help='Reward Clipping Threshold')
     args = parser.parse_args()
 
+    # By setting the L5KIT_DATA_FOLDER variable, we can point the script to the folder where the data lies.
+    # The path to 'l5_data_path' needs to be provided
+    os.environ["L5KIT_DATA_FOLDER"] = args.data_path
+
+    # create and register L5 env
+    create_l5_env(args)
+
     # make gym env
     if args.n_envs == 1:
         print("Using 1 envt")
-        env = gym.make("L5-v0")
-        env.clt = args.clt
-        env.clip_thresh = args.rew_clip
+        env = gym.make("L5-CLE-v0")
 
     # custom wrap env into VecEnv
     else:
         print(f"Using {args.n_envs} parallel envts")
-        env = make_vec_env("L5-v0", n_envs=args.n_envs, vec_env_cls=SubprocVecEnv,
+        env = make_vec_env("L5-CLE-v0", n_envs=args.n_envs, vec_env_cls=SubprocVecEnv,
                            vec_env_kwargs=dict(start_method='fork'))
-        env.env_method("set_clt", args.clt)
-        env.env_method("set_rew_clip", args.rew_clip)
 
     # Custom Feature Extractor backbone
     policy_kwargs = dict(
@@ -105,13 +114,12 @@ if __name__ == "__main__":
 
     # make eval env at start itself
     print("Creating Eval env.....")
-    eval_env = gym.make("L5-v0")
-    eval_env.clt = args.clt
+    eval_env = gym.make("L5-CLE-v0")
     eval_env.clip_thresh = args.rew_clip
     model.eval_env = eval_env
 
     # init callback list
-    callback = get_callback_list(args.output_prefix, args.n_envs, args.clt, args.save_freq, args)
+    callback = get_callback_list(args.output_prefix, args.n_envs, args.save_freq, args)
 
     # train
     start = time.time()

@@ -1,6 +1,5 @@
-import os
-import pickle
-from typing import Any, Dict
+from pathlib import Path
+from typing import Any, Dict, Optional
 
 import numpy as np
 import torch
@@ -45,11 +44,13 @@ def convert_to_dict(data: np.ndarray, future_num_frames: int) -> Dict[str, np.nd
     return data_dict
 
 
-def visualize_input_raster(rasterizer: Rasterizer, image: torch.Tensor) -> None:
+def visualize_input_raster(rasterizer: Rasterizer, image: torch.Tensor,
+                           output_folder: Optional[str] = 'raster_inputs') -> None:
     """Visualize the input raster image
 
     :param rasterizer: the rasterizer
     :param image: numpy array
+    :param output_folder: directory to save the image
     :return: the numpy dict with 'positions' and 'yaws'
     """
 
@@ -58,21 +59,20 @@ def visualize_input_raster(rasterizer: Rasterizer, image: torch.Tensor) -> None:
 
     im = Image.fromarray(output_im)
 
+    # mkdir
+    Path(output_folder).mkdir(exist_ok=True)
+    output_folder = Path(output_folder)
+
+    # loop
     i = 0
-    while os.path.exists("imgs/test%s.png" % i):
+    img_path = output_folder / 'input{}.png'.format(i)
+    while img_path.exists():
         i += 1
-    print("Saving Raster RGB Image")
-    im.save("imgs/test%s.png" % i)
+        img_path = output_folder / 'input{}.png'.format(i)
 
+    # save
+    im.save(img_path)
 
-def error_stats(path: str) -> None:
-    """L2 error between groundtruth and prediction during Open loop training
-
-    :param path: the path to pkl file containing the groundtruth and predictions
-    """
-    with open(path + ".pkl", 'rb') as f:
-        [gt_action_list, action_list] = pickle.load(f)
-        error = gt_action_list - action_list
-        error = np.linalg.norm(error, axis=1)
-        print("Error: ", error)
-    return
+    # exit code once 20 images saved
+    if i == 20:
+        exit()
