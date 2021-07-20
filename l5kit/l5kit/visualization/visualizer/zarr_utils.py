@@ -315,9 +315,9 @@ def simulation_ego_out_to_visualizer_scene(sim_out: SimulationOutput, mapAPI: Ma
 
 
             trajectories.append(TrajectoryVisualization(xs=single_step_sim[:, 0], ys=single_step_sim[:, 1],
-                                                        color="green", legend_label="ego_big_simulated", track_id=-1))
+                                                        color="green", legend_label="ego_simulated (10x scale)", track_id=-1))
             trajectories.append(TrajectoryVisualization(xs=single_step_replay[:, 0], ys=single_step_replay[:, 1],
-                                                        color="yellow", legend_label="ego_big_replay", track_id=-1))
+                                                        color="yellow", legend_label="ego_replay (10x scale)", track_id=-1))
             # trajectories.append(TrajectoryVisualization(xs=replay_traj[:, 0], ys=replay_traj[:, 1],
             #                                             color="blue", legend_label="ego_replay", track_id=-1))
             # trajectories.append(TrajectoryVisualization(xs=sim_traj[:, 0], ys=sim_traj[:, 1],
@@ -462,9 +462,9 @@ def simulation_out_to_visualizer_scene_clt(sim_out: SimulationOutput, mapAPI: Ma
 
 
             trajectories.append(TrajectoryVisualization(xs=single_step_sim[:, 0], ys=single_step_sim[:, 1],
-                                                        color="green", legend_label="ego_big_simulated", track_id=-1))
+                                                        color="green", legend_label="ego_simulated (10x scale)", track_id=-1))
             trajectories.append(TrajectoryVisualization(xs=single_step_replay[:, 0], ys=single_step_replay[:, 1],
-                                                        color="yellow", legend_label="ego_big_replay", track_id=-1))
+                                                        color="yellow", legend_label="ego_replay (10x scale)", track_id=-1))
 
         if has_agents_info:
             agents_in_out = agents_ins_outs[frame_idx]
