@@ -3,16 +3,17 @@ from typing import DefaultDict, Dict, List, Optional
 import numpy as np
 import torch
 
-from l5kit.environment.cle_utils import get_cle, SimulationOutputGym
 from l5kit.simulation.dataset import SimulationDataset
 from l5kit.simulation.unroll import UnrollInputOutput
+from l5kit.environment.cle_metricset import L5BaseMetricSet, SimulationOutputGym
 
 
 class Reward(object):
-    def __init__(self, rew_clip_thresh: Optional[float] = 15, use_yaw: Optional[bool] = True,
+    def __init__(self, metric_set: L5BaseMetricSet, rew_clip_thresh: Optional[float] = 15, use_yaw: Optional[bool] = True,
                  yaw_weight: Optional[float] = 3.0, open_loop: Optional[bool] = False,
                  stop_thresh: Optional[float] = 100000) -> None:
         """
+        :param metric_set: the set of metrics to compute
         :param rew_clip_thresh: the threshold to clip the reward
         :param use_yaw: flag to penalize the yaw prediction
         :param yaw_weight: weight of the yaw error
@@ -20,8 +21,9 @@ class Reward(object):
         :param stop_thresh: the reward threshold to early terminate an episode
         """
 
-        # To add Metric Set
-        self.closed_loop_evaluator = get_cle()
+        # Metric Set
+        self.metric_set = metric_set
+
         self.open_loop = open_loop
         self.use_yaw = use_yaw
         self.yaw_weight = yaw_weight
@@ -32,7 +34,7 @@ class Reward(object):
         """
         Reset the closed loop evaluator when a new episode starts
         """
-        self.closed_loop_evaluator.reset()
+        self.metric_set.reset()
 
     def get_close_loop_reward(self, frame_index: int, scene_indices: List[int], sim_dataset: SimulationDataset,
                               ego_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]],
@@ -53,10 +55,10 @@ class Reward(object):
         simulated_outputs: List[SimulationOutputGym] = []
         for scene_idx in scene_indices:
             simulated_outputs.append(SimulationOutputGym(scene_idx, sim_dataset, ego_ins_outs, agents_ins_outs))
-        self.closed_loop_evaluator.evaluate(simulated_outputs)
+        self.metric_set.evaluate(simulated_outputs)
 
         # get CLE metrics
-        scene_metrics = self.closed_loop_evaluator.scene_metric_results[scene_idx]
+        scene_metrics = self.metric_set.evaluator.scene_metric_results[scene_idx]
         dist_error = scene_metrics['displacement_error_l2'][frame_index + 1]
         yaw_error = self.yaw_weight * torch.abs(scene_metrics['yaw_error_ca'][frame_index + 1])
 
