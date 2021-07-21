@@ -11,7 +11,7 @@ from gym import spaces
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
-from l5kit.environment.cle_utils import SimulationOutputGym
+from l5kit.environment.cle_metricset import SimulationOutputGym
 from l5kit.environment.reward import Reward
 from l5kit.environment.utils import convert_to_dict, default_collate_numpy
 from l5kit.rasterization import build_rasterizer
