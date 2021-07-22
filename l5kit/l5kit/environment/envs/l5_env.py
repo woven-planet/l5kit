@@ -1,6 +1,5 @@
 import random
 from collections import defaultdict
-from pathlib import Path
 from typing import Any, DefaultDict, Dict, List, NamedTuple
 
 import gym
@@ -12,8 +11,8 @@ from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
 from l5kit.environment.cle_metricset import SimulationOutputGym
-from l5kit.environment.reward import Reward
-from l5kit.environment.utils import convert_to_dict, default_collate_numpy
+from l5kit.environment.reward import Reward, RewardInput
+from l5kit.environment.utils import convert_to_dict, default_collate_numpy, rescale_action
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.simulation.unroll import ClosedLoopSimulator, UnrollInputOutput
@@ -29,7 +28,7 @@ class GymStepOutput(NamedTuple):
     """
 
     obs: Dict[str, np.ndarray]
-    reward: int
+    reward: float
     done: bool
     info: Dict[str, Any]
 
@@ -37,7 +36,7 @@ class GymStepOutput(NamedTuple):
 class L5Env(gym.Env):
     """ Custom Environment of L5 Kit that can be registered in OpenAI Gym. """
 
-    def __init__(self, env_config_path: Path, sim_cfg: SimulationConfig, reward: Reward, cle: bool) -> None:
+    def __init__(self, env_config_path: str, sim_cfg: SimulationConfig, reward: Reward, cle: bool) -> None:
         """
         :param env_config_path: path to the L5Kit environment configuration file
         :param simulation_cfg: configuration of the L5Kit closed loop simulator
@@ -63,7 +62,8 @@ class L5Env(gym.Env):
 
         # Define action and observation space
         # Continuous Action Space: gym.spaces.Box (X, Y, Yaw * number of future states)
-        self.action_space = spaces.Box(low=-1000, high=1000, shape=(self.future_num_frames * 3, ))
+        # self.action_space = spaces.Box(low=-1000, high=1000, shape=(self.future_num_frames * 3, ))
+        self.action_space = spaces.Box(low=-1, high=1, shape=(self.future_num_frames * 3, ))
 
         # Observation Space: gym.spaces.Dict (image: [n_channels, raster_size, raster_size])
         self.observation_space = spaces.Dict({'image': spaces.Box(low=0, high=1,
@@ -126,6 +126,7 @@ class L5Env(gym.Env):
 
         # EGO
         if not self.sim_cfg.use_ego_gt:
+            action = rescale_action(action)
             action = convert_to_dict(action, self.future_num_frames)
             self.ego_output_dict = action
 
@@ -139,14 +140,12 @@ class L5Env(gym.Env):
                 self.ego_ins_outs[scene_idx].append(ego_frame_in_out[scene_idx])
 
         # reward calculation
-        if self.cle:
-            reward = self.reward.get_reward(self.frame_index, self.scene_indices, self.sim_dataset,
-                                            self.ego_ins_outs, self.agents_ins_outs)
-        else:
-            reward = self.reward.get_reward(self.ego_output_dict, self.ego_input_dict)
+        reward_input = RewardInput(self.frame_index, self.scene_indices, self.sim_dataset, self.ego_ins_outs,
+                                   self.agents_ins_outs, self.ego_output_dict, self.ego_input_dict)
+        reward = self.reward.get_reward(reward_input)
 
-        # done is True when episode ends or error gets too high (optional)
-        done = episode_over or self.check_done_status()
+        # done is True when episode ends
+        done = episode_over
 
         # Optionally we can pass additional info
         # We are using "info" to output simulated outputs
@@ -169,15 +168,6 @@ class L5Env(gym.Env):
         # return obs, reward, done, info
         return GymStepOutput(obs, reward, done, info)
 
-    def check_done_status(self) -> bool:
-        """
-        (Optionally) End episode if the displacement error crosses a threshold
-        :return: end episode flag
-        """
-        if self.reward.stop_flag:
-            return self.reward.stop_error > self.reward.stop_thresh
-        return False
-
     def get_simulated_outputs(self) -> List[SimulationOutputGym]:
         """
         Generate simulated outputs at end of episode
@@ -193,4 +183,3 @@ class L5Env(gym.Env):
 
     def render(self) -> None:
         raise NotImplementedError
-

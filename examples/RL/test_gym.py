@@ -12,6 +12,8 @@ parser.add_argument('--env_config_path', type=str, default='/home/ubuntu/src/l5k
                     help='Environment configuration file')
 parser.add_argument('--eps_length', default=16, type=int,
                     help='Number of time steps')
+parser.add_argument('--disable_cle', action='store_true',
+                    help='disable close loop training')
 parser.add_argument('--rew_clip', default=15, type=float,
                     help='Reward Clipping Threshold')
 args = parser.parse_args()
@@ -21,7 +23,7 @@ args = parser.parse_args()
 os.environ["L5KIT_DATA_FOLDER"] = args.data_path
 
 # create and register L5Kit gym env
-create_l5_env(args)
+create_l5_env(args.env_config_path, args.eps_length, args.disable_cle, args.rew_clip)
 
 # call
 env = gym.make('L5-CLE-v0')

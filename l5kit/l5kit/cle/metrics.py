@@ -8,7 +8,7 @@ from l5kit.data import get_agents_slice_from_frames
 from l5kit.evaluation import error_functions
 from l5kit.evaluation import metrics as l5metrics
 from l5kit.rasterization import EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH
-from l5kit.simulation.unroll import SimulationOutput, TrajectoryStateIndices
+from l5kit.simulation.unroll import SimulationOutputCLE, TrajectoryStateIndices
 
 
 class SupportsMetricCompute(Protocol):
@@ -16,7 +16,7 @@ class SupportsMetricCompute(Protocol):
     metric_name: str
 
     @abstractmethod
-    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
         """The compute method sould return the result of the metric
         computed at every frame of the scene.
 
@@ -57,7 +57,7 @@ class CollisionMetricBase(ABC):
 
         return 0.0
 
-    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
         """Compute the metric on all frames of the scene.
 
         :param simulation_output: the output from the closed-loop simulation
@@ -117,7 +117,7 @@ class DisplacementErrorMetric(SupportsMetricCompute):
     def __init__(self, error_function: error_functions.ErrorFunction) -> None:
         self.error_function = error_function
 
-    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
         """Compute the metric on all frames of the scene.
 
         :param simulation_output: the output from the closed-loop simulation
@@ -167,7 +167,7 @@ class DistanceToRefTrajectoryMetric(SupportsMetricCompute):
 
         self.scene_fraction = scene_fraction
 
-    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
         """Compute the metric on all frames of the scene.
 
         :param simulation_output: the output from the closed-loop simulation
@@ -198,7 +198,7 @@ class SimulatedDrivenMilesMetric:
     metric_name = "simulated_driven_miles"
     METER_TO_MILES = 0.000621371
 
-    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
         """Compute the metric on all frames of the scene.
 
         :param simulation_output: the output from the closed-loop simulation
@@ -221,7 +221,7 @@ class ReplayDrivenMilesMetric:
     metric_name = "replay_driven_miles"
     METER_TO_MILES = 0.000621371
 
-    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
         """Compute the metric on all frames of the scene.
 
         :param simulation_output: the output from the closed-loop simulation
@@ -250,7 +250,7 @@ class YawErrorMetric(SupportsMetricCompute):
     def __init__(self, error_function: error_functions.ErrorFunction) -> None:
         self.error_function = error_function
 
-    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
         """Compute the metric on all frames of the scene.
 
         :param simulation_output: the output from the closed-loop simulation

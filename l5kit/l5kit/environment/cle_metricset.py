@@ -4,10 +4,10 @@ from typing import Any, DefaultDict, Dict, List
 from l5kit.cle import composite_metrics, metrics, validators
 from l5kit.cle.closed_loop_evaluator import ClosedLoopEvaluator, EvaluationPlan
 from l5kit.simulation.dataset import SimulationDataset
-from l5kit.simulation.unroll import SimulationOutput, UnrollInputOutput
+from l5kit.simulation.unroll import SimulationOutputCLE, UnrollInputOutput
 
 
-class SimulationOutputGym(SimulationOutput):
+class SimulationOutputGym(SimulationOutputCLE):
     def __init__(self, scene_id: int, sim_dataset: SimulationDataset,
                  ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]],
                  agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]]):
@@ -22,12 +22,9 @@ class SimulationOutputGym(SimulationOutput):
         super(SimulationOutputGym, self).__init__(scene_id, sim_dataset, ego_ins_outs, agents_ins_outs)
 
         # Required for Bokeh Visualizer
-        self.tls_frames = self.simulated_dataset.dataset.tl_faces
-        self.agents_th = self.simulated_dataset.cfg["raster_params"]["filter_agents_threshold"]
-
-        # Remove Dataset attributes
-        self.recorded_dataset = None
-        self.simulated_dataset = None
+        simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
+        self.tls_frames = simulated_dataset.dataset.tl_faces
+        self.agents_th = simulated_dataset.cfg["raster_params"]["filter_agents_threshold"]
 
 
 class CLEMetricSet(ABC):
@@ -37,7 +34,7 @@ class CLEMetricSet(ABC):
     evaluator: ClosedLoopEvaluator
 
     @abstractmethod
-    def evaluate(self, sim_outputs: List[SimulationOutputGym]) -> None:
+    def evaluate(self, sim_outputs: List[SimulationOutputCLE]) -> None:
         """Run the CLE (Closed-loop Evaluator) on simulated scenes.
         :param sim_outputs: outputs from the simulator.
         """
@@ -86,7 +83,7 @@ class L5BaseMetricSet(CLEMetricSet):
         metrics are metrics that depend upon metrics and validator results."""
         return []
 
-    def evaluate(self, sim_outputs: List[SimulationOutputGym]) -> None:
+    def evaluate(self, sim_outputs: List[SimulationOutputCLE]) -> None:
         """Run the CLE (Closed-loop Evaluator) on simulated scenes.
         :param sim_outputs: outputs from the simulator.
         """

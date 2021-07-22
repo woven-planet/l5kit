@@ -14,8 +14,6 @@ sphinx-rtd-theme = "*"
 recommonmark = "*"
 pre-commit = "*"
 typing-extensions = "*"
-line-profiler = "*"
-importlib-metadata = "*"
 
 [packages]
 l5kit = {editable = true, path = "."}

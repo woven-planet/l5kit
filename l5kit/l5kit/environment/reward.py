@@ -1,12 +1,34 @@
 from abc import ABC, abstractmethod
-from typing import DefaultDict, Dict, List, Optional
+from typing import DefaultDict, Dict, List, NamedTuple, Optional
 
 import numpy as np
 import torch
 
+from l5kit.environment.cle_metricset import L5BaseMetricSet, L5GymCLEMetricSet, SimulationOutputCLE
 from l5kit.simulation.dataset import SimulationDataset
 from l5kit.simulation.unroll import UnrollInputOutput
-from l5kit.environment.cle_metricset import L5BaseMetricSet, L5GymCLEMetricSet, SimulationOutputGym
+
+
+class RewardInput(NamedTuple):
+    """ The input tuple to calculate reward
+
+    :param frame_index: the current step in the episode
+    :param scene_indices: the list of scene indices rolled out in parallel
+    :param sim_dataset: the input dataset corresponding to the scene_indices
+    :param ego_ins_outs: object contain the ground truth and prediction information of the ego
+    :param agents_ins_outs: object contain the ground truth and prediction information of the agents
+    :param ego_output_dict: dictionary containing the predicted ego positions and yaws
+    :param ego_input_dict: dictionary containing the target ego positions and yaws
+    """
+
+    frame_index: int
+    scene_indices: List[int]
+    sim_dataset: SimulationDataset
+    ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]]
+    agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]]
+    ego_output_dict: Dict[str, np.ndarray]
+    ego_input_dict: Dict[str, np.ndarray]
+
 
 class Reward(ABC):
     """Base class interface for gym environment reward."""
@@ -15,12 +37,12 @@ class Reward(ABC):
 
     @abstractmethod
     def reset(self) -> None:
-        """Reset the reward function when new episode starts.
+        """Reset the reward state when new episode starts.
         """
         raise NotImplementedError
 
     @abstractmethod
-    def get_reward(self, *args) -> None:
+    def get_reward(self, reward_input: RewardInput) -> float:
         """Return the reward at a particular time-step during the episode.
         """
         raise NotImplementedError
@@ -28,7 +50,7 @@ class Reward(ABC):
 
 class CLE_Reward(Reward):
     def __init__(self, reward_prefix: str = "CLE", metric_set: Optional[L5BaseMetricSet] = None,
-                 enable_clip: Optional[bool] = True, rew_clip_thresh: Optional[float] = 15,
+                 enable_clip: bool = True, rew_clip_thresh: float = 15,
                  use_yaw: Optional[bool] = True, yaw_weight: Optional[float] = 3.0,
                  stop_flag: Optional[bool] = False, stop_thresh: Optional[float] = 20) -> None:
         """
@@ -53,29 +75,28 @@ class CLE_Reward(Reward):
         self.stop_flag = stop_flag
         self.stop_thresh = stop_thresh
 
-    def reset(self):
+    def reset(self) -> None:
         """ Reset the closed loop evaluator when a new episode starts """
         self.metric_set.reset()
 
-    def get_reward(self, frame_index: int, scene_indices: List[int], sim_dataset: SimulationDataset,
-                   ego_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]],
-                   agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]]) -> float:
+    def get_reward(self, reward_input: RewardInput) -> float:
         """ Get the reward for the given step in close loop training.
-        :param frame_index: the current frame index of the episode. Prediction is made for this frame.
-        :param scene_indices: the scene indices being rolled out in the environment
-        :param sim_dataset: the simulation dataset object of the environment
-        :param ego_ins_outs: object contain the ground truth and prediction information of the ego
-        :param agents_ins_outs: object contain the ground truth and prediction information of the agents
-
+        :param RewardInput: the input tuple for reward calculation
         :return: the reward is the combination of L2 error from groundtruth trajectory and (optionally) yaw error
         """
+
+        frame_index = reward_input.frame_index
+        scene_indices = reward_input.scene_indices
+        sim_dataset = reward_input.sim_dataset
+        ego_ins_outs = reward_input.ego_ins_outs
+        agents_ins_outs = reward_input.agents_ins_outs
 
         assert len(scene_indices) == 1
 
         # generate simulated_outputs
-        simulated_outputs: List[SimulationOutputGym] = []
+        simulated_outputs: List[SimulationOutputCLE] = []
         for scene_idx in scene_indices:
-            simulated_outputs.append(SimulationOutputGym(scene_idx, sim_dataset, ego_ins_outs, agents_ins_outs))
+            simulated_outputs.append(SimulationOutputCLE(scene_idx, sim_dataset, ego_ins_outs, agents_ins_outs))
         self.metric_set.evaluate(simulated_outputs)
 
         # get CLE metrics
@@ -84,7 +105,7 @@ class CLE_Reward(Reward):
         yaw_error = self.yaw_weight * torch.abs(scene_metrics['yaw_error_ca'][frame_index + 1])
 
         # clip reward
-        reward = -dist_error.item()
+        reward = float(-dist_error.item())
         if self.enable_clip:
             reward = max(-self.rew_clip_thresh, -dist_error.item())
 
@@ -102,19 +123,19 @@ class OLE_Reward(Reward):
     def __init__(self, reward_prefix: str = "OLE") -> None:
         self.stop_flag = False
 
-    def reset(self):
+    def reset(self) -> None:
         """ Reset the open loop evaluator when a new episode starts """
         pass
 
-    def get_reward(self, ego_output_dict: Dict[str, np.ndarray],
-                   ego_input_dict: Dict[str, np.ndarray]) -> float:
+    def get_reward(self, reward_input: RewardInput) -> float:
         """ Get the reward for the given step in open loop training.
-        :param ego_output_dict: dictionary containing the predicted ego positions and yaws
-        :param ego_input_dict: dictionary containing the target ego positions and yaws
+        :param RewardInput: the input tuple for reward calculation
         :return: the reward is the L2 error from groundtruth trajectory
         """
         # Reward for open loop training (MSE)
+        ego_output_dict = reward_input.ego_output_dict
+        ego_input_dict = reward_input.ego_input_dict
         penalty = np.square(ego_output_dict["positions"] - ego_input_dict["target_positions"]).mean()
-        reward = - penalty
+        reward = - float(penalty)
 
         return reward

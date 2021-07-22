@@ -7,7 +7,7 @@ import torch
 from typing_extensions import Protocol
 
 from l5kit.cle import metrics
-from l5kit.simulation.unroll import SimulationOutput, TrajectoryStateIndices
+from l5kit.simulation.unroll import SimulationOutputCLE, TrajectoryStateIndices
 
 
 class ValidatorOutput(NamedTuple):
@@ -31,7 +31,7 @@ class SupportsMetricValidate(Protocol):
 
     @abstractmethod
     def validate(self, metric_results: Dict[str, torch.Tensor],
-                 simulation_output: SimulationOutput) -> ValidatorOutput:
+                 simulation_output: SimulationOutputCLE) -> ValidatorOutput:
         """Apply the validator on the metric results.
 
         :param metric_results: results from all computed metrics
@@ -110,7 +110,7 @@ class RangeValidator(SupportsMetricValidate):
         return cumsum
 
     def validate(self, metric_results: Dict[str, torch.Tensor],
-                 simulation_output: SimulationOutput) -> ValidatorOutput:
+                 simulation_output: SimulationOutputCLE) -> ValidatorOutput:
         """Apply the validator on the results of the metric computation.
 
         :param metric_results: all metric results
