@@ -1,5 +1,5 @@
 from pathlib import Path
-from typing import Any, Dict, Optional
+from typing import Any, Dict
 
 import numpy as np
 import torch
@@ -7,7 +7,9 @@ from PIL import Image
 
 from l5kit.rasterization import Rasterizer
 
-def rescale_action(action, x_mu=1.20, x_scale=0.2, y_mu=0.0, y_scale=0.03, yaw_scale=3.14):
+
+def rescale_action(action: np.ndarray, x_mu: float = 1.20, x_scale: float = 0.2,
+                   y_mu: float = 0.0, y_scale: float = 0.03, yaw_scale: float = 3.14) -> np.ndarray:
     assert len(action) == 3
     action[0] = x_mu + x_scale * action[0]
     action[1] = y_mu + y_scale * action[1]
@@ -52,7 +54,7 @@ def convert_to_dict(data: np.ndarray, future_num_frames: int) -> Dict[str, np.nd
 
 
 def visualize_input_raster(rasterizer: Rasterizer, image: torch.Tensor,
-                           output_folder: Optional[str] = 'raster_inputs') -> None:
+                           output_folder: str = 'raster_inputs') -> None:
     """Visualize the input raster image
 
     :param rasterizer: the rasterizer

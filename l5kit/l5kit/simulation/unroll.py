@@ -46,12 +46,12 @@ class UnrollInputOutput(NamedTuple):
     outputs: Dict[str, np.ndarray]
 
 
-class SimulationOutput:
+class SimulationOutputCLE:
     def __init__(self, scene_id: int, sim_dataset: SimulationDataset,
                  ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]],
                  agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]]):
         """This object holds information about the result of the simulation loop
-        for a given scene dataset
+        for a given scene dataset for close loop evaluation
 
         :param scene_id: the scene indices
         :param sim_dataset: the simulation dataset
@@ -62,13 +62,13 @@ class SimulationOutput:
             raise ValueError(f"scene: {scene_id} not in sim datasets: {sim_dataset.scene_dataset_batch}")
 
         self.scene_id = scene_id
-        self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
-        self.simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
+        recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
+        simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
 
-        self.simulated_agents = self.simulated_dataset.dataset.agents
-        self.recorded_agents = self.recorded_dataset.dataset.agents
-        self.recorded_ego = self.recorded_dataset.dataset.frames
-        self.simulated_ego = self.simulated_dataset.dataset.frames
+        self.simulated_agents = simulated_dataset.dataset.agents
+        self.recorded_agents = recorded_dataset.dataset.agents
+        self.recorded_ego = recorded_dataset.dataset.frames
+        self.simulated_ego = simulated_dataset.dataset.frames
 
         self.simulated_ego_states = self.build_trajectory_states(self.simulated_ego)
         self.recorded_ego_states = self.build_trajectory_states(self.recorded_ego)
@@ -103,6 +103,26 @@ class SimulationOutput:
             # TODO: we may need to fill other fields
 
         return trajectory_states
+
+
+class SimulationOutput(SimulationOutputCLE):
+    def __init__(self, scene_id: int, sim_dataset: SimulationDataset,
+                 ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]],
+                 agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]]):
+        """This object holds information about the result of the simulation loop
+        for a given scene dataset for close loop evaluation and visualization
+
+        :param scene_id: the scene indices
+        :param sim_dataset: the simulation dataset
+        :param ego_ins_outs: all inputs and outputs for ego (each frame of each scene has only one)
+        :param agents_ins_outs: all inputs and outputs for agents (multiple per frame in a scene)
+        """
+
+        super(SimulationOutput, self).__init__(scene_id, sim_dataset, ego_ins_outs, agents_ins_outs)
+
+        # Useful for visualization
+        self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
+        self.simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
 
 
 class ClosedLoopSimulator:

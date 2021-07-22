@@ -8,7 +8,7 @@ from typing_extensions import Protocol
 
 from l5kit.cle import metrics, validators
 from l5kit.cle.metrics import SupportsMetricCompute
-from l5kit.simulation.unroll import SimulationOutput
+from l5kit.simulation.unroll import SimulationOutputCLE
 
 
 class SupportsCompositeMetricCompute(Protocol):
@@ -24,7 +24,7 @@ class SupportsCompositeMetricCompute(Protocol):
     @abstractmethod
     def compute(self, metric_results: Dict[str, torch.Tensor],
                 validation_results: Dict[str, validators.ValidatorOutput],
-                simulation_output: SimulationOutput) -> float:
+                simulation_output: SimulationOutputCLE) -> float:
         """Method that supports the computation of the composite metric. This
         metric should return a single float per scene.
 
@@ -71,7 +71,7 @@ class PassedDrivenMilesCompositeMetric(SupportsCompositeMetricCompute):
 
     def compute(self, metric_results: Dict[str, torch.Tensor],
                 validation_results: Dict[str, validators.ValidatorOutput],
-                simulation_output: SimulationOutput) -> float:
+                simulation_output: SimulationOutputCLE) -> float:
         """Computes the driven miles until the first intervention
         is found (first failed frame).
 
@@ -128,7 +128,7 @@ class DrivenMilesCompositeMetric(SupportsCompositeMetricCompute):
 
     def compute(self, metric_results: Dict[str, torch.Tensor],
                 validation_results: Dict[str, validators.ValidatorOutput],
-                simulation_output: SimulationOutput) -> float:
+                simulation_output: SimulationOutputCLE) -> float:
         driven_miles = metric_results[self.driven_miles_metric_name].sum()
         driven_miles_cpu = driven_miles.cpu().item()
         return float(driven_miles_cpu)

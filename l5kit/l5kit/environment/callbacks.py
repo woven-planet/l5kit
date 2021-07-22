@@ -102,6 +102,7 @@ class TrajectoryCallback(BaseCallback):
 
         return True
 
+
 class LoggingCallback(BaseCallback):
     """
     Callback for logging model config at start of training.

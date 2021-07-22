@@ -10,8 +10,8 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.vec_env import SubprocVecEnv
 
-from l5kit.environment.callbacks import LoggingCallback, TrajectoryCallback, VizCallback
-from l5kit.environment.feature_extractor import ResNetCNN, SimpleCNN
+from l5kit.environment import feature_extractor
+from l5kit.environment.callbacks import LoggingCallback, VizCallback
 from l5kit.environment.register_l5_env import create_l5_env
 
 
@@ -88,7 +88,7 @@ if __name__ == "__main__":
     os.environ["L5KIT_DATA_FOLDER"] = args.data_path
 
     # create and register L5 env
-    create_l5_env(args)
+    create_l5_env(args.env_config_path, args.eps_length, args.disable_cle, args.rew_clip)
 
     # make gym env
     if args.n_envs == 1:
@@ -103,7 +103,7 @@ if __name__ == "__main__":
 
     # Custom Feature Extractor backbone
     policy_kwargs = dict(
-        features_extractor_class=SimpleCNN,  # ResNetCNN
+        features_extractor_class=feature_extractor.SimpleCNN,  # ResNetCNN
         features_extractor_kwargs=dict(features_dim=128),
         normalize_images=False
     )
