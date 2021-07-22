@@ -13,6 +13,7 @@ sphinx = "*"
 sphinx-rtd-theme = "*"
 recommonmark = "*"
 pre-commit = "*"
+importlib-metadata = "*"  # required for python 3.8
 typing-extensions = "*"
 
 [packages]
