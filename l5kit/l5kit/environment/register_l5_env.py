@@ -2,7 +2,7 @@ from pathlib import Path
 
 import gym
 
-from l5kit.environment.reward import Reward
+from l5kit.environment import reward
 from l5kit.simulation.dataset import SimulationConfig
 from l5kit.environment.cle_metricset import L5GymCLEMetricSet
 
@@ -13,11 +13,14 @@ def create_l5_env(args):
     # config path
     env_config_path = Path(args.env_config_path)
 
-    # metric set
-    metric_set = L5GymCLEMetricSet()
+    # Closed loop environment
+    close_loop_envt = not args.disable_cle
 
     # Define Reward Function
-    reward = Reward(metric_set)
+    if close_loop_envt:
+        reward_fn = reward.CLE_Reward(rew_clip_thresh=args.rew_clip)
+    else:
+        reward_fn = reward.OLE_Reward()
 
     # Define Close-Loop Simulator
     num_simulation_steps = args.eps_length
@@ -32,5 +35,6 @@ def create_l5_env(args):
         entry_point="l5kit.environment.envs:L5Env",
         kwargs={'env_config_path': env_config_path,
                 'sim_cfg': sim_cfg,
-                'reward': reward},
+                'reward': reward_fn,
+                'cle': close_loop_envt},
     )

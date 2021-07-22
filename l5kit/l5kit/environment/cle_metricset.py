@@ -99,7 +99,7 @@ class L5BaseMetricSet(CLEMetricSet):
     def get_results(self) -> Dict[str, Any]:
         """Perform all required aggregations and returns a dictionary
         composed by all results."""
-        pass
+        raise NotImplementedError
 
 
 class L5GymCLEMetricSet(L5BaseMetricSet):
