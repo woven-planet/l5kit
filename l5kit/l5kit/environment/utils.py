@@ -7,6 +7,13 @@ from PIL import Image
 
 from l5kit.rasterization import Rasterizer
 
+def rescale_action(action, x_mu=1.20, x_scale=0.2, y_mu=0.0, y_scale=0.03, yaw_scale=3.14):
+    assert len(action) == 3
+    action[0] = x_mu + x_scale * action[0]
+    action[1] = y_mu + y_scale * action[1]
+    action[2] = yaw_scale * action[2]
+    return action
+
 
 def default_collate_numpy(data: Dict[str, Any]) -> Dict[str, np.ndarray]:
     """Move a torch dict into numpy (on cpu)

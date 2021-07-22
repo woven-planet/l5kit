@@ -35,7 +35,6 @@ class VizCallback(BaseCallback):
 
     def _on_step(self) -> bool:
         if self.n_calls % self.save_freq == 0:
-            print("OLT: ", self.model.eval_env.open_loop)
             path = os.path.join(self.save_path, f"{self.name_prefix}_{self.num_timesteps}_steps")
             obs = self.model.eval_env.reset()
             for i in range(350):

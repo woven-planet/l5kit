@@ -13,7 +13,7 @@ from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
 from l5kit.environment.cle_metricset import SimulationOutputGym
 from l5kit.environment.reward import Reward
-from l5kit.environment.utils import convert_to_dict, default_collate_numpy
+from l5kit.environment.utils import convert_to_dict, default_collate_numpy, rescale_action
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.simulation.unroll import ClosedLoopSimulator, UnrollInputOutput
@@ -35,17 +35,14 @@ class GymStepOutput(NamedTuple):
 
 
 class L5Env(gym.Env):
-    """
-    Custom Environment of L5 Kit that can be registered in OpenAI Gym.
-    If closed loop training, the raster is updated according to predicted ego positions.
-    else (open loop training), the raster is based on the ground truth ego positions (i.e. no update).
-    """
+    """ Custom Environment of L5 Kit that can be registered in OpenAI Gym. """
 
-    def __init__(self, env_config_path: Path, sim_cfg: SimulationConfig, reward: Reward) -> None:
+    def __init__(self, env_config_path: Path, sim_cfg: SimulationConfig, reward: Reward, cle: bool) -> None:
         """
         :param env_config_path: path to the L5Kit environment configuration file
         :param simulation_cfg: configuration of the L5Kit closed loop simulator
         :param reward: calculates the reward for the gym environment
+        :param cle: flag to enable close loop environment updates
         """
         super(L5Env, self).__init__()
 
@@ -66,7 +63,8 @@ class L5Env(gym.Env):
 
         # Define action and observation space
         # Continuous Action Space: gym.spaces.Box (X, Y, Yaw * number of future states)
-        self.action_space = spaces.Box(low=-1000, high=1000, shape=(self.future_num_frames * 3, ))
+        # self.action_space = spaces.Box(low=-1000, high=1000, shape=(self.future_num_frames * 3, ))
+        self.action_space = spaces.Box(low=-1, high=1, shape=(self.future_num_frames * 3, ))
 
         # Observation Space: gym.spaces.Dict (image: [n_channels, raster_size, raster_size])
         self.observation_space = spaces.Dict({'image': spaces.Box(low=0, high=1,
@@ -85,9 +83,8 @@ class L5Env(gym.Env):
         if cfg["gym_params"]["overfit"]:  # Overfit
             self.max_scene_id = 0
 
-        # Flag for open-loop training
-        self.open_loop = cfg["gym_params"]["open_loop"]
-        assert self.open_loop == self.reward.open_loop, "Open loop flag of Reward differs from Gym environment"
+        # Flag for close-loop training
+        self.cle = cle
 
     def reset(self) -> Dict[str, np.ndarray]:
         """
@@ -126,15 +123,16 @@ class L5Env(gym.Env):
 
         frame_index = self.frame_index
         next_frame_index = frame_index + 1
-        episode_over = next_frame_index == (len(self.sim_dataset) - self.future_num_frames)  # Note !!
+        episode_over = next_frame_index == (len(self.sim_dataset) - self.future_num_frames)
 
         # EGO
         if not self.sim_cfg.use_ego_gt:
+            action = rescale_action(action)
             action = convert_to_dict(action, self.future_num_frames)
             self.ego_output_dict = action
 
-            if not self.open_loop:
-                # Update raster according to predicted ego since closed loop training
+            if self.cle:
+                # In closed loop training, the raster is updated according to predicted ego positions.
                 self.simulator.update_ego(self.sim_dataset, next_frame_index, self.ego_input_dict, self.ego_output_dict)
 
             ego_frame_in_out = self.simulator.get_ego_in_out(self.ego_input_dict, self.ego_output_dict,
@@ -143,11 +141,11 @@ class L5Env(gym.Env):
                 self.ego_ins_outs[scene_idx].append(ego_frame_in_out[scene_idx])
 
         # reward calculation
-        if self.open_loop:
-            reward = self.reward.get_open_loop_reward(self.ego_output_dict, self.ego_input_dict)
+        if self.cle:
+            reward = self.reward.get_reward(self.frame_index, self.scene_indices, self.sim_dataset,
+                                            self.ego_ins_outs, self.agents_ins_outs)
         else:
-            reward = self.reward.get_close_loop_reward(self.frame_index, self.scene_indices, self.sim_dataset,
-                                                       self.ego_ins_outs, self.agents_ins_outs)
+            reward = self.reward.get_reward(self.ego_output_dict, self.ego_input_dict)
 
         # done is True when episode ends or error gets too high (optional)
         done = episode_over or self.check_done_status()
@@ -178,7 +176,9 @@ class L5Env(gym.Env):
         (Optionally) End episode if the displacement error crosses a threshold
         :return: end episode flag
         """
-        return self.reward.stop_error > self.reward.stop_thresh
+        if self.reward.stop_flag:
+            return self.reward.stop_error > self.reward.stop_thresh
+        return False
 
     def get_simulated_outputs(self) -> List[SimulationOutputGym]:
         """
@@ -194,7 +194,5 @@ class L5Env(gym.Env):
         return simulated_outputs
 
     def render(self) -> None:
-        pass
+        raise NotImplementedError
 
-    def close(self) -> None:
-        pass

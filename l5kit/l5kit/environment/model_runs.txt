@@ -78,3 +78,39 @@ tb_log/PPO_75	 	 	hyp_g95_rollout_steps128_rerun
  
 /tmp/SB3-2021-07-21-09-30-17-568441	 	 	del
  
+tb_log/PPO_76	 	 	t16_rerun2
+ 
+tb_log/SAC_1	 	 	sac_t16
+ 
+tb_log/SAC_2	 	 	sac_t16
+ 
+/tmp/SB3-2021-07-21-10-17-44-194821	 	 	del
+ 
+/tmp/SB3-2021-07-21-10-18-11-625597	 	 	del
+ 
+/tmp/SB3-2021-07-21-10-19-58-341070	 	 	del
+ 
+tb_log/PPO_77	 	 	t16_rescale_actions
+ 
+tb_log/PPO_78	 	 	hyp_g95_rollout_steps256_rescale_actions
+ 
+tb_log/PPO_79	 	 	t64_hyp_g90_rollout_steps256_rc10_rescale_actions
+ 
+/tmp/SB3-2021-07-21-20-27-20-515446	 	 	del
+ 
+/tmp/SB3-2021-07-21-21-18-42-334731	 	 	del
+ 
+/tmp/SB3-2021-07-21-21-19-01-983405	 	 	del
+ 
+/tmp/SB3-2021-07-21-21-19-27-231794	 	 	del
+ 
+/tmp/SB3-2021-07-21-21-19-50-679896	 	 	del
+ 
+tb_log/PPO_80	 	 	hyp_g95_rollout_steps256_rescale_actions_re
+ 
+tb_log/PPO_81	 	 	t64_hyp_g90_rollout_steps256_rescale_actions
+ 
+tb_log/PPO_82	 	 	hyp_g95_rollout_steps256_rescale_actions_re
+ 
+tb_log/PPO_83	 	 	t64_hyp_g90_rollout_steps256_rescale_actions
+ 

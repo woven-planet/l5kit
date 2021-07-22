@@ -55,6 +55,8 @@ if __name__ == "__main__":
                         help='Environment configuration file')
     parser.add_argument('--env_config_path', type=str, default='/home/ubuntu/src/l5kit/examples/RL/config.yaml',
                         help='Environment configuration file')
+    parser.add_argument('--disable_cle', action='store_true',
+                        help='Flag to disable close loop environment')
     parser.add_argument('--save_freq', default=50000, type=int,
                         help='Frequency to save model states')
     parser.add_argument('--n_envs', default=4, type=int,
