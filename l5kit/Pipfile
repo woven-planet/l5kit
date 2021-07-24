@@ -16,6 +16,7 @@ pre-commit = "*"
 typing-extensions = "*"
 line-profiler = "*"
 importlib-metadata = "*"
+sphinx-autobuild = "*"
 
 [packages]
 l5kit = {editable = true, path = "."}
