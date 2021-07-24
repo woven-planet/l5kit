@@ -51,7 +51,7 @@ class SimulationOutputCLE:
                  ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]],
                  agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]]):
         """This object holds information about the result of the simulation loop
-        for a given scene dataset for close loop evaluation
+        for a given scene dataset for close loop evaluation.
 
         :param scene_id: the scene indices
         :param sim_dataset: the simulation dataset

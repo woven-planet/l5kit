@@ -4,13 +4,13 @@ from typing import DefaultDict, Dict, List, NamedTuple, Optional
 import numpy as np
 import torch
 
-from l5kit.environment.cle_metricset import L5BaseMetricSet, L5GymCLEMetricSet, SimulationOutputCLE
+from l5kit.environment.cle_metricset import L5GymCLEMetricSet, L5MetricSet, SimulationOutputCLE
 from l5kit.simulation.dataset import SimulationDataset
 from l5kit.simulation.unroll import UnrollInputOutput
 
 
 class RewardInput(NamedTuple):
-    """ The input tuple to calculate reward
+    """The input tuple to calculate reward
 
     :param frame_index: the current step in the episode
     :param scene_indices: the list of scene indices rolled out in parallel
@@ -20,7 +20,6 @@ class RewardInput(NamedTuple):
     :param ego_output_dict: dictionary containing the predicted ego positions and yaws
     :param ego_input_dict: dictionary containing the target ego positions and yaws
     """
-
     frame_index: int
     scene_indices: List[int]
     sim_dataset: SimulationDataset
@@ -49,20 +48,26 @@ class Reward(ABC):
 
 
 class CLE_Reward(Reward):
-    def __init__(self, reward_prefix: str = "CLE", metric_set: Optional[L5BaseMetricSet] = None,
+    """This class is responsible for calculating reward during close loop simulation
+    within the gym-compatible L5Kit environment.
+
+    :param reward_prefix: the prefix that will identify this reward class
+    :param metric_set: the set of metrics to compute
+    :param enable_clip: flag to determine whether to clip reward
+    :param rew_clip_thresh: the threshold to clip the reward
+    :param use_yaw: flag to penalize the yaw prediction
+    :param yaw_weight: weight of the yaw error
+    :param stop_flag: flag to early terminate episode if reward crosses a threshold
+    :param stop_thresh: the reward threshold to early terminate an episode
+    """
+
+    def __init__(self, reward_prefix: str = "CLE", metric_set: Optional[L5MetricSet] = None,
                  enable_clip: bool = True, rew_clip_thresh: float = 15,
                  use_yaw: Optional[bool] = True, yaw_weight: Optional[float] = 3.0,
                  stop_flag: Optional[bool] = False, stop_thresh: Optional[float] = 20) -> None:
+        """Constructor method
         """
-        :param metric_set: the set of metrics to compute
-        :param enable_clip: flag to determine whether to clip reward
-        :param rew_clip_thresh: the threshold to clip the reward
-        :param use_yaw: flag to penalize the yaw prediction
-        :param yaw_weight: weight of the yaw error
-        :param stop_flag: flag to early terminate episode if reward crosses a threshold
-        :param stop_thresh: the reward threshold to early terminate an episode
-        """
-
+        self.reward_prefix = reward_prefix
         # Metric Set
         self.metric_set = metric_set if metric_set is not None else L5GymCLEMetricSet()
 
@@ -76,15 +81,16 @@ class CLE_Reward(Reward):
         self.stop_thresh = stop_thresh
 
     def reset(self) -> None:
-        """ Reset the closed loop evaluator when a new episode starts """
+        """Reset the closed loop evaluator when a new episode starts.
+        """
         self.metric_set.reset()
 
     def get_reward(self, reward_input: RewardInput) -> float:
-        """ Get the reward for the given step in close loop training.
-        :param RewardInput: the input tuple for reward calculation
+        """Get the reward for the given step in close loop training.
+
+        :param reward_input: the input tuple for reward calculation
         :return: the reward is the combination of L2 error from groundtruth trajectory and (optionally) yaw error
         """
-
         frame_index = reward_input.frame_index
         scene_indices = reward_input.scene_indices
         sim_dataset = reward_input.sim_dataset
@@ -120,16 +126,26 @@ class CLE_Reward(Reward):
 
 
 class OLE_Reward(Reward):
-    def __init__(self, reward_prefix: str = "OLE") -> None:
-        self.stop_flag = False
+    """This class is responsible for calculating reward during open loop simulation
+    within the gym-compatible L5Kit environment.
+
+    :param reward_prefix: the prefix that will identify this reward class
+    """
+
+    def __init__(self, reward_prefix: str = "CLE") -> None:
+        """Constructor method
+        """
+        self.reward_prefix = reward_prefix
 
     def reset(self) -> None:
-        """ Reset the open loop evaluator when a new episode starts """
+        """Reset the open loop evaluator when a new episode starts.
+        """
         pass
 
     def get_reward(self, reward_input: RewardInput) -> float:
-        """ Get the reward for the given step in open loop training.
-        :param RewardInput: the input tuple for reward calculation
+        """Get the reward for the given step in open loop training.
+
+        :param reward_input: the input tuple for reward calculation
         :return: the reward is the L2 error from groundtruth trajectory
         """
         # Reward for open loop training (MSE)
