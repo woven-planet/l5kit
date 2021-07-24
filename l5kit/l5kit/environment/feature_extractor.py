@@ -137,3 +137,63 @@ class SimpleCNN(BaseFeaturesExtractor):
             encoded_tensor_list.append(extractor(observations[key]))
         # Return a (B, self._features_dim) PyTorch tensor, where B is batch dimension.
         return torch.cat(encoded_tensor_list, dim=1)
+
+
+class SimplerCNN(BaseFeaturesExtractor):
+    """
+    :param observation_space: (gym.Space)
+    :param features_dim: (int) Number of features extracted.
+        This corresponds to the number of unit for the last layer.
+    """
+
+    def __init__(self, observation_space: gym.spaces.Dict, features_dim: int = 256):
+        super(SimplerCNN, self).__init__(observation_space, features_dim)
+        # We assume CxHxW images (channels first)
+        # Re-ordering will be done by pre-preprocessing or wrapper
+        num_input_channels = observation_space["image"].shape[0]
+
+        print("Simple Model")
+        model = torch.nn.Sequential(
+            nn.Conv2d(num_input_channels, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
+            nn.BatchNorm2d(32),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=4, stride=4),
+            nn.Conv2d(32, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.Conv2d(16, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
+            nn.BatchNorm2d(16),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=2, stride=2),
+            nn.Flatten(),
+            nn.Linear(in_features=784, out_features=features_dim),
+        )
+
+        extractors = {}
+
+        total_concat_size = 0
+        # We need to know size of the output of this extractor,
+        # so go over all the spaces and compute output feature sizes
+        for key, subspace in observation_space.spaces.items():
+            if key == "image":
+                # Raster Image
+                extractors[key] = model
+                total_concat_size += features_dim
+            elif key == "vector":
+                print("No vector attribute in observation space")
+                raise NotImplementedError
+
+        self.extractors = nn.ModuleDict(extractors)
+
+        # Update the features dim manually
+        self._features_dim = total_concat_size
+
+    def forward(self, observations) -> torch.Tensor:
+        encoded_tensor_list = []
+
+        # self.extractors contain nn.Modules that do all the processing.
+        for key, extractor in self.extractors.items():
+            encoded_tensor_list.append(extractor(observations[key]))
+        # Return a (B, self._features_dim) PyTorch tensor, where B is batch dimension.
+        return torch.cat(encoded_tensor_list, dim=1)

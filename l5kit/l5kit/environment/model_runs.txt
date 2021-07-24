@@ -122,3 +122,29 @@ tb_log/PPO_83	 	 	t64_hyp_g90_rollout_steps256_rescale_actions
  
 /tmp/SB3-2021-07-22-20-15-46-170564	 	 	del
  
+/tmp/SB3-2021-07-22-21-29-21-294470	 	 	del
+ 
+/tmp/SB3-2021-07-22-21-30-03-765077	 	 	del
+ 
+/tmp/SB3-2021-07-22-21-31-23-728785	 	 	del
+ 
+/tmp/SB3-2021-07-22-21-31-46-795286	 	 	del
+ 
+/tmp/SB3-2021-07-22-21-32-26-406471	 	 	del
+ 
+/tmp/SB3-2021-07-22-21-34-27-782670	 	 	del
+ 
+/tmp/SB3-2021-07-22-21-35-07-144652	 	 	del
+ 
+tb_log/PPO_84	 	 	hyp_g95_rollout_steps256_rescale_actions_simpler
+ 
+tb_log/PPO_85	 	 	t64_hyp_g90_rollout_steps256_rescale_actions_simpler
+ 
+tb_log/PPO_86	 	 	hyp_g95_rollout_steps256_rescale_actions_ResNet
+ 
+tb_log/PPO_87	 	 	t64_hyp_g90_rollout_steps256_rescale_actions_ResNet
+ 
+tb_log/PPO_88	 	 	del
+ 
+tb_log/PPO_89	 	 	del
+ 

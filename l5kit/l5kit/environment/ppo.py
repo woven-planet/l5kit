@@ -12,6 +12,7 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 
 from l5kit.environment import feature_extractor
 from l5kit.environment.callbacks import LoggingCallback, VizCallback
+from l5kit.environment.cle_metricset import SimulationConfigGym
 from l5kit.environment.register_l5_env import create_l5_env
 
 
@@ -87,23 +88,21 @@ if __name__ == "__main__":
     # The path to 'l5_data_path' needs to be provided
     os.environ["L5KIT_DATA_FOLDER"] = args.data_path
 
-    # create and register L5 env
-    create_l5_env(args.env_config_path, args.eps_length, args.disable_cle, args.rew_clip)
-
     # make gym env
     if args.n_envs == 1:
         print("Using 1 envt")
-        env = gym.make("L5-CLE-v0")
+        env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length))
 
     # custom wrap env into VecEnv
     else:
         print(f"Using {args.n_envs} parallel envts")
-        env = make_vec_env("L5-CLE-v0", n_envs=args.n_envs, vec_env_cls=SubprocVecEnv,
+        env = make_vec_env("L5-CLE-v0", env_kwargs={'sim_cfg': SimulationConfigGym(args.eps_length)},
+                           n_envs=args.n_envs, vec_env_cls=SubprocVecEnv,
                            vec_env_kwargs=dict(start_method='fork'))
 
     # Custom Feature Extractor backbone
     policy_kwargs = dict(
-        features_extractor_class=feature_extractor.SimpleCNN,  # ResNetCNN
+        features_extractor_class=feature_extractor.ResNetCNN,  # ResNetCNN
         features_extractor_kwargs=dict(features_dim=128),
         normalize_images=False
     )
