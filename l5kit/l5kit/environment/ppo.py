@@ -13,7 +13,6 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 from l5kit.environment import feature_extractor
 from l5kit.environment.callbacks import LoggingCallback, VizCallback
 from l5kit.environment.cle_metricset import SimulationConfigGym
-from l5kit.environment.register_l5_env import create_l5_env
 
 
 def get_callback_list(output_prefix: str, n_envs: int, save_freq: Optional[int] = 50000,

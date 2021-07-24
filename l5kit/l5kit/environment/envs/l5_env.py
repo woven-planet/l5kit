@@ -1,6 +1,6 @@
 import random
 from collections import defaultdict
-from typing import Any, DefaultDict, Dict, List, Optional, NamedTuple
+from typing import Any, DefaultDict, Dict, List, NamedTuple, Optional
 
 import gym
 import numpy as np
@@ -10,8 +10,8 @@ from gym import spaces
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
-from l5kit.environment.cle_metricset import SimulationOutputGym, SimulationConfigGym
-from l5kit.environment.reward import Reward, CLE_Reward, RewardInput
+from l5kit.environment.cle_metricset import SimulationConfigGym, SimulationOutputGym
+from l5kit.environment.reward import CLE_Reward, Reward, RewardInput
 from l5kit.environment.utils import default_collate_numpy
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset

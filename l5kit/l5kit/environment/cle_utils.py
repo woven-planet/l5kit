@@ -22,6 +22,7 @@ from typing import DefaultDict, List
 from l5kit.simulation.dataset import SimulationDataset
 from l5kit.simulation.unroll import SimulationOutput, UnrollInputOutput
 
+
 class SimulationOutputGym(SimulationOutput):
     def __init__(self, scene_id: int, sim_dataset: SimulationDataset,
                  ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]],

@@ -13,13 +13,14 @@ class SimulationConfigGym(SimulationConfig):
     :param eps_length: the number of step to simulate per episode in the gym environment.
     """
 
-    def __new__(cls, eps_length: int = 32):
+    def __new__(cls, eps_length: int = 32) -> 'SimulationConfigGym':
         """Constructor method
         """
         self = super(SimulationConfigGym, cls).__new__(cls, use_ego_gt=False, use_agents_gt=True,
                                                        disable_new_agents=False, distance_th_far=30,
                                                        distance_th_close=15, num_simulation_steps=eps_length)
         return self
+
 
 class SimulationOutputGym(SimulationOutputCLE):
     """This object holds information about the result of the simulation loop
