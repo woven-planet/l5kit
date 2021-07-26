@@ -300,3 +300,96 @@ class TestReplayDrivenMilesMetric(unittest.TestCase):
         # Should have only a zero for the first step and then
         # the same step for other frames
         self.assertEqual(len(result.unique()), 2)
+
+
+class TestYawErrorMetric(unittest.TestCase):
+    def test_same_trajectory(self) -> None:
+        timesteps = 20
+        attrs = {
+            "simulated_ego_states": torch.ones(timesteps, 7),
+            "recorded_ego_states": torch.ones(timesteps, 7),
+        }
+        sim_output = mock.Mock(**attrs)
+        metric = metrics.YawErrorMetric(error_functions.closest_angle_error)
+        result = metric.compute(sim_output)
+        self.assertEqual(len(result), timesteps)
+        self.assertEqual(result.sum(), 0.)
+
+    def test_rotating_trajectory(self) -> None:
+        attrs = {
+            "simulated_ego_states": torch.zeros(20, 7),
+            "recorded_ego_states": torch.full((20, 7), 2.0),
+        }
+        sim_output = mock.Mock(**attrs)
+        metric = metrics.YawErrorMetric(error_functions.closest_angle_error)
+        result = metric.compute(sim_output)
+        self.assertEqual(len(torch.unique(result)), 1)
+        self.assertAlmostEqual(torch.unique(result).item(), 2.0000, 4)
+
+    def test_wrap_rotating_trajectory(self) -> None:
+        attrs = {
+            "simulated_ego_states": torch.zeros(20, 7),
+            "recorded_ego_states": torch.full((20, 7), 4.0),
+        }
+        sim_output = mock.Mock(**attrs)
+        metric = metrics.YawErrorMetric(error_functions.closest_angle_error)
+        result = metric.compute(sim_output)
+        torch.pi = torch.acos(torch.zeros(1)).item() * 2  # which is 3.1415927410125732
+        self.assertEqual(len(torch.unique(result)), 1)
+        self.assertAlmostEqual(torch.unique(result).item(), 2 * torch.pi - 4, 4)
+
+    def test_yaw_closest_angle_rotating_trajectory(self) -> None:
+        attrs = {
+            "simulated_ego_states": torch.zeros(20, 7),
+            "recorded_ego_states": torch.full((20, 7), 2.0),
+        }
+        sim_output = mock.Mock(**attrs)
+        metric_ca_arg = metrics.YawErrorMetric(error_functions.closest_angle_error)
+        result_ca_arg = metric_ca_arg.compute(sim_output)
+
+        metric = metrics.YawErrorCAMetric()
+        result = metric.compute(sim_output)
+
+        # Make sure both results match
+        self.assertTrue((result_ca_arg == result).all())
+
+    def test_half_trajectories(self) -> None:
+        observed_trajectory = torch.ones(40, 7)
+        observed_trajectory[20:, :] += 1.0
+        attrs = {
+            "simulated_ego_states": torch.ones(40, 7),
+            "recorded_ego_states": observed_trajectory,
+        }
+        sim_output = mock.Mock(**attrs)
+        metric = metrics.YawErrorMetric(error_functions.closest_angle_error)
+        result = metric.compute(sim_output)
+        self.assertEqual(len(torch.unique(result)), 2)
+
+    def test_symmetry(self) -> None:
+        attrs = {
+            "simulated_ego_states": torch.ones(20, 7),
+            "recorded_ego_states": torch.full((20, 7), 2.0),
+        }
+        sim_output = mock.Mock(**attrs)
+        metric = metrics.YawErrorMetric(error_functions.closest_angle_error)
+        result = metric.compute(sim_output)
+
+        attrs = {
+            "simulated_ego_states": torch.full((20, 7,), 2.0),
+            "recorded_ego_states": torch.ones(20, 7),
+        }
+        sim_output = mock.Mock(**attrs)
+        metric = metrics.YawErrorMetric(error_functions.closest_angle_error)
+        result_switch = metric.compute(sim_output)
+        self.assertEqual(result.sum(), result_switch.sum())
+
+    def test_more_simulation_than_observation(self) -> None:
+        timesteps = 20
+        attrs = {
+            "simulated_ego_states": torch.ones(timesteps + 20, 7),
+            "recorded_ego_states": torch.ones(timesteps, 7),
+        }
+        sim_output = mock.Mock(**attrs)
+        metric = metrics.YawErrorMetric(error_functions.closest_angle_error)
+        with self.assertRaisesRegex(ValueError, "More simulated timesteps than observed"):
+            _ = metric.compute(sim_output)
