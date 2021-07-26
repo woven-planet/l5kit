@@ -10,12 +10,49 @@ from gym import spaces
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
-from l5kit.environment.cle_metricset import SimulationConfigGym, SimulationOutputGym
 from l5kit.environment.reward import CLE_Reward, Reward, RewardInput
 from l5kit.environment.utils import default_collate_numpy
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
-from l5kit.simulation.unroll import ClosedLoopSimulator, UnrollInputOutput
+from l5kit.simulation.unroll import ClosedLoopSimulator, SimulationOutputCLE, UnrollInputOutput
+
+
+class SimulationConfigGym(SimulationConfig):
+    """Defines the default parameters used for the simulation of ego and agents around it in L5Kit Gym.
+
+    :param eps_length: the number of step to simulate per episode in the gym environment.
+    """
+
+    def __new__(cls, eps_length: int = 32) -> 'SimulationConfigGym':
+        """Constructor method
+        """
+        self = super(SimulationConfigGym, cls).__new__(cls, use_ego_gt=False, use_agents_gt=True,
+                                                       disable_new_agents=False, distance_th_far=30,
+                                                       distance_th_close=15, num_simulation_steps=eps_length)
+        return self
+
+
+class SimulationOutputGym(SimulationOutputCLE):
+    """This object holds information about the result of the simulation loop
+    for a given scene dataset in gym-compatible L5Kit environment.
+
+    :param scene_id: the scene indices
+    :param sim_dataset: the simulation dataset
+    :param ego_ins_outs: all inputs and outputs for ego (each frame of each scene has only one)
+    :param agents_ins_outs: all inputs and outputs for agents (multiple per frame in a scene)
+    """
+
+    def __init__(self, scene_id: int, sim_dataset: SimulationDataset,
+                 ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]],
+                 agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]]):
+        """Constructor method
+        """
+        super(SimulationOutputGym, self).__init__(scene_id, sim_dataset, ego_ins_outs, agents_ins_outs)
+
+        # Required for Bokeh Visualizer
+        simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
+        self.tls_frames = simulated_dataset.dataset.tl_faces
+        self.agents_th = simulated_dataset.cfg["raster_params"]["filter_agents_threshold"]
 
 
 class GymStepOutput(NamedTuple):
@@ -65,7 +102,7 @@ class L5Env(gym.Env):
         # Define action and observation space
         # Continuous Action Space: gym.spaces.Box (X, Y, Yaw * number of future states)
         # self.action_space = spaces.Box(low=-1000, high=1000, shape=(self.future_num_frames * 3, ))
-        self.action_space = spaces.Box(low=-1, high=1, shape=(self.future_num_frames * 3, ))
+        self.action_space = spaces.Box(low=-2, high=2, shape=(self.future_num_frames * 3, ))
 
         # Observation Space: gym.spaces.Dict (image: [n_channels, raster_size, raster_size])
         self.observation_space = spaces.Dict({'image': spaces.Box(low=0, high=1,
@@ -185,7 +222,7 @@ class L5Env(gym.Env):
         raise NotImplementedError
 
     def _rescale_action(self, action: np.ndarray, x_mu: float = 1.20, x_scale: float = 0.2,
-                        y_mu: float = 0.0, y_scale: float = 0.03, yaw_scale: float = 3.14) -> np.ndarray:
+                        y_mu: float = 0.0, y_scale: float = 0.03, yaw_scale: float = 0.3) -> np.ndarray:
         """Rescale the input action back to the un-normalized action space. PPO and related algorithms work well
         with normalized action spaces. The environment receives a normalized action and we un-normalize it back to
         the original action space for environment updates.

@@ -4,9 +4,10 @@ from typing import DefaultDict, Dict, List, NamedTuple, Optional
 import numpy as np
 import torch
 
-from l5kit.environment.cle_metricset import L5GymCLEMetricSet, L5MetricSet, SimulationOutputCLE
+from l5kit.cle.metric_set import L5MetricSet
+from l5kit.environment.gym_metric_set import L5GymCLEMetricSet
 from l5kit.simulation.dataset import SimulationDataset
-from l5kit.simulation.unroll import UnrollInputOutput
+from l5kit.simulation.unroll import UnrollInputOutput, SimulationOutputCLE
 
 
 class RewardInput(NamedTuple):
@@ -63,7 +64,7 @@ class CLE_Reward(Reward):
 
     def __init__(self, reward_prefix: str = "CLE", metric_set: Optional[L5MetricSet] = None,
                  enable_clip: bool = True, rew_clip_thresh: float = 15,
-                 use_yaw: Optional[bool] = True, yaw_weight: Optional[float] = 3.0,
+                 use_yaw: Optional[bool] = True, yaw_weight: Optional[float] = 10.0,
                  stop_flag: Optional[bool] = False, stop_thresh: Optional[float] = 20) -> None:
         """Constructor method
         """
