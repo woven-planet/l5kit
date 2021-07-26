@@ -8,11 +8,12 @@ from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CallbackList, CheckpointCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.evaluation import evaluate_policy
+from stable_baselines3.common.utils import get_linear_fn
 from stable_baselines3.common.vec_env import SubprocVecEnv
 
 from l5kit.environment import feature_extractor
 from l5kit.environment.callbacks import LoggingCallback, VizCallback
-from l5kit.environment.cle_metricset import SimulationConfigGym
+from l5kit.environment.envs.l5_env import SimulationConfigGym
 
 
 def get_callback_list(output_prefix: str, n_envs: int, save_freq: Optional[int] = 50000,
@@ -101,7 +102,7 @@ if __name__ == "__main__":
 
     # Custom Feature Extractor backbone
     policy_kwargs = dict(
-        features_extractor_class=feature_extractor.ResNetCNN,  # ResNetCNN
+        features_extractor_class=feature_extractor.SimpleCNN,  # ResNetCNN
         features_extractor_kwargs=dict(features_dim=128),
         normalize_images=False
     )
@@ -109,13 +110,12 @@ if __name__ == "__main__":
     # define model
     print("Creating Model.....")
     model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, n_steps=args.num_rollout_steps,
-                learning_rate=3e-4, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
-                device=args.device)
+                learning_rate=get_linear_fn(3e-4, 3e-6, 0.5), gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
+                device=args.device, clip_range=get_linear_fn(0.2, 0.001, 1.0))
 
     # make eval env at start itself
     print("Creating Eval env.....")
-    eval_env = gym.make("L5-CLE-v0")
-    eval_env.clip_thresh = args.rew_clip
+    eval_env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length))
     model.eval_env = eval_env
 
     # init callback list

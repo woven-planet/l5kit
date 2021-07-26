@@ -150,3 +150,56 @@ tb_log/PPO_89	 	 	del
  
 /tmp/SB3-2021-07-24-12-20-26-489872	 	 	del
  
+tb_log/PPO_89	 	 	hyp_g95_rollout_steps256_rescale_actions_history5
+ 
+tb_log/PPO_90	 	 	t64_hyp_g90_rollout_steps256_rescale_actions_history5
+ 
+tb_log/PPO_91	 	 	hyp_g95_rollout_steps256_rescale_actions_5
+ 
+tb_log/PPO_92	 	 	t64_hyp_g90_rollout_steps256_rescale_actions_5
+ 
+tb_log/PPO_93	 	 	hyp_g95_rollout_steps256_rescale_actions_5
+ 
+tb_log/PPO_94	 	 	t64_hyp_g90_rollout_steps256_rescale_actions_5
+ 
+tb_log/PPO_95	 	 	hyp_g95_rollout_steps256_rescale_actions_del
+ 
+tb_log/PPO_96	 	 	hyp_g95_rollout_steps256_rescale_actions_yawl2
+ 
+tb_log/PPO_97	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030
+ 
+tb_log/PPO_98	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030
+ 
+tb_log/PPO_99	 	 	hyp_g95_rollout_steps256_bound5
+ 
+tb_log/PPO_100	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10
+ 
+tb_log/PPO_101	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt30
+ 
+tb_log/PPO_102	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_abs
+ 
+tb_log/PPO_103	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_abs
+ 
+tb_log/PPO_104	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt30_abs
+ 
+/tmp/SB3-2021-07-26-09-46-52-715907	 	 	del
+ 
+/tmp/SB3-2021-07-26-09-47-32-714618	 	 	del
+ 
+tb_log/PPO_105	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_abs
+
+ 
+tb_log/PPO_106	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_500k
+ 
+tb_log/PPO_107	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_1M
+ 
+/tmp/SB3-2021-07-26-12-48-11-978114	 	 	del
+ 
+/tmp/SB3-2021-07-26-13-54-41-404496	 	 	del
+ 
+tb_log/PPO_108	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_500k_lr
+ 
+tb_log/PPO_109	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_1M_lr
+ 
+tb_log/PPO_110	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_1M_lr_RE
+ 

@@ -127,3 +127,19 @@ class LoggingCallback(BaseCallback):
             f.write(self.args.output_prefix)
             f.write('\n \n')
         return True
+
+
+class TensorboardCallback(BaseCallback):
+    """
+    Custom callback for plotting additional values in tensorboard.
+    """
+
+    def __init__(self, verbose=0):
+        super(TensorboardCallback, self).__init__(verbose)
+
+    def _on_step(self) -> bool:
+        env_rewards = self.model.env.get_attr('reward')
+        for i, reward in enumerate(env_rewards):
+            self.logger.record('reward/{}th_yaw_error'.format(i+1), reward.yaw_error)
+            self.logger.record('reward/{}th_dist_error'.format(i+1), reward.dist_error)
+        return True

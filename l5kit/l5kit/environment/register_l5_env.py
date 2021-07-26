@@ -12,10 +12,8 @@ def create_l5_env(env_config_path: str, eps_length: int, disable_cle: bool, rew_
 
     # Define Reward Function
     reward_fn: reward.Reward
-    if close_loop_envt:
-        reward_fn = reward.CLE_Reward(rew_clip_thresh=rew_clip)
-    else:
-        reward_fn = reward.OLE_Reward()
+    reward_fn = reward.CLE_Reward(rew_clip_thresh=rew_clip)
+
 
     # Define Close-Loop Simulator
     sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=True, disable_new_agents=False,

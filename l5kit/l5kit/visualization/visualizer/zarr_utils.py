@@ -450,11 +450,13 @@ def simulation_out_to_visualizer_scene_clt(sim_out: SimulationOutput, mapAPI: Ma
 
         if has_ego_info:
             ego_in_out = ego_ins_outs[frame_idx]
+            # print("Target at: ", frame_idx, ego_in_out.inputs['target_positions'], ego_in_out.inputs['target_yaws'])
+            # print("Output at: ", frame_idx, ego_in_out.outputs['positions'], ego_in_out.outputs['yaws'])
             replay_traj, sim_traj = _get_in_out_as_trajectories(ego_in_out)
             # Ego Direction
             scale = 10
             ego_centroid = np.array([[frame_vis.ego.center_x, frame_vis.ego.center_y]])
-            # print("Ego Rep: ", frame_vis.ego.center_x, frame_vis.ego.center_y, ego_centroid, replay_traj[0:1], len(replay_traj))
+            print("Ego Rep: ", frame_vis.ego.center_x, frame_vis.ego.center_y, ego_centroid, replay_traj[0:1], len(replay_traj))
             ego_next_step_replay = ego_centroid + scale * (replay_traj[0:1] - ego_centroid)
             ego_next_step_sim = ego_centroid + scale * (sim_traj[0:1] - ego_centroid)
             single_step_replay = np.concatenate([ego_centroid, ego_next_step_replay])

@@ -10,7 +10,7 @@ from gym import spaces
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
-from l5kit.environment.reward import CLE_Reward, Reward, RewardInput
+from l5kit.environment.reward import CLE_Reward, Reward
 from l5kit.environment.utils import default_collate_numpy
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
@@ -129,8 +129,8 @@ class L5Env(gym.Env):
         :return: the observation of first frame of sampled scene index
         """
         # Sample a episode randomly
-        self.scene_indices = [random.randint(0, self.max_scene_id)]
-        self.sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, self.scene_indices, self.sim_cfg)
+        self.scene_index = random.randint(0, self.max_scene_id)
+        self.sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, [self.scene_index], self.sim_cfg)
 
         # Define in / outs for given scene
         self.agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]] = defaultdict(list)
@@ -171,13 +171,14 @@ class L5Env(gym.Env):
 
             ego_frame_in_out = self.simulator.get_ego_in_out(self.ego_input_dict, self.ego_output_dict,
                                                              self.simulator.keys_to_exclude)
-            for scene_idx in self.scene_indices:
-                self.ego_ins_outs[scene_idx].append(ego_frame_in_out[scene_idx])
+            self.ego_ins_outs[self.scene_index].append(ego_frame_in_out[self.scene_index])
+
+        # generate simulated_outputs
+        simulated_outputs = SimulationOutputCLE(self.scene_index, self.sim_dataset, self.ego_ins_outs,
+                                                self.agents_ins_outs)
 
         # reward calculation
-        reward_input = RewardInput(self.frame_index, self.scene_indices, self.sim_dataset, self.ego_ins_outs,
-                                   self.agents_ins_outs, self.ego_output_dict, self.ego_input_dict)
-        reward = self.reward.get_reward(reward_input)
+        reward = self.reward.get_reward(self.frame_index, [simulated_outputs])
 
         # done is True when episode ends
         done = episode_over
@@ -208,12 +209,9 @@ class L5Env(gym.Env):
 
         :return: List of simulated outputs
         """
-        assert len(self.scene_indices) == 1
         # generate simulated_outputs
-        simulated_outputs: List[SimulationOutputGym] = []
-        for scene_idx in self.scene_indices:
-            simulated_outputs.append(SimulationOutputGym(scene_idx, self.sim_dataset,
-                                                         self.ego_ins_outs, self.agents_ins_outs))
+        simulated_outputs = [SimulationOutputGym(self.scene_index, self.sim_dataset, self.ego_ins_outs,
+                                                 self.agents_ins_outs)]
         return simulated_outputs
 
     def render(self) -> None:
