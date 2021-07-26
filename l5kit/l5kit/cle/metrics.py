@@ -257,8 +257,8 @@ class YawErrorMetric(SupportsMetricCompute):
         :returns: distance per frame [Shape: N, where N = timesteps]
         """
         simulated_scene_ego_state = simulation_output.simulated_ego_states
-        simulated_yaws = simulated_scene_ego_state[:, 2]  # [Timesteps,]
-        observed_ego_yaws = simulation_output.recorded_ego_states[:, 2]  # [Timesteps,]
+        simulated_yaws = simulated_scene_ego_state[:, 2:3]  # [Timesteps,]
+        observed_ego_yaws = simulation_output.recorded_ego_states[:, 2:3]  # [Timesteps,]
 
         if len(observed_ego_yaws) < len(simulated_yaws):
             raise ValueError("More simulated timesteps than observed.")
@@ -275,4 +275,4 @@ class YawErrorCAMetric(YawErrorMetric):
     metric_name = "yaw_error_ca"
 
     def __init__(self) -> None:
-        super().__init__(error_functions.closest_angle)
+        super().__init__(error_functions.closest_angle_error)

@@ -10,12 +10,49 @@ from gym import spaces
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
-from l5kit.environment.cle_metricset import SimulationConfigGym, SimulationOutputGym
-from l5kit.environment.reward import CLE_Reward, Reward, RewardInput
+from l5kit.environment.reward import CLE_Reward, Reward
 from l5kit.environment.utils import default_collate_numpy
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
-from l5kit.simulation.unroll import ClosedLoopSimulator, UnrollInputOutput
+from l5kit.simulation.unroll import ClosedLoopSimulator, SimulationOutputCLE, UnrollInputOutput
+
+
+class SimulationConfigGym(SimulationConfig):
+    """Defines the default parameters used for the simulation of ego and agents around it in L5Kit Gym.
+
+    :param eps_length: the number of step to simulate per episode in the gym environment.
+    """
+
+    def __new__(cls, eps_length: int = 32) -> 'SimulationConfigGym':
+        """Constructor method
+        """
+        self = super(SimulationConfigGym, cls).__new__(cls, use_ego_gt=False, use_agents_gt=True,
+                                                       disable_new_agents=False, distance_th_far=30,
+                                                       distance_th_close=15, num_simulation_steps=eps_length)
+        return self
+
+
+class SimulationOutputGym(SimulationOutputCLE):
+    """This object holds information about the result of the simulation loop
+    for a given scene dataset in gym-compatible L5Kit environment.
+
+    :param scene_id: the scene indices
+    :param sim_dataset: the simulation dataset
+    :param ego_ins_outs: all inputs and outputs for ego (each frame of each scene has only one)
+    :param agents_ins_outs: all inputs and outputs for agents (multiple per frame in a scene)
+    """
+
+    def __init__(self, scene_id: int, sim_dataset: SimulationDataset,
+                 ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]],
+                 agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]]):
+        """Constructor method
+        """
+        super(SimulationOutputGym, self).__init__(scene_id, sim_dataset, ego_ins_outs, agents_ins_outs)
+
+        # Required for Bokeh Visualizer
+        simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
+        self.tls_frames = simulated_dataset.dataset.tl_faces
+        self.agents_th = simulated_dataset.cfg["raster_params"]["filter_agents_threshold"]
 
 
 class GymStepOutput(NamedTuple):
@@ -36,19 +73,23 @@ class L5Env(gym.Env):
     """Custom Environment of L5 Kit that can be registered in OpenAI Gym.
 
     :param env_config_path: path to the L5Kit environment configuration file
+    :param dmg: local data manager object
     :param simulation_cfg: configuration of the L5Kit closed loop simulator
     :param reward: calculates the reward for the gym environment
     :param cle: flag to enable close loop environment updates
+    :param rescale_action: flag to rescale the model action back to the un-normalized action space
     """
 
-    def __init__(self, env_config_path: str, sim_cfg: Optional[SimulationConfig] = None,
-                 reward: Optional[Reward] = None, cle: bool = True) -> None:
+    def __init__(self, env_config_path: str, dmg: Optional[LocalDataManager] = None,
+                 sim_cfg: Optional[SimulationConfig] = None,
+                 reward: Optional[Reward] = None, cle: bool = True,
+                 rescale_action: bool = True) -> None:
         """Constructor method
         """
         super(L5Env, self).__init__()
 
         # env config
-        dm = LocalDataManager(None)
+        dm = dmg if dmg is not None else LocalDataManager(None)
         cfg = load_config_data(env_config_path)
 
         # rasterisation
@@ -65,7 +106,7 @@ class L5Env(gym.Env):
         # Define action and observation space
         # Continuous Action Space: gym.spaces.Box (X, Y, Yaw * number of future states)
         # self.action_space = spaces.Box(low=-1000, high=1000, shape=(self.future_num_frames * 3, ))
-        self.action_space = spaces.Box(low=-1, high=1, shape=(self.future_num_frames * 3, ))
+        self.action_space = spaces.Box(low=-2, high=2, shape=(self.future_num_frames * 3, ))
 
         # Observation Space: gym.spaces.Dict (image: [n_channels, raster_size, raster_size])
         self.observation_space = spaces.Dict({'image': spaces.Box(low=0, high=1,
@@ -83,8 +124,8 @@ class L5Env(gym.Env):
         if cfg["gym_params"]["overfit"]:
             self.max_scene_id = 0
 
-        # Flag for close-loop training
         self.cle = cle
+        self.rescale_action = rescale_action
 
     def reset(self) -> Dict[str, np.ndarray]:
         """ Resets the environment and outputs first frame of a new scene sample.
@@ -92,8 +133,8 @@ class L5Env(gym.Env):
         :return: the observation of first frame of sampled scene index
         """
         # Sample a episode randomly
-        self.scene_indices = [random.randint(0, self.max_scene_id)]
-        self.sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, self.scene_indices, self.sim_cfg)
+        self.scene_index = random.randint(0, self.max_scene_id)
+        self.sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, [self.scene_index], self.sim_cfg)
 
         # Define in / outs for given scene
         self.agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]] = defaultdict(list)
@@ -134,13 +175,14 @@ class L5Env(gym.Env):
 
             ego_frame_in_out = self.simulator.get_ego_in_out(self.ego_input_dict, self.ego_output_dict,
                                                              self.simulator.keys_to_exclude)
-            for scene_idx in self.scene_indices:
-                self.ego_ins_outs[scene_idx].append(ego_frame_in_out[scene_idx])
+            self.ego_ins_outs[self.scene_index].append(ego_frame_in_out[self.scene_index])
+
+        # generate simulated_outputs
+        simulated_outputs = SimulationOutputCLE(self.scene_index, self.sim_dataset, self.ego_ins_outs,
+                                                self.agents_ins_outs)
 
         # reward calculation
-        reward_input = RewardInput(self.frame_index, self.scene_indices, self.sim_dataset, self.ego_ins_outs,
-                                   self.agents_ins_outs, self.ego_output_dict, self.ego_input_dict)
-        reward = self.reward.get_reward(reward_input)
+        reward = self.reward.get_reward(self.frame_index, [simulated_outputs])
 
         # done is True when episode ends
         done = episode_over
@@ -171,12 +213,9 @@ class L5Env(gym.Env):
 
         :return: List of simulated outputs
         """
-        assert len(self.scene_indices) == 1
         # generate simulated_outputs
-        simulated_outputs: List[SimulationOutputGym] = []
-        for scene_idx in self.scene_indices:
-            simulated_outputs.append(SimulationOutputGym(scene_idx, self.sim_dataset,
-                                                         self.ego_ins_outs, self.agents_ins_outs))
+        simulated_outputs = [SimulationOutputGym(self.scene_index, self.sim_dataset, self.ego_ins_outs,
+                                                 self.agents_ins_outs)]
         return simulated_outputs
 
     def render(self) -> None:
@@ -185,7 +224,7 @@ class L5Env(gym.Env):
         raise NotImplementedError
 
     def _rescale_action(self, action: np.ndarray, x_mu: float = 1.20, x_scale: float = 0.2,
-                        y_mu: float = 0.0, y_scale: float = 0.03, yaw_scale: float = 3.14) -> np.ndarray:
+                        y_mu: float = 0.0, y_scale: float = 0.03, yaw_scale: float = 0.3) -> np.ndarray:
         """Rescale the input action back to the un-normalized action space. PPO and related algorithms work well
         with normalized action spaces. The environment receives a normalized action and we un-normalize it back to
         the original action space for environment updates.
@@ -198,10 +237,11 @@ class L5Env(gym.Env):
         :param yaw_scale: the scaling of the yaw
         :return: the unnormalized action
         """
-        assert len(action) == 3
-        action[0] = x_mu + x_scale * action[0]
-        action[1] = y_mu + y_scale * action[1]
-        action[2] = yaw_scale * action[2]
+        if self.rescale_action:
+            assert len(action) == 3
+            action[0] = x_mu + x_scale * action[0]
+            action[1] = y_mu + y_scale * action[1]
+            action[2] = yaw_scale * action[2]
         return action
 
     def _convert_to_dict(self, data: np.ndarray, future_num_frames: int) -> Dict[str, np.ndarray]:
