@@ -1,8 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Optional
 
-import torch
-
 from l5kit.cle.metric_set import L5MetricSet
 from l5kit.environment.gym_metric_set import L5GymCLEMetricSet
 from l5kit.simulation.unroll import SimulationOutputCLE

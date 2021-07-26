@@ -56,14 +56,16 @@ def test_env_episode(dmg: LocalDataManager, env_cfg_path: str) -> None:
 
     # Unroll epsiode
     obs = env.reset()
-    for frame_idx in range(31):
+    epsiode_len: int = 0
+    for frame_idx in range(100):
+        epsiode_len += 1
         action = ego_model(obs)
         obs, _, done, info = env.step(action)
         if done:
             sim_outputs = info["info"]
             break
 
-    assert frame_idx == env.sim_cfg.num_simulation_steps - 2
+    assert epsiode_len == (len(env.sim_dataset) - 1)
 
     # check ego movement
     for sim_output in sim_outputs:
