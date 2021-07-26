@@ -73,19 +73,23 @@ class L5Env(gym.Env):
     """Custom Environment of L5 Kit that can be registered in OpenAI Gym.
 
     :param env_config_path: path to the L5Kit environment configuration file
+    :param dmg: local data manager object
     :param simulation_cfg: configuration of the L5Kit closed loop simulator
     :param reward: calculates the reward for the gym environment
     :param cle: flag to enable close loop environment updates
+    :param rescale_action: flag to rescale the model action back to the un-normalized action space
     """
 
-    def __init__(self, env_config_path: str, sim_cfg: Optional[SimulationConfig] = None,
-                 reward: Optional[Reward] = None, cle: bool = True) -> None:
+    def __init__(self, env_config_path: str, dmg: Optional[LocalDataManager] = None,
+                 sim_cfg: Optional[SimulationConfig] = None,
+                 reward: Optional[Reward] = None, cle: bool = True,
+                 rescale_action: bool = True) -> None:
         """Constructor method
         """
         super(L5Env, self).__init__()
 
         # env config
-        dm = LocalDataManager(None)
+        dm = dmg if dmg is not None else LocalDataManager(None)
         cfg = load_config_data(env_config_path)
 
         # rasterisation
@@ -120,8 +124,8 @@ class L5Env(gym.Env):
         if cfg["gym_params"]["overfit"]:
             self.max_scene_id = 0
 
-        # Flag for close-loop training
         self.cle = cle
+        self.rescale_action = rescale_action
 
     def reset(self) -> Dict[str, np.ndarray]:
         """ Resets the environment and outputs first frame of a new scene sample.
@@ -233,10 +237,11 @@ class L5Env(gym.Env):
         :param yaw_scale: the scaling of the yaw
         :return: the unnormalized action
         """
-        assert len(action) == 3
-        action[0] = x_mu + x_scale * action[0]
-        action[1] = y_mu + y_scale * action[1]
-        action[2] = yaw_scale * action[2]
+        if self.rescale_action:
+            assert len(action) == 3
+            action[0] = x_mu + x_scale * action[0]
+            action[1] = y_mu + y_scale * action[1]
+            action[2] = yaw_scale * action[2]
         return action
 
     def _convert_to_dict(self, data: np.ndarray, future_num_frames: int) -> Dict[str, np.ndarray]:

@@ -36,6 +36,19 @@ def cfg() -> dict:
     return load_config_data("./l5kit/tests/artefacts/config.yaml")
 
 
+@pytest.fixture(scope="function")
+def env_cfg_path() -> str:
+    """
+    Get a L5 environment config file from artefacts
+        Note: the scope of this fixture is "function"-> one per test function
+
+    Returns:
+        dict: the L5Kit gym-compatible environment config python dict
+    """
+    env_cfg_path = "./l5kit/tests/artefacts/gym_config.yaml"
+    return env_cfg_path
+
+
 @pytest.fixture(scope="session")
 def zarr_dataset(dmg: LocalDataManager) -> ChunkedDataset:
     zarr_path = dmg.require("single_scene.zarr")
