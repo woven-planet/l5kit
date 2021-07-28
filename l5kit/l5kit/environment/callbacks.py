@@ -36,20 +36,38 @@ class VizCallback(BaseCallback):
     def _on_step(self) -> bool:
         if self.n_calls % self.save_freq == 0:
             path = os.path.join(self.save_path, f"{self.name_prefix}_{self.num_timesteps}_steps")
-            obs = self.model.eval_env.reset()
-            for i in range(350):
-                action, _ = self.model.predict(obs, deterministic=True)
-                obs, _, done, info = self.model.eval_env.step(action)
-                if done:
-                    break
+            simulation_outputs = []
+            scene_id_list = self._determine_rollout_scenes()
+
+            for id_ in scene_id_list:
+                sim_out = self._rollout_scene(id_)
+                simulation_outputs.append(sim_out)
 
             if self.verbose > 1:
                 print(f"Saving SimulationOutputGym to {path}")
 
             with open(path + ".pkl", 'wb') as f:
-                pickle.dump(info["info"], f)
+                pickle.dump(simulation_outputs, f)
 
         return True
+
+    def _rollout_scene(self, idx: int):
+        obs = self.model.eval_env.reset(scene_index=idx)
+        for i in range(350):
+            action, _ = self.model.predict(obs, deterministic=True)
+            obs, _, done, info = self.model.eval_env.step(action)
+            if done:
+                break
+
+        sim_out = info["info"][0]
+        return sim_out
+
+    def _determine_rollout_scenes(self):
+        if self.model.eval_env.overfit:
+            return [self.model.eval_env.overfit_scene_id]
+
+        scene_id_list = list(range(self.model.eval_env.max_scene_id))
+        return scene_id_list
 
 
 class TrajectoryCallback(BaseCallback):
@@ -140,6 +158,6 @@ class TensorboardCallback(BaseCallback):
     def _on_step(self) -> bool:
         env_rewards = self.model.env.get_attr('reward')
         for i, reward in enumerate(env_rewards):
-            self.logger.record('reward/{}th_yaw_error'.format(i+1), reward.yaw_error)
-            self.logger.record('reward/{}th_dist_error'.format(i+1), reward.dist_error)
+            self.logger.record('reward/{}th_yaw_error'.format(i + 1), reward.yaw_error)
+            self.logger.record('reward/{}th_dist_error'.format(i + 1), reward.dist_error)
         return True

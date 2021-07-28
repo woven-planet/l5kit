@@ -205,3 +205,67 @@ tb_log/PPO_110	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_1M_
  
 /tmp/SB3-2021-07-26-20-02-02-069220	 	 	del
  
+/tmp/SB3-2021-07-27-09-42-13-151222	 	 	del
+ 
+/tmp/SB3-2021-07-27-09-59-56-400170	 	 	del
+ 
+/tmp/SB3-2021-07-27-10-00-19-938505	 	 	del
+ 
+tb_log/PPO_111	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M
+ 
+/tmp/SB3-2021-07-27-13-09-16-179864	 	 	del
+ 
+tb_log/PPO_112	 	 	turn_hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M
+ 
+tb_log/PPO_113	 	 	turn_f27_hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M
+ 
+tb_log/PPO_114	 	 	turn_f27_hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M
+ 
+tb_log/PPO_115	 	 	turn_f27_hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_hist3
+ 
+tb_log/PPO_116	 	 	turn_f27_hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_hist5
+ 
+/tmp/SB3-2021-07-27-20-35-21-339152	 	 	del
+ 
+/tmp/SB3-2021-07-27-20-36-14-051209	 	 	del
+ 
+/tmp/SB3-2021-07-27-20-40-38-449154	 	 	del
+ 
+/tmp/SB3-2021-07-27-20-43-01-242428	 	 	del
+ 
+/tmp/SB3-2021-07-27-20-43-45-985658	 	 	del
+ 
+/tmp/SB3-2021-07-27-20-44-45-948027	 	 	del
+ 
+/tmp/SB3-2021-07-27-20-45-35-857449	 	 	del
+ 
+tb_log/PPO_117	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_km
+ 
+tb_log/PPO_118	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_km_start1
+ 
+tb_log/PPO_118	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_km_start1
+ 
+tb_log/PPO_118	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_km_start1
+ 
+tb_log/PPO_118	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_km_start1
+ 
+/tmp/SB3-2021-07-28-11-14-45-939886	 	 	del
+ 
+/tmp/SB3-2021-07-28-11-15-17-346971	 	 	del
+ 
+/tmp/SB3-2021-07-28-11-16-02-644100	 	 	del
+ 
+tb_log/PPO_119	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_km_start1_re
+ 
+/tmp/SB3-2021-07-28-12-44-50-442528	 	 	del
+ 
+/tmp/SB3-2021-07-28-13-18-57-461340	 	 	del
+ 
+/tmp/SB3-2021-07-28-14-28-31-989864	 	 	del
+ 
+/tmp/SB3-2021-07-28-14-39-16-411686	 	 	del
+ 
+/tmp/SB3-2021-07-28-14-41-30-462003	 	 	del
+ 
+/tmp/SB3-2021-07-28-14-47-25-794644	 	 	del
+ 

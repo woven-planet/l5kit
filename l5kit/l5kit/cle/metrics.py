@@ -272,7 +272,7 @@ class YawErrorMetric(SupportsMetricCompute):
 
 class YawErrorCAMetric(YawErrorMetric):
     """Yaw error calculated with closest angle."""
-    metric_name = "yaw_error_ca"
+    metric_name = "yaw_error_closest_angle"
 
     def __init__(self) -> None:
         super().__init__(error_functions.closest_angle_error)

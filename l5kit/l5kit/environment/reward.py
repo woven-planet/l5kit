@@ -28,7 +28,7 @@ class Reward(ABC):
         raise NotImplementedError
 
 
-class CLE_Reward(Reward):
+class CLEReward(Reward):
     """This class is responsible for calculating reward during close loop simulation
     within the gym-compatible L5Kit environment.
 
@@ -38,8 +38,6 @@ class CLE_Reward(Reward):
     :param rew_clip_thresh: the threshold to clip the reward
     :param use_yaw: flag to penalize the yaw prediction
     :param yaw_weight: weight of the yaw error
-    :param stop_flag: flag to early terminate episode if reward crosses a threshold
-    :param stop_thresh: the reward threshold to early terminate an episode
     """
 
     def __init__(self, reward_prefix: str = "CLE", metric_set: Optional[L5MetricSet] = None,
@@ -74,7 +72,7 @@ class CLE_Reward(Reward):
 
         scene_metrics = self.metric_set.evaluator.scene_metric_results[scene_id]
         dist_error = scene_metrics['displacement_error_l2'][frame_index + 1]
-        yaw_error = self.yaw_weight * scene_metrics['yaw_error_ca'][frame_index + 1]
+        yaw_error = self.yaw_weight * scene_metrics['yaw_error_closest_angle'][frame_index + 1]
 
         # clip reward
         reward = float(-dist_error.item())

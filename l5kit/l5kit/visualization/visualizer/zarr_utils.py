@@ -439,7 +439,7 @@ def simulation_out_to_visualizer_scene_clt(sim_out: SimulationOutput, mapAPI: Ma
     has_agents_info = len(agents_ins_outs) > 0
 
     frames_vis: List[FrameVisualization] = []
-    for frame_idx in range(len(frames)-1):
+    for frame_idx in range(len(frames)-2):
         frame = frames[frame_idx]
         tls_frame = tls_frames[frame_idx]
 
@@ -449,6 +449,7 @@ def simulation_out_to_visualizer_scene_clt(sim_out: SimulationOutput, mapAPI: Ma
         trajectories = []
 
         if has_ego_info:
+            print(frame_idx)
             ego_in_out = ego_ins_outs[frame_idx]
             # print("Target at: ", frame_idx, ego_in_out.inputs['target_positions'], ego_in_out.inputs['target_yaws'])
             # print("Output at: ", frame_idx, ego_in_out.outputs['positions'], ego_in_out.outputs['yaws'])
@@ -456,7 +457,7 @@ def simulation_out_to_visualizer_scene_clt(sim_out: SimulationOutput, mapAPI: Ma
             # Ego Direction
             scale = 10
             ego_centroid = np.array([[frame_vis.ego.center_x, frame_vis.ego.center_y]])
-            print("Ego Rep: ", frame_vis.ego.center_x, frame_vis.ego.center_y, ego_centroid, replay_traj[0:1], len(replay_traj))
+            # print("Ego Rep: ", frame_vis.ego.center_x, frame_vis.ego.center_y, ego_centroid, replay_traj[0:1], len(replay_traj))
             ego_next_step_replay = ego_centroid + scale * (replay_traj[0:1] - ego_centroid)
             ego_next_step_sim = ego_centroid + scale * (sim_traj[0:1] - ego_centroid)
             single_step_replay = np.concatenate([ego_centroid, ego_next_step_replay])

@@ -82,6 +82,8 @@ if __name__ == "__main__":
                         help='Device for running model')
     parser.add_argument('--rew_clip', default=15, type=float,
                         help='Reward Clipping Threshold')
+    parser.add_argument('--kinematic', action='store_true',
+                        help='Use kinematic model')
     args = parser.parse_args()
 
     # By setting the L5KIT_DATA_FOLDER variable, we can point the script to the folder where the data lies.
@@ -91,12 +93,13 @@ if __name__ == "__main__":
     # make gym env
     if args.n_envs == 1:
         print("Using 1 envt")
-        env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length))
+        env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length), use_kinematic=args.kinematic)
 
     # custom wrap env into VecEnv
     else:
         print(f"Using {args.n_envs} parallel envts")
-        env = make_vec_env("L5-CLE-v0", env_kwargs={'sim_cfg': SimulationConfigGym(args.eps_length)},
+        env_kwargs = {'sim_cfg': SimulationConfigGym(args.eps_length), 'use_kinematic': args.kinematic}
+        env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs,
                            n_envs=args.n_envs, vec_env_cls=SubprocVecEnv,
                            vec_env_kwargs=dict(start_method='fork'))
 
@@ -110,12 +113,12 @@ if __name__ == "__main__":
     # define model
     print("Creating Model.....")
     model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, n_steps=args.num_rollout_steps,
-                learning_rate=get_linear_fn(3e-4, 3e-6, 0.5), gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
+                learning_rate=3e-4, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
                 device=args.device, clip_range=get_linear_fn(0.2, 0.001, 1.0))
 
     # make eval env at start itself
     print("Creating Eval env.....")
-    eval_env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length))
+    eval_env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length), use_kinematic=args.kinematic)
     model.eval_env = eval_env
 
     # init callback list
