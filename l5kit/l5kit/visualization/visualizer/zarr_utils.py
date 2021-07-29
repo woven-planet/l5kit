@@ -449,7 +449,7 @@ def simulation_out_to_visualizer_scene_clt(sim_out: SimulationOutput, mapAPI: Ma
         trajectories = []
 
         if has_ego_info:
-            print(frame_idx)
+            # print(frame_idx)
             ego_in_out = ego_ins_outs[frame_idx]
             # print("Target at: ", frame_idx, ego_in_out.inputs['target_positions'], ego_in_out.inputs['target_yaws'])
             # print("Output at: ", frame_idx, ego_in_out.outputs['positions'], ego_in_out.outputs['yaws'])

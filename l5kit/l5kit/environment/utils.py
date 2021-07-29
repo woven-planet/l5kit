@@ -29,8 +29,8 @@ class ActionRescaleParams(NamedTuple):
     y_scale: float = 0.03
     yaw_mu: float = 0.0
     yaw_scale: float = 0.3
-    steer_scale: float = math.radians(30) * 0.1
-    acc_scale: float = 0.4
+    steer_scale: float = math.radians(15) * 0.1
+    acc_scale: float = 0.3
 
 
 def calculate_rescale_params(sim_dataset: SimulationDataset, use_kinematic: bool = False) -> ActionRescaleParams:

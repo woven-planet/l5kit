@@ -66,11 +66,13 @@ if __name__ == "__main__":
                         help='Number of time steps')
     parser.add_argument('--n_steps', default=3000, type=int,
                         help='Number of time steps')
-    parser.add_argument('--num_rollout_steps', default=64, type=int,
+    parser.add_argument('--num_rollout_steps', default=256, type=int,
                         help='Number of rollout steps per update')
     parser.add_argument('--n_epochs', default=10, type=int,
                         help='Number of model epochs per update')
-    parser.add_argument('--gamma', default=0.99, type=float,
+    parser.add_argument('--batch_size', default=64, type=int,
+                        help='Mini batch size of model update')
+    parser.add_argument('--gamma', default=0.95, type=float,
                         help='Discount factor')
     parser.add_argument('--tb_log', default=None, type=str,
                         help='Tensorboard Log folder')
@@ -114,7 +116,7 @@ if __name__ == "__main__":
     print("Creating Model.....")
     model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, n_steps=args.num_rollout_steps,
                 learning_rate=3e-4, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
-                device=args.device, clip_range=get_linear_fn(0.2, 0.001, 1.0))
+                device=args.device, clip_range=get_linear_fn(0.2, 0.001, 1.0), batch_size=args.batch_size)
 
     # make eval env at start itself
     print("Creating Eval env.....")

@@ -1,11 +1,3 @@
-tb_log/PPO_53tb_log/PPO_54del
- 
- 
-tb_log/PPO_55	 	 	del
- 
- 
-tb_log/PPO_56	 	 	del
- 
 tb_log/PPO_57	 	 	hyp_g95_rollout_steps64
  
 tb_log/PPO_58	 	 	hyp_g95_rs32_num_epoch5
@@ -28,8 +20,6 @@ tb_log/PPO_66	 	 	t64_hyp_g95_rs256_num_epoch15
  
 tb_log/PPO_67	 	 	t64_hyp_g95_rollout_steps256
  
-/tmp/SB3-2021-07-18-16-32-40-169766	 	 	check_rc
- 
 tb_log/PPO_68	 	 	t64_hyp_g95_rollout_steps256_rc10
  
 tb_log/PPO_69	 	 	t64_hyp_g90_rollout_steps256
@@ -38,45 +28,11 @@ tb_log/PPO_70	 	 	t64_hyp_g95_rollout_steps512
  
 tb_log/PPO_71	 	 	t64_hyp_g90_rollout_steps256_rc10
  
-/tmp/SB3-2021-07-20-15-05-38-038995	 	 	del
- 
-/tmp/SB3-2021-07-20-16-35-15-780373	 	 	del
- 
-/tmp/SB3-2021-07-20-16-36-04-607840	 	 	del
- 
-/tmp/SB3-2021-07-20-16-37-31-775143	 	 	del
- 
-/tmp/SB3-2021-07-20-17-07-57-620526	 	 	del
- 
-/tmp/SB3-2021-07-20-17-08-40-804520	 	 	del
- 
 tb_log/PPO_72	 	 	t16_rerun
  
 tb_log/PPO_73	 	 	t16_rerun
  
-tb_log/PPO_74	 	 	del
- 
-/tmp/SB3-2021-07-20-20-24-42-489734	 	 	del
- 
-/tmp/SB3-2021-07-20-20-25-41-406704	 	 	del
- 
-/tmp/SB3-2021-07-20-20-29-14-766966	 	 	del
- 
-/tmp/SB3-2021-07-20-20-30-21-028212	 	 	del
- 
-/tmp/SB3-2021-07-20-20-42-04-436694	 	 	del
- 
 tb_log/PPO_75	 	 	hyp_g95_rollout_steps128_rerun
- 
-/tmp/SB3-2021-07-21-07-58-32-586530	 	 	del
- 
-/tmp/SB3-2021-07-21-09-00-26-090434	 	 	del
- 
-/tmp/SB3-2021-07-21-09-23-34-234789	 	 	del
- 
-/tmp/SB3-2021-07-21-09-28-28-604258	 	 	del
- 
-/tmp/SB3-2021-07-21-09-30-17-568441	 	 	del
  
 tb_log/PPO_76	 	 	t16_rerun2
  
@@ -84,27 +40,11 @@ tb_log/SAC_1	 	 	sac_t16
  
 tb_log/SAC_2	 	 	sac_t16
  
-/tmp/SB3-2021-07-21-10-17-44-194821	 	 	del
- 
-/tmp/SB3-2021-07-21-10-18-11-625597	 	 	del
- 
-/tmp/SB3-2021-07-21-10-19-58-341070	 	 	del
- 
 tb_log/PPO_77	 	 	t16_rescale_actions
  
 tb_log/PPO_78	 	 	hyp_g95_rollout_steps256_rescale_actions
  
 tb_log/PPO_79	 	 	t64_hyp_g90_rollout_steps256_rc10_rescale_actions
- 
-/tmp/SB3-2021-07-21-20-27-20-515446	 	 	del
- 
-/tmp/SB3-2021-07-21-21-18-42-334731	 	 	del
- 
-/tmp/SB3-2021-07-21-21-19-01-983405	 	 	del
- 
-/tmp/SB3-2021-07-21-21-19-27-231794	 	 	del
- 
-/tmp/SB3-2021-07-21-21-19-50-679896	 	 	del
  
 tb_log/PPO_80	 	 	hyp_g95_rollout_steps256_rescale_actions_re
  
@@ -113,29 +53,7 @@ tb_log/PPO_81	 	 	t64_hyp_g90_rollout_steps256_rescale_actions
 tb_log/PPO_82	 	 	hyp_g95_rollout_steps256_rescale_actions_re
  
 tb_log/PPO_83	 	 	t64_hyp_g90_rollout_steps256_rescale_actions
- 
-/tmp/SB3-2021-07-22-19-37-40-714767	 	 	del
- 
-/tmp/SB3-2021-07-22-19-48-07-981940	 	 	del
- 
-/tmp/SB3-2021-07-22-19-51-05-988208	 	 	del
- 
-/tmp/SB3-2021-07-22-20-15-46-170564	 	 	del
- 
-/tmp/SB3-2021-07-22-21-29-21-294470	 	 	del
- 
-/tmp/SB3-2021-07-22-21-30-03-765077	 	 	del
- 
-/tmp/SB3-2021-07-22-21-31-23-728785	 	 	del
- 
-/tmp/SB3-2021-07-22-21-31-46-795286	 	 	del
- 
-/tmp/SB3-2021-07-22-21-32-26-406471	 	 	del
- 
-/tmp/SB3-2021-07-22-21-34-27-782670	 	 	del
- 
-/tmp/SB3-2021-07-22-21-35-07-144652	 	 	del
- 
+
 tb_log/PPO_84	 	 	hyp_g95_rollout_steps256_rescale_actions_simpler
  
 tb_log/PPO_85	 	 	t64_hyp_g90_rollout_steps256_rescale_actions_simpler
@@ -143,12 +61,6 @@ tb_log/PPO_85	 	 	t64_hyp_g90_rollout_steps256_rescale_actions_simpler
 tb_log/PPO_86	 	 	hyp_g95_rollout_steps256_rescale_actions_ResNet
  
 tb_log/PPO_87	 	 	t64_hyp_g90_rollout_steps256_rescale_actions_ResNet
- 
-tb_log/PPO_88	 	 	del
- 
-tb_log/PPO_89	 	 	del
- 
-/tmp/SB3-2021-07-24-12-20-26-489872	 	 	del
  
 tb_log/PPO_89	 	 	hyp_g95_rollout_steps256_rescale_actions_history5
  
@@ -182,38 +94,19 @@ tb_log/PPO_103	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_abs
  
 tb_log/PPO_104	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt30_abs
  
-/tmp/SB3-2021-07-26-09-46-52-715907	 	 	del
- 
-/tmp/SB3-2021-07-26-09-47-32-714618	 	 	del
- 
 tb_log/PPO_105	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_abs
 
- 
 tb_log/PPO_106	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_500k
  
 tb_log/PPO_107	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_1M
- 
-/tmp/SB3-2021-07-26-12-48-11-978114	 	 	del
- 
-/tmp/SB3-2021-07-26-13-54-41-404496	 	 	del
- 
+
 tb_log/PPO_108	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_500k_lr
  
 tb_log/PPO_109	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_1M_lr
  
 tb_log/PPO_110	 	 	hyp_g95_rollout_steps256_rescale_actions_yawsc030_yawwt10_1M_lr_RE
  
-/tmp/SB3-2021-07-26-20-02-02-069220	 	 	del
- 
-/tmp/SB3-2021-07-27-09-42-13-151222	 	 	del
- 
-/tmp/SB3-2021-07-27-09-59-56-400170	 	 	del
- 
-/tmp/SB3-2021-07-27-10-00-19-938505	 	 	del
- 
 tb_log/PPO_111	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M
- 
-/tmp/SB3-2021-07-27-13-09-16-179864	 	 	del
  
 tb_log/PPO_112	 	 	turn_hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M
  
@@ -225,47 +118,94 @@ tb_log/PPO_115	 	 	turn_f27_hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_his
  
 tb_log/PPO_116	 	 	turn_f27_hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_hist5
  
-/tmp/SB3-2021-07-27-20-35-21-339152	 	 	del
- 
-/tmp/SB3-2021-07-27-20-36-14-051209	 	 	del
- 
-/tmp/SB3-2021-07-27-20-40-38-449154	 	 	del
- 
-/tmp/SB3-2021-07-27-20-43-01-242428	 	 	del
- 
-/tmp/SB3-2021-07-27-20-43-45-985658	 	 	del
- 
-/tmp/SB3-2021-07-27-20-44-45-948027	 	 	del
- 
-/tmp/SB3-2021-07-27-20-45-35-857449	 	 	del
- 
 tb_log/PPO_117	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_km
  
 tb_log/PPO_118	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_km_start1
  
-tb_log/PPO_118	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_km_start1
- 
-tb_log/PPO_118	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_km_start1
- 
-tb_log/PPO_118	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_km_start1
- 
-/tmp/SB3-2021-07-28-11-14-45-939886	 	 	del
- 
-/tmp/SB3-2021-07-28-11-15-17-346971	 	 	del
- 
-/tmp/SB3-2021-07-28-11-16-02-644100	 	 	del
- 
 tb_log/PPO_119	 	 	hyp_g95_rollout_steps256_rescale_auto_yawwt10_1M_km_start1_re
  
-/tmp/SB3-2021-07-28-12-44-50-442528	 	 	del
+tb_log/PPO_120	 	 	5scenes_kinematic
  
-/tmp/SB3-2021-07-28-13-18-57-461340	 	 	del
+tb_log/PPO_121	 	 	5scenes
  
-/tmp/SB3-2021-07-28-14-28-31-989864	 	 	del
+tb_log/PPO_122	 	 	5scenes_bs128
  
-/tmp/SB3-2021-07-28-14-39-16-411686	 	 	del
+tb_log/PPO_123	 	 	5scenes_bs256
  
-/tmp/SB3-2021-07-28-14-41-30-462003	 	 	del
+tb_log/PPO_124	 	 	5scenes_bs64
  
-/tmp/SB3-2021-07-28-14-47-25-794644	 	 	del
+tb_log/PPO_125	 	 	5scenes_kinematic_1M
+
+
+/tmp/SB3-2021-07-29-13-18-08-075022	 	 	del
+ 
+/tmp/SB3-2021-07-29-13-21-07-689897	 	 	del
+ 
+/tmp/SB3-2021-07-29-13-21-13-768229	 	 	del
+ 
+/tmp/SB3-2021-07-29-13-25-25-347834	 	 	del
+ 
+/tmp/SB3-2021-07-29-13-25-29-796154	 	 	del
+ 
+/tmp/SB3-2021-07-29-13-28-59-777870	 	 	del
+ 
+/tmp/SB3-2021-07-29-13-29-14-739371	 	 	del
+ 
+/tmp/SB3-2021-07-29-13-32-50-452414	 	 	del
+ 
+/tmp/SB3-2021-07-29-13-33-04-554468	 	 	del
+ 
+/tmp/SB3-2021-07-29-13-35-09-019319	 	 	del
+ 
+/tmp/SB3-2021-07-29-13-38-04-766561	 	 	del
+ 
+/tmp/SB3-2021-07-29-13-38-07-772983	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-00-10-918402	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-02-53-865796	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-03-01-232535	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-07-37-450551	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-08-26-669020	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-09-15-834319	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-09-56-697692	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-11-31-030427	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-11-35-069693	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-14-10-208587	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-14-25-337145	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-24-03-009212	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-25-43-235446	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-28-14-625714	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-28-19-086319	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-34-54-026769	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-35-04-649454	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-47-02-537173	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-53-47-991228	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-55-35-798695	 	 	del
+ 
+/tmp/SB3-2021-07-29-14-55-42-190320	 	 	del
+ 
+/tmp/SB3-2021-07-29-15-05-04-251401	 	 	del
+ 
+/tmp/SB3-2021-07-29-15-05-10-202574	 	 	del
+ 
+tb_log/PPO_78	 	 	5scenes_kinematic_1M
  
