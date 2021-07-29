@@ -29,8 +29,8 @@ class ActionRescaleParams(NamedTuple):
     y_scale: float = 0.03
     yaw_mu: float = 0.0
     yaw_scale: float = 0.3
-    steer_scale: float = math.radians(15) * 0.1
-    acc_scale: float = 0.3
+    steer_scale: float = math.radians(30) * 0.1
+    acc_scale: float = 0.4
 
 
 def calculate_rescale_params(sim_dataset: SimulationDataset, use_kinematic: bool = False) -> ActionRescaleParams:
@@ -49,15 +49,18 @@ def calculate_rescale_params(sim_dataset: SimulationDataset, use_kinematic: bool
             v_component_frames.append([scene['curr_speed'].item() for scene in ego_input])
             yaw_component_frames.append([scene['target_yaws'][0, 0] for scene in ego_input])
 
-        v_components = np.concatenate(v_component_frames)
+        v_components = np.stack(v_component_frames)
         acc_components = v_components[1:] - v_components[:-1]
+        acc_components = acc_components.flatten()
         acc_mu, acc_std = np.mean(acc_components), np.std(acc_components)
 
         yaw_components = np.concatenate(yaw_component_frames)
         yaw_mu, yaw_std = np.mean(yaw_components), np.std(yaw_components)
 
-        assert max(acc_components) <= 0.5
-        assert -0.5 <= min(acc_components)
+        v_components = np.stack(v_component_frames)
+
+        assert max(acc_components) <= 0.7
+        assert -0.7 <= min(acc_components)
         return ActionRescaleParams()
 
     x_component_frames = []
