@@ -10,8 +10,9 @@ from gym import spaces
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
-from l5kit.environment.reward import CLE_Reward, Reward
-from l5kit.environment.utils import default_collate_numpy
+from l5kit.environment.kinematic_model import KinematicModel, UnicycleModel
+from l5kit.environment.reward import CLEReward, Reward
+from l5kit.environment.utils import ActionRescaleParams, calculate_rescale_params, convert_to_numpy
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.simulation.unroll import ClosedLoopSimulator, SimulationOutputCLE, UnrollInputOutput
@@ -23,12 +24,17 @@ class SimulationConfigGym(SimulationConfig):
     :param eps_length: the number of step to simulate per episode in the gym environment.
     """
 
-    def __new__(cls, eps_length: int = 32) -> 'SimulationConfigGym':
+    def __new__(cls, eps_length: int = 32, start_frame_idx: int = 0) -> 'SimulationConfigGym':
         """Constructor method
         """
+        # Note: num_simulation_steps = eps_length + 1
+        # This is because we (may) require to extract the initial speed of the vehicle for the kinematic model
+        # The speed at start_frame_idx is always 0 (not indicative of the true current speed).
+        # We therefore simulate the episode from (start_frame_idx + 1, start_frame_idx + eps_length + 1)
         self = super(SimulationConfigGym, cls).__new__(cls, use_ego_gt=False, use_agents_gt=True,
                                                        disable_new_agents=False, distance_th_far=30,
-                                                       distance_th_close=15, num_simulation_steps=eps_length)
+                                                       distance_th_close=15, start_frame_index=start_frame_idx,
+                                                       num_simulation_steps=eps_length + 1)
         return self
 
 
@@ -78,12 +84,14 @@ class L5Env(gym.Env):
     :param reward: calculates the reward for the gym environment
     :param cle: flag to enable close loop environment updates
     :param rescale_action: flag to rescale the model action back to the un-normalized action space
+    :param use_kinematic: flag to use the kinematic model
+    :param kin_model: the kinematic model
     """
 
     def __init__(self, env_config_path: str, dmg: Optional[LocalDataManager] = None,
                  sim_cfg: Optional[SimulationConfig] = None,
-                 reward: Optional[Reward] = None, cle: bool = True,
-                 rescale_action: bool = True) -> None:
+                 reward: Optional[Reward] = None, cle: bool = True, rescale_action: bool = True,
+                 use_kinematic: bool = False, kin_model: Optional[KinematicModel] = None) -> None:
         """Constructor method
         """
         super(L5Env, self).__init__()
@@ -101,52 +109,65 @@ class L5Env(gym.Env):
         train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
         self.dataset = EgoDataset(cfg, train_zarr, rasterizer)
 
-        self.future_num_frames = cfg["model_params"]["future_num_frames"]
-
         # Define action and observation space
         # Continuous Action Space: gym.spaces.Box (X, Y, Yaw * number of future states)
-        # self.action_space = spaces.Box(low=-1000, high=1000, shape=(self.future_num_frames * 3, ))
-        self.action_space = spaces.Box(low=-2, high=2, shape=(self.future_num_frames * 3, ))
+        # self.action_space = spaces.Box(low=-1000, high=1000, shape=(3, ))
+        # self.action_space = spaces.Box(low=-2, high=2, shape=(3, ))
+        self.action_space = spaces.Box(low=-1, high=1, shape=(3, ))
 
         # Observation Space: gym.spaces.Dict (image: [n_channels, raster_size, raster_size])
-        self.observation_space = spaces.Dict({'image': spaces.Box(low=0, high=1,
-                                              shape=(n_channels, raster_size, raster_size), dtype=np.float32)})
+        obs_shape = (n_channels, raster_size, raster_size)
+        self.observation_space = spaces.Dict({'image': spaces.Box(low=0, high=1, shape=obs_shape, dtype=np.float32)})
 
         # Simulator Config within Gym
         self.sim_cfg = sim_cfg if sim_cfg is not None else SimulationConfigGym()
         self.simulator = ClosedLoopSimulator(self.sim_cfg, self.dataset, device=torch.device("cpu"),
                                              verify_model=False)
 
-        # Reward
-        self.reward = reward if reward is not None else CLE_Reward()
+        self.reward = reward if reward is not None else CLEReward()
 
         self.max_scene_id = cfg["gym_params"]["max_scene_id"]
-        if cfg["gym_params"]["overfit"]:
-            self.max_scene_id = 0
+        self.overfit = cfg["gym_params"]["overfit"]
+        if self.overfit:
+            self.overfit_scene_id = cfg["gym_params"]["overfit_id"]
 
         self.cle = cle
         self.rescale_action = rescale_action
+        self.use_kinematic = use_kinematic
 
-    def reset(self) -> Dict[str, np.ndarray]:
+        self.action_rescale_params = self._get_action_rescale_params()
+
+        if self.use_kinematic:
+            self.kin_model = kin_model if kin_model is not None else UnicycleModel()
+
+    def reset(self, scene_index: Optional[int] = None) -> Dict[str, np.ndarray]:
         """ Resets the environment and outputs first frame of a new scene sample.
 
+        :param scene_index: the scene index to roll out (deterministic scene sampling)
         :return: the observation of first frame of sampled scene index
         """
-        # Sample a episode randomly
-        self.scene_index = random.randint(0, self.max_scene_id)
-        self.sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, [self.scene_index], self.sim_cfg)
-
-        # Define in / outs for given scene
+        # Define in / outs for new episode scene
         self.agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]] = defaultdict(list)
         self.ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]] = defaultdict(list)
+
+        if scene_index is not None:
+            self.scene_index = scene_index
+        else:  # Sample a scene
+            self.scene_index = random.randint(0, self.max_scene_id) if not self.overfit else self.overfit_scene_id
+        self.sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, [self.scene_index], self.sim_cfg)
 
         # Reset CLE evaluator
         self.reward.reset()
 
         # Output first observation
-        self.frame_index = 0
+        self.frame_index = 1  # Frame_index 1 has access to the true ego speed
         ego_input = self.sim_dataset.rasterise_frame_batch(self.frame_index)
-        self.ego_input_dict = default_collate_numpy(ego_input[0])
+        self.ego_input_dict = convert_to_numpy(ego_input[0])
+
+        # Reset Kinematic model
+        if self.use_kinematic:
+            init_kin_state = np.array([0.0, 0.0, 0.0, 0.1 * ego_input[0]['curr_speed']])
+            self.kin_model.reset(init_kin_state)
 
         # Only output the image attribute
         obs = {'image': ego_input[0]["image"]}
@@ -161,13 +182,13 @@ class L5Env(gym.Env):
         """
         frame_index = self.frame_index
         next_frame_index = frame_index + 1
-        episode_over = next_frame_index == (len(self.sim_dataset) - self.future_num_frames)
+        episode_over = next_frame_index == (len(self.sim_dataset) - 1)
 
         # EGO
         if not self.sim_cfg.use_ego_gt:
             action = self._rescale_action(action)
-            action = self._convert_to_dict(action, self.future_num_frames)
-            self.ego_output_dict = action
+            ego_output = self._convert_action_to_ego_output(action)
+            self.ego_output_dict = ego_output
 
             if self.cle:
                 # In closed loop training, the raster is updated according to predicted ego positions.
@@ -193,17 +214,9 @@ class L5Env(gym.Env):
         if done:
             info = {"info": self.get_simulated_outputs()}
 
-        # Prepare next obs
-        if not episode_over:
-            self.frame_index += 1
-            ego_input = self.sim_dataset.rasterise_frame_batch(self.frame_index)
-            self.ego_input_dict = default_collate_numpy(ego_input[0])
-            obs = {"image": ego_input[0]["image"]}
-        else:
-            # Dummy final obs (when episode_over)
-            ego_input = self.sim_dataset.rasterise_frame_batch(0)
-            self.ego_input_dict = default_collate_numpy(ego_input[0])
-            obs = {"image": ego_input[0]["image"]}
+        # Get next obs
+        self.frame_index += 1
+        obs = self._get_obs(self.frame_index, episode_over)
 
         # return obs, reward, done, info
         return GymStepOutput(obs, reward, done, info)
@@ -223,38 +236,62 @@ class L5Env(gym.Env):
         """
         raise NotImplementedError
 
-    def _rescale_action(self, action: np.ndarray, x_mu: float = 1.20, x_scale: float = 0.2,
-                        y_mu: float = 0.0, y_scale: float = 0.03, yaw_scale: float = 0.3) -> np.ndarray:
+    def _get_obs(self, frame_index: int, episode_over: bool) -> Dict[str, np.ndarray]:
+        """Get the observation corresponding to a given frame index in the scene.
+
+        :param frame_index: the index of the frame which provides the observation
+        :param episode_over: flag to determine if the episode is over
+        :return: the observation corresponding to the frame index
+        """
+        if episode_over:
+            frame_index = 0  # Dummy final obs (when episode_over)
+
+        ego_input = self.sim_dataset.rasterise_frame_batch(frame_index)
+        self.ego_input_dict = convert_to_numpy(ego_input[0])
+        obs = {"image": ego_input[0]["image"]}
+        return obs
+
+    def _rescale_action(self, action: np.ndarray) -> np.ndarray:
         """Rescale the input action back to the un-normalized action space. PPO and related algorithms work well
         with normalized action spaces. The environment receives a normalized action and we un-normalize it back to
         the original action space for environment updates.
 
         :param action: the normalized action
-        :param x_mu: the translation of the x-coordinate
-        :param x_scale: the scaling of the x-coordinate
-        :param y_mu: the translation of the y-coordinate
-        :param y_scale: the scaling of the y-coordinate
-        :param yaw_scale: the scaling of the yaw
         :return: the unnormalized action
         """
+        assert len(action) == 3
         if self.rescale_action:
-            assert len(action) == 3
-            action[0] = x_mu + x_scale * action[0]
-            action[1] = y_mu + y_scale * action[1]
-            action[2] = yaw_scale * action[2]
+            if self.use_kinematic:
+                action[0] = self.action_rescale_params.steer_scale * action[0]
+                action[1] = self.action_rescale_params.acc_scale * action[1]
+            else:
+                action[0] = self.action_rescale_params.x_mu + self.action_rescale_params.x_scale * action[0]
+                action[1] = self.action_rescale_params.y_mu + self.action_rescale_params.y_scale * action[1]
+                action[2] = self.action_rescale_params.yaw_mu + self.action_rescale_params.yaw_scale * action[2]
         return action
 
-    def _convert_to_dict(self, data: np.ndarray, future_num_frames: int) -> Dict[str, np.ndarray]:
-        """Convert vector into numpy dict.
+    def _get_action_rescale_params(self) -> ActionRescaleParams:
+        """Determine the action un-normalization parameters for the current dataset in the L5Kit environment.
 
-        :param data: numpy array
-        :param future_num_frames: number of frames predicted
-        :return: the numpy dict with keys 'positions' and 'yaws'
+        :return: Tuple of the action un-normalization parameters
         """
-        # [batch_size=1, num_steps, (X, Y, yaw)]
-        data = data.reshape(1, future_num_frames, 3)
-        pred_positions = data[:, :, :2]
-        # [batch_size, num_steps, 1->(yaw)]
-        pred_yaws = data[:, :, 2:3]
-        data_dict = {"positions": pred_positions, "yaws": pred_yaws}
+        scene_ids = list(range(self.max_scene_id + 1)) if not self.overfit else [self.overfit_scene_id]
+        sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, scene_ids, self.sim_cfg)
+        return calculate_rescale_params(sim_dataset, self.use_kinematic)
+
+    def _convert_action_to_ego_output(self, action: np.ndarray) -> Dict[str, np.ndarray]:
+        """Convert the input action into ego output format.
+
+        :param action: the input action provided by policy
+        :return: action in ego output format, a numpy dict with keys 'positions' and 'yaws'
+        """
+        if self.use_kinematic:
+            data_dict = self.kin_model.update(action[:2])
+        else:
+            # [batch_size=1, num_steps, (X, Y, yaw)]
+            data = action.reshape(1, 1, 3)
+            pred_positions = data[:, :, :2]
+            # [batch_size, num_steps, 1->(yaw)]
+            pred_yaws = data[:, :, 2:3]
+            data_dict = {"positions": pred_positions, "yaws": pred_yaws}
         return data_dict

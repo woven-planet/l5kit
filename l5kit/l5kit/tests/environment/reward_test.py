@@ -8,7 +8,7 @@ from l5kit.environment import gym_metric_set, reward
 
 class TestCLEReward(unittest.TestCase):
     def test_default_attributes(self) -> None:
-        cle_reward = reward.CLE_Reward()
+        cle_reward = reward.CLEReward()
         self.assertIsInstance(cle_reward.metric_set, gym_metric_set.L5GymCLEMetricSet)
 
     def test_reward_reset(self) -> None:
@@ -19,7 +19,7 @@ class TestCLEReward(unittest.TestCase):
             "get_scene_id.return_value": 0,
         }
         sim_output = mock.Mock(**attrs)
-        cle_reward = reward.CLE_Reward()
+        cle_reward = reward.CLEReward()
         _ = cle_reward.get_reward(0, [sim_output])
 
         cle_reward.reset()
@@ -34,7 +34,7 @@ class TestCLEReward(unittest.TestCase):
         }
 
         sim_output = mock.Mock(**attrs)
-        cle_reward = reward.CLE_Reward()
+        cle_reward = reward.CLEReward()
         for i in range(19):
             cle_reward.reset()
             result = cle_reward.get_reward(i, [sim_output])
@@ -48,7 +48,7 @@ class TestCLEReward(unittest.TestCase):
             "get_scene_id.return_value": 0,
         }
         sim_output = mock.Mock(**attrs)
-        cle_reward = reward.CLE_Reward(yaw_weight=0.0)
+        cle_reward = reward.CLEReward(yaw_weight=0.0)
         for i in range(19):
             cle_reward.reset()
             result = cle_reward.get_reward(i, [sim_output])
@@ -62,7 +62,7 @@ class TestCLEReward(unittest.TestCase):
             "get_scene_id.return_value": 0,
         }
         sim_output = mock.Mock(**attrs)
-        cle_reward = reward.CLE_Reward(yaw_weight=0.0, rew_clip_thresh=10.0)
+        cle_reward = reward.CLEReward(yaw_weight=0.0, rew_clip_thresh=10.0)
         for i in range(19):
             cle_reward.reset()
             result = cle_reward.get_reward(i, [sim_output])
@@ -76,7 +76,7 @@ class TestCLEReward(unittest.TestCase):
             "get_scene_id.return_value": 0,
         }
         sim_output = mock.Mock(**attrs)
-        cle_reward = reward.CLE_Reward(yaw_weight=1.0)
+        cle_reward = reward.CLEReward(yaw_weight=1.0)
         for i in range(19):
             cle_reward.reset()
             result = cle_reward.get_reward(i, [sim_output])
@@ -90,7 +90,7 @@ class TestCLEReward(unittest.TestCase):
             "get_scene_id.return_value": 0,
         }
         sim_output = mock.Mock(**attrs)
-        cle_reward = reward.CLE_Reward(yaw_weight=1.0, rew_clip_thresh=10.0)
+        cle_reward = reward.CLEReward(yaw_weight=1.0, rew_clip_thresh=10.0)
         torch.pi = torch.acos(torch.zeros(1)).item() * 2  # which is 3.1415927410125732
 
         for i in range(19):
