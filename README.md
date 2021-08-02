@@ -56,7 +56,7 @@ We provide a simulation notebook to test interaction between agents and the SDV 
 ### Simulation
 We provide a notebook to test interaction between agents and the SDV when the SDV is trained in a gym environment using reinforcement learning using real-world data.
 
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lyft/l5kit/blob/tree/parth/rl_baseline/examples/RL/gym_train.ipynb)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lyft/l5kit/blob/parth%2Frl_baseline/examples/RL/gym_train.ipynb)
 
 # News
 - 04-16-2021: We've just released a new notebook for the ML simulation task!
