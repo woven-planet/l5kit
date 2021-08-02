@@ -1,51 +1,16 @@
 import argparse
 import os
 import time
-from typing import Any, Optional
 
 import gym
 from stable_baselines3 import PPO
-from stable_baselines3.common.callbacks import CallbackList, CheckpointCallback
 from stable_baselines3.common.env_util import make_vec_env
-from stable_baselines3.common.evaluation import evaluate_policy
 from stable_baselines3.common.utils import get_linear_fn
 from stable_baselines3.common.vec_env import SubprocVecEnv
 
-from l5kit.environment import feature_extractor
-from l5kit.environment.callbacks import LoggingCallback, VizCallback
+from l5kit.environment.callbacks import get_callback_list
 from l5kit.environment.envs.l5_env import SimulationConfigGym
-
-
-def get_callback_list(output_prefix: str, n_envs: int, save_freq: Optional[int] = 50000,
-                      args: Optional[Any] = None, ckpt_prefix: Optional[str] = None) -> CallbackList:
-
-    callback_list = []
-    # Define callbacks
-    assert output_prefix is not None, "Provide output prefix to save model states"
-
-    print(f"Saving Model every {save_freq} steps")
-    # Save SimulationOutputGym periodically
-    viz_callback = VizCallback(save_freq=(save_freq // n_envs), save_path='./logs/',
-                               name_prefix=output_prefix, verbose=2)
-    callback_list.append(viz_callback)
-
-    # Save Model Periodically
-    ckpt_prefix = ckpt_prefix if ckpt_prefix is not None else output_prefix
-    checkpoint_callback = CheckpointCallback(save_freq=(save_freq // n_envs), save_path='./logs/',
-                                             name_prefix=ckpt_prefix, verbose=2)
-    callback_list.append(checkpoint_callback)
-
-    # Save Model Config
-    log_callback = LoggingCallback(args)
-    callback_list.append(log_callback)
-
-    # Print Error at end of OpenLoop training
-    # if not clt:
-    #     traj_callback = TrajectoryCallback(save_path='./logs/', verbose=2)
-    #     callback_list.append(traj_callback)
-
-    callback = CallbackList(callback_list)
-    return callback
+from l5kit.environment.feature_extractor import CustomFeatureExtractor
 
 
 if __name__ == "__main__":
@@ -86,6 +51,10 @@ if __name__ == "__main__":
                         help='Reward Clipping Threshold')
     parser.add_argument('--kinematic', action='store_true',
                         help='Use kinematic model')
+    parser.add_argument('--clip_end_val', default=0.001, type=float,
+                        help='End value of clip in PPO')
+    parser.add_argument('--model_arch', default='simple', type=str,
+                        help='Model architecture of feature extractor')
     args = parser.parse_args()
 
     # By setting the L5KIT_DATA_FOLDER variable, we can point the script to the folder where the data lies.
@@ -107,8 +76,8 @@ if __name__ == "__main__":
 
     # Custom Feature Extractor backbone
     policy_kwargs = dict(
-        features_extractor_class=feature_extractor.SimpleCNN,  # ResNetCNN
-        features_extractor_kwargs=dict(features_dim=128),
+        features_extractor_class=CustomFeatureExtractor,
+        features_extractor_kwargs=dict(features_dim=128, model_arch=args.model_arch),
         normalize_images=False
     )
 
@@ -116,7 +85,7 @@ if __name__ == "__main__":
     print("Creating Model.....")
     model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, n_steps=args.num_rollout_steps,
                 learning_rate=3e-4, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
-                device=args.device, clip_range=get_linear_fn(0.2, 0.001, 1.0), batch_size=args.batch_size)
+                device=args.device, clip_range=get_linear_fn(0.2, args.clip_end_val, 1), batch_size=args.batch_size)
 
     # make eval env at start itself
     print("Creating Eval env.....")
@@ -124,21 +93,9 @@ if __name__ == "__main__":
     model.eval_env = eval_env
 
     # init callback list
-    callback = get_callback_list(args.output_prefix, args.n_envs, args.save_freq, args)
+    callback = get_callback_list(args.output_prefix, args.n_envs, args.save_freq)
 
     # train
     start = time.time()
     model.learn(args.n_steps, callback=callback)
     print("Training Time: ", time.time() - start)
-
-    # Eval at end of training
-    if args.eval:
-        print("Deterministic=True Eval")
-        mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=5, deterministic=True)
-        print(f"mean_reward={mean_reward:.2f} +/- {std_reward}")
-        print("Done")
-
-        print("Deterministic=False Eval")
-        mean_reward, std_reward = evaluate_policy(model, eval_env, n_eval_episodes=10, deterministic=False)
-        print(f"mean_reward={mean_reward:.2f} +/- {std_reward}")
-        print("Done")

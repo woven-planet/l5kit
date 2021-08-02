@@ -26,7 +26,7 @@ class MockModel(torch.nn.Module):
 
 def test_default_attributes(dmg: LocalDataManager, env_cfg_path: str) -> None:
     env = L5Env(env_cfg_path, dmg)
-    assert isinstance(env.reward, reward.CLE_Reward)
+    assert isinstance(env.reward, reward.CLEReward)
     assert isinstance(env.sim_cfg, SimulationConfigGym)
 
 
@@ -69,23 +69,23 @@ def test_env_episode(dmg: LocalDataManager, env_cfg_path: str) -> None:
 
     # check ego movement
     for sim_output in sim_outputs:
-        ego_tr = sim_output.simulated_ego["ego_translation"][1 : env.sim_cfg.num_simulation_steps, :2]
+        ego_tr = sim_output.simulated_ego["ego_translation"][1: env.sim_cfg.num_simulation_steps, :2]
         ego_dist = np.linalg.norm(np.diff(ego_tr, axis=0), axis=-1)
         assert np.allclose(ego_dist, 1.0)
 
-        ego_tr = sim_output.simulated_ego_states[1 : env.sim_cfg.num_simulation_steps,
+        ego_tr = sim_output.simulated_ego_states[1: env.sim_cfg.num_simulation_steps,
                                                  TrajectoryStateIndices.X: TrajectoryStateIndices.Y + 1]
         ego_dist = np.linalg.norm(np.diff(ego_tr.numpy(), axis=0), axis=-1)
         assert np.allclose(ego_dist, 1.0, atol=1e-3)
 
         # all rotations should be the same as the first one as the MockModel outputs 0 for that
-        rots_sim = sim_output.simulated_ego["ego_rotation"][1 : env.sim_cfg.num_simulation_steps]
+        rots_sim = sim_output.simulated_ego["ego_rotation"][1: env.sim_cfg.num_simulation_steps]
         r_rep = sim_output.recorded_ego["ego_rotation"][0]
         for r_sim in rots_sim:
             assert np.allclose(rotation33_as_yaw(r_sim), rotation33_as_yaw(r_rep), atol=1e-2)
 
         # all rotations should be the same as the first one as the MockModel outputs 0 for that
-        rots_sim = sim_output.simulated_ego_states[1 : env.sim_cfg.num_simulation_steps, TrajectoryStateIndices.THETA]
+        rots_sim = sim_output.simulated_ego_states[1: env.sim_cfg.num_simulation_steps, TrajectoryStateIndices.THETA]
         r_rep = sim_output.recorded_ego_states[0, TrajectoryStateIndices.THETA]
         for r_sim in rots_sim:
             assert np.allclose(r_sim, r_rep, atol=1e-2)

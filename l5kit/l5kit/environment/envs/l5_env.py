@@ -91,7 +91,8 @@ class L5Env(gym.Env):
     def __init__(self, env_config_path: str, dmg: Optional[LocalDataManager] = None,
                  sim_cfg: Optional[SimulationConfig] = None,
                  reward: Optional[Reward] = None, cle: bool = True, rescale_action: bool = True,
-                 use_kinematic: bool = False, kin_model: Optional[KinematicModel] = None) -> None:
+                 use_kinematic: bool = False, kin_model: Optional[KinematicModel] = None,
+                 reset_scene_id: Optional[int] = None) -> None:
         """Constructor method
         """
         super(L5Env, self).__init__()
@@ -140,20 +141,24 @@ class L5Env(gym.Env):
         if self.use_kinematic:
             self.kin_model = kin_model if kin_model is not None else UnicycleModel()
 
-    def reset(self, scene_index: Optional[int] = None) -> Dict[str, np.ndarray]:
+        # If not None, reset_scene_id is the scene_id that will be rolled out when reset is called
+        self.reset_scene_id = reset_scene_id
+        if self.overfit:
+            self.reset_scene_id = self.overfit_scene_id
+
+    def reset(self) -> Dict[str, np.ndarray]:
         """ Resets the environment and outputs first frame of a new scene sample.
 
-        :param scene_index: the scene index to roll out (deterministic scene sampling)
         :return: the observation of first frame of sampled scene index
         """
         # Define in / outs for new episode scene
         self.agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]] = defaultdict(list)
         self.ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]] = defaultdict(list)
 
-        if scene_index is not None:
-            self.scene_index = scene_index
+        if self.reset_scene_id is not None:
+            self.scene_index = self.reset_scene_id
         else:  # Sample a scene
-            self.scene_index = random.randint(0, self.max_scene_id) if not self.overfit else self.overfit_scene_id
+            self.scene_index = random.randint(0, self.max_scene_id)
         self.sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, [self.scene_index], self.sim_cfg)
 
         # Reset CLE evaluator

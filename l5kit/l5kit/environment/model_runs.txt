@@ -209,3 +209,55 @@ tb_log/PPO_125	 	 	5scenes_kinematic_1M
  
 tb_log/PPO_78	 	 	5scenes_kinematic_1M
  
+tb_log/PPO_79	 	 	5scenes_kinematic_1M_history3
+ 
+tb_log/PPO_80	 	 	5scenes_1M_history3
+ 
+tb_log/PPO_81	 	 	5scenes_kinematic_1M_history5
+ 
+tb_log/PPO_82	 	 	5scenes_1M_history5
+ 
+tb_log/PPO_83	 	 	5scenes_kinematic_1M_history3_run2
+ 
+tb_log/PPO_84	 	 	5scenes_1M_history3_run2
+ 
+tb_log/PPO_85	 	 	5scenes_kinematic_1M_history3_yawwt20
+ 
+tb_log/PPO_86	 	 	5scenes_1M_history3_yawwt20
+ 
+tb_log/PPO_87	 	 	10scenes_1M_history3
+ 
+tb_log/PPO_88	 	 	10scenes_kinematic_1M_history3
+ 
+tb_log/PPO_89	 	 	10scenes_1M_history3_yawwt20
+ 
+tb_log/PPO_90	 	 	10scenes_kinematic_1M_history3_yawwt20
+ 
+tb_log/PPO_91	 	 	10scenes_kinematic_1M_history3_y20_c0002
+ 
+tb_log/PPO_92	 	 	10scenes_kinematic_1M_history3_y20_c0005
+ 
+tb_log/PPO_93	 	 	10scenes_kinematic_1M_history3_y20_c0001
+ 
+tb_log/PPO_94	 	 	10scenes_kinematic_1M_history3_y20_c001
+ 
+tb_log/PPO_95	 	 	10scenes_kinematic_1M_history3_y20_c00005
+ 
+tb_log/PPO_95	 	 	10scenes_kinematic_1M_history3_y20_c00005
+ 
+tb_log/PPO_96	 	 	10scenes_kinematic_1M_history3_yawwt40
+ 
+tb_log/PPO_97	 	 	10scenes_kinematic_1M_history3_y20_clip10
+ 
+tb_log/PPO_98	 	 	10scenes_kinematic_1M_history3_y20_clip10
+ 
+tb_log/PPO_99	 	 	10scenes_kinematic_1M_history3_y20_accn06
+ 
+tb_log/PPO_100	 	 	10scenes_kinematic_1M_history3_y20_accn06
+ 
+tb_log/PPO_101	 	 	10scenes_kinematic_15M_history3_yawwt20
+ 
+tb_log/PPO_102	 	 	10scenes_kinematic_1M_history3_yawwt20_resnet
+ 
+tb_log/PPO_103	 	 	10scenes_kinematic_1M_history3_yawwt20_simpler
+ 

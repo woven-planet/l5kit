@@ -6,7 +6,7 @@ format_version: 4
 model_params:
   model_architecture: "resnet50"
 
-  history_num_frames: 1
+  history_num_frames: 3
   future_num_frames: 1
   step_time: 0.1
   render_ego_history: True
@@ -60,6 +60,6 @@ train_data_loader:
 ###################
 ## Gym params
 gym_params:
-  max_scene_id: 5
-  overfit: True
+  max_scene_id: 10
+  overfit: False
   overfit_id: 0

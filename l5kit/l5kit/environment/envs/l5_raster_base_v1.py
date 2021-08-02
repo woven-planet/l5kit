@@ -46,7 +46,6 @@ class L5RasterBaseEnvV1(gym.Env):
         self.num_simulation_steps = cfg["gym_params"]["num_simulation_steps"]
 
         n_channels = rasterizer.num_channels()
-        raster_size = rasterizer.raster_size[0]
 
         # Define action and observation space
         # Dummy Action Space
