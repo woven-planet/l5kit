@@ -49,7 +49,7 @@ def test_env_reset(dmg: LocalDataManager, env_cfg_path: str) -> None:
 
 
 def test_env_episode(dmg: LocalDataManager, env_cfg_path: str) -> None:
-    env = L5Env(env_cfg_path, dmg, rescale_action=False)
+    env = L5Env(env_cfg_path, dmg, rescale_action=False, return_info=True)
 
     # ego will move by 1 each time
     ego_model = MockModel(advance_x=1.0)
@@ -62,7 +62,7 @@ def test_env_episode(dmg: LocalDataManager, env_cfg_path: str) -> None:
         action = ego_model(obs)
         obs, _, done, info = env.step(action)
         if done:
-            sim_outputs = info["info"]
+            sim_outputs = info["sim_outs"]
             break
 
     assert epsiode_len == (len(env.sim_dataset) - 2)

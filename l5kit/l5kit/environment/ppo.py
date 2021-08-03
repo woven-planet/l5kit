@@ -11,15 +11,14 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 from l5kit.environment.callbacks import get_callback_list
 from l5kit.environment.envs.l5_env import SimulationConfigGym
 from l5kit.environment.feature_extractor import CustomFeatureExtractor
+from l5kit.environment.monitor_utils import monitor_env
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--output_prefix', required=True, type=str,
                         help='Output prefix for tracking model outputs during training')
-    parser.add_argument('--data_path', type=str, default='/home/ubuntu/level5_data/',
-                        help='Environment configuration file')
-    parser.add_argument('--env_config_path', type=str, default='/home/ubuntu/src/l5kit/examples/RL/config.yaml',
+    parser.add_argument('--data_path', type=str, default='/level5_data/',
                         help='Environment configuration file')
     parser.add_argument('--disable_cle', action='store_true',
                         help='Flag to disable close loop environment')
@@ -27,9 +26,9 @@ if __name__ == "__main__":
                         help='Frequency to save model states')
     parser.add_argument('--n_envs', default=4, type=int,
                         help='Number of parallel envts')
-    parser.add_argument('--eps_length', default=16, type=int,
+    parser.add_argument('--eps_length', default=32, type=int,
                         help='Number of time steps')
-    parser.add_argument('--n_steps', default=3000, type=int,
+    parser.add_argument('--n_steps', default=1000000, type=int,
                         help='Number of time steps')
     parser.add_argument('--num_rollout_steps', default=256, type=int,
                         help='Number of rollout steps per update')
@@ -59,20 +58,26 @@ if __name__ == "__main__":
 
     # By setting the L5KIT_DATA_FOLDER variable, we can point the script to the folder where the data lies.
     # The path to 'l5_data_path' needs to be provided
-    os.environ["L5KIT_DATA_FOLDER"] = args.data_path
+    os.environ["L5KIT_DATA_FOLDER"] = os.environ["HOME"] + args.data_path
+
+    # Extra info keywords to monitor in addition to tensorboard logs
+    info_keywords = ("reward_tot", "reward_dist", "reward_yaw")
+    monitor_dir = 'monitor_logs/{}'.format(args.output_prefix)
+    monitor_kwargs = {'info_keywords': info_keywords}
 
     # make gym env
     if args.n_envs == 1:
         print("Using 1 envt")
         env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length), use_kinematic=args.kinematic)
+        env = monitor_env(env, monitor_dir, monitor_kwargs)
 
     # custom wrap env into VecEnv
     else:
         print(f"Using {args.n_envs} parallel envts")
         env_kwargs = {'sim_cfg': SimulationConfigGym(args.eps_length), 'use_kinematic': args.kinematic}
-        env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs,
-                           n_envs=args.n_envs, vec_env_cls=SubprocVecEnv,
-                           vec_env_kwargs=dict(start_method='fork'))
+        env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs, n_envs=args.n_envs,
+                           vec_env_cls=SubprocVecEnv, vec_env_kwargs=dict(start_method='fork'),
+                           monitor_dir=monitor_dir, monitor_kwargs=monitor_kwargs)
 
     # Custom Feature Extractor backbone
     policy_kwargs = dict(
@@ -89,7 +94,8 @@ if __name__ == "__main__":
 
     # make eval env at start itself
     print("Creating Eval env.....")
-    eval_env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length), use_kinematic=args.kinematic)
+    eval_env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length), use_kinematic=args.kinematic,
+                        return_info=True)
     model.eval_env = eval_env
 
     # init callback list

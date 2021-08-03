@@ -6,6 +6,8 @@ import torch.nn as nn
 from stable_baselines3.common.torch_layers import BaseFeaturesExtractor
 from torchvision.models.resnet import resnet18, resnet50
 
+from l5kit.environment import models
+
 
 class CustomFeatureExtractor(BaseFeaturesExtractor):
     """Custom feature extractor from raster images for the RL Policy.
@@ -24,11 +26,13 @@ class CustomFeatureExtractor(BaseFeaturesExtractor):
         num_input_channels = observation_space["image"].shape[0]
 
         if model_arch == "simple":
-            model = SimpleCNN(num_input_channels, features_dim)
+            model = models.SimpleCNN(num_input_channels, features_dim)
         elif model_arch == "simpler":
-            model = SimplerCNN(num_input_channels, features_dim)
+            model = models.SimplerCNN(num_input_channels, features_dim)
         elif model_arch in {"resnet18", "resnet50"}:
             model = ResNetCNN(num_input_channels, features_dim, model_arch)
+        elif model_arch in {"resnet1", "resnet2", "resnet3"}:
+            model = CustomResNetCNN(num_input_channels, features_dim, model_arch)
         else:
             raise NotImplementedError
 
@@ -56,11 +60,12 @@ class CustomFeatureExtractor(BaseFeaturesExtractor):
         # self.extractors contain nn.Modules that do all the processing.
         for key, extractor in self.extractors.items():
             encoded_tensor_list.append(extractor(observations[key]))
+        # import pdb; pdb.set_trace()
         # Return a (B, self._features_dim) PyTorch tensor, where B is batch dimension.
         return torch.cat(encoded_tensor_list, dim=1)
 
 
-def ResNetCNN(num_input_channels: int, features_dim: int, model_arch: str, pretrained: bool = True) -> torch.nn.Module:
+def ResNetCNN(num_input_channels: int, features_dim: int, model_arch: str, pretrained: bool = True) -> nn.Module:
     """ResNet feature extractor.
 
     :param num_input_channels: the number of input channels in the input
@@ -88,53 +93,29 @@ def ResNetCNN(num_input_channels: int, features_dim: int, model_arch: str, pretr
     return model
 
 
-def SimpleCNN(num_input_channels: int, features_dim: int) -> torch.nn.Module:
-    """A simplified feature extractor.
+def CustomResNetCNN(num_input_channels: int, features_dim: int, model_arch: str) -> nn.Module:
+    """Custom ResNet feature extractor.
 
     :param num_input_channels: the number of input channels in the input
     :param features_dim: the number of features to extract from input
+    :param model_arch: the architecture of resnet model
     """
-    model = torch.nn.Sequential(
-        nn.Conv2d(num_input_channels, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False),
-        nn.BatchNorm2d(64),
-        nn.ReLU(),
-        nn.MaxPool2d(kernel_size=2, stride=2),
-        nn.Conv2d(64, 32, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False),
-        nn.BatchNorm2d(32),
-        nn.ReLU(),
-        nn.MaxPool2d(kernel_size=2, stride=2),
-        nn.Flatten(),
-        nn.Linear(in_features=1568, out_features=features_dim),
-    )
 
-    return model
+    if model_arch == "resnet1":
+        model = models.CustomResNet(models.BasicBlock, [2])
+        model.fc = nn.Linear(in_features=3136, out_features=features_dim)
+    elif model_arch == "resnet2":
+        model = models.CustomResNet(models.BasicBlock, [2, 2])
+        model.fc = nn.Linear(in_features=1568, out_features=features_dim)
+    elif model_arch == "resnet3":
+        model = models.CustomResNet(models.BasicBlock, [2, 2, 2])
+        model.fc = nn.Linear(in_features=576, out_features=features_dim)
+    else:
+        raise NotImplementedError(f"Model arch {model_arch} unknown")
 
-
-def SimplerCNN(num_input_channels: int, features_dim: int) -> torch.nn.Module:
-    """A simplified feature extractor.
-
-    :param num_input_channels: the number of input channels in the input
-    :param features_dim: the number of features to extract from input
-    """
-    model = torch.nn.Sequential(
-        nn.Conv2d(num_input_channels, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
-        nn.BatchNorm2d(32),
-        nn.ReLU(),
-        nn.MaxPool2d(kernel_size=2, stride=2),
-        nn.Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
-        nn.BatchNorm2d(32),
-        nn.ReLU(),
-        nn.MaxPool2d(kernel_size=2, stride=2),
-        nn.Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
-        nn.BatchNorm2d(32),
-        nn.ReLU(),
-        nn.MaxPool2d(kernel_size=2, stride=2),
-        nn.Conv2d(32, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
-        nn.BatchNorm2d(16),
-        nn.ReLU(),
-        nn.MaxPool2d(kernel_size=2, stride=2),
-        nn.Flatten(),
-        nn.Linear(in_features=784, out_features=features_dim),
-    )
+    if num_input_channels != 3:
+        model.conv = nn.Conv2d(
+            num_input_channels, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+        )
 
     return model

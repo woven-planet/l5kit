@@ -113,7 +113,7 @@ class VizCallback(BaseCallback):
                 break
 
         sim_out: SimulationOutputGym
-        sim_out = info["info"][0]
+        sim_out = info["sim_outs"][0]
         return sim_out
 
     def _determine_rollout_scenes(self) -> List[int]:
@@ -164,19 +164,3 @@ class LoggingCallback(BaseCallback):
 
         with open(self.log_file, 'a') as f:
             f.write('{} \t \t \t {} \n \n'.format(self.model.logger.dir, self.output_prefix))
-
-
-# class TensorboardCallback(BaseCallback):
-#     """
-#     Custom callback for plotting additional values in tensorboard.
-#     """
-
-#     def __init__(self, verbose=0):
-#         super(TensorboardCallback, self).__init__(verbose)
-
-#     def _on_step(self) -> bool:
-#         env_rewards = self.model.env.get_attr('reward')
-#         for i, reward in enumerate(env_rewards):
-#             self.logger.record('reward/{}th_yaw_error'.format(i + 1), reward.yaw_error)
-#             self.logger.record('reward/{}th_dist_error'.format(i + 1), reward.dist_error)
-#         return True

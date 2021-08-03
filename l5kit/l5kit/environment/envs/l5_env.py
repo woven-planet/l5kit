@@ -86,13 +86,14 @@ class L5Env(gym.Env):
     :param rescale_action: flag to rescale the model action back to the un-normalized action space
     :param use_kinematic: flag to use the kinematic model
     :param kin_model: the kinematic model
+    :param return_info: flag to return info when a episode ends
     """
 
     def __init__(self, env_config_path: str, dmg: Optional[LocalDataManager] = None,
                  sim_cfg: Optional[SimulationConfig] = None,
                  reward: Optional[Reward] = None, cle: bool = True, rescale_action: bool = True,
                  use_kinematic: bool = False, kin_model: Optional[KinematicModel] = None,
-                 reset_scene_id: Optional[int] = None) -> None:
+                 reset_scene_id: Optional[int] = None, return_info: bool = False) -> None:
         """Constructor method
         """
         super(L5Env, self).__init__()
@@ -145,6 +146,10 @@ class L5Env(gym.Env):
         self.reset_scene_id = reset_scene_id
         if self.overfit:
             self.reset_scene_id = self.overfit_scene_id
+
+        # flag to decide whether to return any info at end of episode
+        # helps to limit the IPC
+        self.return_info = return_info
 
     def reset(self) -> Dict[str, np.ndarray]:
         """ Resets the environment and outputs first frame of a new scene sample.
@@ -214,17 +219,19 @@ class L5Env(gym.Env):
         done = episode_over
 
         # Optionally we can pass additional info
-        # We are using "info" to output simulated outputs
-        info = {}
-        if done:
-            info = {"info": self.get_simulated_outputs()}
+        # We are using "info" to output rewards and simulated outputs (during evaluation)
+        info: Dict[str, Any]
+        info = {'reward_tot': reward["total"], 'reward_dist': reward["distance"], 'reward_yaw': reward["yaw"]}
+        if done and self.return_info:
+            info = {"sim_outs": self.get_simulated_outputs(), "reward_tot": reward["total"],
+                    "reward_dist": reward["distance"], "reward_yaw": reward["yaw"]}
 
         # Get next obs
         self.frame_index += 1
         obs = self._get_obs(self.frame_index, episode_over)
 
         # return obs, reward, done, info
-        return GymStepOutput(obs, reward, done, info)
+        return GymStepOutput(obs, reward["total"], done, info)
 
     def get_simulated_outputs(self) -> List[SimulationOutputGym]:
         """Generate and output the simulation outputs for the episode.
