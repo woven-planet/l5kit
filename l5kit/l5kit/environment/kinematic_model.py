@@ -76,11 +76,6 @@ class UnicycleModel(KinematicModel):
         acc = input_action[1]
 
         # Update x, y, r, v
-        # self.new_r = self.old_r + steer
-        # self.new_v = self.old_v + acc
-        # self.new_x = self.old_x + math.cos(self.new_r) * self.new_v
-        # self.new_y = self.old_y + math.sin(self.new_r) * self.new_v
-
         self.new_r = steer
         self.new_v = self.old_v + acc
         self.new_x = math.cos(self.new_r) * self.new_v
@@ -94,9 +89,6 @@ class UnicycleModel(KinematicModel):
         return_dict = {"positions": np.array([[[self.new_x, self.new_y]]]), "yaws": np.array([[[self.new_r]]])}
 
         # Saved updated states
-        # self.old_x = self.new_x
-        # self.old_y = self.new_y
-        # self.old_r = self.new_r
         self.old_v = self.new_v
 
         return return_dict

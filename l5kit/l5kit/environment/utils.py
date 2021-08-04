@@ -41,25 +41,6 @@ def calculate_rescale_params(sim_dataset: SimulationDataset, use_kinematic: bool
     :return: the unnormalized action
     """
     if use_kinematic:
-        v_component_frames = []
-        yaw_component_frames = []
-
-        for index_ in range(1, len(sim_dataset)):
-            ego_input = sim_dataset.rasterise_frame_batch(index_)
-            v_component_frames.append([scene['curr_speed'].item() for scene in ego_input])
-            yaw_component_frames.append([scene['target_yaws'][0, 0] for scene in ego_input])
-
-        v_components = np.stack(v_component_frames)
-        acc_components = v_components[1:] - v_components[:-1]
-        acc_components = acc_components.flatten()
-        # acc_mu, acc_std = np.mean(acc_components), np.std(acc_components)
-
-        yaw_components = np.concatenate(yaw_component_frames)
-        yaw_mu, yaw_std = np.mean(yaw_components), np.std(yaw_components)
-
-        print(max(acc_components), min(acc_components))
-        # assert max(acc_components) <= 0.7
-        # assert -0.7 <= min(acc_components)
         return ActionRescaleParams()
 
     x_component_frames = []
@@ -77,16 +58,8 @@ def calculate_rescale_params(sim_dataset: SimulationDataset, use_kinematic: bool
     yaw_components = np.concatenate(yaw_component_frames)
 
     x_mu, x_std = np.mean(x_components), np.std(x_components)
-    assert x_mu - 10 * x_std <= min(x_components)
-    assert x_mu + 10 * x_std >= max(x_components)
-
     y_mu, y_std = np.mean(y_components), np.std(y_components)
-    assert y_mu - 10 * y_std <= min(y_components)
-    assert y_mu + 10 * y_std >= max(y_components)
-
     yaw_mu, yaw_std = np.mean(yaw_components), np.std(yaw_components)
-    assert yaw_mu - 10 * yaw_std <= min(yaw_components)
-    assert yaw_mu + 10 * yaw_std >= max(yaw_components)
 
     return ActionRescaleParams(x_mu, 10 * x_std, y_mu, 10 * y_std, yaw_mu, 10 * yaw_std)
 
