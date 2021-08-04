@@ -27,6 +27,10 @@ class CustomFeatureExtractor(BaseFeaturesExtractor):
 
         if model_arch == "simple":
             model = models.SimpleCNN(num_input_channels, features_dim)
+        elif model_arch == "simple_gn":
+            model = models.SimpleGNCNN(num_input_channels, features_dim)
+        elif model_arch == "simple_gn2":
+            model = models.SimpleGNCNN2(num_input_channels, features_dim)
         elif model_arch == "simpler":
             model = models.SimplerCNN(num_input_channels, features_dim)
         elif model_arch in {"resnet18", "resnet50"}:
@@ -104,18 +108,22 @@ def CustomResNetCNN(num_input_channels: int, features_dim: int, model_arch: str)
     if model_arch == "resnet1":
         model = models.CustomResNet(models.BasicBlock, [2])
         model.fc = nn.Linear(in_features=3136, out_features=features_dim)
+        # model.fc = nn.Linear(in_features=784, out_features=features_dim)
     elif model_arch == "resnet2":
         model = models.CustomResNet(models.BasicBlock, [2, 2])
         model.fc = nn.Linear(in_features=1568, out_features=features_dim)
+        # model.fc = nn.Linear(in_features=288, out_features=features_dim)
     elif model_arch == "resnet3":
         model = models.CustomResNet(models.BasicBlock, [2, 2, 2])
         model.fc = nn.Linear(in_features=576, out_features=features_dim)
+        # model.fc = nn.Linear(in_features=64, out_features=features_dim)
     else:
         raise NotImplementedError(f"Model arch {model_arch} unknown")
 
     if num_input_channels != 3:
         model.conv = nn.Conv2d(
             num_input_channels, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False
+            # num_input_channels, 16, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False
         )
 
     return model

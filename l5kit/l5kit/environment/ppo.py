@@ -54,6 +54,11 @@ if __name__ == "__main__":
                         help='End value of clip in PPO')
     parser.add_argument('--model_arch', default='simple', type=str,
                         help='Model architecture of feature extractor')
+    parser.add_argument('--load_model_path', type=str,
+                        help='Path to load model and continue training')
+    parser.add_argument('--clip_range_vf', default=None, type=float,
+                        help='Clip value of value function in PPO')
+    parser.add_argument('--seed', default=42, type=int)
     args = parser.parse_args()
 
     # By setting the L5KIT_DATA_FOLDER variable, we can point the script to the folder where the data lies.
@@ -68,7 +73,8 @@ if __name__ == "__main__":
     # make gym env
     if args.n_envs == 1:
         print("Using 1 envt")
-        env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length), use_kinematic=args.kinematic)
+        env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length), use_kinematic=args.kinematic,
+                       seed=args.seed)
         env = monitor_env(env, monitor_dir, monitor_kwargs)
 
     # custom wrap env into VecEnv
@@ -77,7 +83,7 @@ if __name__ == "__main__":
         env_kwargs = {'sim_cfg': SimulationConfigGym(args.eps_length), 'use_kinematic': args.kinematic}
         env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs, n_envs=args.n_envs,
                            vec_env_cls=SubprocVecEnv, vec_env_kwargs=dict(start_method='fork'),
-                           monitor_dir=monitor_dir, monitor_kwargs=monitor_kwargs)
+                           monitor_dir=monitor_dir, monitor_kwargs=monitor_kwargs, seed=args.seed)
 
     # Custom Feature Extractor backbone
     policy_kwargs = dict(
@@ -87,10 +93,19 @@ if __name__ == "__main__":
     )
 
     # define model
-    print("Creating Model.....")
-    model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, n_steps=args.num_rollout_steps,
-                learning_rate=3e-4, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
-                device=args.device, clip_range=get_linear_fn(0.2, args.clip_end_val, 1), batch_size=args.batch_size)
+    if args.load_model_path is not None:
+        print("Loading Model......")
+        model = PPO.load(args.load_model_path, env)
+        # _ = model.env.reset()  # Else, error thrown to reset the environment
+        # reset_num_timesteps = False
+        reset_num_timesteps = True
+    else:
+        print("Creating Model.....")
+        model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, n_steps=args.num_rollout_steps,
+                    learning_rate=3e-4, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
+                    device=args.device, clip_range=get_linear_fn(0.2, args.clip_end_val, 1),
+                    batch_size=args.batch_size, clip_range_vf=args.clip_range_vf)
+        reset_num_timesteps = True
 
     # make eval env at start itself
     print("Creating Eval env.....")
@@ -103,5 +118,5 @@ if __name__ == "__main__":
 
     # train
     start = time.time()
-    model.learn(args.n_steps, callback=callback)
+    model.learn(args.n_steps, callback=callback, reset_num_timesteps=reset_num_timesteps)
     print("Training Time: ", time.time() - start)

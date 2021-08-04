@@ -6,6 +6,7 @@ import gym
 import numpy as np
 import torch
 from gym import spaces
+from gym.utils import seeding
 
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
@@ -150,6 +151,18 @@ class L5Env(gym.Env):
         # flag to decide whether to return any info at end of episode
         # helps to limit the IPC
         self.return_info = return_info
+
+        self.seed()
+
+    def seed(self, seed: int = None) -> List[int]:
+        """ Generate the random seed.
+
+        :param seed: the seed integer
+        :return: the output random seed
+        """
+        self.np_random, seed = seeding.np_random(seed)
+        # TODO : add a torch seed for future
+        return [seed]
 
     def reset(self) -> Dict[str, np.ndarray]:
         """ Resets the environment and outputs first frame of a new scene sample.
