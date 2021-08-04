@@ -38,7 +38,9 @@ class TestCLEReward(unittest.TestCase):
         for i in range(19):
             cle_reward.reset()
             result = cle_reward.get_reward(i, [sim_output])
-            self.assertEqual(result, 0.)
+            self.assertEqual(result["total"], 0.)
+            self.assertEqual(result["distance"], 0.)
+            self.assertEqual(result["yaw"], 0.)
 
     def test_l2_parallel_trajectory(self) -> None:
         attrs = {
@@ -52,7 +54,9 @@ class TestCLEReward(unittest.TestCase):
         for i in range(19):
             cle_reward.reset()
             result = cle_reward.get_reward(i, [sim_output])
-            self.assertAlmostEqual(result, -1.4142, 4)
+            self.assertAlmostEqual(result["total"], -1.4142, 4)
+            self.assertAlmostEqual(result["distance"], -1.4142, 4)
+            self.assertEqual(result["yaw"], 0.0)
 
     def test_l2_reward_clipping(self) -> None:
         attrs = {
@@ -66,7 +70,9 @@ class TestCLEReward(unittest.TestCase):
         for i in range(19):
             cle_reward.reset()
             result = cle_reward.get_reward(i, [sim_output])
-            self.assertAlmostEqual(result, -10.0, 4)
+            self.assertAlmostEqual(result["total"], -10.0, 4)
+            self.assertAlmostEqual(result["distance"], -10.0, 4)
+            self.assertEqual(result["yaw"], 0.0)
 
     def test_cle_trajectory_without_clipping(self) -> None:
         attrs = {
@@ -80,7 +86,9 @@ class TestCLEReward(unittest.TestCase):
         for i in range(19):
             cle_reward.reset()
             result = cle_reward.get_reward(i, [sim_output])
-            self.assertAlmostEqual(result, -1.4142 - 1.0, 4)
+            self.assertAlmostEqual(result["total"], -1.4142 - 1.0, 4)
+            self.assertAlmostEqual(result["distance"], -1.4142, 4)
+            self.assertAlmostEqual(result["yaw"], - 1.0, 4)
 
     def test_cle_trajectory_with_clipping(self) -> None:
         attrs = {
@@ -97,4 +105,6 @@ class TestCLEReward(unittest.TestCase):
             cle_reward.reset()
             result = cle_reward.get_reward(i, [sim_output])
             # l2 reward = 10 (clip)
-            self.assertAlmostEqual(result, -10 - (14 - 4 * torch.pi), 4)
+            self.assertAlmostEqual(result["total"], -10 - (14 - 4 * torch.pi), 4)
+            self.assertAlmostEqual(result["distance"], -10.0, 4)
+            self.assertAlmostEqual(result["yaw"], - 14 + 4 * torch.pi, 4)

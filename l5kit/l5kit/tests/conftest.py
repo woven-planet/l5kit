@@ -36,7 +36,7 @@ def cfg() -> dict:
     return load_config_data("./l5kit/tests/artefacts/config.yaml")
 
 
-@pytest.fixture(scope="function")
+@pytest.fixture(scope="session")
 def env_cfg_path() -> str:
     """
     Get a L5 environment config file from artefacts

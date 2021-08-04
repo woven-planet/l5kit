@@ -6,6 +6,7 @@ import gym
 import numpy as np
 import torch
 from gym import spaces
+from gym.utils import seeding
 
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
@@ -86,12 +87,14 @@ class L5Env(gym.Env):
     :param rescale_action: flag to rescale the model action back to the un-normalized action space
     :param use_kinematic: flag to use the kinematic model
     :param kin_model: the kinematic model
+    :param return_info: flag to return info when a episode ends
     """
 
     def __init__(self, env_config_path: str, dmg: Optional[LocalDataManager] = None,
                  sim_cfg: Optional[SimulationConfig] = None,
                  reward: Optional[Reward] = None, cle: bool = True, rescale_action: bool = True,
-                 use_kinematic: bool = False, kin_model: Optional[KinematicModel] = None) -> None:
+                 use_kinematic: bool = False, kin_model: Optional[KinematicModel] = None,
+                 reset_scene_id: Optional[int] = None, return_info: bool = False) -> None:
         """Constructor method
         """
         super(L5Env, self).__init__()
@@ -140,20 +143,40 @@ class L5Env(gym.Env):
         if self.use_kinematic:
             self.kin_model = kin_model if kin_model is not None else UnicycleModel()
 
-    def reset(self, scene_index: Optional[int] = None) -> Dict[str, np.ndarray]:
+        # If not None, reset_scene_id is the scene_id that will be rolled out when reset is called
+        self.reset_scene_id = reset_scene_id
+        if self.overfit:
+            self.reset_scene_id = self.overfit_scene_id
+
+        # flag to decide whether to return any info at end of episode
+        # helps to limit the IPC
+        self.return_info = return_info
+
+        self.seed()
+
+    def seed(self, seed: int = None) -> List[int]:
+        """ Generate the random seed.
+
+        :param seed: the seed integer
+        :return: the output random seed
+        """
+        self.np_random, seed = seeding.np_random(seed)
+        # TODO : add a torch seed for future
+        return [seed]
+
+    def reset(self) -> Dict[str, np.ndarray]:
         """ Resets the environment and outputs first frame of a new scene sample.
 
-        :param scene_index: the scene index to roll out (deterministic scene sampling)
         :return: the observation of first frame of sampled scene index
         """
         # Define in / outs for new episode scene
         self.agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]] = defaultdict(list)
         self.ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]] = defaultdict(list)
 
-        if scene_index is not None:
-            self.scene_index = scene_index
+        if self.reset_scene_id is not None:
+            self.scene_index = self.reset_scene_id
         else:  # Sample a scene
-            self.scene_index = random.randint(0, self.max_scene_id) if not self.overfit else self.overfit_scene_id
+            self.scene_index = random.randint(0, self.max_scene_id)
         self.sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, [self.scene_index], self.sim_cfg)
 
         # Reset CLE evaluator
@@ -209,17 +232,19 @@ class L5Env(gym.Env):
         done = episode_over
 
         # Optionally we can pass additional info
-        # We are using "info" to output simulated outputs
-        info = {}
-        if done:
-            info = {"info": self.get_simulated_outputs()}
+        # We are using "info" to output rewards and simulated outputs (during evaluation)
+        info: Dict[str, Any]
+        info = {'reward_tot': reward["total"], 'reward_dist': reward["distance"], 'reward_yaw': reward["yaw"]}
+        if done and self.return_info:
+            info = {"sim_outs": self.get_simulated_outputs(), "reward_tot": reward["total"],
+                    "reward_dist": reward["distance"], "reward_yaw": reward["yaw"]}
 
         # Get next obs
         self.frame_index += 1
         obs = self._get_obs(self.frame_index, episode_over)
 
         # return obs, reward, done, info
-        return GymStepOutput(obs, reward, done, info)
+        return GymStepOutput(obs, reward["total"], done, info)
 
     def get_simulated_outputs(self) -> List[SimulationOutputGym]:
         """Generate and output the simulation outputs for the episode.
