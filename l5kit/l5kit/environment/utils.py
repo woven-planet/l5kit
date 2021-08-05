@@ -90,7 +90,6 @@ def save_input_raster(rasterizer: Rasterizer, image: torch.Tensor, output_folder
     :param rasterizer: the rasterizer
     :param image: numpy array
     :param output_folder: directory to save the image
-    :return: the numpy dict with 'positions' and 'yaws'
     """
 
     image = image.permute(1, 2, 0).cpu().numpy()

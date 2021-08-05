@@ -114,8 +114,6 @@ class L5Env(gym.Env):
 
         # Define action and observation space
         # Continuous Action Space: gym.spaces.Box (X, Y, Yaw * number of future states)
-        # self.action_space = spaces.Box(low=-1000, high=1000, shape=(3, ))
-        # self.action_space = spaces.Box(low=-2, high=2, shape=(3, ))
         self.action_space = spaces.Box(low=-1, high=1, shape=(3, ))
 
         # Observation Space: gym.spaces.Dict (image: [n_channels, raster_size, raster_size])
