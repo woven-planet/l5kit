@@ -3,7 +3,7 @@
 Starting 24.08.2020 we are hosting a [Kaggle competition](https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview) about predicting future movements of other traffic participants.
 This page serves as introduction point for it and gives additional information.
 
-# Scoring
+## Scoring
 When taking part in the competition, you will be asked to submit predictions for a private test set (no ground truth is available),
 and your solutions will be scored by Kaggle. Overall 30.000 USD as prizes are available!
 As traffic scenes can contain a large amount of ambiguity and uncertainty, we encourage the submission of multi-modal predictions.
@@ -48,7 +48,7 @@ Then, we rewrite this by substracting the maximum value x<sup>*</sup> from each 
 
 ![equation](https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20LSE%28x_1%2C%20%5Cldots%2C%20x_n%29%20%3D%20x%5E*%20&plus;%20%5Clog%28e%5E%7Bx_1%20-%20x%5E%7B*%7D%7D%20&plus;%20%5Cldots%20&plus;%20e%5E%7Bx_n%20-%20x%5E%7B*%7D%7D%29)
 
-# Coordinates System for the competition
+## Coordinates System for the competition
 Please refer to [this doc](https://github.com/lyft/l5kit/blob/master/coords_systems.md) for a full description of the different coordinate systems used in L5Kit.
 
 The ground truth coordinates for the competition are stored as positional displacements in the [world coordinate system](https://github.com/lyft/l5kit/blob/master/coords_systems.md#world-coordinate-system).
@@ -60,7 +60,7 @@ and subtract the centroid.
 
 Yaw is not required/used for this competition.
 
-# Additional Metrics
+## Additional Metrics
 Scoring multi-modal prediction models is a highly complex task, and while we chose the metric described above due to its elegance and support for multi-modality,
 we encourage participants to also employ other metrics for assessing their models.
 Examples of such other metrics, commonly used in literature, are *Average Displacement Error* (ADE) and *Final Displacement Error* (FDE) (see 

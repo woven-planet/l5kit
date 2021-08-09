@@ -1,5 +1,5 @@
 How to contribute
-==
+=================
 
 You are invited to contribute to the L5Kit with your examples and improvements.
 These are peer-reviewed by the development team to maintain quality and reproducibility.
