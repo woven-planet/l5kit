@@ -16,7 +16,8 @@ from l5kit.environment.reward import CLEReward, Reward
 from l5kit.environment.utils import ActionRescaleParams, calculate_rescale_params, convert_to_numpy
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
-from l5kit.simulation.unroll import ClosedLoopSimulator, SimulationOutputCLE, UnrollInputOutput
+from l5kit.simulation.unroll import (ClosedLoopSimulator, ClosedLoopSimulatorModes, SimulationOutputCLE,
+                                     UnrollInputOutput)
 
 
 class SimulationConfigGym(SimulationConfig):
@@ -39,9 +40,10 @@ class SimulationConfigGym(SimulationConfig):
         return self
 
 
-class SimulationOutputGym(SimulationOutputCLE):
-    """This object holds information about the result of the simulation loop
-    for a given scene dataset in gym-compatible L5Kit environment.
+class EpisodeOutputGym(SimulationOutputCLE):
+    """This object holds information regarding the simulation output at the end of an episode
+    in the gym-compatible L5Kit environment. The output can be used to
+    calculate quantitative metrics and provide qualitative visualization.
 
     :param scene_id: the scene indices
     :param sim_dataset: the simulation dataset
@@ -54,7 +56,7 @@ class SimulationOutputGym(SimulationOutputCLE):
                  agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]]):
         """Constructor method
         """
-        super(SimulationOutputGym, self).__init__(scene_id, sim_dataset, ego_ins_outs, agents_ins_outs)
+        super(EpisodeOutputGym, self).__init__(scene_id, sim_dataset, ego_ins_outs, agents_ins_outs)
 
         # Required for Bokeh Visualizer
         simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
@@ -114,6 +116,8 @@ class L5Env(gym.Env):
 
         # Define action and observation space
         # Continuous Action Space: gym.spaces.Box (X, Y, Yaw * number of future states)
+        # self.action_space = spaces.Box(low=-1000, high=1000, shape=(3, ))
+        # self.action_space = spaces.Box(low=-2, high=2, shape=(3, ))
         self.action_space = spaces.Box(low=-1, high=1, shape=(3, ))
 
         # Observation Space: gym.spaces.Dict (image: [n_channels, raster_size, raster_size])
@@ -123,7 +127,7 @@ class L5Env(gym.Env):
         # Simulator Config within Gym
         self.sim_cfg = sim_cfg if sim_cfg is not None else SimulationConfigGym()
         self.simulator = ClosedLoopSimulator(self.sim_cfg, self.dataset, device=torch.device("cpu"),
-                                             verify_model=False)
+                                             mode=ClosedLoopSimulatorModes.GYM)
 
         self.reward = reward if reward is not None else CLEReward()
 
@@ -234,7 +238,7 @@ class L5Env(gym.Env):
         info: Dict[str, Any]
         info = {'reward_tot': reward["total"], 'reward_dist': reward["distance"], 'reward_yaw': reward["yaw"]}
         if done and self.return_info:
-            info = {"sim_outs": self.get_simulated_outputs(), "reward_tot": reward["total"],
+            info = {"sim_outs": self.get_episode_outputs(), "reward_tot": reward["total"],
                     "reward_dist": reward["distance"], "reward_yaw": reward["yaw"]}
 
         # Get next obs
@@ -244,15 +248,14 @@ class L5Env(gym.Env):
         # return obs, reward, done, info
         return GymStepOutput(obs, reward["total"], done, info)
 
-    def get_simulated_outputs(self) -> List[SimulationOutputGym]:
-        """Generate and output the simulation outputs for the episode.
+    def get_episode_outputs(self) -> List[EpisodeOutputGym]:
+        """Generate and return the outputs at the end of the episode.
 
-        :return: List of simulated outputs
+        :return: List of episode outputs
         """
-        # generate simulated_outputs
-        simulated_outputs = [SimulationOutputGym(self.scene_index, self.sim_dataset, self.ego_ins_outs,
-                                                 self.agents_ins_outs)]
-        return simulated_outputs
+        episode_outputs = [EpisodeOutputGym(self.scene_index, self.sim_dataset, self.ego_ins_outs,
+                                            self.agents_ins_outs)]
+        return episode_outputs
 
     def render(self) -> None:
         """Render a frame during the simulation

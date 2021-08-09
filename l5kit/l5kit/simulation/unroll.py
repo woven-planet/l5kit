@@ -46,6 +46,16 @@ class UnrollInputOutput(NamedTuple):
     outputs: Dict[str, np.ndarray]
 
 
+class ClosedLoopSimulatorModes(IntEnum):
+    """Defines the different modes for which the closed loop simulator can be used.
+
+    :param L5KIT: the index for using closed loop simulator for L5Kit environment
+    :param GYM: the index for using closed loop simulator for Gym environment
+    """
+    L5KIT = 0
+    GYM = 1
+
+
 class SimulationOutputCLE:
     def __init__(self, scene_id: int, sim_dataset: SimulationDataset,
                  ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]],
@@ -131,7 +141,7 @@ class ClosedLoopSimulator:
                  model_ego: Optional[torch.nn.Module] = None,
                  model_agents: Optional[torch.nn.Module] = None,
                  keys_to_exclude: Tuple[str] = ("image",),
-                 verify_model: Optional[bool] = True):
+                 mode: int = ClosedLoopSimulatorModes.L5KIT):
         """
         Create a simulation loop object capable of unrolling ego and agents
         :param sim_cfg: configuration for unroll
@@ -140,12 +150,12 @@ class ClosedLoopSimulator:
         :param model_ego: the model to be used for ego
         :param model_agents: the model to be used for agents
         :param keys_to_exclude: keys to exclude from input/output (e.g. huge blobs)
-        :param verify_model: flag to verify the ego/agent model when use_ego_gt/use_agent_gt is False
+        :param mode: the framework that uses the closed loop simulator
         """
         self.sim_cfg = sim_cfg
-        if not sim_cfg.use_ego_gt and model_ego is None and verify_model:
+        if not sim_cfg.use_ego_gt and model_ego is None and mode == ClosedLoopSimulatorModes.L5KIT:
             raise ValueError("ego model should not be None when simulating ego")
-        if not sim_cfg.use_agents_gt and model_agents is None and verify_model:
+        if not sim_cfg.use_agents_gt and model_agents is None and mode == ClosedLoopSimulatorModes.L5KIT:
             raise ValueError("agents model should not be None when simulating agent")
 
         self.model_ego = torch.nn.Sequential().to(device) if model_ego is None else model_ego.to(device)

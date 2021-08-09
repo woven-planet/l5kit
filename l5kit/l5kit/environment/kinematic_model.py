@@ -41,8 +41,8 @@ class UnicycleModel(KinematicModel):
     """
 
     def __init__(self, model_prefix: str = "Unicycle",
-                 min_acc: float = -0.5,  # min acceleration: -5 mps2
-                 max_acc: float = 0.5,   # max acceleration: 5 mps2
+                 min_acc: float = -0.6,  # min acceleration: -6 mps2
+                 max_acc: float = 0.6,   # max acceleration: 6 mps2
                  min_steer: float = -math.radians(45) * 0.1,  # max yaw rate: 45 degrees per second
                  max_steer: float = math.radians(45) * 0.1,   # max yaw rate: 45 degrees per second
                  ) -> None:
@@ -75,15 +75,16 @@ class UnicycleModel(KinematicModel):
         steer = input_action[0]
         acc = input_action[1]
 
+        # Clip
+        steer = np.clip(steer, self.min_steer, self.max_steer)
+        acc = np.clip(acc, self.min_acc, self.max_acc)
+
         # Update x, y, r, v
+        # x, y and r are already zero-centered in the raster image
         self.new_r = steer
         self.new_v = self.old_v + acc
         self.new_x = math.cos(self.new_r) * self.new_v
         self.new_y = math.sin(self.new_r) * self.new_v
-
-        eps = 1e-3
-        assert self.min_steer - eps <= steer <= self.max_steer + eps
-        assert self.min_acc - eps <= acc <= self.max_acc + eps
 
         # Predicted positions and yaws according to unicycle model
         return_dict = {"positions": np.array([[[self.new_x, self.new_y]]]), "yaws": np.array([[[self.new_r]]])}
