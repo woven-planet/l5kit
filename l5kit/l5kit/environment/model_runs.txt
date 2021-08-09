@@ -340,3 +340,50 @@ tb_log/PPO_123 	 	 	 42scenes_kinematic_1M_history3_gn2
  
 tb_log/PPO_124 	 	 	 42scenes_kinematic_1M_history5_gn2 
  
+tb_log/PPO_125 	 	 	 verify_eps64_simple_gn2_km_turn 
+ 
+tb_log/PPO_126 	 	 	 verify_eps64_simple_gn2_km_turn 
+ 
+tb_log/PPO_127 	 	 	 verify_eps64_simple_gn2_km_turn 
+ 
+tb_log/PPO_128 	 	 	 42scenes_kinematic_1M_history3_gn2_c0025 
+
+## Acc: 0.6, Steer: 20 
+tb_log/PPO_129 	 	 	 42scenes_kinematic_1M_history3_gn2_c0025 
+ 
+tb_log/PPO_130 	 	 	 42scenes_kinematic_1M_history3_gn2 
+ 
+tb_log/PPO_131 	 	 	 42scenes_kinematic_1M_history3_gn2_c01 
+ 
+tb_log/PPO_132 	 	 	 42scenes_kinematic_1M_history3_gn2_c0005 
+ 
+tb_log/PPO_132 	 	 	 42scenes_kinematic_3M_history3_gn2_c01 
+ 
+tb_log/PPO_132 	 	 	 42scenes_kinematic_3M_history3_gn2_c0025 
+ 
+tb_log/PPO_133 	 	 	 42scenes_kinematic_1M_3M_history3_gn2_c01 
+ 
+tb_log/PPO_134 	 	 	 42scenes_kinematic_1M_3M_history3_gn2_c0025 
+ 
+tb_log/PPO_135 	 	 	 42scenes_kinematic_2M_history3_gn2_c02 
+ 
+tb_log/PPO_136 	 	 	 42scenes_kinematic_1M_history3_gn2_c01_gae090 
+ 
+tb_log/PPO_137 	 	 	 42scenes_kinematic_1M_history3_gn2_c01_gamma099 
+ 
+tb_log/PPO_138 	 	 	 42scenes_kinematic_20M_history3_gn2_c0001_gae090 
+ 
+tb_log/PPO_139 	 	 	 42scenes_kinematic_20M_history3_gn2_c0001 
+ 
+tb_log/PPO_140 	 	 	 42scenes_kinematic_20M_history3_gn2_c0001_const_gae090 
+ 
+tb_log/PPO_141 	 	 	 42scenes_kinematic_10M_history3_gn2_c01_c0001_gae090 
+ 
+/tmp/SB3-2021-08-09-11-41-49-890881 	 	 	 del 
+ 
+/tmp/SB3-2021-08-09-11-42-36-782095 	 	 	 del 
+ 
+/tmp/SB3-2021-08-09-11-45-38-454964 	 	 	 del 
+ 
+/tmp/SB3-2021-08-09-12-44-30-069281 	 	 	 del 
+ 

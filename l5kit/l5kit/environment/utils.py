@@ -29,8 +29,8 @@ class ActionRescaleParams(NamedTuple):
     y_scale: float = 0.03
     yaw_mu: float = 0.0
     yaw_scale: float = 0.3
-    steer_scale: float = math.radians(15) * 0.1
-    acc_scale: float = 0.3
+    steer_scale: float = math.radians(20) * 0.1  # 15
+    acc_scale: float = 0.6  # 0.3
 
 
 def calculate_rescale_params(sim_dataset: SimulationDataset, use_kinematic: bool = False) -> ActionRescaleParams:
@@ -51,6 +51,12 @@ def calculate_rescale_params(sim_dataset: SimulationDataset, use_kinematic: bool
 
         v_components = np.stack(v_component_frames)
         acc_components = v_components[1:] - v_components[:-1]
+        acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
+        acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
+        acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
+
+        # import pdb; pdb.set_trace()
+
         acc_components = acc_components.flatten()
         # acc_mu, acc_std = np.mean(acc_components), np.std(acc_components)
 
@@ -58,6 +64,8 @@ def calculate_rescale_params(sim_dataset: SimulationDataset, use_kinematic: bool
         yaw_mu, yaw_std = np.mean(yaw_components), np.std(yaw_components)
 
         print(max(acc_components), min(acc_components))
+        print(max(yaw_components), min(yaw_components), math.radians(20) * 0.1)
+        # import pdb; pdb.set_trace()
         # assert max(acc_components) <= 0.7
         # assert -0.7 <= min(acc_components)
         return ActionRescaleParams()
