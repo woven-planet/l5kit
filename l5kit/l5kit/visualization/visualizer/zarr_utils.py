@@ -7,7 +7,7 @@ from l5kit.data.filter import (filter_agents_by_frames, filter_agents_by_labels,
                                filter_tl_faces_by_status)
 from l5kit.data.labels import PERCEPTION_LABELS
 from l5kit.data.map_api import MapAPI, TLFacesColors
-from l5kit.environment.envs.l5_env import SimulationOutputGym
+from l5kit.environment.envs.l5_env import EpisodeOutputGym
 from l5kit.geometry import transform_points
 from l5kit.rasterization.box_rasterizer import get_box_world_coords, get_ego_as_agent
 from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
@@ -268,9 +268,9 @@ def simulation_out_to_visualizer_scene(sim_out: SimulationOutput, mapAPI: MapAPI
     return frames_vis
 
 
-def simulation_out_to_visualizer_scene_gym_cle(sim_out: SimulationOutputGym,
-                                               mapAPI: MapAPI) -> List[FrameVisualization]:
-    """Convert a simulation output of closed loop gym into a scene we can visualize.
+def episode_out_to_visualizer_scene_gym_cle(sim_out: EpisodeOutputGym,
+                                            mapAPI: MapAPI) -> List[FrameVisualization]:
+    """Convert a episode output of closed loop gym into a scene we can visualize.
     The scene will include replayed and simulated trajectories for ego and agents when these are
     simulated.
 

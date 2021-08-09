@@ -38,6 +38,8 @@ if __name__ == "__main__":
                         help='Mini batch size of model update')
     parser.add_argument('--gamma', default=0.95, type=float,
                         help='Discount factor')
+    parser.add_argument('--gae_lambda', default=0.95, type=float,
+                        help='Discount factor')
     parser.add_argument('--tb_log', default=None, type=str,
                         help='Tensorboard Log folder')
     parser.add_argument('--eval', action='store_true',
@@ -50,6 +52,8 @@ if __name__ == "__main__":
                         help='Reward Clipping Threshold')
     parser.add_argument('--kinematic', action='store_true',
                         help='Use kinematic model')
+    parser.add_argument('--clip_start_val', default=0.2, type=float,
+                        help='Start value of clip in PPO')
     parser.add_argument('--clip_end_val', default=0.001, type=float,
                         help='End value of clip in PPO')
     parser.add_argument('--model_arch', default='simple', type=str,
@@ -73,8 +77,7 @@ if __name__ == "__main__":
     # make gym env
     if args.n_envs == 1:
         print("Using 1 envt")
-        env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length), use_kinematic=args.kinematic,
-                       seed=args.seed)
+        env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length), use_kinematic=args.kinematic)
         env = monitor_env(env, monitor_dir, monitor_kwargs)
 
     # custom wrap env into VecEnv
@@ -83,7 +86,7 @@ if __name__ == "__main__":
         env_kwargs = {'sim_cfg': SimulationConfigGym(args.eps_length), 'use_kinematic': args.kinematic}
         env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs, n_envs=args.n_envs,
                            vec_env_cls=SubprocVecEnv, vec_env_kwargs=dict(start_method='fork'),
-                           monitor_dir=monitor_dir, monitor_kwargs=monitor_kwargs, seed=args.seed)
+                           monitor_dir=monitor_dir, monitor_kwargs=monitor_kwargs)
 
     # Custom Feature Extractor backbone
     policy_kwargs = dict(
@@ -93,9 +96,10 @@ if __name__ == "__main__":
     )
 
     # define model
+    clip_schedule = get_linear_fn(args.clip_start_val, args.clip_end_val, 1)
     if args.load_model_path is not None:
         print("Loading Model......")
-        model = PPO.load(args.load_model_path, env)
+        model = PPO.load(args.load_model_path, env, clip_range=clip_schedule)
         # _ = model.env.reset()  # Else, error thrown to reset the environment
         # reset_num_timesteps = False
         reset_num_timesteps = True
@@ -103,8 +107,8 @@ if __name__ == "__main__":
         print("Creating Model.....")
         model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, n_steps=args.num_rollout_steps,
                     learning_rate=3e-4, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
-                    device=args.device, clip_range=get_linear_fn(0.2, args.clip_end_val, 1),
-                    batch_size=args.batch_size, clip_range_vf=args.clip_range_vf)
+                    device=args.device, clip_range=clip_schedule, clip_range_vf=args.clip_range_vf,
+                    batch_size=args.batch_size, seed=args.seed, gae_lambda=args.gae_lambda)
         reset_num_timesteps = True
 
     # make eval env at start itself
