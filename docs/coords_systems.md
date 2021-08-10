@@ -1,7 +1,6 @@
 Coordinate Systems in L5Kit
 ===
 
-# Introduction
 One essential feature of L5Kit is converting raw data into multi-channel images. We refer to this process as
 **rasterisation**. These raw data can come from different sources, such as:
 - `.zarr` datasets, which include information about the AV and other agents;
@@ -13,7 +12,6 @@ before we can use them together to get our final multi-channel image.
 L5Kit performs this operation smoothly under the hood, but you may want to know more details about these different systems
 if you're trying a more experimental workflow.
 
-# Coordinate Systems
 
 ## World Coordinate System
 We refer to the coordinate system in the `.zarr` dataset as **world**. This is shared by *all* our zarrs in a dataset
@@ -100,3 +98,9 @@ When you query it for a supported element (only lanes and crosswalks currently):
 - the features is finally converted from ECEF to world (this is the reason for the `world_to_ecef` arg in the `MapAPI` constructor).
 
 As these operations are computationally expensive, the function results are LRUcached
+
+## Notebook Tutorial
+
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/visualisation/visualise_data.ipynb)
+
+Our [visualisation notebook](./examples/visualisation/visualise_data.ipynb) is the perfect place to start if you want to know more about L5Kit dataset format and coordinate systems.

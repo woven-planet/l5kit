@@ -1,10 +1,9 @@
-Dataset Formats
-===
+Dataset Formats in L5Kit
+===============
 
-## Introduction
 In the L5Kit codebase, we make use of a data format that consists of a set of [numpy structured arrays](https://docs.scipy.org/doc/numpy/user/basics.rec.html). Conceptually, it is similar to a set of CSV files with records and different columns, only that they are stored as binary files instead of text. Structured arrays can be directly memory mapped from disk.
 
-### Interleaved data in structured arrays
+## Interleaved data in structured arrays
 Structured arrays are stored in memory in an interleaved format, this means that one "row" or "sample" is grouped together in memory. For example, if we are storing colors and whether we like them (as a boolean `l`), it would be `[r,g,b,l,r,g,b,l,r,g,b,l]` and not `[r,r,r,g,g,g,b,b,b,l,l,l]`). Most ML applications require row-based access - column-based operations are much less common - making this a good fit.
 
 Here is how this example translates into code:
@@ -38,7 +37,7 @@ As you can see, structured arrays allow us to mix different data types into a si
 
 This becomes increasingly relevant with a larger number of fields and complexities of each field. In our dataset, an observation of another agent is described with its centroid (`dtype=(float64, 3)`), its rotation matrix (`dtype=(np.float64, (3,3))`), its extent or size (`dtype=(np.float64, 3)`) to name a few properties. Structured arrays are a great fit to group this data together in memory and on disk.
 
-### Short introduction to zarr
+## Short introduction to zarr
 We use the zarr data format to store and read these numpy structured arrays from disk. Zarr allows us to write very large (structured) arrays to disk in n-dimensional compressed chunks. See the [zarr docs](https://zarr.readthedocs.io/en/stable/). Here is a short tutorial:
 
 ```python

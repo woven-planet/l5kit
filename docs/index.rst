@@ -29,11 +29,17 @@ Table of Contents
    :maxdepth: 1
 
    README.md
+   overview.md
+   installation.md
    data_format.md
    coords_systems.md
+   prediction.md
+   planning.md
+   simulation.md
    how_to_contribute.md
    competition.md
    api_reference.md
+   license.md
    credits.md
 
 
