@@ -62,6 +62,8 @@ if __name__ == "__main__":
                         help='Path to load model and continue training')
     parser.add_argument('--clip_range_vf', default=None, type=float,
                         help='Clip value of value function in PPO')
+    parser.add_argument('--clip_progress_ratio', default=1.0, type=float,
+                        help='Clip progress for linear schedule')
     parser.add_argument('--seed', default=42, type=int)
     args = parser.parse_args()
 
@@ -96,7 +98,7 @@ if __name__ == "__main__":
     )
 
     # define model
-    clip_schedule = get_linear_fn(args.clip_start_val, args.clip_end_val, 1)
+    clip_schedule = get_linear_fn(args.clip_start_val, args.clip_end_val, args.clip_progress_ratio)
     if args.load_model_path is not None:
         print("Loading Model......")
         model = PPO.load(args.load_model_path, env, clip_range=clip_schedule)

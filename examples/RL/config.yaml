@@ -56,6 +56,6 @@ train_data_loader:
 ###################
 ## Gym params
 gym_params:
-  max_scene_id: 42
+  max_scene_id: 100
   overfit: False
   overfit_id: 0
