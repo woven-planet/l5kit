@@ -26,7 +26,7 @@ class MockModel(torch.nn.Module):
 
 def test_default_attributes(dmg: LocalDataManager, env_cfg_path: str) -> None:
     env = L5Env(env_cfg_path, dmg)
-    assert isinstance(env.reward, reward.CLEReward)
+    assert isinstance(env.reward, reward.L2DisplacementYawReward)
     assert isinstance(env.sim_cfg, SimulationConfigGym)
 
 

@@ -1,4 +1,5 @@
 import math
+import numbers
 from pathlib import Path
 from typing import Any, Dict, NamedTuple
 
@@ -10,8 +11,9 @@ from l5kit.rasterization import Rasterizer
 from l5kit.simulation.dataset import SimulationDataset
 
 
-class ActionRescaleParams(NamedTuple):
-    """Defines the parameters to rescale model actions into un-normalized action space.
+class NonKinematicActionRescaleParams(NamedTuple):
+    """Defines the parameters to rescale actions into un-normalized action space
+    when the kinematic model is not used.
 
     :param x_mu: the translation of the x-coordinate
     :param x_scale: the scaling of the x-coordinate
@@ -19,36 +21,38 @@ class ActionRescaleParams(NamedTuple):
     :param y_scale: the scaling of the y-coordinate
     :param yaw_mu: the translation of the yaw (radians)
     :param yaw_scale: the scaling of the yaw (radians)
+    """
+    x_mu: float
+    x_scale: float
+    y_mu: float
+    y_scale: float
+    yaw_mu: float
+    yaw_scale: float
+
+
+class KinematicActionRescaleParams(NamedTuple):
+    """Defines the parameters to rescale actions into un-normalized action space
+    when the kinematic model is used.
+
     :param steer_scale: the scaling of the steer (kinematic model)
     :param acc_scale: the scaling of the acceleration (kinematic model)
-
     """
-    x_mu: float = 1.20
-    x_scale: float = 0.20
-    y_mu: float = 0.0
-    y_scale: float = 0.03
-    yaw_mu: float = 0.0
-    yaw_scale: float = 0.3
-    steer_scale: float = math.radians(15) * 0.1
-    acc_scale: float = 0.3
+    steer_scale: float
+    acc_scale: float
 
 
-def calculate_rescale_params(sim_dataset: SimulationDataset, use_kinematic: bool = False) -> ActionRescaleParams:
-    """Calculate the action un-normalization parameters from the simulation dataset.
+def calculate_non_kinematic_rescale_params(sim_dataset: SimulationDataset) -> NonKinematicActionRescaleParams:
+    """Calculate the action un-normalization parameters from the simulation dataset for non-kinematic model.
 
     :param sim_dataset: the input dataset to calculate the action rescale parameters
-    :param use_kinematic: flag to use the kinematic model
     :return: the unnormalized action
     """
-    if use_kinematic:
-        return ActionRescaleParams()
-
     x_component_frames = []
     y_component_frames = []
     yaw_component_frames = []
 
-    for index_ in range(1, len(sim_dataset) - 1):
-        ego_input = sim_dataset.rasterise_frame_batch(index_)
+    for index in range(1, len(sim_dataset) - 1):
+        ego_input = sim_dataset.rasterise_frame_batch(index)
         x_component_frames.append([scene['target_positions'][0, 0] for scene in ego_input])
         y_component_frames.append([scene['target_positions'][0, 1] for scene in ego_input])
         yaw_component_frames.append([scene['target_yaws'][0, 0] for scene in ego_input])
@@ -61,7 +65,17 @@ def calculate_rescale_params(sim_dataset: SimulationDataset, use_kinematic: bool
     y_mu, y_std = np.mean(y_components), np.std(y_components)
     yaw_mu, yaw_std = np.mean(yaw_components), np.std(yaw_components)
 
-    return ActionRescaleParams(x_mu, 10 * x_std, y_mu, 10 * y_std, yaw_mu, 10 * yaw_std)
+    # Keeping scale = 10 * std so that extreme values are not clipped
+    return NonKinematicActionRescaleParams(x_mu, 10 * x_std, y_mu, 10 * y_std, yaw_mu, 10 * yaw_std)
+
+
+def calculate_kinematic_rescale_params(sim_dataset: SimulationDataset) -> KinematicActionRescaleParams:
+    """Calculate the action un-normalization parameters from the simulation dataset for kinematic model.
+
+    :param sim_dataset: the input dataset to calculate the action rescale parameters
+    :return: the unnormalized action
+    """
+    return KinematicActionRescaleParams(math.radians(20) * 0.1, 0.6)
 
 
 def convert_to_numpy(data: Dict[str, Any]) -> Dict[str, np.ndarray]:
@@ -72,15 +86,14 @@ def convert_to_numpy(data: Dict[str, Any]) -> Dict[str, np.ndarray]:
     """
     output_data = {}
     for k, v in data.items():
-        if isinstance(v, int) or isinstance(v, float) or isinstance(v, np.int64) or isinstance(v, np.float32):
+        if isinstance(v, numbers.Number):
             output_data[k] = np.array([v])
         elif isinstance(v, np.ndarray):
             output_data[k] = np.expand_dims(v, axis=0)
         elif isinstance(v, torch.Tensor):
             output_data[k] = np.expand_dims(v.cpu().numpy(), axis=0)
         else:
-            print(k, v, type(v))
-            raise NotImplementedError
+            raise NotImplementedError(f"{type(v)} is not supported (field {k})")
     return output_data
 
 
@@ -90,6 +103,7 @@ def save_input_raster(rasterizer: Rasterizer, image: torch.Tensor, output_folder
     :param rasterizer: the rasterizer
     :param image: numpy array
     :param output_folder: directory to save the image
+    :return: the numpy dict with 'positions' and 'yaws'
     """
 
     image = image.permute(1, 2, 0).cpu().numpy()
