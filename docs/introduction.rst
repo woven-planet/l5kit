@@ -1,3 +1,5 @@
+.. _intro:
+
 Introduction
 ============
 
@@ -5,9 +7,13 @@ This repository and the associated datasets constitute a framework for developin
 
 The purpose of this framework is to enable engineers and researchers to experiment with data-driven approaches to planning and simulation problems using real world driving data and contribute to state-of-the-art solutions.
 
-![Modern AV pipeline](/images/pipeline.png)
+
+.. image:: images/pipeline.png
+   :width: 800
+   :alt: Modern AV pipeline
 
 You can use this framework to build systems which:
+
 * Turn prediction, planning and simulation problems into data problems and train them on real data.
 * Use neural networks to model key components of the Autonomous Vehicle (AV) stack.
 * Use historical observations to predict future movement of cars around an AV.
@@ -15,12 +21,14 @@ You can use this framework to build systems which:
 * Study the improvement in performance of these systems as the amount of data increases.
 
 
-This software is developed by Lyft Level 5 self-driving division and is [open to external contributors](how_to_contribute.md).
+This software is developed by Lyft Level 5 self-driving division and is :ref:`open to external contributors <contribute>`.
 
-&nbsp;
 
-## Video Tutorial
+Video Tutorial
+--------------
 
 Here is a short video tour introducing the L5Kit and the functionalities of the library.
 
-[![Introduction to L5Kit](https://img.youtube.com/vi/1cfXBS0i92Q/sddefault.jpg)](https://www.youtube.com/watch?v=1cfXBS0i92Q)
+.. raw:: html
+
+   <iframe width="560" height="315" src="https://www.youtube.com/embed/1cfXBS0i92Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
