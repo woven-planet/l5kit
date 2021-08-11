@@ -21,11 +21,11 @@ class SimulationConfig(NamedTuple):
     :param num_simulation_steps: the number of step to simulate
     :param show_info: whether to show info logging during unroll
     """
-    use_ego_gt: bool
-    use_agents_gt: bool
-    disable_new_agents: bool
-    distance_th_far: float
-    distance_th_close: float
+    use_ego_gt: bool = False
+    use_agents_gt: bool = False
+    disable_new_agents: bool = False
+    distance_th_far: float = 30.0
+    distance_th_close: float = 15.0
     start_frame_index: int = 0
     num_simulation_steps: Optional[int] = None
     show_info: bool = False

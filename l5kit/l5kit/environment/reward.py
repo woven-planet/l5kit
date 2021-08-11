@@ -2,7 +2,7 @@ from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 
 from l5kit.cle.metric_set import L5MetricSet
-from l5kit.environment.gym_metric_set import L5GymCLEMetricSet
+from l5kit.environment.gym_metric_set import L2DisplacementYawMetricSet
 from l5kit.simulation.unroll import SimulationOutputCLE
 
 
@@ -29,9 +29,11 @@ class Reward(ABC):
         raise NotImplementedError
 
 
-class CLEReward(Reward):
-    """This class is responsible for calculating reward during close loop simulation
-    within the gym-compatible L5Kit environment.
+class L2DisplacementYawReward(Reward):
+    """This class is responsible for calculating a reward based on
+    (1) L2 displacement error on the (x, y) coordinates
+    (2) Closest angle error on the yaw coordinate
+    during close loop simulation within the gym-compatible L5Kit environment.
 
     :param reward_prefix: the prefix that will identify this reward class
     :param metric_set: the set of metrics to compute
@@ -41,14 +43,21 @@ class CLEReward(Reward):
     :param yaw_weight: weight of the yaw error
     """
 
-    def __init__(self, reward_prefix: str = "CLE", metric_set: Optional[L5MetricSet] = None,
+    def __init__(self, reward_prefix: str = "L2DisplacementYaw", metric_set: Optional[L5MetricSet] = None,
                  enable_clip: bool = True, rew_clip_thresh: float = 15.0,
                  use_yaw: Optional[bool] = True, yaw_weight: Optional[float] = 20.0) -> None:
         """Constructor method
         """
         self.reward_prefix = reward_prefix
         # Metric Set
-        self.metric_set = metric_set if metric_set is not None else L5GymCLEMetricSet()
+        self.metric_set = metric_set if metric_set is not None else L2DisplacementYawMetricSet()
+
+        # Verify that error metrics necessary for reward calculation are present in the metric set
+        metric_names = [metric.metric_name for metric in self.metric_set.evaluation_plan.metrics]
+        if 'yaw_error_closest_angle' not in metric_names:
+            raise RuntimeError('\'yaw_error_closest_angle\' missing in metric set')
+        if 'displacement_error_l2' not in metric_names:
+            raise RuntimeError('\'displacement_error_l2\' missing in metric set')
 
         self.use_yaw = use_yaw
         self.yaw_weight = yaw_weight
@@ -61,6 +70,20 @@ class CLEReward(Reward):
         """
         self.metric_set.reset()
 
+    def slice_simulated_output(self, index: int,
+                               simulated_outputs: List[SimulationOutputCLE]) -> List[SimulationOutputCLE]:
+        """ Slice the simulated output at a particular frame index.
+        This prevent calculating metric over all frames.
+
+        :param index: the frame index at which the simulation outputs is to be sliced
+        :param simulated_outputs: the object contain the ego target and prediction attributes
+        :return: the sliced simulation output
+        """
+        # Only the simulated and recorded ego states are used for metric calculation
+        simulated_outputs[0].recorded_ego_states = simulated_outputs[0].recorded_ego_states[index:index + 1]
+        simulated_outputs[0].simulated_ego_states = simulated_outputs[0].simulated_ego_states[index:index + 1]
+        return simulated_outputs
+
     def get_reward(self, frame_index: int, simulated_outputs: List[SimulationOutputCLE]) -> Dict[str, float]:
         """Get the reward for the given step in close loop training.
 
@@ -69,11 +92,15 @@ class CLEReward(Reward):
         :return: the dictionary containing total reward and individual components that make up the reward
         """
         scene_id = simulated_outputs[0].scene_id
-        self.metric_set.evaluate(simulated_outputs)
 
+        # Get the simulated output value at frame index + 1
+        simulated_outputs = self.slice_simulated_output(frame_index + 1, simulated_outputs)
+
+        # Evaluate metrics on the sliced simulated output
+        self.metric_set.evaluate(simulated_outputs)
         scene_metrics = self.metric_set.evaluator.scene_metric_results[scene_id]
-        dist_error = scene_metrics['displacement_error_l2'][frame_index + 1]
-        yaw_error = self.yaw_weight * scene_metrics['yaw_error_closest_angle'][frame_index + 1]
+        dist_error = scene_metrics['displacement_error_l2']
+        yaw_error = self.yaw_weight * scene_metrics['yaw_error_closest_angle']
 
         # clip the distance error (in x, y) only, not the yaw error (yaw error is bounded).
         dist_reward = float(-dist_error.item())

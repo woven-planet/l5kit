@@ -1,4 +1,5 @@
 import math
+import numbers
 from pathlib import Path
 from typing import Any, Dict, NamedTuple
 
@@ -10,8 +11,9 @@ from l5kit.rasterization import Rasterizer
 from l5kit.simulation.dataset import SimulationDataset
 
 
-class ActionRescaleParams(NamedTuple):
-    """Defines the parameters to rescale model actions into un-normalized action space.
+class NonKinematicActionRescaleParams(NamedTuple):
+    """Defines the parameters to rescale actions into un-normalized action space
+    when the kinematic model is not used.
 
     :param x_mu: the translation of the x-coordinate
     :param x_scale: the scaling of the x-coordinate
@@ -19,63 +21,38 @@ class ActionRescaleParams(NamedTuple):
     :param y_scale: the scaling of the y-coordinate
     :param yaw_mu: the translation of the yaw (radians)
     :param yaw_scale: the scaling of the yaw (radians)
+    """
+    x_mu: float
+    x_scale: float
+    y_mu: float
+    y_scale: float
+    yaw_mu: float
+    yaw_scale: float
+
+
+class KinematicActionRescaleParams(NamedTuple):
+    """Defines the parameters to rescale actions into un-normalized action space
+    when the kinematic model is used.
+
     :param steer_scale: the scaling of the steer (kinematic model)
     :param acc_scale: the scaling of the acceleration (kinematic model)
-
     """
-    x_mu: float = 1.20
-    x_scale: float = 0.20
-    y_mu: float = 0.0
-    y_scale: float = 0.03
-    yaw_mu: float = 0.0
-    yaw_scale: float = 0.3
     steer_scale: float = math.radians(20) * 0.1  # 15
     acc_scale: float = 0.6  # 0.3
 
 
-def calculate_rescale_params(sim_dataset: SimulationDataset, use_kinematic: bool = False) -> ActionRescaleParams:
-    """Calculate the action un-normalization parameters from the simulation dataset.
+def calculate_non_kinematic_rescale_params(sim_dataset: SimulationDataset) -> NonKinematicActionRescaleParams:
+    """Calculate the action un-normalization parameters from the simulation dataset for non-kinematic model.
 
     :param sim_dataset: the input dataset to calculate the action rescale parameters
-    :param use_kinematic: flag to use the kinematic model
     :return: the unnormalized action
     """
-    if use_kinematic:
-        v_component_frames = []
-        yaw_component_frames = []
-
-        for index_ in range(1, len(sim_dataset)):
-            ego_input = sim_dataset.rasterise_frame_batch(index_)
-            v_component_frames.append([scene['curr_speed'].item() for scene in ego_input])
-            yaw_component_frames.append([scene['target_yaws'][0, 0] for scene in ego_input])
-
-        v_components = np.stack(v_component_frames)
-        acc_components = v_components[1:] - v_components[:-1]
-        acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
-        acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
-        acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
-
-        # import pdb; pdb.set_trace()
-
-        acc_components = acc_components.flatten()
-        # acc_mu, acc_std = np.mean(acc_components), np.std(acc_components)
-
-        yaw_components = np.concatenate(yaw_component_frames)
-        yaw_mu, yaw_std = np.mean(yaw_components), np.std(yaw_components)
-
-        print(max(acc_components), min(acc_components))
-        print(max(yaw_components), min(yaw_components), math.radians(20) * 0.1)
-        # import pdb; pdb.set_trace()
-        # assert max(acc_components) <= 0.7
-        # assert -0.7 <= min(acc_components)
-        return ActionRescaleParams()
-
     x_component_frames = []
     y_component_frames = []
     yaw_component_frames = []
 
-    for index_ in range(1, len(sim_dataset) - 1):
-        ego_input = sim_dataset.rasterise_frame_batch(index_)
+    for index in range(1, len(sim_dataset) - 1):
+        ego_input = sim_dataset.rasterise_frame_batch(index)
         x_component_frames.append([scene['target_positions'][0, 0] for scene in ego_input])
         y_component_frames.append([scene['target_positions'][0, 1] for scene in ego_input])
         yaw_component_frames.append([scene['target_yaws'][0, 0] for scene in ego_input])
@@ -96,7 +73,46 @@ def calculate_rescale_params(sim_dataset: SimulationDataset, use_kinematic: bool
     assert yaw_mu - 10 * yaw_std <= min(yaw_components)
     assert yaw_mu + 10 * yaw_std >= max(yaw_components)
 
-    return ActionRescaleParams(x_mu, 10 * x_std, y_mu, 10 * y_std, yaw_mu, 10 * yaw_std)
+    # Keeping scale = 10 * std so that extreme values are not clipped
+    return NonKinematicActionRescaleParams(x_mu, 10 * x_std, y_mu, 10 * y_std, yaw_mu, 10 * yaw_std)
+
+
+def calculate_kinematic_rescale_params(sim_dataset: SimulationDataset) -> KinematicActionRescaleParams:
+    """Calculate the action un-normalization parameters from the simulation dataset for kinematic model.
+
+    :param sim_dataset: the input dataset to calculate the action rescale parameters
+    :return: the unnormalized action
+    """
+    v_component_frames = []
+    yaw_component_frames = []
+
+    for index in range(1, len(sim_dataset)):
+        ego_input = sim_dataset.rasterise_frame_batch(index)
+        v_component_frames.append([scene['curr_speed'].item() for scene in ego_input])
+        yaw_component_frames.append([scene['target_yaws'][0, 0] for scene in ego_input])
+
+    v_components = np.stack(v_component_frames)
+    acc_components = v_components[1:] - v_components[:-1]
+    acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
+    acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
+    acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
+
+    # import pdb; pdb.set_trace()
+
+    acc_components = acc_components.flatten()
+    # acc_mu, acc_std = np.mean(acc_components), np.std(acc_components)
+
+    yaw_components = np.concatenate(yaw_component_frames)
+    # yaw_mu, yaw_std = np.mean(yaw_components), np.std(yaw_components)
+
+    print(max(acc_components), min(acc_components))
+    print(max(yaw_components), min(yaw_components), math.radians(20) * 0.1)
+    # import pdb; pdb.set_trace()
+    # assert max(acc_components) <= 0.7
+    # assert -0.7 <= min(acc_components)
+
+    # 15, 0.3
+    return KinematicActionRescaleParams(math.radians(20) * 0.1, 0.6)
 
 
 def convert_to_numpy(data: Dict[str, Any]) -> Dict[str, np.ndarray]:
@@ -107,15 +123,14 @@ def convert_to_numpy(data: Dict[str, Any]) -> Dict[str, np.ndarray]:
     """
     output_data = {}
     for k, v in data.items():
-        if isinstance(v, int) or isinstance(v, float) or isinstance(v, np.int64) or isinstance(v, np.float32):
+        if isinstance(v, numbers.Number):
             output_data[k] = np.array([v])
         elif isinstance(v, np.ndarray):
             output_data[k] = np.expand_dims(v, axis=0)
         elif isinstance(v, torch.Tensor):
             output_data[k] = np.expand_dims(v.cpu().numpy(), axis=0)
         else:
-            print(k, v, type(v))
-            raise NotImplementedError
+            raise NotImplementedError(f"{type(v)} is not supported (field {k})")
     return output_data
 
 

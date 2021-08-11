@@ -9,7 +9,6 @@ from stable_baselines3.common.utils import get_linear_fn
 from stable_baselines3.common.vec_env import SubprocVecEnv
 
 from l5kit.environment.callbacks import get_callback_list
-from l5kit.environment.envs.l5_env import SimulationConfigGym
 from l5kit.environment.feature_extractor import CustomFeatureExtractor
 from l5kit.environment.monitor_utils import monitor_env
 
@@ -25,7 +24,7 @@ if __name__ == "__main__":
     parser.add_argument('--save_freq', default=50000, type=int,
                         help='Frequency to save model states')
     parser.add_argument('--n_envs', default=4, type=int,
-                        help='Number of parallel envts')
+                        help='Number of parallel environments')
     parser.add_argument('--eps_length', default=32, type=int,
                         help='Number of time steps')
     parser.add_argument('--n_steps', default=1000000, type=int,
@@ -76,16 +75,19 @@ if __name__ == "__main__":
     monitor_dir = 'monitor_logs/{}'.format(args.output_prefix)
     monitor_kwargs = {'info_keywords': info_keywords}
 
+    env_config_path = '../../../examples/RL/config.yaml'
     # make gym env
     if args.n_envs == 1:
         print("Using 1 envt")
-        env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length), use_kinematic=args.kinematic)
+        env = gym.make("L5-CLE-v0", env_config_path=env_config_path,
+                       use_kinematic=args.kinematic)
         env = monitor_env(env, monitor_dir, monitor_kwargs)
 
     # custom wrap env into VecEnv
     else:
         print(f"Using {args.n_envs} parallel envts")
-        env_kwargs = {'sim_cfg': SimulationConfigGym(args.eps_length), 'use_kinematic': args.kinematic}
+        env_kwargs = {'env_config_path': env_config_path,
+                      'use_kinematic': args.kinematic}
         env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs, n_envs=args.n_envs,
                            vec_env_cls=SubprocVecEnv, vec_env_kwargs=dict(start_method='fork'),
                            monitor_dir=monitor_dir, monitor_kwargs=monitor_kwargs)
@@ -115,8 +117,8 @@ if __name__ == "__main__":
 
     # make eval env at start itself
     print("Creating Eval env.....")
-    eval_env = gym.make("L5-CLE-v0", sim_cfg=SimulationConfigGym(args.eps_length), use_kinematic=args.kinematic,
-                        return_info=True)
+    eval_env = gym.make("L5-CLE-v0", env_config_path=env_config_path,
+                        use_kinematic=args.kinematic, return_info=True)
     model.eval_env = eval_env
 
     # init callback list
