@@ -92,9 +92,8 @@ If you run into trouble installing L5Kit on Windows, you may need to
 
 .. code-block:: console
 
-    sphinx-apidoc --module-first --separate -o API/ l5kit/l5kit l5kit/l5kit/tests*
-    sphinx-build . docs
-
+    sphinx-apidoc --module-first --separate -o docs/API/ l5kit/l5kit l5kit/l5kit/tests*
+    sphinx-build docs docs_built
 
 4. Run example
 ++++++++++++++
