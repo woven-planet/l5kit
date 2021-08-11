@@ -35,7 +35,7 @@ Let's add some data and see what the array looks like::
 
 As you can see, structured arrays allow us to mix different data types into a single array, and the byte representation lets us group samples together. Now imagine that we have such an array on disk with millions of values. Reading the first 100 values turns into a matter of reading the first 100*(3+1) bytes. If we had a separate array for each of the different fields we would have to read from 4 smaller files.
 
-This becomes increasingly relevant with a larger number of fields and complexities of each field. In our dataset, an observation of another agent is described with its centroid (:code:`dtype=(float64, 3)`), its rotation matrix (:code:`dtype=(np.float64, (3,3))`), its extent or size (`dtype=(np.float64, 3)`) to name a few properties. Structured arrays are a great fit to group this data together in memory and on disk.
+This becomes increasingly relevant with a larger number of fields and complexities of each field. In our dataset, an observation of another agent is described with its centroid (:code:`dtype=(float64, 3)`), its rotation matrix (:code:`dtype=(np.float64, (3,3))`), its extent or size (:code:`dtype=(np.float64, 3)`) to name a few properties. Structured arrays are a great fit to group this data together in memory and on disk.
 
 Short introduction to zarr
 --------------------------
@@ -198,7 +198,7 @@ A first implementation would look like this::
         centroid = dt.agents[idx]["centroid"]
         centroids.append(centroid)
 
-However, in this implementation **we are decompressing the same chunk (or two) 10_000 times!**
+However, in this implementation **we are decompressing the same chunk (or two) 10,000 times!**
 
 If we rewrite it as::
 

@@ -3,7 +3,7 @@
 Overview
 ========
 
-The framework consists of three modules:
+The L5Kit framework consists of three modules:
 
 * **Datasets** - data available for training ML models.
 * **L5Kit** - the core library supporting functionality for reading the data and framing planning and simulation problems as ML problems.
