@@ -20,8 +20,8 @@ from l5kit import __version__
 # -- Project information -----------------------------------------------------
 
 project = "L5Kit"
-copyright = "2020, Lyft Level 5"
-author = "Lyft Level 5"
+copyright = "2020, Level 5"
+author = "Level 5"
 
 # The full version, including alpha/beta/rc tags
 release = __version__
