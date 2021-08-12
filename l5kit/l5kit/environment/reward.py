@@ -53,10 +53,9 @@ class L2DisplacementYawReward(Reward):
         self.metric_set = metric_set if metric_set is not None else L2DisplacementYawMetricSet()
 
         # Verify that error metrics necessary for reward calculation are present in the metric set
-        metric_names = [metric.metric_name for metric in self.metric_set.evaluation_plan.metrics]
-        if 'yaw_error_closest_angle' not in metric_names:
+        if 'yaw_error_closest_angle' not in self.metric_set.evaluation_plan.metrics_dict():
             raise RuntimeError('\'yaw_error_closest_angle\' missing in metric set')
-        if 'displacement_error_l2' not in metric_names:
+        if 'displacement_error_l2' not in self.metric_set.evaluation_plan.metrics_dict():
             raise RuntimeError('\'displacement_error_l2\' missing in metric set')
 
         self.use_yaw = use_yaw
@@ -70,8 +69,8 @@ class L2DisplacementYawReward(Reward):
         """
         self.metric_set.reset()
 
-    def slice_simulated_output(self, index: int,
-                               simulated_outputs: List[SimulationOutputCLE]) -> List[SimulationOutputCLE]:
+    @staticmethod
+    def slice_simulated_output(index: int, simulated_outputs: List[SimulationOutputCLE]) -> List[SimulationOutputCLE]:
         """ Slice the simulated output at a particular frame index.
         This prevent calculating metric over all frames.
 

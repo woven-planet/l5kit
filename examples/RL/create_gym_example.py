@@ -10,7 +10,7 @@ import l5kit.environment
 # follow the instructions (https://github.com/lyft/l5kit#download-the-datasets)
 # to correctly organise it.
 
-# Set the L5KIT_DATA_FOLDER path and uncomment the line below
+# Uncomment the line below
 # os.environ["L5KIT_DATA_FOLDER"] = your_path_to_data
 env_config_path = "./config.yaml"
 

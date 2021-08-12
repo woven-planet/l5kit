@@ -13,7 +13,7 @@ from l5kit.dataset import EgoDataset
 from l5kit.environment.kinematic_model import KinematicModel, UnicycleModel
 from l5kit.environment.reward import L2DisplacementYawReward, Reward
 from l5kit.environment.utils import (calculate_kinematic_rescale_params, calculate_non_kinematic_rescale_params,
-                                     convert_to_numpy, KinematicActionRescaleParams, NonKinematicActionRescaleParams)
+                                     KinematicActionRescaleParams, NonKinematicActionRescaleParams)
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.simulation.unroll import (ClosedLoopSimulator, ClosedLoopSimulatorModes, SimulationOutputCLE,
@@ -26,14 +26,22 @@ class SimulationConfigGym(SimulationConfig):
     This is because we (may) require to extract the initial speed of the vehicle for the kinematic model
     The speed at start_frame_idx is always 0 (not indicative of the true current speed).
     We therefore simulate the episode from (start_frame_idx + 1, start_frame_idx + eps_length + 1)
+
+    :param use_ego_gt: whether to use GT annotations for ego instead of model's outputs
+    :param use_agents_gt: whether to use GT annotations for agents instead of model's outputs
+    :param disable_new_agents: whether to disable agents that are not returned at start_frame_index
+    :param distance_th_far: if a tracked agent is closed than this value to ego, it will be controlled
+    :param distance_th_close: if a new agent is closer than this value to ego, it will be controlled
+    :param start_frame_index: the start index of the simulation
+    :param num_simulation_steps: the number of step to simulate
     """
     use_ego_gt: bool = False
     use_agents_gt: bool = True
     disable_new_agents: bool = False
     distance_th_far: float = 30.0
     distance_th_close: float = 15.0
-    num_simulation_steps: int = 33
     start_frame_idx: int = 0
+    num_simulation_steps: int = 33
 
 
 class EpisodeOutputGym(SimulationOutputCLE):
@@ -187,7 +195,7 @@ class L5Env(gym.Env):
         # Output first observation
         self.frame_index = 1  # Frame_index 1 has access to the true ego speed
         ego_input = self.sim_dataset.rasterise_frame_batch(self.frame_index)
-        self.ego_input_dict = convert_to_numpy(ego_input[0])
+        self.ego_input_dict = {k: np.expand_dims(v, axis=0) for k, v in ego_input[0].items()}
 
         # Reset Kinematic model
         if self.use_kinematic:
@@ -273,7 +281,7 @@ class L5Env(gym.Env):
             frame_index = 0  # Dummy final obs (when episode_over)
 
         ego_input = self.sim_dataset.rasterise_frame_batch(frame_index)
-        self.ego_input_dict = convert_to_numpy(ego_input[0])
+        self.ego_input_dict = {k: np.expand_dims(v, axis=0) for k, v in ego_input[0].items()}
         obs = {"image": ego_input[0]["image"]}
         return obs
 

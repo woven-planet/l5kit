@@ -96,7 +96,7 @@ None if not desired
 
         # add information only, so that all data keys are always preserved
         data["scene_index"] = scene_index
-        data["host_id"] = convert_str_to_fixed_length_tensor(self.dataset.scenes[scene_index]["host"])
+        data["host_id"] = np.uint8(convert_str_to_fixed_length_tensor(self.dataset.scenes[scene_index]["host"]).cpu())
         data["timestamp"] = frames[state_index]["timestamp"]
         data["track_id"] = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
         data["world_to_image"] = data["raster_from_world"]  # TODO deprecate

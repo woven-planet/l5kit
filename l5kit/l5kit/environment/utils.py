@@ -1,7 +1,6 @@
 import math
-import numbers
 from pathlib import Path
-from typing import Any, Dict, NamedTuple
+from typing import NamedTuple
 
 import numpy as np
 import torch
@@ -75,33 +74,45 @@ def calculate_kinematic_rescale_params(sim_dataset: SimulationDataset) -> Kinema
     :param sim_dataset: the input dataset to calculate the action rescale parameters
     :return: the unnormalized action
     """
+    v_component_frames = []
+    yaw_component_frames = []
+
+    for index in range(1, len(sim_dataset)):
+        ego_input = sim_dataset.rasterise_frame_batch(index)
+        v_component_frames.append([scene['curr_speed'].item() for scene in ego_input])
+        yaw_component_frames.append([scene['target_yaws'][0, 0] for scene in ego_input])
+
+    v_components = np.stack(v_component_frames)
+    acc_components = v_components[1:] - v_components[:-1]
+    acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
+    acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
+    acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
+
+    # import pdb; pdb.set_trace()
+
+    acc_components = acc_components.flatten()
+    # acc_mu, acc_std = np.mean(acc_components), np.std(acc_components)
+
+    yaw_components = np.concatenate(yaw_component_frames)
+    # yaw_mu, yaw_std = np.mean(yaw_components), np.std(yaw_components)
+
+    print(max(acc_components), min(acc_components))
+    print(max(yaw_components), min(yaw_components), math.radians(20) * 0.1)
+    # import pdb; pdb.set_trace()
+    # assert max(acc_components) <= 0.7
+    # assert -0.7 <= min(acc_components)
+
+    # 15, 0.3
     return KinematicActionRescaleParams(math.radians(20) * 0.1, 0.6)
 
 
-def convert_to_numpy(data: Dict[str, Any]) -> Dict[str, np.ndarray]:
-    """Convert a dict into numpy dict (on cpu).
-
-    :param data: the dict with both torch and numpy entries
-    :return: the numpy dict
-    """
-    output_data = {}
-    for k, v in data.items():
-        if isinstance(v, numbers.Number):
-            output_data[k] = np.array([v])
-        elif isinstance(v, np.ndarray):
-            output_data[k] = np.expand_dims(v, axis=0)
-        elif isinstance(v, torch.Tensor):
-            output_data[k] = np.expand_dims(v.cpu().numpy(), axis=0)
-        else:
-            raise NotImplementedError(f"{type(v)} is not supported (field {k})")
-    return output_data
-
-
-def save_input_raster(rasterizer: Rasterizer, image: torch.Tensor, output_folder: str = 'raster_inputs') -> None:
+def save_input_raster(rasterizer: Rasterizer, image: torch.Tensor, num_images: int = 20,
+                      output_folder: str = 'raster_inputs') -> None:
     """Save the input raster image.
 
     :param rasterizer: the rasterizer
     :param image: numpy array
+    :param num_images: number of images to save
     :param output_folder: directory to save the image
     :return: the numpy dict with 'positions' and 'yaws'
     """
@@ -117,14 +128,14 @@ def save_input_raster(rasterizer: Rasterizer, image: torch.Tensor, output_folder
 
     # loop
     i = 0
-    img_path = output_folder / 'input{}.png'.format(i)
+    img_path = output_folder / f"input{i}.png"
     while img_path.exists():
         i += 1
-        img_path = output_folder / 'input{}.png'.format(i)
+        img_path = output_folder / f"input{i}.png"
 
     # save
     im.save(img_path)
 
-    # exit code once 20 images saved
-    if i == 20:
+    # exit code once num_images images saved
+    if i == num_images:
         exit()

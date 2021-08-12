@@ -34,8 +34,6 @@ class L5MetricSet(BaseMetricSet):
     """
 
     def __init__(self, metric_prefix: str = "L5") -> None:
-        """Constructor method
-        """
         self.metric_prefix = metric_prefix
         metric_list = self.build_metrics()
         validators_list = self.build_validators()
