@@ -247,7 +247,7 @@ class YawErrorMetric(SupportsMetricCompute):
     """
     metric_name = "yaw_error"
 
-    def __init__(self, error_function: error_functions.ErrorFunction) -> None:
+    def __init__(self, error_function: error_functions.ErrorFunction = error_functions.closest_angle_error) -> None:
         self.error_function = error_function
 
     def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:

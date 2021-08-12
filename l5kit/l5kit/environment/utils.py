@@ -1,7 +1,6 @@
 import math
-import numbers
 from pathlib import Path
-from typing import Any, Dict, NamedTuple
+from typing import NamedTuple
 
 import numpy as np
 import torch
@@ -115,30 +114,13 @@ def calculate_kinematic_rescale_params(sim_dataset: SimulationDataset) -> Kinema
     return KinematicActionRescaleParams(math.radians(20) * 0.1, 0.6)
 
 
-def convert_to_numpy(data: Dict[str, Any]) -> Dict[str, np.ndarray]:
-    """Convert a dict into numpy dict (on cpu).
-
-    :param data: the dict with both torch and numpy entries
-    :return: the numpy dict
-    """
-    output_data = {}
-    for k, v in data.items():
-        if isinstance(v, numbers.Number):
-            output_data[k] = np.array([v])
-        elif isinstance(v, np.ndarray):
-            output_data[k] = np.expand_dims(v, axis=0)
-        elif isinstance(v, torch.Tensor):
-            output_data[k] = np.expand_dims(v.cpu().numpy(), axis=0)
-        else:
-            raise NotImplementedError(f"{type(v)} is not supported (field {k})")
-    return output_data
-
-
-def save_input_raster(rasterizer: Rasterizer, image: torch.Tensor, output_folder: str = 'raster_inputs') -> None:
+def save_input_raster(rasterizer: Rasterizer, image: torch.Tensor, num_images: int = 20,
+                      output_folder: str = 'raster_inputs') -> None:
     """Save the input raster image.
 
     :param rasterizer: the rasterizer
     :param image: numpy array
+    :param num_images: number of images to save
     :param output_folder: directory to save the image
     :return: the numpy dict with 'positions' and 'yaws'
     """
@@ -154,14 +136,14 @@ def save_input_raster(rasterizer: Rasterizer, image: torch.Tensor, output_folder
 
     # loop
     i = 0
-    img_path = output_folder / 'input{}.png'.format(i)
+    img_path = output_folder / f"input{i}.png"
     while img_path.exists():
         i += 1
-        img_path = output_folder / 'input{}.png'.format(i)
+        img_path = output_folder / f"input{i}.png"
 
     # save
     im.save(img_path)
 
-    # exit code once 20 images saved
-    if i == 20:
+    # exit code once num_images images saved
+    if i == num_images:
         exit()
