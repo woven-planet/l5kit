@@ -7,7 +7,7 @@
   
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   
-  <title>Dataset Formats &mdash; L5Kit 1.3.1 documentation</title>
+  <title>Dataset Formats in L5Kit &mdash; L5Kit 1.3.1 documentation</title>
   
 
   
@@ -39,7 +39,7 @@
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
     <link rel="next" title="Coordinate Systems in L5Kit" href="coords_systems.html" />
-    <link rel="prev" title="l5kit.visualization.video module" href="API/l5kit.visualization.video.html" /> 
+    <link rel="prev" title="Installation" href="installation.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -84,49 +84,50 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="README.html">ML Prediction, Planning and Simulation for Self-Driving</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#examples">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#news">News</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#overview">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#license">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#credits">Credits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#contact">Contact</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Dataset Formats</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#introduction">Introduction</a><ul>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="gettingstarted.html">Getting started</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Dataset Formats in L5Kit</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#interleaved-data-in-structured-arrays">Interleaved data in structured arrays</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#short-introduction-to-zarr">Short introduction to zarr</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#lyft-competition-dataset-format">2020 Lyft Competition Dataset format</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#scenes">Scenes</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#frames">Frames</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#agents">Agents</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#traffic-light-faces">Traffic Light Faces</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#lyft-competition-dataset-format">2020 Lyft Competition Dataset format</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#scenes">Scenes</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#frames">Frames</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#agents">Agents</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#traffic-light-faces">Traffic Light Faces</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#working-with-the-zarr-format">Working with the zarr format</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#the-chunkeddataset">The ChunkedDataset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#performance-aware-slicing">Performance-aware slicing</a></li>
 </ul>
 </li>
-<li class="toctree-l2"><a class="reference internal" href="#working-with-the-zarr-format">Working with the zarr format</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#the-chunkeddataset">The ChunkedDataset</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#performance-aware-slicing">Performance-aware slicing</a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#dataset-abstraction-classes">Dataset Abstraction Classes</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#egodataset">EgoDataset</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#agentdataset">AgentDataset</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#dataset-abstraction-classes">Dataset Abstraction Classes</a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#egodataset">EgoDataset</a></li>
+<li class="toctree-l4"><a class="reference internal" href="#agentdataset">AgentDataset</a></li>
 </ul>
 </li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="coords_systems.html">Coordinate Systems in L5Kit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="coords_systems.html#introduction">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="coords_systems.html#coordinate-systems">Coordinate Systems</a></li>
+<li class="toctree-l2"><a class="reference internal" href="coords_systems.html">Coordinate Systems in L5Kit</a></li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="competitions.html">Competitions</a></li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
-<li class="toctree-l1"><a class="reference internal" href="competition.html">Competition</a></li>
-<li class="toctree-l1"><a class="reference internal" href="competition.html#scoring">Scoring</a></li>
-<li class="toctree-l1"><a class="reference internal" href="competition.html#coordinates-system-for-the-competition">Coordinates System for the competition</a></li>
-<li class="toctree-l1"><a class="reference internal" href="competition.html#additional-metrics">Additional Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
 </ul>
 
             
@@ -175,13 +176,15 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
-      <li>Dataset Formats</li>
+          <li><a href="gettingstarted.html">Getting started</a> &raquo;</li>
+        
+      <li>Dataset Formats in L5Kit</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/data_format.md.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/data_format.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -194,16 +197,14 @@
           <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
            <div itemprop="articleBody">
             
-  <div class="section" id="dataset-formats">
-<h1>Dataset Formats<a class="headerlink" href="#dataset-formats" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="introduction">
-<h2>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h2>
+  <div class="section" id="dataset-formats-in-l5kit">
+<span id="data-format"></span><h1>Dataset Formats in L5Kit<a class="headerlink" href="#dataset-formats-in-l5kit" title="Permalink to this headline">¶</a></h1>
 <p>In the L5Kit codebase, we make use of a data format that consists of a set of <a class="reference external" href="https://docs.scipy.org/doc/numpy/user/basics.rec.html">numpy structured arrays</a>. Conceptually, it is similar to a set of CSV files with records and different columns, only that they are stored as binary files instead of text. Structured arrays can be directly memory mapped from disk.</p>
 <div class="section" id="interleaved-data-in-structured-arrays">
-<h3>Interleaved data in structured arrays<a class="headerlink" href="#interleaved-data-in-structured-arrays" title="Permalink to this headline">¶</a></h3>
-<p>Structured arrays are stored in memory in an interleaved format, this means that one “row” or “sample” is grouped together in memory. For example, if we are storing colors and whether we like them (as a boolean <code class="docutils literal notranslate"><span class="pre">l</span></code>), it would be <code class="docutils literal notranslate"><span class="pre">[r,g,b,l,r,g,b,l,r,g,b,l]</span></code> and not <code class="docutils literal notranslate"><span class="pre">[r,r,r,g,g,g,b,b,b,l,l,l]</span></code>). Most ML applications require row-based access - column-based operations are much less common - making this a good fit.</p>
+<h2>Interleaved data in structured arrays<a class="headerlink" href="#interleaved-data-in-structured-arrays" title="Permalink to this headline">¶</a></h2>
+<p>Structured arrays are stored in memory in an interleaved format, this means that one “row” or “sample” is grouped together in memory. For example, if we are storing colors and whether we like them (as a boolean <code class="code docutils literal notranslate"><span class="pre">l</span></code>), it would be <code class="code docutils literal notranslate"><span class="pre">[r,g,b,l,r,g,b,l,r,g,b,l]</span></code> and not <code class="code docutils literal notranslate"><span class="pre">[r,r,r,g,g,g,b,b,b,l,l,l]</span></code>). Most ML applications require row-based access - column-based operations are much less common - making this a good fit.</p>
 <p>Here is how this example translates into code:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 <span class="n">my_arr</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="p">[(</span><span class="s2">&quot;color&quot;</span><span class="p">,</span> <span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">uint8</span><span class="p">,</span> <span class="mi">3</span><span class="p">)),</span> <span class="p">(</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">bool</span><span class="p">)])</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">my_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span>
@@ -211,7 +212,7 @@
 </pre></div>
 </div>
 <p>Let’s add some data and see what the array looks like:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">my_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">218</span><span class="p">,</span> <span class="mi">130</span><span class="p">]</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">my_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">218</span><span class="p">,</span> <span class="mi">130</span><span class="p">]</span>
 <span class="n">my_arr</span><span class="p">[</span><span class="mi">0</span><span class="p">][</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
 <span class="n">my_arr</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;color&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">245</span><span class="p">,</span> <span class="mi">59</span><span class="p">,</span> <span class="mi">255</span><span class="p">]</span>
 <span class="n">my_arr</span><span class="p">[</span><span class="mi">1</span><span class="p">][</span><span class="s2">&quot;label&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="kc">True</span>
@@ -226,12 +227,12 @@
 </pre></div>
 </div>
 <p>As you can see, structured arrays allow us to mix different data types into a single array, and the byte representation lets us group samples together. Now imagine that we have such an array on disk with millions of values. Reading the first 100 values turns into a matter of reading the first 100*(3+1) bytes. If we had a separate array for each of the different fields we would have to read from 4 smaller files.</p>
-<p>This becomes increasingly relevant with a larger number of fields and complexities of each field. In our dataset, an observation of another agent is described with its centroid (<code class="docutils literal notranslate"><span class="pre">dtype=(float64,</span> <span class="pre">3)</span></code>), its rotation matrix (<code class="docutils literal notranslate"><span class="pre">dtype=(np.float64,</span> <span class="pre">(3,3))</span></code>), its extent or size (<code class="docutils literal notranslate"><span class="pre">dtype=(np.float64,</span> <span class="pre">3)</span></code>) to name a few properties. Structured arrays are a great fit to group this data together in memory and on disk.</p>
+<p>This becomes increasingly relevant with a larger number of fields and complexities of each field. In our dataset, an observation of another agent is described with its centroid (<code class="code docutils literal notranslate"><span class="pre">dtype=(float64,</span> <span class="pre">3)</span></code>), its rotation matrix (<code class="code docutils literal notranslate"><span class="pre">dtype=(np.float64,</span> <span class="pre">(3,3))</span></code>), its extent or size (<code class="code docutils literal notranslate"><span class="pre">dtype=(np.float64,</span> <span class="pre">3)</span></code>) to name a few properties. Structured arrays are a great fit to group this data together in memory and on disk.</p>
 </div>
 <div class="section" id="short-introduction-to-zarr">
-<h3>Short introduction to zarr<a class="headerlink" href="#short-introduction-to-zarr" title="Permalink to this headline">¶</a></h3>
+<h2>Short introduction to zarr<a class="headerlink" href="#short-introduction-to-zarr" title="Permalink to this headline">¶</a></h2>
 <p>We use the zarr data format to store and read these numpy structured arrays from disk. Zarr allows us to write very large (structured) arrays to disk in n-dimensional compressed chunks. See the <a class="reference external" href="https://zarr.readthedocs.io/en/stable/">zarr docs</a>. Here is a short tutorial:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zarr</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zarr</span>
 <span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
 
 <span class="n">z</span> <span class="o">=</span> <span class="n">zarr</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="s2">&quot;./path/to/dataset.zarr&quot;</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;w&quot;</span><span class="p">,</span> <span class="n">shape</span><span class="o">=</span><span class="p">(</span><span class="mi">500</span><span class="p">,),</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">chunks</span><span class="o">=</span><span class="p">(</span><span class="mi">100</span><span class="p">,))</span>
@@ -240,8 +241,8 @@
 <span class="n">z</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">150</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">arange</span><span class="p">(</span><span class="mi">150</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>As we specified chunks to be of size 100, we just wrote to two separate chunks. On your filesystem in the <code class="docutils literal notranslate"><span class="pre">dataset.zarr</span></code> folder you will now find these two chunks. As we didn’t completely fill the second chunk, those missing values will be set to the fill value (defaults to 0). The chunks are actually compressed on disk too! We can print some info:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
+<p>As we specified chunks to be of size 100, we just wrote to two separate chunks. On your filesystem in the <code class="code docutils literal notranslate"><span class="pre">dataset.zarr</span></code> folder you will now find these two chunks. As we didn’t completely fill the second chunk, those missing values will be set to the fill value (defaults to 0). The chunks are actually compressed on disk too! We can print some info:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">z</span><span class="o">.</span><span class="n">info</span><span class="p">)</span>
 <span class="c1"># Type               : zarr.core.Array</span>
 <span class="c1"># Data type          : float32</span>
 <span class="c1"># Shape              : (500,)</span>
@@ -257,8 +258,8 @@
 </pre></div>
 </div>
 <p>By not doing much work at all we saved almost 75% in disk space!</p>
-<p>Reading from a zarr array is as easy as slicing from it like you would any numpy array. The return value is an ordinary numpy array. Zarr takes care of determining which chunks to read from.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">z</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
+<p>Reading from a zarr array is as easy as slicing from it like you would any numpy array. The return value is an ordinary numpy array. Zarr takes care of determining which chunks to read from:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="n">z</span><span class="p">[:</span><span class="mi">10</span><span class="p">])</span>
 <span class="c1"># [0. 1. 2. 3. 4. 5. 6. 7. 8. 9.]</span>
 
 <span class="nb">print</span><span class="p">(</span><span class="n">z</span><span class="p">[::</span><span class="mi">20</span><span class="p">])</span> <span class="c1"># Read every 20th value</span>
@@ -270,26 +271,25 @@
 <p>Some other zarr benefits are:</p>
 <ul class="simple">
 <li><p>Safe to use in a multithreading or multiprocessing setup. Reading is entirely safe, for writing there are lock mechanisms built-in.</p></li>
-<li><p>If you have a dataset that is too large to fit in memory, loading a single sample becomes <code class="docutils literal notranslate"><span class="pre">my_sample</span> <span class="pre">=</span> <span class="pre">z[sample_index]</span></code> and you get compression out of the box.</p></li>
+<li><p>If you have a dataset that is too large to fit in memory, loading a single sample becomes <code class="code docutils literal notranslate"><span class="pre">my_sample</span> <span class="pre">=</span> <span class="pre">z[sample_index]</span></code> and you get compression out of the box.</p></li>
 <li><p>The blosc compressor is so fast that it is faster to read the compressed data and uncompress it than reading the uncompressed data from disk.</p></li>
 <li><p>Zarr supports multiple backend stores, your data could also live in a zip file, or even a remote server or S3 bucket.</p></li>
 <li><p>Other libraries such as xarray, Dask and TensorStore have good interoperability with Zarr.</p></li>
 <li><p>The metadata (e.g. dtype, chunk size, compression type) is stored inside the zarr dataset too. If one day you decide to change your chunk size, you can still read the older datasets without changing any code.</p></li>
 </ul>
 </div>
-</div>
 <div class="section" id="lyft-competition-dataset-format">
 <h2>2020 Lyft Competition Dataset format<a class="headerlink" href="#lyft-competition-dataset-format" title="Permalink to this headline">¶</a></h2>
-<p>The 2020 Lyft competition dataset is stored in four structured arrays: <code class="docutils literal notranslate"><span class="pre">scenes</span></code>, <code class="docutils literal notranslate"><span class="pre">frames</span></code>, <code class="docutils literal notranslate"><span class="pre">agents</span></code> and <code class="docutils literal notranslate"><span class="pre">tl_faces</span></code>.</p>
-<p>Note: in the following all <code class="docutils literal notranslate"><span class="pre">_interval</span></code> fields assume that information is stored consecutively in the arrays.
-This means that if <code class="docutils literal notranslate"><span class="pre">frame_index_interval</span></code> for <code class="docutils literal notranslate"><span class="pre">scene_0</span></code> is <code class="docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">100)</span></code>, frames from <code class="docutils literal notranslate"><span class="pre">scene_1</span></code> will start from index 100 in the frames array.</p>
+<p>The 2020 Lyft competition dataset is stored in four structured arrays: <code class="code docutils literal notranslate"><span class="pre">scenes</span></code>, <code class="code docutils literal notranslate"><span class="pre">frames</span></code>, <code class="code docutils literal notranslate"><span class="pre">agents</span></code> and <code class="code docutils literal notranslate"><span class="pre">tl_faces</span></code>.</p>
+<p>Note: in the following all <code class="code docutils literal notranslate"><span class="pre">_interval</span></code> fields assume that information is stored consecutively in the arrays.
+This means that if <code class="code docutils literal notranslate"><span class="pre">frame_index_interval</span></code> for <code class="code docutils literal notranslate"><span class="pre">scene_0</span></code> is <code class="code docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">100)</span></code>, frames from <code class="code docutils literal notranslate"><span class="pre">scene_1</span></code> will start from index 100 in the frames array.</p>
 <div class="section" id="scenes">
 <h3>Scenes<a class="headerlink" href="#scenes" title="Permalink to this headline">¶</a></h3>
 <p>A scene is identified by the host (i.e. which car was used to collect it) and a start and end time.
 It consists of multiple frames (=snapshots at discretized time intervals).
 The scene datatype stores references to its corresponding frames in terms of the start and end index within the frames array (described below).
-The frames in between these indices all correspond to the scene (including start index, excluding end index).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">SCENE_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
+The frames in between these indices all correspond to the scene (including start index, excluding end index):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">SCENE_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="s2">&quot;frame_index_interval&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
     <span class="p">(</span><span class="s2">&quot;host&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;U16&quot;</span><span class="p">),</span>  <span class="c1"># Unicode string up to 16 chars</span>
     <span class="p">(</span><span class="s2">&quot;start_time&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
@@ -308,8 +308,8 @@ The frames in between these indices all correspond to the scene (including start
 <li><p>a reference to all traffic light faces (see below) for all visible lanes.</p></li>
 </ul>
 <p>The properties for both agents and traffic light faces are stored in their two respective arrays.
-The frame contains only pointers to these stored objects given by a start and an end index in these arrays (again, start is included while end excluded).</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">FRAME_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
+The frame contains only pointers to these stored objects given by a start and an end index in these arrays (again, start is included while end excluded):</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">FRAME_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="s2">&quot;timestamp&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">),</span>
     <span class="p">(</span><span class="s2">&quot;agent_index_interval&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
     <span class="p">(</span><span class="s2">&quot;traffic_light_faces_index_interval&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">int64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
@@ -324,8 +324,8 @@ The frame contains only pointers to these stored objects given by a start and an
 <p>An agent is an observation by the AV of some other detected object.
 Each entry describes the object in terms of its attributes such as position and velocity, gives the agent a tracking number to track it over multiple frames (but only within the same scene!) and its most probable label.
 The label is described as an array of probabilities over each defined class associated with them,
-the possible labels are defined <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/labels.py">here</a>.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">AGENT_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
+the possible labels are defined <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/labels.py">here</a></p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">AGENT_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="s2">&quot;centroid&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float64</span><span class="p">,</span> <span class="p">(</span><span class="mi">2</span><span class="p">,)),</span>
     <span class="p">(</span><span class="s2">&quot;extent&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">(</span><span class="mi">3</span><span class="p">,)),</span>
     <span class="p">(</span><span class="s2">&quot;yaw&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">),</span>
@@ -338,12 +338,12 @@ the possible labels are defined <a class="reference external" href="https://gith
 </div>
 <div class="section" id="traffic-light-faces">
 <h3>Traffic Light Faces<a class="headerlink" href="#traffic-light-faces" title="Permalink to this headline">¶</a></h3>
-<p>Note: we refer to traffic light bulbs (e.g. the red light bulb of a specific traffic light) as <code class="docutils literal notranslate"><span class="pre">faces</span></code> in L5Kit.
+<p>Note: we refer to traffic light bulbs (e.g. the red light bulb of a specific traffic light) as <code class="code docutils literal notranslate"><span class="pre">faces</span></code> in L5Kit.
 For the full list of available types for a bulb please consult our <a class="reference external" href="https://github.com/lyft/l5kit/blob/20ab033c01610d711c3d36e1963ecec86e8b85b6/l5kit/l5kit/data/proto/road_network.proto#L615">protobuf map definition</a>.</p>
 <p>Our semantic map holds static information about the world only. This means it has a list of all traffic lights, but no information about how their status changes over time.
 This dynamic information is instead stored in this array.
-Each array’s element has a unique id to link it to the semantic map, a status (if status <code class="docutils literal notranslate"><span class="pre">&gt;0</span></code>, then the face is active - i.e., the corresponding light bulb is on, otherwise inactive / off ) and a reference to its parent traffic light.</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">TL_FACE_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
+Each array’s element has a unique id to link it to the semantic map, a status (if status <code class="code docutils literal notranslate"><span class="pre">&gt;0</span></code>, then the face is active - i.e., the corresponding light bulb is on, otherwise inactive / off ) and a reference to its parent traffic light:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">TL_FACE_DTYPE</span> <span class="o">=</span> <span class="p">[</span>
     <span class="p">(</span><span class="s2">&quot;face_id&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;U16&quot;</span><span class="p">),</span>
     <span class="p">(</span><span class="s2">&quot;traffic_light_id&quot;</span><span class="p">,</span> <span class="s2">&quot;&lt;U16&quot;</span><span class="p">),</span>
     <span class="p">(</span><span class="s2">&quot;traffic_light_face_status&quot;</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">TL_FACE_LABELS</span><span class="p">,))),</span>
@@ -356,21 +356,21 @@ Each array’s element has a unique id to link it to the semantic map, a status 
 <h2>Working with the zarr format<a class="headerlink" href="#working-with-the-zarr-format" title="Permalink to this headline">¶</a></h2>
 <div class="section" id="the-chunkeddataset">
 <h3>The ChunkedDataset<a class="headerlink" href="#the-chunkeddataset" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">ChunkedDataset</span></code> (<code class="docutils literal notranslate"><span class="pre">l5kit.data.zarr_dataset</span></code>) is the first interface between raw data on the disk and Python accessible information.
+<p>The <code class="code docutils literal notranslate"><span class="pre">ChunkedDataset</span></code> (<code class="code docutils literal notranslate"><span class="pre">l5kit.data.zarr_dataset</span></code>) is the first interface between raw data on the disk and Python accessible information.
 This layer is very thin, and it provides the four arrays mapped from the disk. When one of these array is indexed (or sliced):</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">zarr</span></code> identifies the chunk(s) to be loaded;</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">zarr</span></code> identifies the chunk(s) to be loaded;</p></li>
 <li><p>the chunk is decompressed on the fly;</p></li>
 <li><p>a numpy array copy is returned;</p></li>
 </ul>
-<p>The <code class="docutils literal notranslate"><span class="pre">ChunkedDataset</span></code> also provides an LRUcache; but it works on <a class="reference external" href="https://github.com/zarr-developers/zarr-python/issues/278">compressed chunks only</a>.</p>
+<p>The <code class="code docutils literal notranslate"><span class="pre">ChunkedDataset</span></code> also provides an LRUcache; but it works on <a class="reference external" href="https://github.com/zarr-developers/zarr-python/issues/278">compressed chunks only</a>.</p>
 </div>
 <div class="section" id="performance-aware-slicing">
 <h3>Performance-aware slicing<a class="headerlink" href="#performance-aware-slicing" title="Permalink to this headline">¶</a></h3>
-<p>A very common operation with the <code class="docutils literal notranslate"><span class="pre">ChunkedDataset</span></code> is slicing one array to retrieve some values.
+<p>A very common operation with the <code class="code docutils literal notranslate"><span class="pre">ChunkedDataset</span></code> is slicing one array to retrieve some values.
 Let’s say we want to retrieve the first 10k agents’ centroids and store them in memory.</p>
 <p>A first implementation would look like this:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">l5kit.data</span> <span class="kn">import</span> <span class="n">ChunkedDataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">l5kit.data</span> <span class="kn">import</span> <span class="n">ChunkedDataset</span>
 
 <span class="n">dt</span> <span class="o">=</span> <span class="n">ChunkedDataset</span><span class="p">(</span><span class="s2">&quot;&lt;path&gt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
 <span class="n">centroids</span><span class="o">=</span> <span class="p">[]</span>
@@ -379,53 +379,93 @@ Let’s say we want to retrieve the first 10k agents’ centroids and store them
     <span class="n">centroids</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">centroid</span><span class="p">)</span>
 </pre></div>
 </div>
-<p>However, in this implementation <strong>we are decompressing the same chunk (or two) 10_000 times!</strong></p>
-<p>If we rewrite it as</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">l5kit.data</span> <span class="kn">import</span> <span class="n">ChunkedDataset</span>
+<p>However, in this implementation <strong>we are decompressing the same chunk (or two) 10,000 times!</strong></p>
+<p>If we rewrite it as:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">l5kit.data</span> <span class="kn">import</span> <span class="n">ChunkedDataset</span>
 
 <span class="n">dt</span> <span class="o">=</span> <span class="n">ChunkedDataset</span><span class="p">(</span><span class="s2">&quot;&lt;path&gt;&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">open</span><span class="p">()</span>
 <span class="n">centroids</span> <span class="o">=</span> <span class="n">dt</span><span class="o">.</span><span class="n">agents</span><span class="p">[</span><span class="nb">slice</span><span class="p">(</span><span class="mi">10_000</span><span class="p">)][</span><span class="s2">&quot;centroid&quot;</span><span class="p">]</span>  <span class="c1"># note this is the same as dt.agents[:10_000]</span>
 </pre></div>
 </div>
 <p>we reduce the decompression numbers by <strong>a factor of 10K</strong>.</p>
-<p><strong>TL;DR</strong>: when working with <code class="docutils literal notranslate"><span class="pre">zarr</span></code> you should always aim to minimise the number of accesses to the compressed data.</p>
+<p><strong>TL;DR</strong>: when working with <code class="code docutils literal notranslate"><span class="pre">zarr</span></code> you should always aim to minimise the number of accesses to the compressed data.</p>
 </div>
 </div>
 <div class="section" id="dataset-abstraction-classes">
-<h2>Dataset Abstraction Classes<a class="headerlink" href="#dataset-abstraction-classes" title="Permalink to this headline">¶</a></h2>
-<p>As shown above, working with the raw <code class="docutils literal notranslate"><span class="pre">zarr</span></code> dataset has its own perils. To that end, we provide two structures
-which form an additional abstraction layer over the raw <code class="docutils literal notranslate"><span class="pre">zarr</span></code> dataset. These two Python classes allow to rasterise
+<span id="data-abstraction"></span><h2>Dataset Abstraction Classes<a class="headerlink" href="#dataset-abstraction-classes" title="Permalink to this headline">¶</a></h2>
+<p>As shown above, working with the raw <code class="code docutils literal notranslate"><span class="pre">zarr</span></code> dataset has its own perils. To that end, we provide two structures
+which form an additional abstraction layer over the raw <code class="code docutils literal notranslate"><span class="pre">zarr</span></code> dataset. These two Python classes allow to rasterise
 and get information about the past and future state of the AV or another agent.</p>
 <p><strong>Notes:</strong></p>
 <ul class="simple">
 <li><p>the following 2 classes inherit from Pytorch Dataset and as such are tied to work with it;</p></li>
-<li><p>the following 2 classes assume the world to be rasterised as BEV (Bird-Eye-View), which is a common choice for
-CNN-based approaches. Still, this can be disabled by using <code class="docutils literal notranslate"><span class="pre">stub_debug</span></code> as <code class="docutils literal notranslate"><span class="pre">map_type</span></code>.</p></li>
+<li><p>the following 2 classes assume the world to be rasterised as BEV (Bird-Eye-View), which is a common choice for CNN-based approaches. Still, this can be disabled by using <code class="code docutils literal notranslate"><span class="pre">stub_debug</span></code> as <code class="code docutils literal notranslate"><span class="pre">map_type</span></code>.</p></li>
 </ul>
 <div class="section" id="egodataset">
 <h3>EgoDataset<a class="headerlink" href="#egodataset" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">EgoDataset</span></code> retrieves information about the status of the AV in the current frame and the frames before it (if history is enabled).
+<p>The <code class="code docutils literal notranslate"><span class="pre">EgoDataset</span></code> retrieves information about the status of the AV in the current frame and the frames before it (if history is enabled).
 When iterated, it yields a dict with the following information:</p>
-<p>| Field Name               | Description                                                                                                                                          |
-|————————–|——————————————————————————————————————————————————|
-| <code class="docutils literal notranslate"><span class="pre">image</span></code>                  | The BEV raster as a multi-channel tensor                                                                                                             |
-| <code class="docutils literal notranslate"><span class="pre">target_positions</span></code>       | The coordinates (in <strong>agent</strong> reference system) of the AV in the future. Unit is meters                                                         |
-| <code class="docutils literal notranslate"><span class="pre">target_yaws</span></code>            | The yaws (in <strong>agent</strong> reference system) of the AV in the future. Unit is radians                                                       |
-| <code class="docutils literal notranslate"><span class="pre">target_availabilities</span></code>  | A 1D array. Each item can be either 1 (future step is valid) or 0 (future step is not valid). Invalid steps may occur at the end or start of a scene |
-| <code class="docutils literal notranslate"><span class="pre">history_positions</span></code>      | Same as target_positions but for the frames in the past                                                                                              |
-| <code class="docutils literal notranslate"><span class="pre">history_yaws</span></code>           | Same as target_yaws but for the frames in the past                                                                                                   |
-| <code class="docutils literal notranslate"><span class="pre">history_availabilities</span></code> | Same as target_availabilities but for the frames in the past                                                                                         |
-| <code class="docutils literal notranslate"><span class="pre">raster_from_world</span></code>      | A 3x3 matrix mapping from world to the image reference system                                                                                        |
-| <code class="docutils literal notranslate"><span class="pre">raster_from_agent</span></code>      | A 3x3 matrix mapping from agent to the image reference system                                                                                        |
-| <code class="docutils literal notranslate"><span class="pre">agent_from_world</span></code>       | A 3x3 matrix mapping from world to the agent reference system                                                                                        |
-| <code class="docutils literal notranslate"><span class="pre">world_from_agent</span></code>       | A 3x3 matrix mapping from agent to the world reference system                                                                                        |
-| <code class="docutils literal notranslate"><span class="pre">track_id</span></code>               | A scene-unique identifier id for the agent, or -1 for the AV                                                                                         |
-| <code class="docutils literal notranslate"><span class="pre">timestamp</span></code>              | The timestamp of the current frame                                                                                                                   |
-| <code class="docutils literal notranslate"><span class="pre">centroid</span></code>               | The centroid of the AV in the current frame in <strong>world</strong> reference system. Unit is meters                                                            |
-| <code class="docutils literal notranslate"><span class="pre">yaw</span></code>                    | The angle of yaw of the AV in the current frame in <strong>world</strong> reference system. Unit is radians                                                                                     |
-| <code class="docutils literal notranslate"><span class="pre">extent</span></code>                 | The extent of the AV (in XYZ) in the world reference system. Unit is meters</p>
+<table class="docutils align-default">
+<colgroup>
+<col style="width: 15%" />
+<col style="width: 85%" />
+</colgroup>
+<tbody>
+<tr class="row-odd"><td><p>Field Name</p></td>
+<td><p>Description</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>image</cite></p></td>
+<td><p>The BEV raster as a multi-channel tensor</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>target_positions</cite></p></td>
+<td><p>The coordinates (in <strong>agent</strong> reference system) of the AV in the future. Unit is meters</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>target_yaws</cite></p></td>
+<td><p>The yaws (in <strong>agent</strong> reference system) of the AV in the future. Unit is radians</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>target_availabilities</cite></p></td>
+<td><p>A 1D array. Each item can be either 1 (future step is valid) or 0 (future step is not valid). Invalid steps may occur at the end or start of a scene</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>history_positions</cite></p></td>
+<td><p>Same as target_positions but for the frames in the past</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>history_yaws</cite></p></td>
+<td><p>Same as target_yaws but for the frames in the past</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>history_availabilities</cite></p></td>
+<td><p>Same as target_availabilities but for the frames in the past</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>raster_from_world</cite></p></td>
+<td><p>A 3x3 matrix mapping from world to the image reference system</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>raster_from_agent</cite></p></td>
+<td><p>A 3x3 matrix mapping from agent to the image reference system</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>agent_from_world</cite></p></td>
+<td><p>A 3x3 matrix mapping from world to the agent reference system</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>world_from_agent</cite></p></td>
+<td><p>A 3x3 matrix mapping from agent to the world reference system</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>track_id</cite></p></td>
+<td><p>A scene-unique identifier id for the agent, or (-1) for the AV</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>timestamp</cite></p></td>
+<td><p>The timestamp of the current frame</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>centroid</cite></p></td>
+<td><p>The centroid of the AV in the current frame in <strong>world</strong> reference system. Unit is meters</p></td>
+</tr>
+<tr class="row-even"><td><p><cite>yaw</cite></p></td>
+<td><p>The angle of yaw of the AV in the current frame in <strong>world</strong> reference system. Unit is radians</p></td>
+</tr>
+<tr class="row-odd"><td><p><cite>extent</cite></p></td>
+<td><p>The extent of the AV (in XYZ) in the world reference system. Unit is meters</p></td>
+</tr>
+</tbody>
+</table>
 <p>A sample usage would be:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">l5kit.rasterization</span> <span class="kn">import</span> <span class="n">build_rasterizer</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">l5kit.rasterization</span> <span class="kn">import</span> <span class="n">build_rasterizer</span>
 <span class="kn">from</span> <span class="nn">l5kit.configs</span> <span class="kn">import</span> <span class="n">load_config_data</span>
 <span class="kn">from</span> <span class="nn">l5kit.data</span> <span class="kn">import</span> <span class="n">LocalDataManager</span><span class="p">,</span> <span class="n">ChunkedDataset</span>
 <span class="kn">from</span> <span class="nn">l5kit.dataset</span> <span class="kn">import</span> <span class="n">EgoDataset</span>
@@ -447,18 +487,18 @@ When iterated, it yields a dict with the following information:</p>
 </div>
 <div class="section" id="agentdataset">
 <h3>AgentDataset<a class="headerlink" href="#agentdataset" title="Permalink to this headline">¶</a></h3>
-<p>The <code class="docutils literal notranslate"><span class="pre">AgentDataset</span></code> iterates over agents (i.e. every other dynamic entity in the scene) instead of the AV. Because the returned dict
-is exactly the same as the <code class="docutils literal notranslate"><span class="pre">EgoDataset</span></code>, the two classes are almost interchangeable.</p>
+<p>The <code class="code docutils literal notranslate"><span class="pre">AgentDataset</span></code> iterates over agents (i.e. every other dynamic entity in the scene) instead of the AV. Because the returned dict
+is exactly the same as the <code class="code docutils literal notranslate"><span class="pre">EgoDataset</span></code>, the two classes are almost interchangeable.</p>
 <p>However, one fundamental difference exists:
-The <code class="docutils literal notranslate"><span class="pre">AgentDataset</span></code> is seeded with an <code class="docutils literal notranslate"><span class="pre">agents_mask</span></code> which defines which agents should be iterated over.
+The <code class="code docutils literal notranslate"><span class="pre">AgentDataset</span></code> is seeded with an <code class="code docutils literal notranslate"><span class="pre">agents_mask</span></code> which defines which agents should be iterated over.
 This is used in multiple contexts:</p>
 <ul class="simple">
 <li><p>to exclude unreliable agents during training (e.g. agents underneath a certain detection threshold);</p></li>
 <li><p>to select a subset of agents (e.g. during evaluation for the competition)</p></li>
 </ul>
-<p>If the mask is not passed as an argument to the <code class="docutils literal notranslate"><span class="pre">AgentDataset</span></code>, a new one will be computed and <strong>cached</strong> based on the current value of <code class="docutils literal notranslate"><span class="pre">filter_agents_threshold</span></code>.</p>
-<p>An example of using a custom <code class="docutils literal notranslate"><span class="pre">agents_mask</span></code> would be:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">l5kit.rasterization</span> <span class="kn">import</span> <span class="n">build_rasterizer</span>
+<p>If the mask is not passed as an argument to the <code class="code docutils literal notranslate"><span class="pre">AgentDataset</span></code>, a new one will be computed and <strong>cached</strong> based on the current value of <code class="code docutils literal notranslate"><span class="pre">filter_agents_threshold</span></code>.</p>
+<p>An example of using a custom <code class="code docutils literal notranslate"><span class="pre">agents_mask</span></code> would be:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">l5kit.rasterization</span> <span class="kn">import</span> <span class="n">build_rasterizer</span>
 <span class="kn">from</span> <span class="nn">l5kit.configs</span> <span class="kn">import</span> <span class="n">load_config_data</span>
 <span class="kn">from</span> <span class="nn">l5kit.data</span> <span class="kn">import</span> <span class="n">LocalDataManager</span><span class="p">,</span> <span class="n">ChunkedDataset</span>
 <span class="kn">from</span> <span class="nn">l5kit.dataset</span> <span class="kn">import</span> <span class="n">AgentDataset</span>
@@ -494,7 +534,7 @@ This is used in multiple contexts:</p>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
         <a href="coords_systems.html" class="btn btn-neutral float-right" title="Coordinate Systems in L5Kit" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="API/l5kit.visualization.video.html" class="btn btn-neutral float-left" title="l5kit.visualization.video module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

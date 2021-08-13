@@ -38,8 +38,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Competition" href="competition.html" />
-    <link rel="prev" title="Coordinate Systems in L5Kit" href="coords_systems.html" /> 
+    <link rel="next" title="API Reference" href="api_reference.html" />
+    <link rel="prev" title="Prediction Competition" href="prediction_competition.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -84,20 +84,20 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="README.html">ML Prediction, Planning and Simulation for Self-Driving</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#examples">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#news">News</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#overview">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#license">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#credits">Credits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#contact">Contact</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_format.html">Dataset Formats</a></li>
-<li class="toctree-l1"><a class="reference internal" href="coords_systems.html">Coordinate Systems in L5Kit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="coords_systems.html#introduction">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="coords_systems.html#coordinate-systems">Coordinate Systems</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="gettingstarted.html">Getting started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="competitions.html">Competitions</a></li>
+</ul>
+<ul class="current">
 <li class="toctree-l1 current"><a class="current reference internal" href="#">How to contribute</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#license">License</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#installing-l5kit-as-a-developer">Installing l5kit as a developer</a></li>
@@ -109,10 +109,9 @@
 <li class="toctree-l2"><a class="reference internal" href="#creating-a-distribution">Creating a distribution</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="competition.html">Competition</a></li>
-<li class="toctree-l1"><a class="reference internal" href="competition.html#scoring">Scoring</a></li>
-<li class="toctree-l1"><a class="reference internal" href="competition.html#coordinates-system-for-the-competition">Coordinates System for the competition</a></li>
-<li class="toctree-l1"><a class="reference internal" href="competition.html#additional-metrics">Additional Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
 </ul>
 
             
@@ -167,7 +166,7 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/how_to_contribute.md.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/how_to_contribute.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -181,10 +180,10 @@
            <div itemprop="articleBody">
             
   <div class="section" id="how-to-contribute">
-<h1>How to contribute<a class="headerlink" href="#how-to-contribute" title="Permalink to this headline">¶</a></h1>
+<span id="contribute"></span><h1>How to contribute<a class="headerlink" href="#how-to-contribute" title="Permalink to this headline">¶</a></h1>
 <p>You are invited to contribute to the L5Kit with your examples and improvements.
 These are peer-reviewed by the development team to maintain quality and reproducibility.</p>
-<p><strong>All commands below must be run from the <code class="docutils literal notranslate"><span class="pre">l5kit</span></code> folder (the one with the <code class="docutils literal notranslate"><span class="pre">setup.py</span></code>).</strong></p>
+<p><strong>Note:</strong> All commands below must be run from the <code class="code docutils literal notranslate"><span class="pre">l5kit</span></code> folder (the one with the <code class="code docutils literal notranslate"><span class="pre">setup.py</span></code>).</p>
 <div class="section" id="license">
 <h2>License<a class="headerlink" href="#license" title="Permalink to this headline">¶</a></h2>
 <p>You will be required to sign a contributor agreement license upon a pull request (PR).</p>
@@ -192,7 +191,7 @@ These are peer-reviewed by the development team to maintain quality and reproduc
 <div class="section" id="installing-l5kit-as-a-developer">
 <h2>Installing l5kit as a developer<a class="headerlink" href="#installing-l5kit-as-a-developer" title="Permalink to this headline">¶</a></h2>
 <p>Run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip install -r requirements.txt 
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install -r requirements.txt</span>
 </pre></div>
 </div>
 <p>to install all developer dependencies along with l5kit in editable (-e) mode.</p>
@@ -200,65 +199,64 @@ These are peer-reviewed by the development team to maintain quality and reproduc
 <div class="section" id="code-sanity-checks">
 <h2>Code Sanity checks<a class="headerlink" href="#code-sanity-checks" title="Permalink to this headline">¶</a></h2>
 <p>Before starting a PR, it is highly recommended to also install the git pre-commit hooks, run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pre-commit install 
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pre-commit install</span>
 </pre></div>
 </div>
-<p>This will run all required code checks before each commit and it ensures your builds
-won’t fail in CI.</p>
+<p>This will run all required code checks before each commit and it ensures your builds won’t fail in CI.</p>
 <p>If, on the other hand, you want to run individual checks, please refer to the instructions below.</p>
 </div>
 <div class="section" id="testing">
 <h2>Testing<a class="headerlink" href="#testing" title="Permalink to this headline">¶</a></h2>
 <p>To run the tests, run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./run_tests.sh tests
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./run_tests.sh tests</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="coverage-report">
 <h2>Coverage report<a class="headerlink" href="#coverage-report" title="Permalink to this headline">¶</a></h2>
 <p>To generate a test coverage report, run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Outputs to std out</span>
-pytest --cov
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Outputs to std out
+<span class="go">pytest --cov</span>
 
-<span class="c1"># Output to HTML files in the coverage_report_html folder</span>
-pytest --cov --cov-report html
+<span class="gp"># </span>Output to HTML files within the coverage_report_html folder
+<span class="go">pytest --cov --cov-report html</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="type-checking">
 <h2>Type checking<a class="headerlink" href="#type-checking" title="Permalink to this headline">¶</a></h2>
 <p>To run type checking with mypy, run:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./run_tests.sh types
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./run_tests.sh types</span>
 </pre></div>
 </div>
 </div>
 <div class="section" id="code-style-linting-and-formatting">
 <h2>Code style, linting and formatting<a class="headerlink" href="#code-style-linting-and-formatting" title="Permalink to this headline">¶</a></h2>
-<p>We use <a class="reference external" href="https://github.com/timothycrosley/isort">isort</a> for import sorting, and <a class="reference external" href="https://flake8.pycqa.org/en/latest/">flake8</a> to check for linting errors. These are the relevant commands:</p>
+<p>We use <a class="reference external" href="https://github.com/timothycrosley/isort">isort</a> for import sorting, and <a class="reference external" href="https://flake8.pycqa.org/en/latest/">flake8</a> to check for linting errors.</p>
 <p>You can check against those by running:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>./run_tests.sh lint
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">./run_tests.sh lint</span>
 </pre></div>
 </div>
 <p>Or, if you want to apply those formatters:</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Sort imports automatically.</span>
-isort l5kit --apply --recursive
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Sort imports automatically.
+<span class="go">isort l5kit --apply --recursive</span>
 
-<span class="c1"># Check for linting errors.</span>
-flake8 l5kit
+<span class="gp"># </span>Check linting errors.
+<span class="go">flake8 l5kit</span>
 </pre></div>
 </div>
 <p>Our docstrings are in <a class="reference external" href="https://sphinxcontrib-napoleon.readthedocs.io/en/latest/example_google.html">Google docstring</a> format.</p>
 </div>
 <div class="section" id="creating-a-distribution">
 <h2>Creating a distribution<a class="headerlink" href="#creating-a-distribution" title="Permalink to this headline">¶</a></h2>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span><span class="c1"># Clean up from potential earlier runs</span>
-rm -rf dist
-rm -rf build
+<div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="gp"># </span>Clean up from potential earlier runs
+<span class="go">rm -rf dist</span>
+<span class="go">rm -rf build</span>
 
-python3 setup.py sdist bdist_wheel
+<span class="go">python3 setup.py sdist bdist_wheel</span>
 </pre></div>
 </div>
-<p>You can now find the distribution files (both tar.gz and wheel) in the <code class="docutils literal notranslate"><span class="pre">dist</span></code> folder.</p>
+<p>You can now find the distribution files (both tar.gz and wheel) in the <code class="code docutils literal notranslate"><span class="pre">dist</span></code> folder.</p>
 <p><strong>We look forward to your contributions!</strong></p>
 </div>
 </div>
@@ -269,8 +267,8 @@ python3 setup.py sdist bdist_wheel
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="competition.html" class="btn btn-neutral float-right" title="Competition" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="coords_systems.html" class="btn btn-neutral float-left" title="Coordinate Systems in L5Kit" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="api_reference.html" class="btn btn-neutral float-right" title="API Reference" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="prediction_competition.html" class="btn btn-neutral float-left" title="Prediction Competition" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

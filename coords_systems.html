@@ -38,8 +38,8 @@
     
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="How to contribute" href="how_to_contribute.html" />
-    <link rel="prev" title="Dataset Formats" href="data_format.html" /> 
+    <link rel="next" title="Tutorials" href="tutorials.html" />
+    <link rel="prev" title="Dataset Formats in L5Kit" href="data_format.html" /> 
 </head>
 
 <body class="wy-body-for-nav">
@@ -84,32 +84,37 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="README.html">ML Prediction, Planning and Simulation for Self-Driving</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#examples">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#news">News</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#overview">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#license">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#credits">Credits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="README.html#contact">Contact</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="data_format.html">Dataset Formats</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">Coordinate Systems in L5Kit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#introduction">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="#coordinate-systems">Coordinate Systems</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#world-coordinate-system">World Coordinate System</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#agent-coordinate-system">Agent Coordinate System</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#image-coordinate-system">Image Coordinate System</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#satellite-coordinate-system">Satellite Coordinate System</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#semantic-coordinate-system">Semantic Coordinate System</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1 current"><a class="reference internal" href="gettingstarted.html">Getting started</a><ul class="current">
+<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l2"><a class="reference internal" href="data_format.html">Dataset Formats in L5Kit</a></li>
+<li class="toctree-l2 current"><a class="current reference internal" href="#">Coordinate Systems in L5Kit</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#world-coordinate-system">World Coordinate System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#agent-coordinate-system">Agent Coordinate System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#image-coordinate-system">Image Coordinate System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#satellite-coordinate-system">Satellite Coordinate System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#semantic-coordinate-system">Semantic Coordinate System</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#visualization-notebook">Visualization Notebook</a></li>
 </ul>
 </li>
+</ul>
+</li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="competitions.html">Competitions</a></li>
+</ul>
+<ul>
 <li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
-<li class="toctree-l1"><a class="reference internal" href="competition.html">Competition</a></li>
-<li class="toctree-l1"><a class="reference internal" href="competition.html#scoring">Scoring</a></li>
-<li class="toctree-l1"><a class="reference internal" href="competition.html#coordinates-system-for-the-competition">Coordinates System for the competition</a></li>
-<li class="toctree-l1"><a class="reference internal" href="competition.html#additional-metrics">Additional Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
+<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
 </ul>
 
             
@@ -158,13 +163,15 @@
     
       <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
         
+          <li><a href="gettingstarted.html">Getting started</a> &raquo;</li>
+        
       <li>Coordinate Systems in L5Kit</li>
     
     
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/coords_systems.md.txt" rel="nofollow"> View page source</a>
+            <a href="_sources/coords_systems.rst.txt" rel="nofollow"> View page source</a>
           
         
       </li>
@@ -178,14 +185,11 @@
            <div itemprop="articleBody">
             
   <div class="section" id="coordinate-systems-in-l5kit">
-<h1>Coordinate Systems in L5Kit<a class="headerlink" href="#coordinate-systems-in-l5kit" title="Permalink to this headline">¶</a></h1>
-</div>
-<div class="section" id="introduction">
-<h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
+<span id="coordinate"></span><h1>Coordinate Systems in L5Kit<a class="headerlink" href="#coordinate-systems-in-l5kit" title="Permalink to this headline">¶</a></h1>
 <p>One essential feature of L5Kit is converting raw data into multi-channel images. We refer to this process as
 <strong>rasterisation</strong>. These raw data can come from different sources, such as:</p>
 <ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">.zarr</span></code> datasets, which include information about the AV and other agents;</p></li>
+<li><p><code class="code docutils literal notranslate"><span class="pre">.zarr</span></code> datasets, which include information about the AV and other agents;</p></li>
 <li><p>static aerial images;</p></li>
 <li><p>dynamic semantic maps, which include lane topologies, crosswalks, etc..</p></li>
 </ul>
@@ -193,23 +197,20 @@
 before we can use them together to get our final multi-channel image.
 L5Kit performs this operation smoothly under the hood, but you may want to know more details about these different systems
 if you’re trying a more experimental workflow.</p>
-</div>
-<div class="section" id="coordinate-systems">
-<h1>Coordinate Systems<a class="headerlink" href="#coordinate-systems" title="Permalink to this headline">¶</a></h1>
 <div class="section" id="world-coordinate-system">
-<h2>World Coordinate System<a class="headerlink" href="#world-coordinate-system" title="Permalink to this headline">¶</a></h2>
-<p>We refer to the coordinate system in the <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> dataset as <strong>world</strong>. This is shared by <em>all</em> our zarrs in a dataset
+<span id="world-coordinate"></span><h2>World Coordinate System<a class="headerlink" href="#world-coordinate-system" title="Permalink to this headline">¶</a></h2>
+<p>We refer to the coordinate system in the <code class="code docutils literal notranslate"><span class="pre">.zarr</span></code> dataset as <strong>world</strong>. This is shared by <em>all</em> our zarrs in a dataset
 and is a 3D metric space. The entities living in this space are the AV and the agents:</p>
 <ul class="simple">
-<li><p>AV: samples from the AV are collected using several sensors placed in the car. The AV translation is a 3D vector (XYZ),
-while the orientation is expressed as a 3x3 rotation matrix (counterclockwise in a right-hand system).</p></li>
-<li><p>Agents: samples from other agents are generated while the AV moves around. The translation is a 2D vector (XY) and the orientation
-is expressed via a single <a class="reference external" href="https://en.wikipedia.org/wiki/Yaw_(rotation)">yaw angle</a> (counterclockwise in radians).</p></li>
+<li><p>AV: samples from the AV are collected using several sensors placed in the car. The AV translation is a 3D vector (XYZ), while the orientation is expressed as a 3x3 rotation matrix (counterclockwise in a right-hand system).</p></li>
+<li><p>Agents: samples from other agents are generated while the AV moves around. The translation is a 2D vector (XY) and the orientation is expressed via a single <a class="reference external" href="https://en.wikipedia.org/wiki/Yaw_(rotation)">yaw angle</a> (counterclockwise in radians).</p></li>
 </ul>
-<p>The origin of the <strong>world</strong> coordinate system is located at <a class="reference external" href="https://www.google.com/maps/place/37%C2%B025%2745.6%22N+122%C2%B009%2715.7%22W/&#64;37.4293427,-122.1565407">[37°25’45.6”N, 122°09’15.7”W]</a> in Palo Alto (California, USA).</p>
+<p>The origin of the <strong>world</strong> coordinate system is located at
+<a class="reference external" href="https://www.google.com/maps/place/37%C2%B025'45.6%22N+122%C2%B009'15.7%22W/&#64;37.4293427,-122.1565407">[37°25’45.6”N, 122°09’15.7”W]</a>
+in Palo Alto (California, USA).</p>
 </div>
 <div class="section" id="agent-coordinate-system">
-<h2>Agent Coordinate System<a class="headerlink" href="#agent-coordinate-system" title="Permalink to this headline">¶</a></h2>
+<span id="agent-coordinate"></span><h2>Agent Coordinate System<a class="headerlink" href="#agent-coordinate-system" title="Permalink to this headline">¶</a></h2>
 <p>A common feature of the BEV’s rasterisation is that the agent of interest is always aligned in the same direction.
 In L5Kit this direction is right (i.e. the hood of the agent of interest always points to the right side of the image).</p>
 <p>This metric space is referred to as <strong>agent</strong> and has the following features:</p>
@@ -217,27 +218,27 @@ In L5Kit this direction is right (i.e. the hood of the agent of interest always 
 <li><p>The agent’s position is at (0, 0);</p></li>
 <li><p>The agent’s yaw is 0.</p></li>
 </ul>
-<p>If you’re using one of our high-level dataset objects (either <code class="docutils literal notranslate"><span class="pre">EgoDataset</span></code> or <code class="docutils literal notranslate"><span class="pre">AgentDataset</span></code>) to generate samples, you can
-access the agent-from-world matrix using the <code class="docutils literal notranslate"><span class="pre">agent_from_world</span></code> key of the returned dict.</p>
+<p>If you’re using one of our high-level dataset objects (either <code class="code docutils literal notranslate"><span class="pre">EgoDataset</span></code> or <code class="code docutils literal notranslate"><span class="pre">AgentDataset</span></code>) to generate samples, you can
+access the agent-from-world matrix using the <code class="code docutils literal notranslate"><span class="pre">agent_from_world</span></code> key of the returned dict.</p>
 <p><strong>Note:</strong> This space is aligned with the input raster except for an intrinsic transformation (i.e. meters to pixels),
 which makes this space suitable as a target during training.</p>
 </div>
 <div class="section" id="image-coordinate-system">
-<h2>Image Coordinate System<a class="headerlink" href="#image-coordinate-system" title="Permalink to this headline">¶</a></h2>
+<span id="image-coordinate"></span><h2>Image Coordinate System<a class="headerlink" href="#image-coordinate-system" title="Permalink to this headline">¶</a></h2>
 <p>Once rasterisation is complete, the final multi-channel image will be in the image space. This is a 2D space where (0,0)
 is located in the top-left corner.</p>
-<p>If you’re using one of our high-level dataset objects (either <code class="docutils literal notranslate"><span class="pre">EgoDataset</span></code> or <code class="docutils literal notranslate"><span class="pre">AgentDataset</span></code>) to generate samples, you can
-access the raster-from-world matrix using the <code class="docutils literal notranslate"><span class="pre">raster_from_world</span></code> key on the returned dict. When building this matrix, several steps are combined:</p>
+<p>If you’re using one of our high-level dataset objects (either <code class="code docutils literal notranslate"><span class="pre">EgoDataset</span></code> or <code class="code docutils literal notranslate"><span class="pre">AgentDataset</span></code>) to generate samples, you can
+access the raster-from-world matrix using the <code class="code docutils literal notranslate"><span class="pre">raster_from_world</span></code> key on the returned dict. When building this matrix, several steps are combined:</p>
 <ul class="simple">
-<li><p>Translate world to ego by applying the negative <code class="docutils literal notranslate"><span class="pre">ego_translation</span></code>;</p></li>
-<li><p>Rotate counter-clockwise by negative <code class="docutils literal notranslate"><span class="pre">ego_yaw</span></code> to align world such that ego faces right in the image;</p></li>
-<li><p>Scale from meters to pixels based on the value <code class="docutils literal notranslate"><span class="pre">pixel_size</span></code> set in the configuration;</p></li>
-<li><p>Translate again such that the ego is aligned to the value <code class="docutils literal notranslate"><span class="pre">ego_center</span></code> in the configuration.</p></li>
+<li><p>Translate world to ego by applying the negative <code class="code docutils literal notranslate"><span class="pre">ego_translation</span></code>;</p></li>
+<li><p>Rotate counter-clockwise by negative <code class="code docutils literal notranslate"><span class="pre">ego_yaw</span></code> to align world such that ego faces right in the image;</p></li>
+<li><p>Scale from meters to pixels based on the value <code class="code docutils literal notranslate"><span class="pre">pixel_size</span></code> set in the configuration;</p></li>
+<li><p>Translate again such that the ego is aligned to the value <code class="code docutils literal notranslate"><span class="pre">ego_center</span></code> in the configuration.</p></li>
 </ul>
 <p>Note: we ignore the z coordinate in this transformation</p>
 <p>With this matrix, you can transform a point from world to image space and vice versa using its inverse.</p>
 <p>One application of this is drawing trajectories on the image:</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># this comes from either EgoDataset or AgentDataset</span>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">data</span> <span class="o">=</span> <span class="n">dataset</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>  <span class="c1"># this comes from either EgoDataset or AgentDataset</span>
 
 <span class="n">im</span> <span class="o">=</span> <span class="n">dataset</span><span class="o">.</span><span class="n">rasterizer</span><span class="o">.</span><span class="n">to_rgb</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;image&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">transpose</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">0</span><span class="p">))</span>  <span class="c1"># convert raster into rgb</span>
 <span class="c1"># transform points from agent local coordinate to world coordinate</span>
@@ -249,38 +250,41 @@ access the raster-from-world matrix using the <code class="docutils literal notr
 </div>
 </div>
 <div class="section" id="satellite-coordinate-system">
-<h2>Satellite Coordinate System<a class="headerlink" href="#satellite-coordinate-system" title="Permalink to this headline">¶</a></h2>
-<p>Satellite information is stored as an RGB image in the <code class="docutils literal notranslate"><span class="pre">aerial_map</span></code> folder of the dataset. Together with that we provide
+<span id="sat-coordinate"></span><h2>Satellite Coordinate System<a class="headerlink" href="#satellite-coordinate-system" title="Permalink to this headline">¶</a></h2>
+<p>Satellite information is stored as an RGB image in the <code class="code docutils literal notranslate"><span class="pre">aerial_map</span></code> folder of the dataset. Together with that we provide
 a matrix to convert from the <a class="reference external" href="https://en.wikipedia.org/wiki/ECEF">ECEF</a> reference system to this image reference system (i.e. converting XYZ ECEF coordinates into a 2D pixel coordinates).</p>
-<p>However, the <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> stores information in the world reference system. As such, an additional conversion is required from world to this image reference system:</p>
+<p>However, the <code class="code docutils literal notranslate"><span class="pre">.zarr</span></code> stores information in the world reference system. As such, an additional conversion is required from world to this image reference system:</p>
 <ul class="simple">
-<li><p>world coordinates must be converted into ECEF coordinates. This transformation matrix is currently hard-coded but will be shipped with the dataset
-in the future. It is <strong>dataset dependent</strong> as it encodes where the dataset world origin is located in the Earth frame;</p></li>
+<li><p>world coordinates must be converted into ECEF coordinates. This transformation matrix is currently hard-coded but will be shipped with the dataset in the future. It is <strong>dataset dependent</strong> as it encodes where the dataset world origin is located in the Earth frame;</p></li>
 <li><p>ECEF coordinates must be converted into the aerial image reference system using the above mentioned matrix.</p></li>
 </ul>
-<p>The <code class="docutils literal notranslate"><span class="pre">SatelliteRasterizer</span></code> and its derived classes combine these two matrices into a single one and directly convert
-world coordinates from the <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> into 2D pixels coordinates. In this way, you can rasterise around an agent in the <code class="docutils literal notranslate"><span class="pre">.zarr</span></code> (whose coordinates are in the world reference system)</p>
+<p>The <code class="code docutils literal notranslate"><span class="pre">SatelliteRasterizer</span></code> and its derived classes combine these two matrices into a single one and directly convert
+world coordinates from the <code class="code docutils literal notranslate"><span class="pre">.zarr</span></code> into 2D pixels coordinates. In this way, you can rasterise around an agent in the <code class="code docutils literal notranslate"><span class="pre">.zarr</span></code> (whose coordinates are in the world reference system)</p>
 </div>
 <div class="section" id="semantic-coordinate-system">
-<h2>Semantic Coordinate System<a class="headerlink" href="#semantic-coordinate-system" title="Permalink to this headline">¶</a></h2>
+<span id="sem-coordinate"></span><h2>Semantic Coordinate System<a class="headerlink" href="#semantic-coordinate-system" title="Permalink to this headline">¶</a></h2>
 <p>Semantic information is stored as a protobuf file. The protobuf store information as a list of elements of different types (e.g lanes, crosswalks, etc).</p>
 <p>Each elements can have one or multiple geometric features (e.g. the left and right lane boundaries) which are described
 as a list of 3D points.</p>
 <p>Each element’s features are localised in its local coordinate system:</p>
 <ul class="simple">
-<li><p>features coordinates are expressed in centimeters deltas in an <a class="reference external" href="https://en.wikipedia.org/wiki/Local_tangent_plane_coordinates">ENU</a> reference system. This system is valid <strong>only</strong> for that feature
-(i.e. two features with the same coordinates values are <strong>not</strong> in the same location);</p></li>
-<li><p>the system latitude and longitude, which localise the feature in a global reference system.
-This can be used for example to move the feature into a common space (e.g. world or ECEF)</p></li>
+<li><p>features coordinates are expressed in centimeters deltas in an <a class="reference external" href="https://en.wikipedia.org/wiki/Local_tangent_plane_coordinates">ENU</a>  reference system. This system is valid <strong>only</strong> for that feature (i.e. two features with the same coordinates values are <strong>not</strong> in the same location);</p></li>
+<li><p>the system latitude and longitude, which localise the feature in a global reference system.</p></li>
 </ul>
-<p>The <code class="docutils literal notranslate"><span class="pre">MapAPI</span></code> class has a set of functionality to convert these local spaces into a global reference system.
+<p>This can be used for example to move the feature into a common space (e.g. world or ECEF)</p>
+<p>The <code class="code docutils literal notranslate"><span class="pre">MapAPI</span></code> class has a set of functionality to convert these local spaces into a global reference system.
 When you query it for a supported element (only lanes and crosswalks currently):</p>
 <ul class="simple">
 <li><p>the geometric feature(s) is converted from deltas to absolute values;</p></li>
 <li><p>the feature is then converted from ENU into ECEF by using its GeoFrame reference (lat, lng);</p></li>
-<li><p>the features is finally converted from ECEF to world (this is the reason for the <code class="docutils literal notranslate"><span class="pre">world_to_ecef</span></code> arg in the <code class="docutils literal notranslate"><span class="pre">MapAPI</span></code> constructor).</p></li>
+<li><p>the features is finally converted from ECEF to world (this is the reason for the <code class="code docutils literal notranslate"><span class="pre">world_to_ecef</span></code> arg in the <code class="code docutils literal notranslate"><span class="pre">MapAPI</span></code> constructor).</p></li>
 </ul>
 <p>As these operations are computationally expensive, the function results are LRUcached</p>
+</div>
+<div class="section" id="visualization-notebook">
+<span id="vis-notebook"></span><h2>Visualization Notebook<a class="headerlink" href="#visualization-notebook" title="Permalink to this headline">¶</a></h2>
+<a class="reference external image-reference" href="https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/visualisation/visualise_data.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+<p>Our <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/examples/visualisation/visualise_data.ipynb">visualisation notebook</a> is the perfect place to start if you want to know more about L5Kit dataset format and coordinate systems.</p>
 </div>
 </div>
 
@@ -290,8 +294,8 @@ When you query it for a supported element (only lanes and crosswalks currently):
           </div>
           <footer>
     <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="how_to_contribute.html" class="btn btn-neutral float-right" title="How to contribute" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="data_format.html" class="btn btn-neutral float-left" title="Dataset Formats" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+        <a href="tutorials.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+        <a href="data_format.html" class="btn btn-neutral float-left" title="Dataset Formats in L5Kit" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
     </div>
 
   <hr/>

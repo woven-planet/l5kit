@@ -84,15 +84,21 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../README.html">ML Prediction, Planning and Simulation for Self-Driving</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#examples">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#news">News</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#overview">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#license">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#credits">Credits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#contact">Contact</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../competitions.html">Competitions</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="l5kit.data.html">l5kit.data package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="l5kit.dataset.html">l5kit.dataset package</a></li>
@@ -112,15 +118,8 @@
 <li class="toctree-l2"><a class="reference internal" href="l5kit.visualization.html">l5kit.visualization package</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset Formats</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../coords_systems.html">Coordinate Systems in L5Kit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../coords_systems.html#introduction">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../coords_systems.html#coordinate-systems">Coordinate Systems</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../competition.html">Competition</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../competition.html#scoring">Scoring</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../competition.html#coordinates-system-for-the-competition">Coordinates System for the competition</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../competition.html#additional-metrics">Additional Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../credits.html">Credits</a></li>
 </ul>
 
             
@@ -200,31 +199,27 @@
 <dd><p>Fits feasible ackerman-steering trajectory to groundtruth control points.
 Groundtruth is represented as 4 input numpy arrays <code class="docutils literal notranslate"><span class="pre">(gx,</span> <span class="pre">gy,</span> <span class="pre">gr,</span> <span class="pre">gv)</span></code>
 each of size <code class="docutils literal notranslate"><span class="pre">(N,)</span></code> representing position, rotation and velocity at time <code class="docutils literal notranslate"><span class="pre">i</span></code>.
-Returns 4 arrays <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">r,</span> <span class="pre">v)</span></code> each of shape <code class="docutils literal notranslate"><span class="pre">(N,)</span></code> - the optimal trajectory.</p>
-<p>The solution is found as minimization of the following non-linear least squares problem:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">minimize</span> <span class="n">F</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="n">F_ground_cost</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">+</span> <span class="n">F_kinematics_cost</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span>
-<span class="n">where</span>
-<span class="n">F_ground_cost</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span>
-<span class="p">(</span><span class="n">wgx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gx</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
-<span class="p">(</span><span class="n">wgy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gy</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
-<span class="p">(</span><span class="n">wgr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gr</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
-<span class="p">(</span><span class="n">wgv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gv</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
-<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">...</span> <span class="n">N</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-<span class="ow">and</span>
-<span class="n">F_kinematics_cost</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">,</span> <span class="n">r</span><span class="p">,</span> <span class="n">v</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span>
-<span class="p">(</span><span class="n">wx</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">cos</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
-<span class="p">(</span><span class="n">wy</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">sin</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
-<span class="p">(</span><span class="n">wr</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
-<span class="p">(</span><span class="n">wv</span> <span class="o">*</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span><span class="p">,</span>
-<span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">...</span> <span class="n">N</span><span class="o">-</span><span class="mi">2</span><span class="p">)</span>
-</pre></div>
-</div>
-<p>Weights wg* control adherance to the control points while
+Returns 4 arrays <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">r,</span> <span class="pre">v)</span></code> each of shape <code class="docutils literal notranslate"><span class="pre">(N,)</span></code> - the optimal trajectory.
+The solution is found as minimization of the following non-linear least squares problem:
+minimize F(x, y, r, v) = F_ground_cost(x, y, r, v) + F_kinematics_cost(x, y, r, v) where
+F_ground_cost(x, y, r, v) = 0.5 * sum(
+(wgx[i] * (x[i] - gx[i])) ** 2 +
+(wgy[i] * (y[i] - gy[i])) ** 2 +
+(wgr[i] * (r[i] - gr[i])) ** 2 +
+(wgv[i] * (v[i] - gv[i])) ** 2,
+i = 0 … N-1)
+and
+F_kinematics_cost(x, y, r, v) = 0.5 * sum(
+(wx * (x[i] + cos(r[i]) * v[i] - x[i+1])) ** 2 +
+(wy * (y[i] + sin(r[i]) * v[i] - y[i+1])) ** 2 +
+(wr * (r[i] - r[i+1])) ** 2 +
+(wv * (v[i] - v[i+1])) ** 2,
+i = 0 … N-2)
+Weights wg* control adherance to the control points while
 weights w* control obeying of underlying kinematic motion constrains.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray] – Returns 4 arrays (x, y, r, v) each of shape (N,),
-the optimal trajectory.</p>
+<dd class="field-odd"><p>4 arrays (x, y, r, v) each of shape (N,), the optimal trajectory.</p>
 </dd>
 </dl>
 </dd></dl>
@@ -236,35 +231,31 @@ the optimal trajectory.</p>
 Groundtruth is represented as 4 numpy arrays <code class="docutils literal notranslate"><span class="pre">(gx,</span> <span class="pre">gy,</span> <span class="pre">gr,</span> <span class="pre">gv)</span></code>
 each of shape <code class="docutils literal notranslate"><span class="pre">(N,)</span></code> representing position, rotation and velocity at time i.
 Returns 4 arrays <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">r,</span> <span class="pre">v)</span></code> each of shape <code class="docutils literal notranslate"><span class="pre">(N,)</span></code> - the optimal trajectory.</p>
-<p>The solution is found as minimisation of the following non-linear least squares problem:</p>
-<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">minimize</span> <span class="n">F</span><span class="p">(</span><span class="n">steer</span><span class="p">,</span> <span class="n">acc</span><span class="p">)</span> <span class="o">=</span> <span class="mf">0.5</span> <span class="o">*</span> <span class="nb">sum</span><span class="p">(</span>
-<span class="p">(</span><span class="n">wgx</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gx</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
-<span class="p">(</span><span class="n">wgy</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gy</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
-<span class="p">(</span><span class="n">wgr</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gr</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
-<span class="p">(</span><span class="n">wgv</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">*</span> <span class="p">(</span><span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">-</span> <span class="n">gv</span><span class="p">[</span><span class="n">i</span><span class="p">]))</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
-<span class="p">(</span><span class="n">ws</span> <span class="o">*</span> <span class="n">steer</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span> <span class="o">+</span>
-<span class="p">(</span><span class="n">wa</span> <span class="o">*</span> <span class="n">acc</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span>
-<span class="n">i</span> <span class="o">=</span> <span class="mi">1</span> <span class="o">...</span> <span class="n">N</span><span class="p">)</span>
-<span class="n">subject</span> <span class="n">to</span> <span class="n">following</span> <span class="n">unicycle</span> <span class="n">motion</span> <span class="n">model</span> <span class="n">equations</span><span class="p">:</span>
-<span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">x</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">cos</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-<span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">y</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">sin</span><span class="p">(</span><span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">])</span> <span class="o">*</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-<span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">r</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">steer</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-<span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">v</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">+</span> <span class="n">acc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span>
-<span class="n">min_steer</span> <span class="o">&lt;</span> <span class="n">steer</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">max_steer</span>
-<span class="n">min_acc</span> <span class="o">&lt;</span> <span class="n">acc</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">&lt;</span> <span class="n">max_acc</span>
-<span class="k">for</span> <span class="n">i</span> <span class="o">=</span> <span class="mi">0</span> <span class="o">..</span> <span class="n">N</span>
-</pre></div>
-</div>
-<p>Weights <code class="docutils literal notranslate"><span class="pre">wg*</span></code> control adherence to the control points
+<p>The solution is found as minimisation of the following non-linear least squares problem:
+::
+minimize F(steer, acc) = 0.5 * sum(
+(wgx[i] * (x[i] - gx[i])) ** 2 +
+(wgy[i] * (y[i] - gy[i])) ** 2 +
+(wgr[i] * (r[i] - gr[i])) ** 2 +
+(wgv[i] * (v[i] - gv[i])) ** 2 +
+(ws * steer[i]) ** 2 +
+(wa * acc[i]) ** 2)
+i = 1 … N)
+subject to following unicycle motion model equations:
+x[i+1] = x[i] + cos(r[i]) * v[i]
+y[i+1] = y[i] + sin(r[i]) * v[i]
+r[i+1] = r[i] + steer[i]
+v[i+1] = v[i] + acc[i]
+min_steer &lt; steer[i] &lt; max_steer
+min_acc &lt; acc[i] &lt; max_acc
+for i = 0 .. N
+Weights <code class="docutils literal notranslate"><span class="pre">wg*</span></code> control adherence to the control points
 In a typical usecase <code class="docutils literal notranslate"><span class="pre">wgx</span> <span class="pre">=</span> <span class="pre">wgy</span> <span class="pre">=</span> <span class="pre">1</span></code> and <code class="docutils literal notranslate"><span class="pre">wgr</span> <span class="pre">=</span> <span class="pre">wgv</span> <span class="pre">=</span> <span class="pre">0</span></code></p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>[Tuple[np.ndarray, np.ndarray, np.ndarray, np.ndarray]] – 4 arrays <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">r,</span> <span class="pre">v)</span></code> each of shape <code class="docutils literal notranslate"><span class="pre">(N,)</span></code></p>
+<dd class="field-odd"><p>4 arrays <code class="docutils literal notranslate"><span class="pre">(x,</span> <span class="pre">y,</span> <span class="pre">r,</span> <span class="pre">v)</span></code> each of shape <code class="docutils literal notranslate"><span class="pre">(N,)</span></code>- the optimal trajectory.</p>
 </dd>
 </dl>
-<ul class="simple">
-<li><p>the optimal trajectory.</p></li>
-</ul>
 </dd></dl>
 
 </div>

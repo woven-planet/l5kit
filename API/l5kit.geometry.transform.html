@@ -84,15 +84,21 @@
               
             
             
-              <ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../README.html">ML Prediction, Planning and Simulation for Self-Driving</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#examples">Examples</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#news">News</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#overview">Overview</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#installation">Installation</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#license">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#credits">Credits</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../README.html#contact">Contact</a></li>
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
+</ul>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../competitions.html">Competitions</a></li>
+</ul>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
 <li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
 <li class="toctree-l2"><a class="reference internal" href="l5kit.data.html">l5kit.data package</a></li>
 <li class="toctree-l2"><a class="reference internal" href="l5kit.dataset.html">l5kit.dataset package</a></li>
@@ -113,15 +119,8 @@
 <li class="toctree-l2"><a class="reference internal" href="l5kit.visualization.html">l5kit.visualization package</a></li>
 </ul>
 </li>
-<li class="toctree-l1"><a class="reference internal" href="../data_format.html">Dataset Formats</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../coords_systems.html">Coordinate Systems in L5Kit</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../coords_systems.html#introduction">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../coords_systems.html#coordinate-systems">Coordinate Systems</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../competition.html">Competition</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../competition.html#scoring">Scoring</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../competition.html#coordinates-system-for-the-competition">Coordinates System for the competition</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../competition.html#additional-metrics">Additional Metrics</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../credits.html">Credits</a></li>
 </ul>
 
             
@@ -270,22 +269,17 @@ coordinates. If no altitude is given, altitude 0 is assumed.</p>
 <dl class="py function">
 <dt id="l5kit.geometry.transform.transform_point">
 <code class="sig-prename descclassname"><span class="pre">l5kit.geometry.transform.</span></code><code class="sig-name descname"><span class="pre">transform_point</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">point</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transf_matrix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#l5kit.geometry.transform.transform_point" title="Permalink to this definition">¶</a></dt>
-<dd><dl class="simple">
-<dt>Transform a single vector using transformation matrix.</dt><dd><p>This function call transform_points internally</p>
-</dd>
-</dl>
+<dd><p>Transform a single vector using transformation matrix.
+This function call transform_points internally</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>point</strong> (<em>np.ndarray</em>) – vector of shape (N)</p></li>
-<li><p><strong>transf_matrix</strong> (<em>np.ndarray</em>) – transformation matrix of shape (N+1, N+1)</p></li>
+<li><p><strong>point</strong> – vector of shape (N)</p></li>
+<li><p><strong>transf_matrix</strong> – transformation matrix of shape (N+1, N+1)</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>vector of same shape as input point</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
@@ -295,39 +289,26 @@ coordinates. If no altitude is given, altitude 0 is assumed.</p>
 <code class="sig-prename descclassname"><span class="pre">l5kit.geometry.transform.</span></code><code class="sig-name descname"><span class="pre">transform_points</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">points</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">transf_matrix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#l5kit.geometry.transform.transform_points" title="Permalink to this definition">¶</a></dt>
 <dd><p>Transform a set of 2D/3D points using the given transformation matrix.
 Assumes row major ordering of the input points. The transform function has 3 modes:
-- points (N, F), transf_matrix (F+1, F+1)</p>
-<blockquote>
-<div><p>all points are transformed using the matrix and the output points have shape (N, F).</p>
-</div></blockquote>
-<ul class="simple">
-<li><dl class="simple">
-<dt>points (B, N, F), transf_matrix (F+1, F+1)</dt><dd><p>all sequences of points are transformed using the same matrix and the output points have shape (B, N, F).
-transf_matrix is broadcasted.</p>
-</dd>
-</dl>
-</li>
-<li><dl class="simple">
-<dt>points (B, N, F), transf_matrix (B, F+1, F+1)</dt><dd><p>each sequence of points is transformed using its own matrix and the output points have shape (B, N, F).</p>
-</dd>
-</dl>
-</li>
-</ul>
-<p>Note this function assumes points.shape[-1] == matrix.shape[-1] - 1, which means that last
+- points (N, F), transf_matrix (F+1, F+1)
+all points are transformed using the matrix and the output points have shape (N, F).
+- points (B, N, F), transf_matrix (F+1, F+1)
+all sequences of points are transformed using the same matrix and the output points have shape (B, N, F).
+transf_matrix is broadcasted.
+- points (B, N, F), transf_matrix (B, F+1, F+1)
+each sequence of points is transformed using its own matrix and the output points have shape (B, N, F).
+Note this function assumes points.shape[-1] == matrix.shape[-1] - 1, which means that last
 rows in the matrices do not influence the final results.
 For 2D points only the first 2x3 parts of the matrices will be used.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
 <dd class="field-odd"><ul class="simple">
-<li><p><strong>points</strong> (<em>np.ndarray</em>) – Input points of shape (N, F) or (B, N, F)</p></li>
-<li><p><strong>F = 2</strong><strong> or </strong><strong>3 depending on input points are 2D</strong><strong> or </strong><strong>3D points.</strong> (<em>with</em>) – </p></li>
-<li><p><strong>transf_matrix</strong> (<em>np.ndarray</em>) – Transformation matrix of shape (F+1, F+1) or (B, F+1, F+1) with F = 2 or 3.</p></li>
+<li><p><strong>points</strong> – Input points of shape (N, F) or (B, N, F)
+with F = 2 or 3 depending on input points are 2D or 3D points.</p></li>
+<li><p><strong>transf_matrix</strong> – Transformation matrix of shape (F+1, F+1) or (B, F+1, F+1) with F = 2 or 3.</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>Transformed points of shape (N, F) or (B, N, F) depending on the dimensions of the input points.</p>
-</dd>
-<dt class="field-odd">Return type</dt>
-<dd class="field-odd"><p>np.ndarray</p>
 </dd>
 </dl>
 </dd></dl>
