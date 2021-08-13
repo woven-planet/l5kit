@@ -11,6 +11,7 @@ from .rasterizer import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, 
 from .render_context import RenderContext
 from .semantic_rasterizer import CV2_SUB_VALUES, cv2_subpixel
 
+
 # TODO this can be useful to have around
 def get_ego_as_agent(frame: np.ndarray) -> np.ndarray:
     """Get a valid agent with information from the AV. Ford Fusion extent is used.
