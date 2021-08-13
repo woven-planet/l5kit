@@ -20,7 +20,7 @@ from l5kit import __version__
 # -- Project information -----------------------------------------------------
 
 project = "L5Kit"
-copyright = "2020, Level 5"
+copyright = """2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car)"""
 author = "Level 5"
 
 # The full version, including alpha/beta/rc tags

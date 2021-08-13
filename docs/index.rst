@@ -1,9 +1,13 @@
 .. _index:
 
+.. image:: images/smart_car_logo.png
+   :alt: logocar
+   :align: center
+   :width: 840px
+
 Welcome to L5Kit !
 =================================
 L5Kit is a Python library with functionality for the development and training of *learned prediction, planning and simulation* models for autonomous driving applications.
-
 
 News
 ----
