@@ -55,7 +55,14 @@ exclude_patterns = ['.env/*', '.venv/*', '*/l5kit.egg-info/*', '.env*/*']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = "press"
+
+html_logo = "images/L5logo_small_v2.png"
+html_theme_options = {
+  "external_links": [
+      ("Github", "https://github.com/lyft/l5kit"),
+  ]
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
