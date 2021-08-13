@@ -11,12 +11,12 @@ from .rasterizer import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, 
 from .render_context import RenderContext
 from .semantic_rasterizer import CV2_SUB_VALUES, cv2_subpixel
 
-
-def get_ego_as_agent(frame: np.ndarray) -> np.ndarray:  # TODO this can be useful to have around
-    """ Get a valid agent with information from the AV. Ford Fusion extent is used.
+# TODO this can be useful to have around
+def get_ego_as_agent(frame: np.ndarray) -> np.ndarray:
+    """Get a valid agent with information from the AV. Ford Fusion extent is used.
 
     :param frame: The frame from which the Ego states are extracted
-    :return An agent numpy array of the Ego states
+    :return: An agent numpy array of the Ego states
     """
     ego_agent = np.zeros(1, dtype=AGENT_DTYPE)
     ego_agent[0]["centroid"] = frame["ego_translation"][:2]
