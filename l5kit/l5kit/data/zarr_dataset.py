@@ -56,7 +56,6 @@ TL_FACE_DTYPE = [
 class ChunkedDataset:
     """ChunkedDataset is a dataset that lives on disk in compressed chunks, it has easy to use data loading and
     writing interfaces that involves making numpy-like slices.
-
     Currently only .zarr directory stores are supported (i.e. the data will live in a folder on your
     local filesystem called <something>.zarr).
     """
@@ -65,14 +64,8 @@ class ChunkedDataset:
         """Creates a new handle for the dataset, does NOT initialize or open it yet, use respective methods for that.
         Right now only DirectoryStore is supported.
 
-        Arguments:
-            path (str): Path on disk where to write this dataset, should end in ``.zarr``.
-
-        Keyword Arguments:
-            key (str): Key in the zarr group to write under, you probably never need to change this (default: {""})
-
-        Raises:
-            Exception: An exception is raised when the path does not end in .zarr
+        :param path: Path on disk where to write this dataset, should end in ``.zarr``.
+        :param key: Key in the zarr group to write under, you probably never need to change this (default: {""})
         """
         self.key = key
         self.path = path
@@ -98,12 +91,11 @@ class ChunkedDataset:
     ) -> "ChunkedDataset":
         """Initializes a new zarr dataset, creating the underlying arrays.
 
-        Keyword Arguments:
-            mode (str): Mode to open dataset in, should be something that supports writing. (default: {"w"})
-            num_scenes (int): pre-allocate this number of scenes
-            num_frames (int): pre-allocate this number of frames
-            num_agents (int): pre-allocate this number of agents
-            num_tl_faces (int): pre-allocate this number of traffic lights
+        :param mode: Mode to open dataset in, should be something that supports writing. (default: {"w"})
+        :param num_scenes: pre-allocate this number of scenes
+        :param num_frames: pre-allocate this number of frames
+        :param num_agents: pre-allocate this number of agents
+        :param num_tl_faces: pre-allocate this number of traffic lights
         """
 
         self.root = zarr.open_group(self.path, mode=mode)
@@ -128,14 +120,9 @@ class ChunkedDataset:
     def open(self, mode: str = "r", cached: bool = True, cache_size_bytes: int = int(1e9)) -> "ChunkedDataset":
         """Opens a zarr dataset from disk from the path supplied in the constructor.
 
-        Keyword Arguments:
-            mode (str): Mode to open dataset in, default to read-only (default: {"r"})
-            cached (bool): Whether to cache files read from disk using a LRU cache. (default: {True})
-            cache_size_bytes (int): Size of cache in bytes (default: {1e9} (1GB))
-
-        Raises:
-            Exception: When any of the expected arrays (frames, agents, scenes) is missing or the store couldn't be
-opened.
+        :param mode: Mode to open dataset in, default to read-only (default: {"r"})
+        :param cached: Whether to cache files read from disk using a LRU cache. (default: {True})
+        :param cache_size_bytes: Size of cache in bytes (default: {1e9} (1GB))
         """
         if cached:
             self.root = zarr.open_group(

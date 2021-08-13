@@ -15,8 +15,9 @@ from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 
 
 class TrajectoryStateIndices(IntEnum):
-    """ Defines indices for accessing trajectory states from LocalSceneBatch.
-        example: all_speeds = local_scene_batch.recorded_ego_states[:, TrajectoryStateIndices.SPEED]
+    """Defines indices for accessing trajectory states from LocalSceneBatch.
+    example: all_speeds = local_scene_batch.recorded_ego_states[:, TrajectoryStateIndices.SPEED]
+
     :param X: the index for x position
     :param Y: the index for y position
     :param THETA: the index for the angle in radians
