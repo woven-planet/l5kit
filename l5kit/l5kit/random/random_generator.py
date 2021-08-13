@@ -1,5 +1,5 @@
 from abc import ABC, abstractmethod
-from typing import Callable
+from typing import Callable, Optional
 
 import numpy as np
 
@@ -58,12 +58,13 @@ class GaussianRandomGenerator(RandomGenerator):
     Note that this gaussian can be multidimensional.
     """
 
-    def __init__(self, mean: np.ndarray, std: np.ndarray):
+    def __init__(self, mean: np.ndarray, std: np.ndarray, random_seed: Optional[int] = 0):
         self.mean = np.array(mean)
         self.std = np.array(std)
+        self.rng = np.random.default_rng(random_seed)
 
     def _sample(self) -> np.ndarray:
-        return np.random.normal(self.mean, self.std)
+        return self.rng.normal(self.mean, self.std)
 
 
 class UniformRandomGenerator(RandomGenerator):
