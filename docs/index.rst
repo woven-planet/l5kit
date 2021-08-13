@@ -6,11 +6,11 @@
    :width: 840px
 
 Welcome to L5Kit !
-=================================
+===============================================================================
 L5Kit is a Python library with functionality for the development and training of *learned prediction, planning and simulation* models for autonomous driving applications.
 
 News
-----
+-------------------------------------------------------------------------------
 
 * 04-16-2021: We've just released a new notebook tutorial for the :ref:`ML simulation task <simulation>`!
 * 12-03-2020: We've just released a series of notebooks to train and evaluate an :ref:`ML planning model <planning>`. We've also included pre-trained models!
@@ -22,7 +22,7 @@ News
 
 
 Table of Contents
-================================
+===============================================================================
 
    .. toctree::
       :maxdepth: 1
@@ -59,5 +59,5 @@ Table of Contents
 
 
 Contact
-================================
+===============================================================================
 If you find problem or have questions about L5Kit please feel free to create `github issue <https://github.com/lyft/l5kit/issues>`_ or reach out to l5kit@lyft.com!
