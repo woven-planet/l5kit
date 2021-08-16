@@ -36,7 +36,7 @@ setup(
     ],
     extras_require={
         "dev": ["pytest", "mypy", "types-PyYAML", "setuptools", "twine", "wheel", "pytest-cov",
-                "flake8", "isort", "Sphinx", "sphinx-rtd-theme", "recommonmark",
+                "flake8", "isort", "Sphinx", "recommonmark",
                 "pre-commit", "sphinx-press-theme"]
     },
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),

@@ -10,7 +10,6 @@ pytest-cov = "*"
 flake8 = "*"
 isort = "*"
 sphinx = "*"
-sphinx-rtd-theme = "*"
 recommonmark = "*"
 pre-commit = "*"
 importlib-metadata = "*"  # required for python 3.8
