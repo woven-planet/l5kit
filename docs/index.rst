@@ -27,31 +27,27 @@ Table of Contents
    .. toctree::
       :maxdepth: 1
 
-      introduction.rst
-      overview.rst
+      intro_index
 
    .. toctree::
       :maxdepth: 2
 
-      gettingstarted.rst
+      gettingstarted
 
    .. toctree::
       :maxdepth: 3
 
-      tutorials.rst
+      tutorials
 
    .. toctree::
       :maxdepth: 2
 
-      competitions.rst
+      competitions
 
    .. toctree::
       :maxdepth: 1
 
-      how_to_contribute.rst
-      api_reference.rst
-      license.rst
-      credits.rst
+      contribute_index
 
 
 .. image:: images/L5logo.png
