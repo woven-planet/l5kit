@@ -15,3 +15,4 @@ API Reference
    API/l5kit.random
    API/l5kit.sampling
    API/l5kit.visualization
+   API/l5kit.environment

@@ -1,11 +1,11 @@
-from typing import Dict, Iterable, List, Optional
+from typing import Dict, Iterable, List, Optional, Sequence
 
 import torch
 
 from l5kit.cle.composite_metrics import SupportsCompositeMetricCompute
 from l5kit.cle.metrics import SupportsMetricCompute
 from l5kit.cle.validators import SupportsMetricValidate, ValidatorOutput
-from l5kit.simulation.unroll import SimulationOutput
+from l5kit.simulation.unroll import SimulationOutputCLE
 
 
 class EvaluationPlan:
@@ -95,7 +95,7 @@ class EvaluationPlan:
                     raise RuntimeError(f"Validator '{validator_requirement}' required "
                                        f"by composite metric '{cm.composite_metric_name}'.")
 
-    def evaluate(self, simulation_output: SimulationOutput) -> Dict[str, torch.Tensor]:
+    def evaluate(self, simulation_output: SimulationOutputCLE) -> Dict[str, torch.Tensor]:
         """Execute the evaluation (metric computation) on the scene.
 
         :param simulation_output: output from the closed-loop simulator
@@ -107,7 +107,7 @@ class EvaluationPlan:
             results[metric_calculator.metric_name] = metric_result
         return results
 
-    def evaluate_composite(self, simulation_output: SimulationOutput,
+    def evaluate_composite(self, simulation_output: SimulationOutputCLE,
                            scene_metrics: Dict[str, torch.Tensor],
                            scene_validation: Dict[str, ValidatorOutput]) -> Dict[str, float]:
         """Execute the evaluation of the composite metrics on the scene.
@@ -174,7 +174,7 @@ class EvaluationPlan:
             return results
 
     def validate(self, scene_metrics: Dict[str, torch.Tensor],
-                 simulation_output: SimulationOutput) -> Dict[str, ValidatorOutput]:
+                 simulation_output: SimulationOutputCLE) -> Dict[str, ValidatorOutput]:
         """Execute the validation (validators) on all metric results.
 
         :param scene_metrics: the result for the metrics computation
@@ -249,7 +249,7 @@ class ClosedLoopEvaluator:
         """
         return self.scene_composite_metric_results
 
-    def evaluate(self, simulation_outputs: List[SimulationOutput]) -> None:
+    def evaluate(self, simulation_outputs: Sequence[SimulationOutputCLE]) -> None:
         """Executes the evaluation plan on all outputs from the simulator.
 
         :param simulation_outputs: the outputs from the simulator
