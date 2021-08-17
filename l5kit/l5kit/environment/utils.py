@@ -36,8 +36,8 @@ class KinematicActionRescaleParams(NamedTuple):
     :param steer_scale: the scaling of the steer (kinematic model)
     :param acc_scale: the scaling of the acceleration (kinematic model)
     """
-    steer_scale: float = math.radians(20) * 0.1  # 15
-    acc_scale: float = 0.6  # 0.3
+    steer_scale: float = math.radians(20) * 0.1  # 15, 20, 30
+    acc_scale: float = 0.6  # 0.3, 0.6, 0.6
 
 
 def calculate_non_kinematic_rescale_params(sim_dataset: SimulationDataset) -> NonKinematicActionRescaleParams:
@@ -82,36 +82,32 @@ def calculate_kinematic_rescale_params(sim_dataset: SimulationDataset) -> Kinema
     :param sim_dataset: the input dataset to calculate the action rescale parameters
     :return: the unnormalized action
     """
-    v_component_frames = []
-    yaw_component_frames = []
+    # v_component_frames = []
+    # yaw_component_frames = []
 
-    for index in range(1, len(sim_dataset)):
-        ego_input = sim_dataset.rasterise_frame_batch(index)
-        v_component_frames.append([scene['curr_speed'].item() for scene in ego_input])
-        yaw_component_frames.append([scene['target_yaws'][0, 0] for scene in ego_input])
+    # for index in range(1, len(sim_dataset)):
+    #     ego_input = sim_dataset.rasterise_frame_batch(index)
+    #     v_component_frames.append([scene['curr_speed'].item() for scene in ego_input])
+    #     yaw_component_frames.append([scene['target_yaws'][0, 0] for scene in ego_input])
 
-    v_components = np.stack(v_component_frames)
-    acc_components = v_components[1:] - v_components[:-1]
-    acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
-    acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
-    acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
-
+    # v_components = np.stack(v_component_frames)
+    # acc_components = v_components[1:] - v_components[:-1]
+    # acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
+    # acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
+    # acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
+    # acc_components = acc_components.flatten()
+    # yaw_components = np.concatenate(yaw_component_frames)
+    # print(max(acc_components), min(acc_components))
+    # print(max(yaw_components), min(yaw_components), math.radians(20) * 0.1)
     # import pdb; pdb.set_trace()
 
-    acc_components = acc_components.flatten()
-    # acc_mu, acc_std = np.mean(acc_components), np.std(acc_components)
+    # Straight; 64 time steps
+    # return KinematicActionRescaleParams(math.radians(15) * 0.1, 0.3)
+    # Turn; 64 time steps
+    # return KinematicActionRescaleParams(math.radians(30) * 0.1, 0.3)
 
-    yaw_components = np.concatenate(yaw_component_frames)
-    # yaw_mu, yaw_std = np.mean(yaw_components), np.std(yaw_components)
-
-    print(max(acc_components), min(acc_components))
-    print(max(yaw_components), min(yaw_components), math.radians(20) * 0.1)
-    # import pdb; pdb.set_trace()
-    # assert max(acc_components) <= 0.7
-    # assert -0.7 <= min(acc_components)
-
-    # 15, 0.3
-    return KinematicActionRescaleParams(math.radians(20) * 0.1, 0.6)
+    # Overfit [10]: (~) 25, 0.3, [100]: 20, 0.6, [1000]: 30, 0.6
+    return KinematicActionRescaleParams(math.radians(30) * 0.1, 0.6)
 
 
 def save_input_raster(rasterizer: Rasterizer, image: torch.Tensor, num_images: int = 20,

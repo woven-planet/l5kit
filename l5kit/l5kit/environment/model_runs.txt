@@ -396,3 +396,7 @@ tb_log/PPO_143 	 	 	 100scenes_kinematic_20M_history3_gn2_c01_c0001_10M_gae090
  
 /tmp/SB3-2021-08-12-13-41-51-856101 	 	 	 del 
  
+tb_log/PPO_144 	 	 	 1000scenes_kinematic_20M_history3_gn2_c01_c0001_gae090 
+ 
+tb_log/PPO_145 	 	 	 1000scenes_kinematic_20M_history3_gn2_c01_c0001_10M_gae090 
+ 

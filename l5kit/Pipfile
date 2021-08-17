@@ -17,6 +17,9 @@ typing-extensions = "*"
 line-profiler = "*"
 importlib-metadata = "*"
 sphinx-autobuild = "*"
+selenium = "*"
+geckodriver-autoinstaller = "*"
+moviepy = "*"
 
 [packages]
 l5kit = {editable = true, path = "."}
