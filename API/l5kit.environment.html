@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-      <title>l5kit.visualization.visualizer.zarr_utils module</title>
+      <title>l5kit.environment package</title>
     
           <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
           <link rel="stylesheet" href="../_static/theme.css " type="text/css" />
@@ -23,8 +23,8 @@
     
   <link rel="index" title="Index" href="../genindex.html" />
   <link rel="search" title="Search" href="../search.html" />
-  <link rel="next" title="l5kit.visualization.gif module" href="l5kit.visualization.gif.html" />
-  <link rel="prev" title="l5kit.visualization.visualizer.visualizer module" href="l5kit.visualization.visualizer.visualizer.html" /> 
+  <link rel="next" title="l5kit.environment.envs package" href="l5kit.environment.envs.html" />
+  <link rel="prev" title="l5kit.visualization.video module" href="l5kit.visualization.video.html" /> 
   </head>
 
   <body>
@@ -336,22 +336,18 @@
     
       <li><a href="../api_reference.html">API Reference</a> &raquo;</li>
     
-      <li><a href="l5kit.visualization.html">l5kit.visualization package</a> &raquo;</li>
-    
-      <li><a href="l5kit.visualization.visualizer.html">l5kit.visualization.visualizer package</a> &raquo;</li>
-    
-    <li>l5kit.visualization.visualizer.zarr_utils module</li>
+    <li>l5kit.environment package</li>
   </ul>
   
 
   <ul class="page-nav">
   <li class="prev">
-    <a href="l5kit.visualization.visualizer.visualizer.html"
-       title="previous chapter">← l5kit.visualization.visualizer.visualizer module</a>
+    <a href="l5kit.visualization.video.html"
+       title="previous chapter">← l5kit.visualization.video module</a>
   </li>
   <li class="next">
-    <a href="l5kit.visualization.gif.html"
-       title="next chapter">l5kit.visualization.gif module →</a>
+    <a href="l5kit.environment.envs.html"
+       title="next chapter">l5kit.environment.envs package →</a>
   </li>
 </ul>
   
@@ -359,64 +355,33 @@
 <hr>
           <div class="content" role="main" v-pre>
             
-  <section id="module-l5kit.visualization.visualizer.zarr_utils">
-<span id="l5kit-visualization-visualizer-zarr-utils-module"></span><h1>l5kit.visualization.visualizer.zarr_utils module<a class="headerlink" href="#module-l5kit.visualization.visualizer.zarr_utils" title="Permalink to this headline">¶</a></h1>
-<dl class="py function">
-<dt class="sig sig-object py" id="l5kit.visualization.visualizer.zarr_utils.episode_out_to_visualizer_scene_gym_cle">
-<span class="sig-prename descclassname"><span class="pre">l5kit.visualization.visualizer.zarr_utils.</span></span><span class="sig-name descname"><span class="pre">episode_out_to_visualizer_scene_gym_cle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_out</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.environment.envs.l5_env.html#l5kit.environment.envs.l5_env.EpisodeOutputGym" title="l5kit.environment.envs.l5_env.EpisodeOutputGym"><span class="pre">l5kit.environment.envs.l5_env.EpisodeOutputGym</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapAPI</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.data.map_api.html#l5kit.data.map_api.MapAPI" title="l5kit.data.map_api.MapAPI"><span class="pre">l5kit.data.map_api.MapAPI</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.visualization.visualizer.common.html#l5kit.visualization.visualizer.common.FrameVisualization" title="l5kit.visualization.visualizer.common.FrameVisualization"><span class="pre">l5kit.visualization.visualizer.common.FrameVisualization</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.visualization.visualizer.zarr_utils.episode_out_to_visualizer_scene_gym_cle" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a episode output of closed loop gym into a scene we can visualize.
-The scene will include replayed and simulated trajectories for ego and agents when these are
-simulated.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sim_out</strong> – the simulation output of L5 gym close loop environment</p></li>
-<li><p><strong>mapAPI</strong> – a MapAPI object</p></li>
+  <section id="module-l5kit.environment">
+<span id="l5kit-environment-package"></span><h1>l5kit.environment package<a class="headerlink" href="#module-l5kit.environment" title="Permalink to this headline">¶</a></h1>
+<section id="subpackages">
+<h2>Subpackages<a class="headerlink" href="#subpackages" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="l5kit.environment.envs.html">l5kit.environment.envs package</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="l5kit.environment.envs.html#submodules">Submodules</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="l5kit.environment.envs.l5_env.html">l5kit.environment.envs.l5_env module</a></li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a list of FrameVisualization for the scene</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="l5kit.visualization.visualizer.zarr_utils.simulation_out_to_visualizer_scene">
-<span class="sig-prename descclassname"><span class="pre">l5kit.visualization.visualizer.zarr_utils.</span></span><span class="sig-name descname"><span class="pre">simulation_out_to_visualizer_scene</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_out</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapAPI</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.data.map_api.html#l5kit.data.map_api.MapAPI" title="l5kit.data.map_api.MapAPI"><span class="pre">l5kit.data.map_api.MapAPI</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.visualization.visualizer.common.html#l5kit.visualization.visualizer.common.FrameVisualization" title="l5kit.visualization.visualizer.common.FrameVisualization"><span class="pre">l5kit.visualization.visualizer.common.FrameVisualization</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.visualization.visualizer.zarr_utils.simulation_out_to_visualizer_scene" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a simulation output into a scene we can visualize.
-The scene will include replayed and simulated trajectories for ego and agents when these are
-simulated.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>sim_out</strong> – the simulation output</p></li>
-<li><p><strong>mapAPI</strong> – a MapAPI object</p></li>
+</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a list of FrameVisualization for the scene</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py function">
-<dt class="sig sig-object py" id="l5kit.visualization.visualizer.zarr_utils.zarr_to_visualizer_scene">
-<span class="sig-prename descclassname"><span class="pre">l5kit.visualization.visualizer.zarr_utils.</span></span><span class="sig-name descname"><span class="pre">zarr_to_visualizer_scene</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset"><span class="pre">l5kit.data.zarr_dataset.ChunkedDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">mapAPI</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.data.map_api.html#l5kit.data.map_api.MapAPI" title="l5kit.data.map_api.MapAPI"><span class="pre">l5kit.data.map_api.MapAPI</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">with_trajectories</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.visualization.visualizer.common.html#l5kit.visualization.visualizer.common.FrameVisualization" title="l5kit.visualization.visualizer.common.FrameVisualization"><span class="pre">l5kit.visualization.visualizer.common.FrameVisualization</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.visualization.visualizer.zarr_utils.zarr_to_visualizer_scene" title="Permalink to this definition">¶</a></dt>
-<dd><p>Convert a zarr scene into a list of FrameVisualization which can be used by the visualiser</p>
-<dl class="field-list simple">
-<dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><ul class="simple">
-<li><p><strong>scene_dataset</strong> – a scene dataset. This must contain a single scene</p></li>
-<li><p><strong>mapAPI</strong> – mapAPI object</p></li>
-<li><p><strong>with_trajectories</strong> – if to enable trajectories or not</p></li>
+</li>
 </ul>
-</dd>
-<dt class="field-even">Returns</dt>
-<dd class="field-even"><p>a list of FrameVisualization objects</p>
-</dd>
-</dl>
-</dd></dl>
-
+</div>
+</section>
+<section id="submodules">
+<h2>Submodules<a class="headerlink" href="#submodules" title="Permalink to this headline">¶</a></h2>
+<div class="toctree-wrapper compound">
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="l5kit.environment.gym_metric_set.html">l5kit.environment.gym_metric_set module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="l5kit.environment.kinematic_model.html">l5kit.environment.kinematic_model module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="l5kit.environment.reward.html">l5kit.environment.reward module</a></li>
+<li class="toctree-l1"><a class="reference internal" href="l5kit.environment.utils.html">l5kit.environment.utils module</a></li>
+</ul>
+</div>
+</section>
 </section>
 
 
@@ -424,12 +389,12 @@ simulated.</p>
           <div class="page-nav">
             <div class="inner"><ul class="page-nav">
   <li class="prev">
-    <a href="l5kit.visualization.visualizer.visualizer.html"
-       title="previous chapter">← l5kit.visualization.visualizer.visualizer module</a>
+    <a href="l5kit.visualization.video.html"
+       title="previous chapter">← l5kit.visualization.video module</a>
   </li>
   <li class="next">
-    <a href="l5kit.visualization.gif.html"
-       title="next chapter">l5kit.visualization.gif module →</a>
+    <a href="l5kit.environment.envs.html"
+       title="next chapter">l5kit.environment.envs package →</a>
   </li>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car).

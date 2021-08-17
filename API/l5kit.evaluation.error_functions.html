@@ -360,6 +360,23 @@
   <section id="module-l5kit.evaluation.error_functions">
 <span id="l5kit-evaluation-error-functions-module"></span><h1>l5kit.evaluation.error_functions module<a class="headerlink" href="#module-l5kit.evaluation.error_functions" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
+<dt class="sig sig-object py" id="l5kit.evaluation.error_functions.closest_angle_error">
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.error_functions.</span></span><span class="sig-name descname"><span class="pre">closest_angle_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">angle_a</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">angle_b</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.evaluation.error_functions.closest_angle_error" title="Permalink to this definition">¶</a></dt>
+<dd><p>Finds the closest angle between angle_b - angle_a in radians.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>angle_a</strong> – a Tensor of angles in radians</p></li>
+<li><p><strong>angle_b</strong> – a Tensor of angles in radians</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>The relative angle error between A and B between [0, pi]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
 <dt class="sig sig-object py" id="l5kit.evaluation.error_functions.l2_error">
 <span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.error_functions.</span></span><span class="sig-name descname"><span class="pre">l2_error</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gt</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.evaluation.error_functions.l2_error" title="Permalink to this definition">¶</a></dt>
 <dd><p>A function that takes pred, gt tensor and computes their L2 distance.</p>

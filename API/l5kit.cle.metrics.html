@@ -367,7 +367,7 @@
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="l5kit.cle.metrics.CollisionMetricBase.compute">
-<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.CollisionMetricBase.compute" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutputCLE" title="l5kit.simulation.unroll.SimulationOutputCLE"><span class="pre">l5kit.simulation.unroll.SimulationOutputCLE</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.CollisionMetricBase.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the metric on all frames of the scene.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -431,7 +431,7 @@ simulated trajectory and the observed trajectory.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="l5kit.cle.metrics.DisplacementErrorMetric.compute">
-<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorMetric.compute" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutputCLE" title="l5kit.simulation.unroll.SimulationOutputCLE"><span class="pre">l5kit.simulation.unroll.SimulationOutputCLE</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.DisplacementErrorMetric.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the metric on all frames of the scene.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -472,7 +472,7 @@ fraction should be between 0.0 and 1.0.</p>
 </dl>
 <dl class="py method">
 <dt class="sig sig-object py" id="l5kit.cle.metrics.DistanceToRefTrajectoryMetric.compute">
-<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.DistanceToRefTrajectoryMetric.compute" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutputCLE" title="l5kit.simulation.unroll.SimulationOutputCLE"><span class="pre">l5kit.simulation.unroll.SimulationOutputCLE</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.DistanceToRefTrajectoryMetric.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the metric on all frames of the scene.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -505,7 +505,7 @@ trajectory, the one in the log replay (as opposed to the one simulated).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="l5kit.cle.metrics.ReplayDrivenMilesMetric.compute">
-<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric.compute" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutputCLE" title="l5kit.simulation.unroll.SimulationOutputCLE"><span class="pre">l5kit.simulation.unroll.SimulationOutputCLE</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.ReplayDrivenMilesMetric.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the metric on all frames of the scene.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -537,7 +537,7 @@ trajectory (as opposed to the one in the log replay).</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="l5kit.cle.metrics.SimulatedDrivenMilesMetric.compute">
-<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric.compute" title="Permalink to this definition">¶</a></dt>
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutputCLE" title="l5kit.simulation.unroll.SimulationOutputCLE"><span class="pre">l5kit.simulation.unroll.SimulationOutputCLE</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.SimulatedDrivenMilesMetric.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute the metric on all frames of the scene.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -563,7 +563,7 @@ trajectory (as opposed to the one in the log replay).</p>
 <p>Protocol supporting the computation method for metrics.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="l5kit.cle.metrics.SupportsMetricCompute.compute">
-<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute.compute" title="Permalink to this definition">¶</a></dt>
+<em class="property"><span class="pre">abstract</span> </em><span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutputCLE" title="l5kit.simulation.unroll.SimulationOutputCLE"><span class="pre">l5kit.simulation.unroll.SimulationOutputCLE</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute.compute" title="Permalink to this definition">¶</a></dt>
 <dd><p>The compute method sould return the result of the metric
 computed at every frame of the scene.</p>
 <dl class="field-list simple">
@@ -579,6 +579,50 @@ computed at every frame of the scene.</p>
 <dl class="py attribute">
 <dt class="sig sig-object py" id="l5kit.cle.metrics.SupportsMetricCompute.metric_name">
 <span class="sig-name descname"><span class="pre">metric_name</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute.metric_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="l5kit.cle.metrics.YawErrorCAMetric">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></span><span class="sig-name descname"><span class="pre">YawErrorCAMetric</span></span><a class="headerlink" href="#l5kit.cle.metrics.YawErrorCAMetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.YawErrorMetric" title="l5kit.cle.metrics.YawErrorMetric"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.YawErrorMetric</span></code></a></p>
+<p>Yaw error calculated with closest angle.</p>
+<dl class="py attribute">
+<dt class="sig sig-object py" id="l5kit.cle.metrics.YawErrorCAMetric.metric_name">
+<span class="sig-name descname"><span class="pre">metric_name</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><em class="property"> <span class="pre">=</span> <span class="pre">'yaw_error_closest_angle'</span></em><a class="headerlink" href="#l5kit.cle.metrics.YawErrorCAMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="l5kit.cle.metrics.YawErrorMetric">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></span><span class="sig-name descname"><span class="pre">YawErrorMetric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="pre">error_function:</span> <span class="pre">Callable[[torch.Tensor,</span> <span class="pre">torch.Tensor],</span> <span class="pre">torch.Tensor]</span> <span class="pre">=</span> <span class="pre">&lt;function</span> <span class="pre">closest_angle_error&gt;</span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.YawErrorMetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.SupportsMetricCompute" title="l5kit.cle.metrics.SupportsMetricCompute"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.SupportsMetricCompute</span></code></a></p>
+<p>Yaw error computes the difference between the
+simulated trajectory yaw and the observed trajectory yaw.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>error_function</strong> – error function to compute distance</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.cle.metrics.YawErrorMetric.compute">
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutputCLE" title="l5kit.simulation.unroll.SimulationOutputCLE"><span class="pre">l5kit.simulation.unroll.SimulationOutputCLE</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.YawErrorMetric.compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>Compute the metric on all frames of the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>simulation_output</strong> – the output from the closed-loop simulation</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>distance per frame [Shape: N, where N = timesteps]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="l5kit.cle.metrics.YawErrorMetric.metric_name">
+<span class="sig-name descname"><span class="pre">metric_name</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><em class="property"> <span class="pre">=</span> <span class="pre">'yaw_error'</span></em><a class="headerlink" href="#l5kit.cle.metrics.YawErrorMetric.metric_name" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>

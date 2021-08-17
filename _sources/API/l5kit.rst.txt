@@ -16,6 +16,7 @@ Subpackages
    l5kit.configs
    l5kit.data
    l5kit.dataset
+   l5kit.environment
    l5kit.evaluation
    l5kit.geometry
    l5kit.kinematic

@@ -1,0 +1,7 @@
+l5kit.cle.metric\_set module
+============================
+
+.. automodule:: l5kit.cle.metric_set
+   :members:
+   :undoc-members:
+   :show-inheritance:

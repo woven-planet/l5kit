@@ -1,0 +1,7 @@
+l5kit.environment.kinematic\_model module
+=========================================
+
+.. automodule:: l5kit.environment.kinematic_model
+   :members:
+   :undoc-members:
+   :show-inheritance:
