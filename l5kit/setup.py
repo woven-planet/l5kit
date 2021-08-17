@@ -7,8 +7,8 @@ from l5kit import __version__
 setup(
     name="l5kit",
     version=__version__,
-    description="Lyft Autonomous Vehicle Research library",
-    author="Lyft Level 5",
+    description="Level-5 Autonomous Vehicle Research library",
+    author="Level 5",
     author_email="l5kit@lyft.com",
     url="https://github.com/lyft/l5kit",
     license="apache2",
@@ -36,8 +36,8 @@ setup(
     ],
     extras_require={
         "dev": ["pytest", "mypy", "types-PyYAML", "setuptools", "twine", "wheel", "pytest-cov",
-                "flake8", "isort", "Sphinx", "sphinx-rtd-theme", "recommonmark",
-                "pre-commit"]
+                "flake8", "isort", "Sphinx", "recommonmark",
+                "pre-commit", "sphinx-press-theme"]
     },
     packages=find_packages(exclude=["*.tests", "*.tests.*", "tests.*", "tests"]),
     classifiers=[

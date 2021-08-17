@@ -20,7 +20,7 @@ from l5kit import __version__
 # -- Project information -----------------------------------------------------
 
 project = "L5Kit"
-copyright = "2020, Level 5"
+copyright = """2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car)"""
 author = "Level 5"
 
 # The full version, including alpha/beta/rc tags
@@ -36,7 +36,6 @@ extensions = [
     "sphinx.ext.intersphinx",
     "sphinx.ext.autodoc",
     "sphinx.ext.napoleon",
-    "sphinx_rtd_theme",
     "sphinx.ext.githubpages",
     "recommonmark",
 ]
@@ -55,12 +54,20 @@ exclude_patterns = ['.env/*', '.venv/*', '*/l5kit.egg-info/*', '.env*/*']
 # The theme to use for HTML and HTML Help pages.  See the documentation for
 # a list of builtin themes.
 #
-html_theme = "sphinx_rtd_theme"
+html_theme = "press"
+
+html_logo = "images/L5logo_small_v2.png"
+html_theme_options = {
+  "external_links": [
+      ("Github", "https://github.com/lyft/l5kit"),
+  ]
+}
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
 # so a file named "default.css" will overwrite the builtin "default.css".
-html_static_path = []
+html_static_path = ["./css"]
+html_css_files = ["custom.css"]
 
 # -- Markdown support
 
