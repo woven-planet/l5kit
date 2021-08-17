@@ -1,226 +1,389 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>l5kit.evaluation.metrics module &mdash; L5Kit 1.3.1 documentation</title>
-  
+<html >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
+      <title>l5kit.evaluation.metrics module</title>
     
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+          <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+          <link rel="stylesheet" href="../_static/theme.css " type="text/css" />
+          <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+      
+      <!-- sphinx script_files -->
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="l5kit.geometry package" href="l5kit.geometry.html" />
-    <link rel="prev" title="l5kit.evaluation.extract_metrics module" href="l5kit.evaluation.extract_metrics.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
-   
-  <div class="wy-grid-for-nav">
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="../index.html" class="icon icon-home"> L5Kit
-          
-
-          
-          </a>
-
-          
-            
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../competitions.html">Competitions</a></li>
-</ul>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="l5kit.data.html">l5kit.data package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.dataset.html">l5kit.dataset package</a></li>
-<li class="toctree-l2 current"><a class="reference internal" href="l5kit.evaluation.html">l5kit.evaluation package</a><ul class="current">
-<li class="toctree-l3 current"><a class="reference internal" href="l5kit.evaluation.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.chop_dataset.html">l5kit.evaluation.chop_dataset module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.csv_utils.html">l5kit.evaluation.csv_utils module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.error_functions.html">l5kit.evaluation.error_functions module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.extract_ground_truth.html">l5kit.evaluation.extract_ground_truth module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.evaluation.extract_metrics.html">l5kit.evaluation.extract_metrics module</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.evaluation.metrics module</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.geometry.html">l5kit.geometry package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.kinematic.html">l5kit.kinematic package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.random.html">l5kit.random package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.sampling.html">l5kit.sampling package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.visualization.html">l5kit.visualization package</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../credits.html">Credits</a></li>
-</ul>
-
-            
-          
-        </div>
-        
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">L5Kit</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
+      <!-- bundled in js (rollup iife) -->
+      <!-- <script src="../_static/theme-vendors.js"></script> -->
+      <script src="../_static/theme.js" defer></script>
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../api_reference.html">API Reference</a> &raquo;</li>
-        
-          <li><a href="l5kit.evaluation.html">l5kit.evaluation package</a> &raquo;</li>
-        
-      <li>l5kit.evaluation.metrics module</li>
+  <link rel="index" title="Index" href="../genindex.html" />
+  <link rel="search" title="Search" href="../search.html" />
+  <link rel="next" title="l5kit.geometry package" href="l5kit.geometry.html" />
+  <link rel="prev" title="l5kit.evaluation.extract_metrics module" href="l5kit.evaluation.extract_metrics.html" /> 
+  </head>
+
+  <body>
+    <div id="app">
+    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
+  <router-link to="../index.html" class="home-link">
     
+      <img class="logo" src="../_static/L5logo_small_v2.png" alt="logo"/>
     
-      <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="../_sources/API/l5kit.evaluation.metrics.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
+  </router-link>
+
+  <div class="links">
+    <navlinks class="can-hide">
 
   
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+    <div class="nav-item">
+      <a href="../intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../gettingstarted.html#getting-started"
+         class="nav-link ">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../tutorials.html#tutorials"
+         class="nav-link ">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+    </navlinks>
+  </div>
+</navbar>
+
+      
+      <div class="sidebar-mask" @click="toggleSidebar(false)">
+      </div>
+        <sidebar @toggle-sidebar="toggleSidebar">
+          
+          <navlinks>
             
-  <div class="section" id="module-l5kit.evaluation.metrics">
+
+  
+    <div class="nav-item">
+      <a href="../intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../gettingstarted.html#getting-started"
+         class="nav-link ">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../tutorials.html#tutorials"
+         class="nav-link ">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+            
+          </navlinks><div id="searchbox" class="searchbox" role="search">
+  <div class="caption"><span class="caption-text">Quick search</span>
+    <div class="searchformwrapper">
+      <form class="search" action="../search.html" method="get">
+        <input type="text" name="q" />
+        <input type="submit" value="Search" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../intro_index.html#introduction-and-overview">introduction and overview</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../introduction.html" class="reference internal ">Introduction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../overview.html" class="reference internal ">Overview</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../gettingstarted.html#getting-started">getting started</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../installation.html" class="reference internal ">Installation</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../data_format.html" class="reference internal ">Dataset Formats in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../coords_systems.html" class="reference internal ">Coordinate Systems in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../tutorials.html#tutorials">tutorials</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../prediction.html" class="reference internal ">Prediction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../planning.html" class="reference internal ">Planning</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../simulation.html" class="reference internal ">Simulation</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../competitions.html#competitions">competitions</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../prediction_competition.html" class="reference internal ">Prediction Competition</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../contribute_index.html#contribute">contribute</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../how_to_contribute.html" class="reference internal ">How to contribute</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../api_reference.html" class="reference internal ">API Reference</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../license.html" class="reference internal ">License</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../credits.html" class="reference internal ">Credits</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+</div>
+        </sidebar>
+
+      <page>
+          <div class="body-header" role="navigation" aria-label="navigation">
+  
+  <ul class="breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+    
+      <li><a href="../contribute_index.html">Contribute</a> &raquo;</li>
+    
+      <li><a href="../api_reference.html">API Reference</a> &raquo;</li>
+    
+      <li><a href="l5kit.evaluation.html">l5kit.evaluation package</a> &raquo;</li>
+    
+    <li>l5kit.evaluation.metrics module</li>
+  </ul>
+  
+
+  <ul class="page-nav">
+  <li class="prev">
+    <a href="l5kit.evaluation.extract_metrics.html"
+       title="previous chapter">← l5kit.evaluation.extract_metrics module</a>
+  </li>
+  <li class="next">
+    <a href="l5kit.geometry.html"
+       title="next chapter">l5kit.geometry package →</a>
+  </li>
+</ul>
+  
+</div>
+<hr>
+          <div class="content" role="main" v-pre>
+            
+  <section id="module-l5kit.evaluation.metrics">
 <span id="l5kit-evaluation-metrics-module"></span><h1>l5kit.evaluation.metrics module<a class="headerlink" href="#module-l5kit.evaluation.metrics" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="l5kit.evaluation.metrics.CollisionType">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></code><code class="sig-name descname"><span class="pre">CollisionType</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.evaluation.metrics.CollisionType" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.CollisionType">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">CollisionType</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.evaluation.metrics.CollisionType" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
 <p>This enum defines the three types of collisions: front, rear and side.</p>
 <dl class="py attribute">
-<dt id="l5kit.evaluation.metrics.CollisionType.FRONT">
-<code class="sig-name descname"><span class="pre">FRONT</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#l5kit.evaluation.metrics.CollisionType.FRONT" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.CollisionType.FRONT">
+<span class="sig-name descname"><span class="pre">FRONT</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#l5kit.evaluation.metrics.CollisionType.FRONT" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="l5kit.evaluation.metrics.CollisionType.REAR">
-<code class="sig-name descname"><span class="pre">REAR</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#l5kit.evaluation.metrics.CollisionType.REAR" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.CollisionType.REAR">
+<span class="sig-name descname"><span class="pre">REAR</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#l5kit.evaluation.metrics.CollisionType.REAR" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="l5kit.evaluation.metrics.CollisionType.SIDE">
-<code class="sig-name descname"><span class="pre">SIDE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#l5kit.evaluation.metrics.CollisionType.SIDE" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.CollisionType.SIDE">
+<span class="sig-name descname"><span class="pre">SIDE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#l5kit.evaluation.metrics.CollisionType.SIDE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py function">
-<dt id="l5kit.evaluation.metrics.average_displacement_error_mean">
-<code class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></code><code class="sig-name descname"><span class="pre">average_displacement_error_mean</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#l5kit.evaluation.metrics.average_displacement_error_mean" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.average_displacement_error_mean">
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">average_displacement_error_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.evaluation.metrics.average_displacement_error_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calls _average_displacement_error() to get the mean average displacement error.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -241,8 +404,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="l5kit.evaluation.metrics.average_displacement_error_oracle">
-<code class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></code><code class="sig-name descname"><span class="pre">average_displacement_error_oracle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#l5kit.evaluation.metrics.average_displacement_error_oracle" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.average_displacement_error_oracle">
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">average_displacement_error_oracle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.evaluation.metrics.average_displacement_error_oracle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calls _average_displacement_error() to get the oracle average displacement error.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -263,8 +426,8 @@
 </dd></dl>
 
 <dl class="py function">
-<dt id="l5kit.evaluation.metrics.detect_collision">
-<code class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></code><code class="sig-name descname"><span class="pre">detect_collision</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_centroid</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_yaw</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_extent</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_agents</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#l5kit.evaluation.metrics.CollisionType" title="l5kit.evaluation.metrics.CollisionType"><span class="pre">l5kit.evaluation.metrics.CollisionType</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#l5kit.evaluation.metrics.detect_collision" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.detect_collision">
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">detect_collision</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_centroid</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_yaw</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred_extent</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target_agents</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#l5kit.evaluation.metrics.CollisionType" title="l5kit.evaluation.metrics.CollisionType"><span class="pre">l5kit.evaluation.metrics.CollisionType</span></a><span class="p"><span class="pre">,</span> </span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.evaluation.metrics.detect_collision" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes whether a collision occured between ego and any another agent.
 Also computes the type of collision: rear, front, or side.
 For this, we compute the intersection of ego’s four sides with a target
@@ -295,8 +458,8 @@ collision type and the agent track_id</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="l5kit.evaluation.metrics.distance_to_reference_trajectory">
-<code class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></code><code class="sig-name descname"><span class="pre">distance_to_reference_trajectory</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_centroid</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_traj</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">torch.Tensor</span><a class="headerlink" href="#l5kit.evaluation.metrics.distance_to_reference_trajectory" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.distance_to_reference_trajectory">
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">distance_to_reference_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">pred_centroid</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ref_traj</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.evaluation.metrics.distance_to_reference_trajectory" title="Permalink to this definition">¶</a></dt>
 <dd><p>Computes the distance from the predicted centroid to the closest waypoint in the reference trajectory.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -315,8 +478,8 @@ collision type and the agent track_id</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="l5kit.evaluation.metrics.final_displacement_error_mean">
-<code class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></code><code class="sig-name descname"><span class="pre">final_displacement_error_mean</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#l5kit.evaluation.metrics.final_displacement_error_mean" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.final_displacement_error_mean">
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">final_displacement_error_mean</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.evaluation.metrics.final_displacement_error_mean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calls _final_displacement_error() to get the mean average displacement error.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -337,8 +500,8 @@ collision type and the agent track_id</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="l5kit.evaluation.metrics.final_displacement_error_oracle">
-<code class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></code><code class="sig-name descname"><span class="pre">final_displacement_error_oracle</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#l5kit.evaluation.metrics.final_displacement_error_oracle" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.final_displacement_error_oracle">
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">final_displacement_error_oracle</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.evaluation.metrics.final_displacement_error_oracle" title="Permalink to this definition">¶</a></dt>
 <dd><p>Calls _final_displacement_error() to get the oracle average displacement error.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -359,8 +522,8 @@ collision type and the agent track_id</p>
 </dd></dl>
 
 <dl class="py function">
-<dt id="l5kit.evaluation.metrics.neg_multi_log_likelihood">
-<code class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></code><code class="sig-name descname"><span class="pre">neg_multi_log_likelihood</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#l5kit.evaluation.metrics.neg_multi_log_likelihood" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.neg_multi_log_likelihood">
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">neg_multi_log_likelihood</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.evaluation.metrics.neg_multi_log_likelihood" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute a negative log-likelihood for the multi-modal scenario.
 log-sum-exp trick is used here to avoid underflow and overflow, For more information about it see:
 <a class="reference external" href="https://en.wikipedia.org/wiki/LogSumExp#log-sum-exp_trick_for_log-domain_calculations">https://en.wikipedia.org/wiki/LogSumExp#log-sum-exp_trick_for_log-domain_calculations</a>
@@ -387,8 +550,8 @@ log-sum-exp trick is used here to avoid underflow and overflow, For more informa
 </dd></dl>
 
 <dl class="py function">
-<dt id="l5kit.evaluation.metrics.prob_true_mode">
-<code class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></code><code class="sig-name descname"><span class="pre">prob_true_mode</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#l5kit.evaluation.metrics.prob_true_mode" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.prob_true_mode">
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">prob_true_mode</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.evaluation.metrics.prob_true_mode" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the probability of the true mode</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -409,8 +572,8 @@ log-sum-exp trick is used here to avoid underflow and overflow, For more informa
 </dd></dl>
 
 <dl class="py function">
-<dt id="l5kit.evaluation.metrics.rmse">
-<code class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></code><code class="sig-name descname"><span class="pre">rmse</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#l5kit.evaluation.metrics.rmse" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.rmse">
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">rmse</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.evaluation.metrics.rmse" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the root mean squared error, computed using the stable nll</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -431,8 +594,8 @@ log-sum-exp trick is used here to avoid underflow and overflow, For more informa
 </dd></dl>
 
 <dl class="py function">
-<dt id="l5kit.evaluation.metrics.time_displace">
-<code class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></code><code class="sig-name descname"><span class="pre">time_displace</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#l5kit.evaluation.metrics.time_displace" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.evaluation.metrics.time_displace">
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.metrics.</span></span><span class="sig-name descname"><span class="pre">time_displace</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">pred</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidences</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">avails</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.evaluation.metrics.time_displace" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return the displacement at timesteps T</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -452,54 +615,30 @@ log-sum-exp trick is used here to avoid underflow and overflow, For more informa
 </dl>
 </dd></dl>
 
-</div>
+</section>
 
 
-           </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="l5kit.geometry.html" class="btn btn-neutral float-right" title="l5kit.geometry package" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="l5kit.evaluation.extract_metrics.html" class="btn btn-neutral float-left" title="l5kit.evaluation.extract_metrics module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Level 5.
-
-    </p>
-  </div>
+          <div class="page-nav">
+            <div class="inner"><ul class="page-nav">
+  <li class="prev">
+    <a href="l5kit.evaluation.extract_metrics.html"
+       title="previous chapter">← l5kit.evaluation.extract_metrics module</a>
+  </li>
+  <li class="next">
+    <a href="l5kit.geometry.html"
+       title="next chapter">l5kit.geometry package →</a>
+  </li>
+</ul><div class="footer" role="contentinfo">
+      &#169; Copyright 2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car).
+    <br>
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
+</div>
+            </div>
+          </div>
+      </page>
+    </div></div>
     
     
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-        </div>
-      </div>
-
-    </section>
-
-  </div>
-  
-
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
-
-  
-  
-    
-   
-
-</body>
+  </body>
 </html>

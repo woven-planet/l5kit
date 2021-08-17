@@ -1,227 +1,388 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>l5kit.data.map_api module &mdash; L5Kit 1.3.1 documentation</title>
-  
+<html >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
+      <title>l5kit.data.map_api module</title>
     
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+          <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+          <link rel="stylesheet" href="../_static/theme.css " type="text/css" />
+          <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+      
+      <!-- sphinx script_files -->
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" />
-    <link rel="next" title="l5kit.data.zarr_dataset module" href="l5kit.data.zarr_dataset.html" />
-    <link rel="prev" title="l5kit.data.local_data_manager module" href="l5kit.data.local_data_manager.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
-   
-  <div class="wy-grid-for-nav">
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="../index.html" class="icon icon-home"> L5Kit
-          
-
-          
-          </a>
-
-          
-            
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../competitions.html">Competitions</a></li>
-</ul>
-<ul class="current">
-<li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
-<li class="toctree-l1 current"><a class="reference internal" href="../api_reference.html">API Reference</a><ul class="current">
-<li class="toctree-l2 current"><a class="reference internal" href="l5kit.data.html">l5kit.data package</a><ul class="current">
-<li class="toctree-l3"><a class="reference internal" href="l5kit.data.html#subpackages">Subpackages</a></li>
-<li class="toctree-l3 current"><a class="reference internal" href="l5kit.data.html#submodules">Submodules</a><ul class="current">
-<li class="toctree-l4"><a class="reference internal" href="l5kit.data.combine.html">l5kit.data.combine module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.data.filter.html">l5kit.data.filter module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.data.labels.html">l5kit.data.labels module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.data.local_data_manager.html">l5kit.data.local_data_manager module</a></li>
-<li class="toctree-l4 current"><a class="current reference internal" href="#">l5kit.data.map_api module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.data.zarr_dataset.html">l5kit.data.zarr_dataset module</a></li>
-<li class="toctree-l4"><a class="reference internal" href="l5kit.data.zarr_utils.html">l5kit.data.zarr_utils module</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.dataset.html">l5kit.dataset package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.evaluation.html">l5kit.evaluation package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.geometry.html">l5kit.geometry package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.kinematic.html">l5kit.kinematic package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.random.html">l5kit.random package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.sampling.html">l5kit.sampling package</a></li>
-<li class="toctree-l2"><a class="reference internal" href="l5kit.visualization.html">l5kit.visualization package</a></li>
-</ul>
-</li>
-<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../credits.html">Credits</a></li>
-</ul>
-
-            
-          
-        </div>
-        
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">L5Kit</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
+      <!-- bundled in js (rollup iife) -->
+      <!-- <script src="../_static/theme-vendors.js"></script> -->
+      <script src="../_static/theme.js" defer></script>
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="../api_reference.html">API Reference</a> &raquo;</li>
-        
-          <li><a href="l5kit.data.html">l5kit.data package</a> &raquo;</li>
-        
-      <li>l5kit.data.map_api module</li>
+  <link rel="index" title="Index" href="../genindex.html" />
+  <link rel="search" title="Search" href="../search.html" />
+  <link rel="next" title="l5kit.data.zarr_dataset module" href="l5kit.data.zarr_dataset.html" />
+  <link rel="prev" title="l5kit.data.local_data_manager module" href="l5kit.data.local_data_manager.html" /> 
+  </head>
+
+  <body>
+    <div id="app">
+    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
+  <router-link to="../index.html" class="home-link">
     
+      <img class="logo" src="../_static/L5logo_small_v2.png" alt="logo"/>
     
-      <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="../_sources/API/l5kit.data.map_api.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
+  </router-link>
+
+  <div class="links">
+    <navlinks class="can-hide">
 
   
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+    <div class="nav-item">
+      <a href="../intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../gettingstarted.html#getting-started"
+         class="nav-link ">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../tutorials.html#tutorials"
+         class="nav-link ">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+    </navlinks>
+  </div>
+</navbar>
+
+      
+      <div class="sidebar-mask" @click="toggleSidebar(false)">
+      </div>
+        <sidebar @toggle-sidebar="toggleSidebar">
+          
+          <navlinks>
             
-  <div class="section" id="module-l5kit.data.map_api">
+
+  
+    <div class="nav-item">
+      <a href="../intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../gettingstarted.html#getting-started"
+         class="nav-link ">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../tutorials.html#tutorials"
+         class="nav-link ">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+            
+          </navlinks><div id="searchbox" class="searchbox" role="search">
+  <div class="caption"><span class="caption-text">Quick search</span>
+    <div class="searchformwrapper">
+      <form class="search" action="../search.html" method="get">
+        <input type="text" name="q" />
+        <input type="submit" value="Search" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../intro_index.html#introduction-and-overview">introduction and overview</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../introduction.html" class="reference internal ">Introduction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../overview.html" class="reference internal ">Overview</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../gettingstarted.html#getting-started">getting started</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../installation.html" class="reference internal ">Installation</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../data_format.html" class="reference internal ">Dataset Formats in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../coords_systems.html" class="reference internal ">Coordinate Systems in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../tutorials.html#tutorials">tutorials</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../prediction.html" class="reference internal ">Prediction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../planning.html" class="reference internal ">Planning</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../simulation.html" class="reference internal ">Simulation</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../competitions.html#competitions">competitions</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../prediction_competition.html" class="reference internal ">Prediction Competition</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../contribute_index.html#contribute">contribute</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../how_to_contribute.html" class="reference internal ">How to contribute</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../api_reference.html" class="reference internal ">API Reference</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../license.html" class="reference internal ">License</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../credits.html" class="reference internal ">Credits</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+</div>
+        </sidebar>
+
+      <page>
+          <div class="body-header" role="navigation" aria-label="navigation">
+  
+  <ul class="breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+    
+      <li><a href="../contribute_index.html">Contribute</a> &raquo;</li>
+    
+      <li><a href="../api_reference.html">API Reference</a> &raquo;</li>
+    
+      <li><a href="l5kit.data.html">l5kit.data package</a> &raquo;</li>
+    
+    <li>l5kit.data.map_api module</li>
+  </ul>
+  
+
+  <ul class="page-nav">
+  <li class="prev">
+    <a href="l5kit.data.local_data_manager.html"
+       title="previous chapter">← l5kit.data.local_data_manager module</a>
+  </li>
+  <li class="next">
+    <a href="l5kit.data.zarr_dataset.html"
+       title="next chapter">l5kit.data.zarr_dataset module →</a>
+  </li>
+</ul>
+  
+</div>
+<hr>
+          <div class="content" role="main" v-pre>
+            
+  <section id="module-l5kit.data.map_api">
 <span id="l5kit-data-map-api-module"></span><h1>l5kit.data.map_api module<a class="headerlink" href="#module-l5kit.data.map_api" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="l5kit.data.map_api.InterpolationMethod">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.data.map_api.</span></code><code class="sig-name descname"><span class="pre">InterpolationMethod</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.data.map_api.InterpolationMethod" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.InterpolationMethod">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.data.map_api.</span></span><span class="sig-name descname"><span class="pre">InterpolationMethod</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.data.map_api.InterpolationMethod" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
 <p>An enumeration.</p>
 <dl class="py attribute">
-<dt id="l5kit.data.map_api.InterpolationMethod.INTER_ENSURE_LEN">
-<code class="sig-name descname"><span class="pre">INTER_ENSURE_LEN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#l5kit.data.map_api.InterpolationMethod.INTER_ENSURE_LEN" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.InterpolationMethod.INTER_ENSURE_LEN">
+<span class="sig-name descname"><span class="pre">INTER_ENSURE_LEN</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#l5kit.data.map_api.InterpolationMethod.INTER_ENSURE_LEN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="l5kit.data.map_api.InterpolationMethod.INTER_METER">
-<code class="sig-name descname"><span class="pre">INTER_METER</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#l5kit.data.map_api.InterpolationMethod.INTER_METER" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.InterpolationMethod.INTER_METER">
+<span class="sig-name descname"><span class="pre">INTER_METER</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#l5kit.data.map_api.InterpolationMethod.INTER_METER" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="l5kit.data.map_api.MapAPI">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.data.map_api.</span></code><code class="sig-name descname"><span class="pre">MapAPI</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protobuf_map_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">world_to_ecef</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.data.map_api.</span></span><span class="sig-name descname"><span class="pre">MapAPI</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">protobuf_map_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">world_to_ecef</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.from_cfg">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">from_cfg</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_manager</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.data.local_data_manager.html#l5kit.data.local_data_manager.DataManager" title="l5kit.data.local_data_manager.DataManager"><span class="pre">l5kit.data.local_data_manager.DataManager</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> &#x2192; <a class="reference internal" href="#l5kit.data.map_api.MapAPI" title="l5kit.data.map_api.MapAPI"><span class="pre">l5kit.data.map_api.MapAPI</span></a><a class="headerlink" href="#l5kit.data.map_api.MapAPI.from_cfg" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.from_cfg">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">from_cfg</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_manager</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.data.local_data_manager.html#l5kit.data.local_data_manager.DataManager" title="l5kit.data.local_data_manager.DataManager"><span class="pre">l5kit.data.local_data_manager.DataManager</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#l5kit.data.map_api.MapAPI" title="l5kit.data.map_api.MapAPI"><span class="pre">l5kit.data.map_api.MapAPI</span></a></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.from_cfg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build a MapAPI object starting from a config file and a data manager</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -237,8 +398,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.get_bounds">
-<code class="sig-name descname"><span class="pre">get_bounds</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_bounds" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.get_bounds">
+<span class="sig-name descname"><span class="pre">get_bounds</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_bounds" title="Permalink to this definition">¶</a></dt>
 <dd><p>For each elements of interest returns bounds [[min_x, min_y],[max_x, max_y]] and proto ids
 Coords are computed by the MapAPI and, as such, are in the world ref system.</p>
 <dl class="field-list simple">
@@ -252,8 +413,8 @@ Coords are computed by the MapAPI and, as such, are in the world ref system.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.get_color_for_face">
-<code class="sig-name descname"><span class="pre">get_color_for_face</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">face_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_color_for_face" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.get_color_for_face">
+<span class="sig-name descname"><span class="pre">get_color_for_face</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">face_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_color_for_face" title="Permalink to this definition">¶</a></dt>
 <dd><p>Utility function. It calls <cite>is_traffic_face_color</cite> for a set of colors until it gets an answer.
 If no color is found, then <cite>face_id</cite> is not the id of a traffic light face (and we raise ValueError).</p>
 <dl class="field-list simple">
@@ -270,8 +431,8 @@ If no color is found, then <cite>face_id</cite> is not the id of a traffic light
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.get_crosswalk_coords">
-<code class="sig-name descname"><span class="pre">get_crosswalk_coords</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_crosswalk_coords" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.get_crosswalk_coords">
+<span class="sig-name descname"><span class="pre">get_crosswalk_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_crosswalk_coords" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get XYZ coordinates in world ref system for a crosswalk given its id
 lru_cached for O(1) access</p>
 <dl class="field-list simple">
@@ -288,8 +449,8 @@ lru_cached for O(1) access</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.get_lane_as_interpolation">
-<code class="sig-name descname"><span class="pre">get_lane_as_interpolation</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#l5kit.data.map_api.InterpolationMethod" title="l5kit.data.map_api.InterpolationMethod"><span class="pre">l5kit.data.map_api.InterpolationMethod</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_lane_as_interpolation" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.get_lane_as_interpolation">
+<span class="sig-name descname"><span class="pre">get_lane_as_interpolation</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#l5kit.data.map_api.InterpolationMethod" title="l5kit.data.map_api.InterpolationMethod"><span class="pre">l5kit.data.map_api.InterpolationMethod</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_lane_as_interpolation" title="Permalink to this definition">¶</a></dt>
 <dd><p>Perform an interpolation of the left and right lanes and compute the midlane.
 See interpolate for details about the different interpolation methods</p>
 <dl class="field-list simple">
@@ -310,8 +471,8 @@ See interpolate for details about the different interpolation methods</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.get_lane_coords">
-<code class="sig-name descname"><span class="pre">get_lane_coords</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">dict</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_lane_coords" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.get_lane_coords">
+<span class="sig-name descname"><span class="pre">get_lane_coords</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_lane_coords" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get XYZ coordinates in world ref system for a lane given its id
 lru_cached for O(1) access</p>
 <dl class="field-list simple">
@@ -328,13 +489,13 @@ lru_cached for O(1) access</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.get_lane_traffic_control_ids">
-<code class="sig-name descname"><span class="pre">get_lane_traffic_control_ids</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">set</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_lane_traffic_control_ids" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.get_lane_traffic_control_ids">
+<span class="sig-name descname"><span class="pre">get_lane_traffic_control_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">set</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.get_lane_traffic_control_ids" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.id_as_str">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">id_as_str</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">road_network_pb2.GlobalId</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">str</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.id_as_str" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.id_as_str">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">id_as_str</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">road_network_pb2.GlobalId</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">str</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.id_as_str" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the element id as a string.
 Elements ids are stored as a variable len sequence of bytes in the protobuf</p>
 <dl class="field-list simple">
@@ -351,8 +512,8 @@ Elements ids are stored as a variable len sequence of bytes in the protobuf</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.interpolate">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">interpolate</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyz</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#l5kit.data.map_api.InterpolationMethod" title="l5kit.data.map_api.InterpolationMethod"><span class="pre">l5kit.data.map_api.InterpolationMethod</span></a></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.interpolate" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.interpolate">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">interpolate</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">xyz</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#l5kit.data.map_api.InterpolationMethod" title="l5kit.data.map_api.InterpolationMethod"><span class="pre">l5kit.data.map_api.InterpolationMethod</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.interpolate" title="Permalink to this definition">¶</a></dt>
 <dd><p>Interpolate points based on cumulative distances from the first one. Two modes are available:
 INTER_METER: interpolate using step as a meter value over cumulative distances (variable len result)
 INTER_ENSURE_LEN: interpolate using a variable step such that we always get step values
@@ -373,8 +534,8 @@ INTER_ENSURE_LEN: interpolate using a variable step such that we always get step
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.is_crosswalk">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_crosswalk</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">road_network_pb2.MapElement</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.is_crosswalk" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.is_crosswalk">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">is_crosswalk</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">road_network_pb2.MapElement</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.is_crosswalk" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether an element is a valid crosswalk</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -390,8 +551,8 @@ INTER_ENSURE_LEN: interpolate using a variable step such that we always get step
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.is_lane">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">is_lane</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">road_network_pb2.MapElement</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.is_lane" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.is_lane">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">is_lane</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">road_network_pb2.MapElement</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.is_lane" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check whether an element is a valid lane</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -407,8 +568,8 @@ INTER_ENSURE_LEN: interpolate using a variable step such that we always get step
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.is_traffic_face">
-<code class="sig-name descname"><span class="pre">is_traffic_face</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.is_traffic_face" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.is_traffic_face">
+<span class="sig-name descname"><span class="pre">is_traffic_face</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.is_traffic_face" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the element is a traffic light face (of any color)</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -421,8 +582,8 @@ INTER_ENSURE_LEN: interpolate using a variable step such that we always get step
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.is_traffic_face_color">
-<code class="sig-name descname"><span class="pre">is_traffic_face_color</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.is_traffic_face_color" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.is_traffic_face_color">
+<span class="sig-name descname"><span class="pre">is_traffic_face_color</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.is_traffic_face_color" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the element is a traffic light face of the given color</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -438,8 +599,8 @@ INTER_ENSURE_LEN: interpolate using a variable step such that we always get step
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.is_traffic_light">
-<code class="sig-name descname"><span class="pre">is_traffic_light</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">bool</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.is_traffic_light" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.is_traffic_light">
+<span class="sig-name descname"><span class="pre">is_traffic_light</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">element_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">bool</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.is_traffic_light" title="Permalink to this definition">¶</a></dt>
 <dd><p>Check if the element is a traffic light
 :param element_id: the id (utf-8 encode) of the element
 :type element_id: str</p>
@@ -451,8 +612,8 @@ INTER_ENSURE_LEN: interpolate using a variable step such that we always get step
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.data.map_api.MapAPI.unpack_deltas_cm">
-<code class="sig-name descname"><span class="pre">unpack_deltas_cm</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dx</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">road_network_pb2.GeoFrame</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">numpy.ndarray</span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.unpack_deltas_cm" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.MapAPI.unpack_deltas_cm">
+<span class="sig-name descname"><span class="pre">unpack_deltas_cm</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dx</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dy</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dz</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Sequence</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">road_network_pb2.GeoFrame</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.data.map_api.MapAPI.unpack_deltas_cm" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get coords in world reference system (local ENU-&gt;ECEF-&gt;world).
 See the protobuf annotations for additional information about how coordinates are stored</p>
 <dl class="field-list simple">
@@ -476,75 +637,51 @@ See the protobuf annotations for additional information about how coordinates ar
 </dd></dl>
 
 <dl class="py class">
-<dt id="l5kit.data.map_api.TLFacesColors">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.data.map_api.</span></code><code class="sig-name descname"><span class="pre">TLFacesColors</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.data.map_api.TLFacesColors" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.TLFacesColors">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.data.map_api.</span></span><span class="sig-name descname"><span class="pre">TLFacesColors</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.data.map_api.TLFacesColors" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
 <p>An enumeration.</p>
 <dl class="py attribute">
-<dt id="l5kit.data.map_api.TLFacesColors.GREEN">
-<code class="sig-name descname"><span class="pre">GREEN</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#l5kit.data.map_api.TLFacesColors.GREEN" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.TLFacesColors.GREEN">
+<span class="sig-name descname"><span class="pre">GREEN</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#l5kit.data.map_api.TLFacesColors.GREEN" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="l5kit.data.map_api.TLFacesColors.RED">
-<code class="sig-name descname"><span class="pre">RED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#l5kit.data.map_api.TLFacesColors.RED" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.TLFacesColors.RED">
+<span class="sig-name descname"><span class="pre">RED</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#l5kit.data.map_api.TLFacesColors.RED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="l5kit.data.map_api.TLFacesColors.YELLOW">
-<code class="sig-name descname"><span class="pre">YELLOW</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#l5kit.data.map_api.TLFacesColors.YELLOW" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.data.map_api.TLFacesColors.YELLOW">
+<span class="sig-name descname"><span class="pre">YELLOW</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#l5kit.data.map_api.TLFacesColors.YELLOW" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
-</div>
+</section>
 
 
-           </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="l5kit.data.zarr_dataset.html" class="btn btn-neutral float-right" title="l5kit.data.zarr_dataset module" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="l5kit.data.local_data_manager.html" class="btn btn-neutral float-left" title="l5kit.data.local_data_manager module" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Level 5.
-
-    </p>
-  </div>
+          <div class="page-nav">
+            <div class="inner"><ul class="page-nav">
+  <li class="prev">
+    <a href="l5kit.data.local_data_manager.html"
+       title="previous chapter">← l5kit.data.local_data_manager module</a>
+  </li>
+  <li class="next">
+    <a href="l5kit.data.zarr_dataset.html"
+       title="next chapter">l5kit.data.zarr_dataset module →</a>
+  </li>
+</ul><div class="footer" role="contentinfo">
+      &#169; Copyright 2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car).
+    <br>
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
+</div>
+            </div>
+          </div>
+      </page>
+    </div></div>
     
     
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-        </div>
-      </div>
-
-    </section>
-
-  </div>
-  
-
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
-
-  
-  
-    
-   
-
-</body>
+  </body>
 </html>

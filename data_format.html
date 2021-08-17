@@ -1,206 +1,376 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Dataset Formats in L5Kit &mdash; L5Kit 1.3.1 documentation</title>
-  
+<html >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
+      <title>Dataset Formats in L5Kit</title>
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+          <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+          <link rel="stylesheet" href="_static/theme.css " type="text/css" />
+          <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+      
+      <!-- sphinx script_files -->
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Coordinate Systems in L5Kit" href="coords_systems.html" />
-    <link rel="prev" title="Installation" href="installation.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
-   
-  <div class="wy-grid-for-nav">
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="index.html" class="icon icon-home"> L5Kit
-          
-
-          
-          </a>
-
-          
-            
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-</ul>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="gettingstarted.html">Getting started</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Dataset Formats in L5Kit</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#interleaved-data-in-structured-arrays">Interleaved data in structured arrays</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#short-introduction-to-zarr">Short introduction to zarr</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#lyft-competition-dataset-format">2020 Lyft Competition Dataset format</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#scenes">Scenes</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#frames">Frames</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#agents">Agents</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#traffic-light-faces">Traffic Light Faces</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#working-with-the-zarr-format">Working with the zarr format</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#the-chunkeddataset">The ChunkedDataset</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#performance-aware-slicing">Performance-aware slicing</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#dataset-abstraction-classes">Dataset Abstraction Classes</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#egodataset">EgoDataset</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#agentdataset">AgentDataset</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="coords_systems.html">Coordinate Systems in L5Kit</a></li>
-</ul>
-</li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="competitions.html">Competitions</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
-</ul>
-
-            
-          
-        </div>
-        
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">L5Kit</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
+      <!-- bundled in js (rollup iife) -->
+      <!-- <script src="_static/theme-vendors.js"></script> -->
+      <script src="_static/theme.js" defer></script>
     
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="gettingstarted.html">Getting started</a> &raquo;</li>
-        
-      <li>Dataset Formats in L5Kit</li>
+  <link rel="index" title="Index" href="genindex.html" />
+  <link rel="search" title="Search" href="search.html" />
+  <link rel="next" title="Coordinate Systems in L5Kit" href="coords_systems.html" />
+  <link rel="prev" title="Installation" href="installation.html" /> 
+  </head>
+
+  <body>
+    <div id="app">
+    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
+  <router-link to="index.html" class="home-link">
     
+      <img class="logo" src="_static/L5logo_small_v2.png" alt="logo"/>
     
-      <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="_sources/data_format.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
+  </router-link>
+
+  <div class="links">
+    <navlinks class="can-hide">
 
   
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+    <div class="nav-item">
+      <a href="intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="gettingstarted.html#getting-started"
+         class="nav-link  router-link-active">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="tutorials.html#tutorials"
+         class="nav-link ">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+    </navlinks>
+  </div>
+</navbar>
+
+      
+      <div class="sidebar-mask" @click="toggleSidebar(false)">
+      </div>
+        <sidebar @toggle-sidebar="toggleSidebar">
+          
+          <navlinks>
             
-  <div class="section" id="dataset-formats-in-l5kit">
+
+  
+    <div class="nav-item">
+      <a href="intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="gettingstarted.html#getting-started"
+         class="nav-link  router-link-active">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="tutorials.html#tutorials"
+         class="nav-link ">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+            
+          </navlinks><div id="searchbox" class="searchbox" role="search">
+  <div class="caption"><span class="caption-text">Quick search</span>
+    <div class="searchformwrapper">
+      <form class="search" action="search.html" method="get">
+        <input type="text" name="q" />
+        <input type="submit" value="Search" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="intro_index.html#introduction-and-overview">introduction and overview</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="introduction.html" class="reference internal ">Introduction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="overview.html" class="reference internal ">Overview</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="gettingstarted.html#getting-started">getting started</a></span>
+      </p>
+      <ul class="current">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="installation.html" class="reference internal ">Installation</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 current">
+            
+              <a href="#" class="reference internal current">Dataset Formats in L5Kit</a>
+            
+
+            
+              <ul>
+                
+                  <li class="toctree-l2"><a href="#interleaved-data-in-structured-arrays" class="reference internal">Interleaved data in structured arrays</a></li>
+                
+                  <li class="toctree-l2"><a href="#short-introduction-to-zarr" class="reference internal">Short introduction to zarr</a></li>
+                
+                  <li class="toctree-l2"><a href="#lyft-competition-dataset-format" class="reference internal">2020 Lyft Competition Dataset format</a></li>
+                
+                  <li class="toctree-l2"><a href="#working-with-the-zarr-format" class="reference internal">Working with the zarr format</a></li>
+                
+                  <li class="toctree-l2"><a href="#dataset-abstraction-classes" class="reference internal">Dataset Abstraction Classes</a></li>
+                
+              </ul>
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="coords_systems.html" class="reference internal ">Coordinate Systems in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="tutorials.html#tutorials">tutorials</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="prediction.html" class="reference internal ">Prediction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="planning.html" class="reference internal ">Planning</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="simulation.html" class="reference internal ">Simulation</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="competitions.html#competitions">competitions</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="prediction_competition.html" class="reference internal ">Prediction Competition</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="contribute_index.html#contribute">contribute</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="how_to_contribute.html" class="reference internal ">How to contribute</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="api_reference.html" class="reference internal ">API Reference</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="license.html" class="reference internal ">License</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="credits.html" class="reference internal ">Credits</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+</div>
+        </sidebar>
+
+      <page>
+          <div class="body-header" role="navigation" aria-label="navigation">
+  
+  <ul class="breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+    
+      <li><a href="gettingstarted.html">Getting started</a> &raquo;</li>
+    
+    <li>Dataset Formats in L5Kit</li>
+  </ul>
+  
+
+  <ul class="page-nav">
+  <li class="prev">
+    <a href="installation.html"
+       title="previous chapter">← Installation</a>
+  </li>
+  <li class="next">
+    <a href="coords_systems.html"
+       title="next chapter">Coordinate Systems in L5Kit →</a>
+  </li>
+</ul>
+  
+</div>
+<hr>
+          <div class="content" role="main" v-pre>
+            
+  <section id="dataset-formats-in-l5kit">
 <span id="data-format"></span><h1>Dataset Formats in L5Kit<a class="headerlink" href="#dataset-formats-in-l5kit" title="Permalink to this headline">¶</a></h1>
 <p>In the L5Kit codebase, we make use of a data format that consists of a set of <a class="reference external" href="https://docs.scipy.org/doc/numpy/user/basics.rec.html">numpy structured arrays</a>. Conceptually, it is similar to a set of CSV files with records and different columns, only that they are stored as binary files instead of text. Structured arrays can be directly memory mapped from disk.</p>
-<div class="section" id="interleaved-data-in-structured-arrays">
+<section id="interleaved-data-in-structured-arrays">
 <h2>Interleaved data in structured arrays<a class="headerlink" href="#interleaved-data-in-structured-arrays" title="Permalink to this headline">¶</a></h2>
 <p>Structured arrays are stored in memory in an interleaved format, this means that one “row” or “sample” is grouped together in memory. For example, if we are storing colors and whether we like them (as a boolean <code class="code docutils literal notranslate"><span class="pre">l</span></code>), it would be <code class="code docutils literal notranslate"><span class="pre">[r,g,b,l,r,g,b,l,r,g,b,l]</span></code> and not <code class="code docutils literal notranslate"><span class="pre">[r,r,r,g,g,g,b,b,b,l,l,l]</span></code>). Most ML applications require row-based access - column-based operations are much less common - making this a good fit.</p>
 <p>Here is how this example translates into code:</p>
@@ -228,8 +398,8 @@
 </div>
 <p>As you can see, structured arrays allow us to mix different data types into a single array, and the byte representation lets us group samples together. Now imagine that we have such an array on disk with millions of values. Reading the first 100 values turns into a matter of reading the first 100*(3+1) bytes. If we had a separate array for each of the different fields we would have to read from 4 smaller files.</p>
 <p>This becomes increasingly relevant with a larger number of fields and complexities of each field. In our dataset, an observation of another agent is described with its centroid (<code class="code docutils literal notranslate"><span class="pre">dtype=(float64,</span> <span class="pre">3)</span></code>), its rotation matrix (<code class="code docutils literal notranslate"><span class="pre">dtype=(np.float64,</span> <span class="pre">(3,3))</span></code>), its extent or size (<code class="code docutils literal notranslate"><span class="pre">dtype=(np.float64,</span> <span class="pre">3)</span></code>) to name a few properties. Structured arrays are a great fit to group this data together in memory and on disk.</p>
-</div>
-<div class="section" id="short-introduction-to-zarr">
+</section>
+<section id="short-introduction-to-zarr">
 <h2>Short introduction to zarr<a class="headerlink" href="#short-introduction-to-zarr" title="Permalink to this headline">¶</a></h2>
 <p>We use the zarr data format to store and read these numpy structured arrays from disk. Zarr allows us to write very large (structured) arrays to disk in n-dimensional compressed chunks. See the <a class="reference external" href="https://zarr.readthedocs.io/en/stable/">zarr docs</a>. Here is a short tutorial:</p>
 <div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span> <span class="nn">zarr</span>
@@ -277,13 +447,13 @@
 <li><p>Other libraries such as xarray, Dask and TensorStore have good interoperability with Zarr.</p></li>
 <li><p>The metadata (e.g. dtype, chunk size, compression type) is stored inside the zarr dataset too. If one day you decide to change your chunk size, you can still read the older datasets without changing any code.</p></li>
 </ul>
-</div>
-<div class="section" id="lyft-competition-dataset-format">
+</section>
+<section id="lyft-competition-dataset-format">
 <h2>2020 Lyft Competition Dataset format<a class="headerlink" href="#lyft-competition-dataset-format" title="Permalink to this headline">¶</a></h2>
 <p>The 2020 Lyft competition dataset is stored in four structured arrays: <code class="code docutils literal notranslate"><span class="pre">scenes</span></code>, <code class="code docutils literal notranslate"><span class="pre">frames</span></code>, <code class="code docutils literal notranslate"><span class="pre">agents</span></code> and <code class="code docutils literal notranslate"><span class="pre">tl_faces</span></code>.</p>
 <p>Note: in the following all <code class="code docutils literal notranslate"><span class="pre">_interval</span></code> fields assume that information is stored consecutively in the arrays.
 This means that if <code class="code docutils literal notranslate"><span class="pre">frame_index_interval</span></code> for <code class="code docutils literal notranslate"><span class="pre">scene_0</span></code> is <code class="code docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">100)</span></code>, frames from <code class="code docutils literal notranslate"><span class="pre">scene_1</span></code> will start from index 100 in the frames array.</p>
-<div class="section" id="scenes">
+<section id="scenes">
 <h3>Scenes<a class="headerlink" href="#scenes" title="Permalink to this headline">¶</a></h3>
 <p>A scene is identified by the host (i.e. which car was used to collect it) and a start and end time.
 It consists of multiple frames (=snapshots at discretized time intervals).
@@ -297,8 +467,8 @@ The frames in between these indices all correspond to the scene (including start
 <span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="frames">
+</section>
+<section id="frames">
 <h3>Frames<a class="headerlink" href="#frames" title="Permalink to this headline">¶</a></h3>
 <p>A frame captures all information that was observed at a time. This includes</p>
 <ul class="simple">
@@ -318,8 +488,8 @@ The frame contains only pointers to these stored objects given by a start and an
 <span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="agents">
+</section>
+<section id="agents">
 <h3>Agents<a class="headerlink" href="#agents" title="Permalink to this headline">¶</a></h3>
 <p>An agent is an observation by the AV of some other detected object.
 Each entry describes the object in terms of its attributes such as position and velocity, gives the agent a tracking number to track it over multiple frames (but only within the same scene!) and its most probable label.
@@ -335,8 +505,8 @@ the possible labels are defined <a class="reference external" href="https://gith
 <span class="p">]</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="traffic-light-faces">
+</section>
+<section id="traffic-light-faces">
 <h3>Traffic Light Faces<a class="headerlink" href="#traffic-light-faces" title="Permalink to this headline">¶</a></h3>
 <p>Note: we refer to traffic light bulbs (e.g. the red light bulb of a specific traffic light) as <code class="code docutils literal notranslate"><span class="pre">faces</span></code> in L5Kit.
 For the full list of available types for a bulb please consult our <a class="reference external" href="https://github.com/lyft/l5kit/blob/20ab033c01610d711c3d36e1963ecec86e8b85b6/l5kit/l5kit/data/proto/road_network.proto#L615">protobuf map definition</a>.</p>
@@ -350,11 +520,11 @@ Each array’s element has a unique id to link it to the semantic map, a status 
 <span class="p">]</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="working-with-the-zarr-format">
+</section>
+</section>
+<section id="working-with-the-zarr-format">
 <h2>Working with the zarr format<a class="headerlink" href="#working-with-the-zarr-format" title="Permalink to this headline">¶</a></h2>
-<div class="section" id="the-chunkeddataset">
+<section id="the-chunkeddataset">
 <h3>The ChunkedDataset<a class="headerlink" href="#the-chunkeddataset" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="code docutils literal notranslate"><span class="pre">ChunkedDataset</span></code> (<code class="code docutils literal notranslate"><span class="pre">l5kit.data.zarr_dataset</span></code>) is the first interface between raw data on the disk and Python accessible information.
 This layer is very thin, and it provides the four arrays mapped from the disk. When one of these array is indexed (or sliced):</p>
@@ -364,8 +534,8 @@ This layer is very thin, and it provides the four arrays mapped from the disk. W
 <li><p>a numpy array copy is returned;</p></li>
 </ul>
 <p>The <code class="code docutils literal notranslate"><span class="pre">ChunkedDataset</span></code> also provides an LRUcache; but it works on <a class="reference external" href="https://github.com/zarr-developers/zarr-python/issues/278">compressed chunks only</a>.</p>
-</div>
-<div class="section" id="performance-aware-slicing">
+</section>
+<section id="performance-aware-slicing">
 <h3>Performance-aware slicing<a class="headerlink" href="#performance-aware-slicing" title="Permalink to this headline">¶</a></h3>
 <p>A very common operation with the <code class="code docutils literal notranslate"><span class="pre">ChunkedDataset</span></code> is slicing one array to retrieve some values.
 Let’s say we want to retrieve the first 10k agents’ centroids and store them in memory.</p>
@@ -389,9 +559,9 @@ Let’s say we want to retrieve the first 10k agents’ centroids and store them
 </div>
 <p>we reduce the decompression numbers by <strong>a factor of 10K</strong>.</p>
 <p><strong>TL;DR</strong>: when working with <code class="code docutils literal notranslate"><span class="pre">zarr</span></code> you should always aim to minimise the number of accesses to the compressed data.</p>
-</div>
-</div>
-<div class="section" id="dataset-abstraction-classes">
+</section>
+</section>
+<section id="dataset-abstraction-classes">
 <span id="data-abstraction"></span><h2>Dataset Abstraction Classes<a class="headerlink" href="#dataset-abstraction-classes" title="Permalink to this headline">¶</a></h2>
 <p>As shown above, working with the raw <code class="code docutils literal notranslate"><span class="pre">zarr</span></code> dataset has its own perils. To that end, we provide two structures
 which form an additional abstraction layer over the raw <code class="code docutils literal notranslate"><span class="pre">zarr</span></code> dataset. These two Python classes allow to rasterise
@@ -401,7 +571,7 @@ and get information about the past and future state of the AV or another agent.<
 <li><p>the following 2 classes inherit from Pytorch Dataset and as such are tied to work with it;</p></li>
 <li><p>the following 2 classes assume the world to be rasterised as BEV (Bird-Eye-View), which is a common choice for CNN-based approaches. Still, this can be disabled by using <code class="code docutils literal notranslate"><span class="pre">stub_debug</span></code> as <code class="code docutils literal notranslate"><span class="pre">map_type</span></code>.</p></li>
 </ul>
-<div class="section" id="egodataset">
+<section id="egodataset">
 <h3>EgoDataset<a class="headerlink" href="#egodataset" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="code docutils literal notranslate"><span class="pre">EgoDataset</span></code> retrieves information about the status of the AV in the current frame and the frames before it (if history is enabled).
 When iterated, it yields a dict with the following information:</p>
@@ -484,8 +654,8 @@ When iterated, it yields a dict with the following information:</p>
     <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;history_positions&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="agentdataset">
+</section>
+<section id="agentdataset">
 <h3>AgentDataset<a class="headerlink" href="#agentdataset" title="Permalink to this headline">¶</a></h3>
 <p>The <code class="code docutils literal notranslate"><span class="pre">AgentDataset</span></code> iterates over agents (i.e. every other dynamic entity in the scene) instead of the AV. Because the returned dict
 is exactly the same as the <code class="code docutils literal notranslate"><span class="pre">EgoDataset</span></code>, the two classes are almost interchangeable.</p>
@@ -523,56 +693,32 @@ This is used in multiple contexts:</p>
     <span class="nb">print</span><span class="p">(</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;history_positions&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
-           </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="coords_systems.html" class="btn btn-neutral float-right" title="Coordinate Systems in L5Kit" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="installation.html" class="btn btn-neutral float-left" title="Installation" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Level 5.
-
-    </p>
-  </div>
+          <div class="page-nav">
+            <div class="inner"><ul class="page-nav">
+  <li class="prev">
+    <a href="installation.html"
+       title="previous chapter">← Installation</a>
+  </li>
+  <li class="next">
+    <a href="coords_systems.html"
+       title="next chapter">Coordinate Systems in L5Kit →</a>
+  </li>
+</ul><div class="footer" role="contentinfo">
+      &#169; Copyright 2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car).
+    <br>
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
+</div>
+            </div>
+          </div>
+      </page>
+    </div></div>
     
     
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-        </div>
-      </div>
-
-    </section>
-
-  </div>
-  
-
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
-
-  
-  
-    
-   
-
-</body>
+  </body>
 </html>

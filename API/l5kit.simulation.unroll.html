@@ -1,181 +1,355 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>l5kit.simulation.unroll module &mdash; L5Kit 1.3.1 documentation</title>
-  
+<html >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  
-  <link rel="stylesheet" href="../_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="../_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
+      <title>l5kit.simulation.unroll module</title>
     
-      <script type="text/javascript" id="documentation_options" data-url_root="../" src="../_static/documentation_options.js"></script>
+          <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+          <link rel="stylesheet" href="../_static/theme.css " type="text/css" />
+          <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+      
+      <!-- sphinx script_files -->
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
         <script src="../_static/jquery.js"></script>
         <script src="../_static/underscore.js"></script>
         <script src="../_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="../_static/js/theme.js"></script>
-
-    
-    <link rel="index" title="Index" href="../genindex.html" />
-    <link rel="search" title="Search" href="../search.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
-   
-  <div class="wy-grid-for-nav">
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="../index.html" class="icon icon-home"> L5Kit
-          
-
-          
-          </a>
-
-          
-            
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="../introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../overview.html">Overview</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../gettingstarted.html">Getting started</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../tutorials.html">Tutorials</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../competitions.html">Competitions</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="../how_to_contribute.html">How to contribute</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../api_reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../credits.html">Credits</a></li>
-</ul>
-
-            
-          
-        </div>
-        
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="../index.html">L5Kit</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
+      <!-- bundled in js (rollup iife) -->
+      <!-- <script src="../_static/theme-vendors.js"></script> -->
+      <script src="../_static/theme.js" defer></script>
     
-      <li><a href="../index.html" class="icon icon-home"></a> &raquo;</li>
-        
-      <li>l5kit.simulation.unroll module</li>
+  <link rel="index" title="Index" href="../genindex.html" />
+  <link rel="search" title="Search" href="../search.html" /> 
+  </head>
+
+  <body>
+    <div id="app">
+    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
+  <router-link to="../index.html" class="home-link">
     
+      <img class="logo" src="../_static/L5logo_small_v2.png" alt="logo"/>
     
-      <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="../_sources/API/l5kit.simulation.unroll.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
+  </router-link>
+
+  <div class="links">
+    <navlinks class="can-hide">
 
   
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+    <div class="nav-item">
+      <a href="../intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../gettingstarted.html#getting-started"
+         class="nav-link ">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../tutorials.html#tutorials"
+         class="nav-link ">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+    </navlinks>
+  </div>
+</navbar>
+
+      
+      <div class="sidebar-mask" @click="toggleSidebar(false)">
+      </div>
+        <sidebar @toggle-sidebar="toggleSidebar">
+          
+          <navlinks>
             
-  <div class="section" id="module-l5kit.simulation.unroll">
+
+  
+    <div class="nav-item">
+      <a href="../intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../gettingstarted.html#getting-started"
+         class="nav-link ">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../tutorials.html#tutorials"
+         class="nav-link ">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+            
+          </navlinks><div id="searchbox" class="searchbox" role="search">
+  <div class="caption"><span class="caption-text">Quick search</span>
+    <div class="searchformwrapper">
+      <form class="search" action="../search.html" method="get">
+        <input type="text" name="q" />
+        <input type="submit" value="Search" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../intro_index.html#introduction-and-overview">introduction and overview</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../introduction.html" class="reference internal ">Introduction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../overview.html" class="reference internal ">Overview</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../gettingstarted.html#getting-started">getting started</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../installation.html" class="reference internal ">Installation</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../data_format.html" class="reference internal ">Dataset Formats in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../coords_systems.html" class="reference internal ">Coordinate Systems in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../tutorials.html#tutorials">tutorials</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../prediction.html" class="reference internal ">Prediction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../planning.html" class="reference internal ">Planning</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../simulation.html" class="reference internal ">Simulation</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../competitions.html#competitions">competitions</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../prediction_competition.html" class="reference internal ">Prediction Competition</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../contribute_index.html#contribute">contribute</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../how_to_contribute.html" class="reference internal ">How to contribute</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../api_reference.html" class="reference internal ">API Reference</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../license.html" class="reference internal ">License</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../credits.html" class="reference internal ">Credits</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+</div>
+        </sidebar>
+
+      <page>
+          <div class="body-header" role="navigation" aria-label="navigation">
+  
+  <ul class="breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+    
+    <li>l5kit.simulation.unroll module</li>
+  </ul>
+  
+
+  <ul class="page-nav">
+</ul>
+  
+</div>
+<hr>
+          <div class="content" role="main" v-pre>
+            
+  <section id="module-l5kit.simulation.unroll">
 <span id="l5kit-simulation-unroll-module"></span><h1>l5kit.simulation.unroll module<a class="headerlink" href="#module-l5kit.simulation.unroll" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt id="l5kit.simulation.unroll.ClosedLoopSimulator">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.simulation.unroll.</span></code><code class="sig-name descname"><span class="pre">ClosedLoopSimulator</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_cfg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationConfig" title="l5kit.simulation.dataset.SimulationConfig"><span class="pre">l5kit.simulation.dataset.SimulationConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.dataset.ego.html#l5kit.dataset.ego.EgoDataset" title="l5kit.dataset.ego.EgoDataset"><span class="pre">l5kit.dataset.ego.EgoDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_ego</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.nn.modules.module.Module</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_agents</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.nn.modules.module.Module</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys_to_exclude</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('image')</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.unroll.ClosedLoopSimulator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.ClosedLoopSimulator">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.simulation.unroll.</span></span><span class="sig-name descname"><span class="pre">ClosedLoopSimulator</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sim_cfg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationConfig" title="l5kit.simulation.dataset.SimulationConfig"><span class="pre">l5kit.simulation.dataset.SimulationConfig</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.dataset.ego.html#l5kit.dataset.ego.EgoDataset" title="l5kit.dataset.ego.EgoDataset"><span class="pre">l5kit.dataset.ego.EgoDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">device</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.device</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_ego</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.nn.modules.module.Module</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_agents</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.nn.modules.module.Module</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys_to_exclude</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">('image',)</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.unroll.ClosedLoopSimulator" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="l5kit.simulation.unroll.ClosedLoopSimulator.get_agents_in_out">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">get_agents_in_out</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys_to_exclude</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#l5kit.simulation.unroll.UnrollInputOutput" title="l5kit.simulation.unroll.UnrollInputOutput"><span class="pre">l5kit.simulation.unroll.UnrollInputOutput</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#l5kit.simulation.unroll.ClosedLoopSimulator.get_agents_in_out" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.ClosedLoopSimulator.get_agents_in_out">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_agents_in_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys_to_exclude</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#l5kit.simulation.unroll.UnrollInputOutput" title="l5kit.simulation.unroll.UnrollInputOutput"><span class="pre">l5kit.simulation.unroll.UnrollInputOutput</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.simulation.unroll.ClosedLoopSimulator.get_agents_in_out" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all agents inputs and outputs as a dict mapping scene index to a list of UnrollInputOutput</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -192,8 +366,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.simulation.unroll.ClosedLoopSimulator.get_ego_in_out">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">get_ego_in_out</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys_to_exclude</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#l5kit.simulation.unroll.UnrollInputOutput" title="l5kit.simulation.unroll.UnrollInputOutput"><span class="pre">l5kit.simulation.unroll.UnrollInputOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#l5kit.simulation.unroll.ClosedLoopSimulator.get_ego_in_out" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.ClosedLoopSimulator.get_ego_in_out">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">get_ego_in_out</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">input_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">keys_to_exclude</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">Set</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><a class="reference internal" href="#l5kit.simulation.unroll.UnrollInputOutput" title="l5kit.simulation.unroll.UnrollInputOutput"><span class="pre">l5kit.simulation.unroll.UnrollInputOutput</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.simulation.unroll.ClosedLoopSimulator.get_ego_in_out" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get all ego inputs and outputs as a dict mapping scene index to a single UnrollInputOutput</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -210,16 +384,16 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.simulation.unroll.ClosedLoopSimulator.unroll">
-<code class="sig-name descname"><span class="pre">unroll</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_indices</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a><span class="p"><span class="pre">]</span></span><a class="headerlink" href="#l5kit.simulation.unroll.ClosedLoopSimulator.unroll" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.ClosedLoopSimulator.unroll">
+<span class="sig-name descname"><span class="pre">unroll</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_indices</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#l5kit.simulation.unroll.SimulationOutput" title="l5kit.simulation.unroll.SimulationOutput"><span class="pre">l5kit.simulation.unroll.SimulationOutput</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.simulation.unroll.ClosedLoopSimulator.unroll" title="Permalink to this definition">¶</a></dt>
 <dd><p>Simulate the dataset for the given scene indices
 :param scene_indices: the scene indices we want to simulate
 :return: the simulated dataset</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.simulation.unroll.ClosedLoopSimulator.update_agents">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">update_agents</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationDataset" title="l5kit.simulation.dataset.SimulationDataset"><span class="pre">l5kit.simulation.dataset.SimulationDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_idx</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#l5kit.simulation.unroll.ClosedLoopSimulator.update_agents" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.ClosedLoopSimulator.update_agents">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">update_agents</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationDataset" title="l5kit.simulation.dataset.SimulationDataset"><span class="pre">l5kit.simulation.dataset.SimulationDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_idx</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#l5kit.simulation.unroll.ClosedLoopSimulator.update_agents" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update the agents in frame_idx (across scenes) using agents_output_dict</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -237,8 +411,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.simulation.unroll.ClosedLoopSimulator.update_ego">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">update_ego</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationDataset" title="l5kit.simulation.dataset.SimulationDataset"><span class="pre">l5kit.simulation.dataset.SimulationDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_idx</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">None</span><a class="headerlink" href="#l5kit.simulation.unroll.ClosedLoopSimulator.update_ego" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.ClosedLoopSimulator.update_ego">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">update_ego</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationDataset" title="l5kit.simulation.dataset.SimulationDataset"><span class="pre">l5kit.simulation.dataset.SimulationDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">frame_idx</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">output_dict</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#l5kit.simulation.unroll.ClosedLoopSimulator.update_ego" title="Permalink to this definition">¶</a></dt>
 <dd><p>Update ego across scenes for the given frame index.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -258,20 +432,20 @@
 </dd></dl>
 
 <dl class="py class">
-<dt id="l5kit.simulation.unroll.SimulationOutput">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.simulation.unroll.</span></code><code class="sig-name descname"><span class="pre">SimulationOutput</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationDataset" title="l5kit.simulation.dataset.SimulationDataset"><span class="pre">l5kit.simulation.dataset.SimulationDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ego_ins_outs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">DefaultDict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#l5kit.simulation.unroll.UnrollInputOutput" title="l5kit.simulation.unroll.UnrollInputOutput"><span class="pre">l5kit.simulation.unroll.UnrollInputOutput</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agents_ins_outs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">DefaultDict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#l5kit.simulation.unroll.UnrollInputOutput" title="l5kit.simulation.unroll.UnrollInputOutput"><span class="pre">l5kit.simulation.unroll.UnrollInputOutput</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.unroll.SimulationOutput" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.SimulationOutput">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.simulation.unroll.</span></span><span class="sig-name descname"><span class="pre">SimulationOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sim_dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationDataset" title="l5kit.simulation.dataset.SimulationDataset"><span class="pre">l5kit.simulation.dataset.SimulationDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">ego_ins_outs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">DefaultDict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#l5kit.simulation.unroll.UnrollInputOutput" title="l5kit.simulation.unroll.UnrollInputOutput"><span class="pre">l5kit.simulation.unroll.UnrollInputOutput</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agents_ins_outs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">DefaultDict</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">,</span> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="#l5kit.simulation.unroll.UnrollInputOutput" title="l5kit.simulation.unroll.UnrollInputOutput"><span class="pre">l5kit.simulation.unroll.UnrollInputOutput</span></a><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.unroll.SimulationOutput" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <dl class="py method">
-<dt id="l5kit.simulation.unroll.SimulationOutput.build_trajectory_states">
-<em class="property"><span class="pre">static</span> </em><code class="sig-name descname"><span class="pre">build_trajectory_states</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> &#x2192; <span class="pre">torch.Tensor</span><a class="headerlink" href="#l5kit.simulation.unroll.SimulationOutput.build_trajectory_states" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.SimulationOutput.build_trajectory_states">
+<em class="property"><span class="pre">static</span> </em><span class="sig-name descname"><span class="pre">build_trajectory_states</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.simulation.unroll.SimulationOutput.build_trajectory_states" title="Permalink to this definition">¶</a></dt>
 <dd><p>Convert frames into a torch trajectory
 :param frames: the scene frames
 :return: the trajectory</p>
 </dd></dl>
 
 <dl class="py method">
-<dt id="l5kit.simulation.unroll.SimulationOutput.get_scene_id">
-<code class="sig-name descname"><span class="pre">get_scene_id</span></code><span class="sig-paren">(</span><span class="sig-paren">)</span> &#x2192; <span class="pre">int</span><a class="headerlink" href="#l5kit.simulation.unroll.SimulationOutput.get_scene_id" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.SimulationOutput.get_scene_id">
+<span class="sig-name descname"><span class="pre">get_scene_id</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">int</span></span></span><a class="headerlink" href="#l5kit.simulation.unroll.SimulationOutput.get_scene_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Get the scene index for this SimulationOutput</p>
 <dl class="field-list simple">
 <dt class="field-odd">Returns</dt>
@@ -283,8 +457,8 @@
 </dd></dl>
 
 <dl class="py class">
-<dt id="l5kit.simulation.unroll.TrajectoryStateIndices">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.simulation.unroll.</span></code><code class="sig-name descname"><span class="pre">TrajectoryStateIndices</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.TrajectoryStateIndices">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.simulation.unroll.</span></span><span class="sig-name descname"><span class="pre">TrajectoryStateIndices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">value</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">enum.IntEnum</span></code></p>
 <p>Defines indices for accessing trajectory states from LocalSceneBatch.
 example: all_speeds = local_scene_batch.recorded_ego_states[:, TrajectoryStateIndices.SPEED]</p>
@@ -302,45 +476,45 @@ example: all_speeds = local_scene_batch.recorded_ego_states[:, TrajectoryStateIn
 </dd>
 </dl>
 <dl class="py attribute">
-<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.ACCELERATION">
-<code class="sig-name descname"><span class="pre">ACCELERATION</span></code><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.ACCELERATION" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.TrajectoryStateIndices.ACCELERATION">
+<span class="sig-name descname"><span class="pre">ACCELERATION</span></span><em class="property"> <span class="pre">=</span> <span class="pre">4</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.ACCELERATION" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.CURVATURE">
-<code class="sig-name descname"><span class="pre">CURVATURE</span></code><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.CURVATURE" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.TrajectoryStateIndices.CURVATURE">
+<span class="sig-name descname"><span class="pre">CURVATURE</span></span><em class="property"> <span class="pre">=</span> <span class="pre">5</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.CURVATURE" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.SPEED">
-<code class="sig-name descname"><span class="pre">SPEED</span></code><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.SPEED" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.TrajectoryStateIndices.SPEED">
+<span class="sig-name descname"><span class="pre">SPEED</span></span><em class="property"> <span class="pre">=</span> <span class="pre">3</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.SPEED" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.THETA">
-<code class="sig-name descname"><span class="pre">THETA</span></code><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.THETA" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.TrajectoryStateIndices.THETA">
+<span class="sig-name descname"><span class="pre">THETA</span></span><em class="property"> <span class="pre">=</span> <span class="pre">2</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.THETA" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.TIME">
-<code class="sig-name descname"><span class="pre">TIME</span></code><em class="property"> <span class="pre">=</span> <span class="pre">6</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.TIME" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.TrajectoryStateIndices.TIME">
+<span class="sig-name descname"><span class="pre">TIME</span></span><em class="property"> <span class="pre">=</span> <span class="pre">6</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.TIME" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.X">
-<code class="sig-name descname"><span class="pre">X</span></code><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.X" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.TrajectoryStateIndices.X">
+<span class="sig-name descname"><span class="pre">X</span></span><em class="property"> <span class="pre">=</span> <span class="pre">0</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.X" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 <dl class="py attribute">
-<dt id="l5kit.simulation.unroll.TrajectoryStateIndices.Y">
-<code class="sig-name descname"><span class="pre">Y</span></code><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.Y" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.TrajectoryStateIndices.Y">
+<span class="sig-name descname"><span class="pre">Y</span></span><em class="property"> <span class="pre">=</span> <span class="pre">1</span></em><a class="headerlink" href="#l5kit.simulation.unroll.TrajectoryStateIndices.Y" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
 
 </dd></dl>
 
 <dl class="py class">
-<dt id="l5kit.simulation.unroll.UnrollInputOutput">
-<em class="property"><span class="pre">class</span> </em><code class="sig-prename descclassname"><span class="pre">l5kit.simulation.unroll.</span></code><code class="sig-name descname"><span class="pre">UnrollInputOutput</span></code><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">track_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.unroll.UnrollInputOutput" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.UnrollInputOutput">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.simulation.unroll.</span></span><span class="sig-name descname"><span class="pre">UnrollInputOutput</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">track_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.simulation.unroll.UnrollInputOutput" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">tuple</span></code></p>
 <p>A single input output dict for an agent/ego in a given frame</p>
 <dl class="field-list simple">
@@ -353,69 +527,41 @@ example: all_speeds = local_scene_batch.recorded_ego_states[:, TrajectoryStateIn
 </dd>
 </dl>
 <dl class="py attribute">
-<dt id="l5kit.simulation.unroll.UnrollInputOutput.inputs">
-<code class="sig-name descname"><span class="pre">inputs</span></code><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#l5kit.simulation.unroll.UnrollInputOutput.inputs" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.UnrollInputOutput.inputs">
+<span class="sig-name descname"><span class="pre">inputs</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#l5kit.simulation.unroll.UnrollInputOutput.inputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 1</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="l5kit.simulation.unroll.UnrollInputOutput.outputs">
-<code class="sig-name descname"><span class="pre">outputs</span></code><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#l5kit.simulation.unroll.UnrollInputOutput.outputs" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.UnrollInputOutput.outputs">
+<span class="sig-name descname"><span class="pre">outputs</span></span><em class="property"><span class="pre">:</span> <span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#l5kit.simulation.unroll.UnrollInputOutput.outputs" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 2</p>
 </dd></dl>
 
 <dl class="py attribute">
-<dt id="l5kit.simulation.unroll.UnrollInputOutput.track_id">
-<code class="sig-name descname"><span class="pre">track_id</span></code><em class="property"><span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#l5kit.simulation.unroll.UnrollInputOutput.track_id" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.simulation.unroll.UnrollInputOutput.track_id">
+<span class="sig-name descname"><span class="pre">track_id</span></span><em class="property"><span class="pre">:</span> <span class="pre">int</span></em><a class="headerlink" href="#l5kit.simulation.unroll.UnrollInputOutput.track_id" title="Permalink to this definition">¶</a></dt>
 <dd><p>Alias for field number 0</p>
 </dd></dl>
 
 </dd></dl>
 
-</div>
+</section>
 
 
-           </div>
-           
           </div>
-          <footer>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Level 5.
-
-    </p>
-  </div>
+          <div class="page-nav">
+            <div class="inner"><ul class="page-nav">
+</ul><div class="footer" role="contentinfo">
+      &#169; Copyright 2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car).
+    <br>
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
+</div>
+            </div>
+          </div>
+      </page>
+    </div></div>
     
     
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-        </div>
-      </div>
-
-    </section>
-
-  </div>
-  
-
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
-
-  
-  
-    
-   
-
-</body>
+  </body>
 </html>

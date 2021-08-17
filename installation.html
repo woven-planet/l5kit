@@ -1,212 +1,383 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Installation &mdash; L5Kit 1.3.1 documentation</title>
-  
+<html >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
+      <title>Installation</title>
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+          <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+          <link rel="stylesheet" href="_static/theme.css " type="text/css" />
+          <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+      
+      <!-- sphinx script_files -->
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Dataset Formats in L5Kit" href="data_format.html" />
-    <link rel="prev" title="Getting started" href="gettingstarted.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
-   
-  <div class="wy-grid-for-nav">
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="index.html" class="icon icon-home"> L5Kit
-          
-
-          
-          </a>
-
-          
-            
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-</ul>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="gettingstarted.html">Getting started</a><ul class="current">
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Installation</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#installing-as-a-user">Installing as a User</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#install-the-package-from-pypy-in-your-project-venv">1. Install the package from pypy (in your project venv)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#run-example">2. Run example</a></li>
-</ul>
-</li>
-<li class="toctree-l3"><a class="reference internal" href="#installing-as-a-developer">Installing as a Developer</a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#clone-the-repo">1. Clone the repo</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#install-l5kit">2. Install L5Kit</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#generate-l5kit-code-html-documentation-optional">3. Generate L5Kit code html documentation (optional)</a></li>
-<li class="toctree-l4"><a class="reference internal" href="#id1">4. Run example</a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="data_format.html">Dataset Formats in L5Kit</a></li>
-<li class="toctree-l2"><a class="reference internal" href="coords_systems.html">Coordinate Systems in L5Kit</a></li>
-</ul>
-</li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="competitions.html">Competitions</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
-</ul>
-
-            
-          
-        </div>
-        
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">L5Kit</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
+      <!-- bundled in js (rollup iife) -->
+      <!-- <script src="_static/theme-vendors.js"></script> -->
+      <script src="_static/theme.js" defer></script>
     
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="gettingstarted.html">Getting started</a> &raquo;</li>
-        
-      <li>Installation</li>
+  <link rel="index" title="Index" href="genindex.html" />
+  <link rel="search" title="Search" href="search.html" />
+  <link rel="next" title="Dataset Formats in L5Kit" href="data_format.html" />
+  <link rel="prev" title="Getting started" href="gettingstarted.html" /> 
+  </head>
+
+  <body>
+    <div id="app">
+    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
+  <router-link to="index.html" class="home-link">
     
+      <img class="logo" src="_static/L5logo_small_v2.png" alt="logo"/>
     
-      <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="_sources/installation.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
+  </router-link>
+
+  <div class="links">
+    <navlinks class="can-hide">
 
   
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+    <div class="nav-item">
+      <a href="intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="gettingstarted.html#getting-started"
+         class="nav-link  router-link-active">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="tutorials.html#tutorials"
+         class="nav-link ">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+    </navlinks>
+  </div>
+</navbar>
+
+      
+      <div class="sidebar-mask" @click="toggleSidebar(false)">
+      </div>
+        <sidebar @toggle-sidebar="toggleSidebar">
+          
+          <navlinks>
             
-  <div class="section" id="installation">
+
+  
+    <div class="nav-item">
+      <a href="intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="gettingstarted.html#getting-started"
+         class="nav-link  router-link-active">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="tutorials.html#tutorials"
+         class="nav-link ">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+            
+          </navlinks><div id="searchbox" class="searchbox" role="search">
+  <div class="caption"><span class="caption-text">Quick search</span>
+    <div class="searchformwrapper">
+      <form class="search" action="search.html" method="get">
+        <input type="text" name="q" />
+        <input type="submit" value="Search" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="intro_index.html#introduction-and-overview">introduction and overview</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="introduction.html" class="reference internal ">Introduction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="overview.html" class="reference internal ">Overview</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="gettingstarted.html#getting-started">getting started</a></span>
+      </p>
+      <ul class="current">
+        
+          <li class="toctree-l1 current">
+            
+              <a href="#" class="reference internal current">Installation</a>
+            
+
+            
+              <ul>
+                
+                  <li class="toctree-l2"><a href="#installing-as-a-user" class="reference internal">Installing as a User</a></li>
+                
+                  <li class="toctree-l2"><a href="#installing-as-a-developer" class="reference internal">Installing as a Developer</a></li>
+                
+              </ul>
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="data_format.html" class="reference internal ">Dataset Formats in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="coords_systems.html" class="reference internal ">Coordinate Systems in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="tutorials.html#tutorials">tutorials</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="prediction.html" class="reference internal ">Prediction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="planning.html" class="reference internal ">Planning</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="simulation.html" class="reference internal ">Simulation</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="competitions.html#competitions">competitions</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="prediction_competition.html" class="reference internal ">Prediction Competition</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="contribute_index.html#contribute">contribute</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="how_to_contribute.html" class="reference internal ">How to contribute</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="api_reference.html" class="reference internal ">API Reference</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="license.html" class="reference internal ">License</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="credits.html" class="reference internal ">Credits</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+</div>
+        </sidebar>
+
+      <page>
+          <div class="body-header" role="navigation" aria-label="navigation">
+  
+  <ul class="breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+    
+      <li><a href="gettingstarted.html">Getting started</a> &raquo;</li>
+    
+    <li>Installation</li>
+  </ul>
+  
+
+  <ul class="page-nav">
+  <li class="prev">
+    <a href="gettingstarted.html"
+       title="previous chapter">← Getting started</a>
+  </li>
+  <li class="next">
+    <a href="data_format.html"
+       title="next chapter">Dataset Formats in L5Kit →</a>
+  </li>
+</ul>
+  
+</div>
+<hr>
+          <div class="content" role="main" v-pre>
+            
+  <section id="installation">
 <span id="install"></span><h1>Installation<a class="headerlink" href="#installation" title="Permalink to this headline">¶</a></h1>
-<div class="section" id="installing-as-a-user">
+<section id="installing-as-a-user">
 <h2>Installing as a User<a class="headerlink" href="#installing-as-a-user" title="Permalink to this headline">¶</a></h2>
 <p>Follow this workflow if:</p>
 <ul class="simple">
 <li><p>you’re not interested in developing and/or contributing to L5Kit;</p></li>
 <li><p>you don’t need any features from a specific branch or latest master and you’re fine with the latest release;</p></li>
 </ul>
-<div class="section" id="install-the-package-from-pypy-in-your-project-venv">
+<section id="install-the-package-from-pypy-in-your-project-venv">
 <h3>1. Install the package from pypy (in your project venv)<a class="headerlink" href="#install-the-package-from-pypy-in-your-project-venv" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">pip install l5kit</span>
 </pre></div>
 </div>
 <p>You should now be able to import from L5Kit (e.g. <code class="code docutils literal notranslate"><span class="pre">from</span> <span class="pre">l5kit.data</span> <span class="pre">import</span> <span class="pre">ChunkedDataset</span></code> should work)</p>
-</div>
-<div class="section" id="run-example">
+</section>
+<section id="run-example">
 <h3>2. Run example<a class="headerlink" href="#run-example" title="Permalink to this headline">¶</a></h3>
 <p>Examples are not shipped with the package, but you can download the zip release from:
 <a class="reference external" href="https://github.com/lyft/l5kit/releases">L5Kit Releases</a></p>
@@ -215,9 +386,9 @@ Unzip the files and grab the example folder in the root of the project.</p>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">jupyter notebook examples/visualisation/visualise_data.ipynb</span>
 </pre></div>
 </div>
-</div>
-</div>
-<div class="section" id="installing-as-a-developer">
+</section>
+</section>
+<section id="installing-as-a-developer">
 <h2>Installing as a Developer<a class="headerlink" href="#installing-as-a-developer" title="Permalink to this headline">¶</a></h2>
 <p>Follow this workflow if:</p>
 <ul class="simple">
@@ -225,17 +396,17 @@ Unzip the files and grab the example folder in the root of the project.</p>
 <li><p>you want to contribute to L5Kit;</p></li>
 <li><p>you want to test the examples using a non-release version of the code;</p></li>
 </ul>
-<div class="section" id="clone-the-repo">
+<section id="clone-the-repo">
 <h3>1. Clone the repo<a class="headerlink" href="#clone-the-repo" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">git clone https://github.com/lyft/l5kit.git</span>
 <span class="go">cd l5kit/l5kit</span>
 </pre></div>
 </div>
 <p>Please note the double <code class="code docutils literal notranslate"><span class="pre">l5kit</span></code> in the path, as we need to <code class="code docutils literal notranslate"><span class="pre">cd</span></code> where <code class="code docutils literal notranslate"><span class="pre">setup.py</span></code> file is.</p>
-</div>
-<div class="section" id="install-l5kit">
+</section>
+<section id="install-l5kit">
 <h3>2. Install L5Kit<a class="headerlink" href="#install-l5kit" title="Permalink to this headline">¶</a></h3>
-<div class="section" id="deterministic-build-suggested">
+<section id="deterministic-build-suggested">
 <h4>2.1 Deterministic Build (Suggested)<a class="headerlink" href="#deterministic-build-suggested" title="Permalink to this headline">¶</a></h4>
 <p>We support deterministic build through <a class="reference external" href="https://pipenv-fork.readthedocs.io/en/latest/">pipenv</a>.</p>
 <p>Once you’ve installed pipenv (or made it available in your env) run:</p>
@@ -243,8 +414,8 @@ Unzip the files and grab the example folder in the root of the project.</p>
 </pre></div>
 </div>
 <p>This will install all dependencies (<code class="code docutils literal notranslate"><span class="pre">--dev</span></code> includes dev-packages too) from the lock file.</p>
-</div>
-<div class="section" id="latest-build">
+</section>
+<section id="latest-build">
 <h4>2.2 Latest Build<a class="headerlink" href="#latest-build" title="Permalink to this headline">¶</a></h4>
 <p>If you don’t care about determinist builds or you’re having troubles with packages resolution (Windows, Python&lt;3.7, etc..),
 you can install directly from the <code class="code docutils literal notranslate"><span class="pre">setup.py</span></code> by running:</p>
@@ -256,70 +427,46 @@ you can install directly from the <code class="code docutils literal notranslate
 <li><p>install Pytorch and torchvision manually first (select the correct version required by your system, i.e. GPU or CPU-only), then run L5Kit install (remove the packages <a class="reference external" href="https://github.com/lyft/l5kit/blob/59f36f348682aac5fc488c6d39dd58f8c27b1ec6/l5kit/setup.py#L23">torch</a> and <a class="reference external" href="https://github.com/lyft/l5kit/blob/59f36f348682aac5fc488c6d39dd58f8c27b1ec6/l5kit/setup.py#L24">torchvision</a> from <code class="code docutils literal notranslate"><span class="pre">setup.py</span></code>)</p></li>
 <li><p>install <a class="reference external" href="https://visualstudio.microsoft.com/visual-cpp-build-tools/">Microsoft C++ Build Tools</a>.</p></li>
 </ul>
-</div>
-</div>
-<div class="section" id="generate-l5kit-code-html-documentation-optional">
+</section>
+</section>
+<section id="generate-l5kit-code-html-documentation-optional">
 <h3>3. Generate L5Kit code html documentation (optional)<a class="headerlink" href="#generate-l5kit-code-html-documentation-optional" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">sphinx-apidoc --module-first --separate -o docs/API/ l5kit/l5kit l5kit/l5kit/tests*</span>
 <span class="go">sphinx-build docs docs_built</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="id1">
+</section>
+<section id="id1">
 <h3>4. Run example<a class="headerlink" href="#id1" title="Permalink to this headline">¶</a></h3>
 <div class="highlight-console notranslate"><div class="highlight"><pre><span></span><span class="go">jupyter notebook examples/visualisation/visualise_data.ipynb</span>
 </pre></div>
 </div>
-</div>
-</div>
-</div>
+</section>
+</section>
+</section>
 
 
-           </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="data_format.html" class="btn btn-neutral float-right" title="Dataset Formats in L5Kit" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="gettingstarted.html" class="btn btn-neutral float-left" title="Getting started" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Level 5.
-
-    </p>
-  </div>
+          <div class="page-nav">
+            <div class="inner"><ul class="page-nav">
+  <li class="prev">
+    <a href="gettingstarted.html"
+       title="previous chapter">← Getting started</a>
+  </li>
+  <li class="next">
+    <a href="data_format.html"
+       title="next chapter">Dataset Formats in L5Kit →</a>
+  </li>
+</ul><div class="footer" role="contentinfo">
+      &#169; Copyright 2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car).
+    <br>
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
+</div>
+            </div>
+          </div>
+      </page>
+    </div></div>
     
     
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-        </div>
-      </div>
-
-    </section>
-
-  </div>
-  
-
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
-
-  
-  
-    
-   
-
-</body>
+  </body>
 </html>

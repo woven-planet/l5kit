@@ -1,190 +1,375 @@
-
-
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" >
-<head>
-  <meta charset="utf-8" />
-  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  
-  <title>Coordinate Systems in L5Kit &mdash; L5Kit 1.3.1 documentation</title>
-  
+<html >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-  
-  <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
-  <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
-
-  
-  
-
-  
-  
-
-  
-
-  
-  <!--[if lt IE 9]>
-    <script src="_static/js/html5shiv.min.js"></script>
-  <![endif]-->
-  
+      <title>Coordinate Systems in L5Kit</title>
     
-      <script type="text/javascript" id="documentation_options" data-url_root="./" src="_static/documentation_options.js"></script>
+          <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+          <link rel="stylesheet" href="_static/theme.css " type="text/css" />
+          <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+      
+      <!-- sphinx script_files -->
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
         <script src="_static/jquery.js"></script>
         <script src="_static/underscore.js"></script>
         <script src="_static/doctools.js"></script>
-    
-    <script type="text/javascript" src="_static/js/theme.js"></script>
-
-    
-    <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" />
-    <link rel="next" title="Tutorials" href="tutorials.html" />
-    <link rel="prev" title="Dataset Formats in L5Kit" href="data_format.html" /> 
-</head>
-
-<body class="wy-body-for-nav">
-
-   
-  <div class="wy-grid-for-nav">
-    
-    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
-      <div class="wy-side-scroll">
-        <div class="wy-side-nav-search" >
-          
-
-          
-            <a href="index.html" class="icon icon-home"> L5Kit
-          
-
-          
-          </a>
-
-          
-            
-            
-          
-
-          
-<div role="search">
-  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
-    <input type="text" name="q" placeholder="Search docs" />
-    <input type="hidden" name="check_keywords" value="yes" />
-    <input type="hidden" name="area" value="default" />
-  </form>
-</div>
-
-          
-        </div>
-
-        
-        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
-          
-            
-            
-              
-            
-            
-              <ul>
-<li class="toctree-l1"><a class="reference internal" href="introduction.html">Introduction</a></li>
-<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
-</ul>
-<ul class="current">
-<li class="toctree-l1 current"><a class="reference internal" href="gettingstarted.html">Getting started</a><ul class="current">
-<li class="toctree-l2"><a class="reference internal" href="installation.html">Installation</a></li>
-<li class="toctree-l2"><a class="reference internal" href="data_format.html">Dataset Formats in L5Kit</a></li>
-<li class="toctree-l2 current"><a class="current reference internal" href="#">Coordinate Systems in L5Kit</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#world-coordinate-system">World Coordinate System</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#agent-coordinate-system">Agent Coordinate System</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#image-coordinate-system">Image Coordinate System</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#satellite-coordinate-system">Satellite Coordinate System</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#semantic-coordinate-system">Semantic Coordinate System</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#visualization-notebook">Visualization Notebook</a></li>
-</ul>
-</li>
-</ul>
-</li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="tutorials.html">Tutorials</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="competitions.html">Competitions</a></li>
-</ul>
-<ul>
-<li class="toctree-l1"><a class="reference internal" href="how_to_contribute.html">How to contribute</a></li>
-<li class="toctree-l1"><a class="reference internal" href="api_reference.html">API Reference</a></li>
-<li class="toctree-l1"><a class="reference internal" href="license.html">License</a></li>
-<li class="toctree-l1"><a class="reference internal" href="credits.html">Credits</a></li>
-</ul>
-
-            
-          
-        </div>
-        
-      </div>
-    </nav>
-
-    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
 
       
-      <nav class="wy-nav-top" aria-label="top navigation">
-        
-          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
-          <a href="index.html">L5Kit</a>
-        
-      </nav>
-
-
-      <div class="wy-nav-content">
-        
-        <div class="rst-content">
-        
-          
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-<div role="navigation" aria-label="breadcrumbs navigation">
-
-  <ul class="wy-breadcrumbs">
+      <!-- bundled in js (rollup iife) -->
+      <!-- <script src="_static/theme-vendors.js"></script> -->
+      <script src="_static/theme.js" defer></script>
     
-      <li><a href="index.html" class="icon icon-home"></a> &raquo;</li>
-        
-          <li><a href="gettingstarted.html">Getting started</a> &raquo;</li>
-        
-      <li>Coordinate Systems in L5Kit</li>
+  <link rel="index" title="Index" href="genindex.html" />
+  <link rel="search" title="Search" href="search.html" />
+  <link rel="next" title="Tutorials" href="tutorials.html" />
+  <link rel="prev" title="Dataset Formats in L5Kit" href="data_format.html" /> 
+  </head>
+
+  <body>
+    <div id="app">
+    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
+  <router-link to="index.html" class="home-link">
     
+      <img class="logo" src="_static/L5logo_small_v2.png" alt="logo"/>
     
-      <li class="wy-breadcrumbs-aside">
-        
-          
-            <a href="_sources/coords_systems.rst.txt" rel="nofollow"> View page source</a>
-          
-        
-      </li>
-    
-  </ul>
+  </router-link>
+
+  <div class="links">
+    <navlinks class="can-hide">
 
   
-  <hr/>
-</div>
-          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
-           <div itemprop="articleBody">
+    <div class="nav-item">
+      <a href="intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="gettingstarted.html#getting-started"
+         class="nav-link  router-link-active">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="tutorials.html#tutorials"
+         class="nav-link ">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+    </navlinks>
+  </div>
+</navbar>
+
+      
+      <div class="sidebar-mask" @click="toggleSidebar(false)">
+      </div>
+        <sidebar @toggle-sidebar="toggleSidebar">
+          
+          <navlinks>
             
-  <div class="section" id="coordinate-systems-in-l5kit">
+
+  
+    <div class="nav-item">
+      <a href="intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="gettingstarted.html#getting-started"
+         class="nav-link  router-link-active">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="tutorials.html#tutorials"
+         class="nav-link ">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+            
+          </navlinks><div id="searchbox" class="searchbox" role="search">
+  <div class="caption"><span class="caption-text">Quick search</span>
+    <div class="searchformwrapper">
+      <form class="search" action="search.html" method="get">
+        <input type="text" name="q" />
+        <input type="submit" value="Search" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="intro_index.html#introduction-and-overview">introduction and overview</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="introduction.html" class="reference internal ">Introduction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="overview.html" class="reference internal ">Overview</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="gettingstarted.html#getting-started">getting started</a></span>
+      </p>
+      <ul class="current">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="installation.html" class="reference internal ">Installation</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="data_format.html" class="reference internal ">Dataset Formats in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 current">
+            
+              <a href="#" class="reference internal current">Coordinate Systems in L5Kit</a>
+            
+
+            
+              <ul>
+                
+                  <li class="toctree-l2"><a href="#world-coordinate-system" class="reference internal">World Coordinate System</a></li>
+                
+                  <li class="toctree-l2"><a href="#agent-coordinate-system" class="reference internal">Agent Coordinate System</a></li>
+                
+                  <li class="toctree-l2"><a href="#image-coordinate-system" class="reference internal">Image Coordinate System</a></li>
+                
+                  <li class="toctree-l2"><a href="#satellite-coordinate-system" class="reference internal">Satellite Coordinate System</a></li>
+                
+                  <li class="toctree-l2"><a href="#semantic-coordinate-system" class="reference internal">Semantic Coordinate System</a></li>
+                
+                  <li class="toctree-l2"><a href="#visualization-notebook" class="reference internal">Visualization Notebook</a></li>
+                
+              </ul>
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="tutorials.html#tutorials">tutorials</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="prediction.html" class="reference internal ">Prediction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="planning.html" class="reference internal ">Planning</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="simulation.html" class="reference internal ">Simulation</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="competitions.html#competitions">competitions</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="prediction_competition.html" class="reference internal ">Prediction Competition</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="contribute_index.html#contribute">contribute</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="how_to_contribute.html" class="reference internal ">How to contribute</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="api_reference.html" class="reference internal ">API Reference</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="license.html" class="reference internal ">License</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="credits.html" class="reference internal ">Credits</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+</div>
+        </sidebar>
+
+      <page>
+          <div class="body-header" role="navigation" aria-label="navigation">
+  
+  <ul class="breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+    
+      <li><a href="gettingstarted.html">Getting started</a> &raquo;</li>
+    
+    <li>Coordinate Systems in L5Kit</li>
+  </ul>
+  
+
+  <ul class="page-nav">
+  <li class="prev">
+    <a href="data_format.html"
+       title="previous chapter">← Dataset Formats in L5Kit</a>
+  </li>
+  <li class="next">
+    <a href="tutorials.html"
+       title="next chapter">Tutorials →</a>
+  </li>
+</ul>
+  
+</div>
+<hr>
+          <div class="content" role="main" v-pre>
+            
+  <section id="coordinate-systems-in-l5kit">
 <span id="coordinate"></span><h1>Coordinate Systems in L5Kit<a class="headerlink" href="#coordinate-systems-in-l5kit" title="Permalink to this headline">¶</a></h1>
 <p>One essential feature of L5Kit is converting raw data into multi-channel images. We refer to this process as
 <strong>rasterisation</strong>. These raw data can come from different sources, such as:</p>
@@ -197,7 +382,7 @@
 before we can use them together to get our final multi-channel image.
 L5Kit performs this operation smoothly under the hood, but you may want to know more details about these different systems
 if you’re trying a more experimental workflow.</p>
-<div class="section" id="world-coordinate-system">
+<section id="world-coordinate-system">
 <span id="world-coordinate"></span><h2>World Coordinate System<a class="headerlink" href="#world-coordinate-system" title="Permalink to this headline">¶</a></h2>
 <p>We refer to the coordinate system in the <code class="code docutils literal notranslate"><span class="pre">.zarr</span></code> dataset as <strong>world</strong>. This is shared by <em>all</em> our zarrs in a dataset
 and is a 3D metric space. The entities living in this space are the AV and the agents:</p>
@@ -208,8 +393,8 @@ and is a 3D metric space. The entities living in this space are the AV and the a
 <p>The origin of the <strong>world</strong> coordinate system is located at
 <a class="reference external" href="https://www.google.com/maps/place/37%C2%B025'45.6%22N+122%C2%B009'15.7%22W/&#64;37.4293427,-122.1565407">[37°25’45.6”N, 122°09’15.7”W]</a>
 in Palo Alto (California, USA).</p>
-</div>
-<div class="section" id="agent-coordinate-system">
+</section>
+<section id="agent-coordinate-system">
 <span id="agent-coordinate"></span><h2>Agent Coordinate System<a class="headerlink" href="#agent-coordinate-system" title="Permalink to this headline">¶</a></h2>
 <p>A common feature of the BEV’s rasterisation is that the agent of interest is always aligned in the same direction.
 In L5Kit this direction is right (i.e. the hood of the agent of interest always points to the right side of the image).</p>
@@ -222,8 +407,8 @@ In L5Kit this direction is right (i.e. the hood of the agent of interest always 
 access the agent-from-world matrix using the <code class="code docutils literal notranslate"><span class="pre">agent_from_world</span></code> key of the returned dict.</p>
 <p><strong>Note:</strong> This space is aligned with the input raster except for an intrinsic transformation (i.e. meters to pixels),
 which makes this space suitable as a target during training.</p>
-</div>
-<div class="section" id="image-coordinate-system">
+</section>
+<section id="image-coordinate-system">
 <span id="image-coordinate"></span><h2>Image Coordinate System<a class="headerlink" href="#image-coordinate-system" title="Permalink to this headline">¶</a></h2>
 <p>Once rasterisation is complete, the final multi-channel image will be in the image space. This is a 2D space where (0,0)
 is located in the top-left corner.</p>
@@ -248,8 +433,8 @@ access the raster-from-world matrix using the <code class="code docutils literal
 <span class="n">draw_trajectory</span><span class="p">(</span><span class="n">im</span><span class="p">,</span> <span class="n">positions_in_raster</span><span class="p">,</span> <span class="n">TARGET_POINTS_COLOR</span><span class="p">,</span> <span class="n">yaws</span><span class="o">=</span><span class="n">data</span><span class="p">[</span><span class="s2">&quot;target_yaws&quot;</span><span class="p">])</span>
 </pre></div>
 </div>
-</div>
-<div class="section" id="satellite-coordinate-system">
+</section>
+<section id="satellite-coordinate-system">
 <span id="sat-coordinate"></span><h2>Satellite Coordinate System<a class="headerlink" href="#satellite-coordinate-system" title="Permalink to this headline">¶</a></h2>
 <p>Satellite information is stored as an RGB image in the <code class="code docutils literal notranslate"><span class="pre">aerial_map</span></code> folder of the dataset. Together with that we provide
 a matrix to convert from the <a class="reference external" href="https://en.wikipedia.org/wiki/ECEF">ECEF</a> reference system to this image reference system (i.e. converting XYZ ECEF coordinates into a 2D pixel coordinates).</p>
@@ -260,8 +445,8 @@ a matrix to convert from the <a class="reference external" href="https://en.wiki
 </ul>
 <p>The <code class="code docutils literal notranslate"><span class="pre">SatelliteRasterizer</span></code> and its derived classes combine these two matrices into a single one and directly convert
 world coordinates from the <code class="code docutils literal notranslate"><span class="pre">.zarr</span></code> into 2D pixels coordinates. In this way, you can rasterise around an agent in the <code class="code docutils literal notranslate"><span class="pre">.zarr</span></code> (whose coordinates are in the world reference system)</p>
-</div>
-<div class="section" id="semantic-coordinate-system">
+</section>
+<section id="semantic-coordinate-system">
 <span id="sem-coordinate"></span><h2>Semantic Coordinate System<a class="headerlink" href="#semantic-coordinate-system" title="Permalink to this headline">¶</a></h2>
 <p>Semantic information is stored as a protobuf file. The protobuf store information as a list of elements of different types (e.g lanes, crosswalks, etc).</p>
 <p>Each elements can have one or multiple geometric features (e.g. the left and right lane boundaries) which are described
@@ -280,60 +465,36 @@ When you query it for a supported element (only lanes and crosswalks currently):
 <li><p>the features is finally converted from ECEF to world (this is the reason for the <code class="code docutils literal notranslate"><span class="pre">world_to_ecef</span></code> arg in the <code class="code docutils literal notranslate"><span class="pre">MapAPI</span></code> constructor).</p></li>
 </ul>
 <p>As these operations are computationally expensive, the function results are LRUcached</p>
-</div>
-<div class="section" id="visualization-notebook">
+</section>
+<section id="visualization-notebook">
 <span id="vis-notebook"></span><h2>Visualization Notebook<a class="headerlink" href="#visualization-notebook" title="Permalink to this headline">¶</a></h2>
 <a class="reference external image-reference" href="https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/visualisation/visualise_data.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
 <p>Our <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/examples/visualisation/visualise_data.ipynb">visualisation notebook</a> is the perfect place to start if you want to know more about L5Kit dataset format and coordinate systems.</p>
-</div>
-</div>
+</section>
+</section>
 
 
-           </div>
-           
           </div>
-          <footer>
-    <div class="rst-footer-buttons" role="navigation" aria-label="footer navigation">
-        <a href="tutorials.html" class="btn btn-neutral float-right" title="Tutorials" accesskey="n" rel="next">Next <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
-        <a href="data_format.html" class="btn btn-neutral float-left" title="Dataset Formats in L5Kit" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
-    </div>
-
-  <hr/>
-
-  <div role="contentinfo">
-    <p>
-        &#169; Copyright 2020, Level 5.
-
-    </p>
-  </div>
+          <div class="page-nav">
+            <div class="inner"><ul class="page-nav">
+  <li class="prev">
+    <a href="data_format.html"
+       title="previous chapter">← Dataset Formats in L5Kit</a>
+  </li>
+  <li class="next">
+    <a href="tutorials.html"
+       title="next chapter">Tutorials →</a>
+  </li>
+</ul><div class="footer" role="contentinfo">
+      &#169; Copyright 2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car).
+    <br>
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
+</div>
+            </div>
+          </div>
+      </page>
+    </div></div>
     
     
-    
-    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
-    
-    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
-    
-    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
-
-</footer>
-        </div>
-      </div>
-
-    </section>
-
-  </div>
-  
-
-  <script type="text/javascript">
-      jQuery(function () {
-          SphinxRtdTheme.Navigation.enable(true);
-      });
-  </script>
-
-  
-  
-    
-   
-
-</body>
+  </body>
 </html>
