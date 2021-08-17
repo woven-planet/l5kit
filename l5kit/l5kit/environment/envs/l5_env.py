@@ -1,4 +1,5 @@
 from collections import defaultdict
+from dataclasses import dataclass
 from typing import Any, DefaultDict, Dict, List, NamedTuple, Optional
 
 import gym
@@ -20,6 +21,7 @@ from l5kit.simulation.unroll import (ClosedLoopSimulator, ClosedLoopSimulatorMod
                                      UnrollInputOutput)
 
 
+@dataclass
 class SimulationConfigGym(SimulationConfig):
     """Defines the default parameters used for the simulation of ego and agents around it in L5Kit Gym.
     Note: num_simulation_steps should be eps_length + 1

@@ -1,5 +1,6 @@
 from copy import deepcopy
-from typing import Dict, List, NamedTuple, Optional, Set, Tuple
+from dataclasses import dataclass
+from typing import Dict, List, Optional, Set, Tuple
 
 import numpy as np
 
@@ -9,7 +10,8 @@ from l5kit.geometry.transform import yaw_as_rotation33
 from l5kit.simulation.utils import disable_agents, get_frames_subset, insert_agent
 
 
-class SimulationConfig(NamedTuple):
+@dataclass
+class SimulationConfig:
     """ Defines the parameters used for the simulation of ego and agents around it.
 
     :param use_ego_gt: whether to use GT annotations for ego instead of model's outputs
