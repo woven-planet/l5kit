@@ -7,6 +7,7 @@ from l5kit.data.filter import (filter_agents_by_frames, filter_agents_by_labels,
                                filter_tl_faces_by_status)
 from l5kit.data.labels import PERCEPTION_LABELS
 from l5kit.data.map_api import MapAPI, TLFacesColors
+from l5kit.environment.envs.l5_env import EpisodeOutputGym
 from l5kit.geometry import transform_points
 from l5kit.rasterization.box_rasterizer import get_box_world_coords, get_ego_as_agent
 from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
@@ -229,6 +230,74 @@ def simulation_out_to_visualizer_scene(sim_out: SimulationOutput, mapAPI: MapAPI
                                                         color="blue", legend_label="ego_replay", track_id=-1))
             trajectories.append(TrajectoryVisualization(xs=sim_traj[:, 0], ys=sim_traj[:, 1],
                                                         color="red", legend_label="ego_simulated", track_id=-1))
+
+        if has_agents_info:
+            agents_in_out = agents_ins_outs[frame_idx]
+            for agent_in_out in agents_in_out:
+                track_id = agent_in_out.inputs["track_id"]
+                replay_traj, sim_traj = _get_in_out_as_trajectories(agent_in_out)
+                trajectories.append(TrajectoryVisualization(xs=replay_traj[:, 0], ys=replay_traj[:, 1],
+                                                            color="orange", legend_label="agent_replay",
+                                                            track_id=track_id))
+                trajectories.append(TrajectoryVisualization(xs=sim_traj[:, 0], ys=sim_traj[:, 1],
+                                                            color="purple", legend_label="agent_simulated",
+                                                            track_id=track_id))
+
+        frame_vis = FrameVisualization(ego=frame_vis.ego, agents=frame_vis.agents,
+                                       lanes=frame_vis.lanes, crosswalks=frame_vis.crosswalks,
+                                       trajectories=trajectories)
+
+        frames_vis.append(frame_vis)
+
+    return frames_vis
+
+
+def episode_out_to_visualizer_scene_gym_cle(sim_out: EpisodeOutputGym,
+                                            mapAPI: MapAPI) -> List[FrameVisualization]:
+    """Convert a episode output of closed loop gym into a scene we can visualize.
+    The scene will include replayed and simulated trajectories for ego and agents when these are
+    simulated.
+
+    :param sim_out: the simulation output of L5 gym close loop environment
+    :param mapAPI: a MapAPI object
+    :return: a list of FrameVisualization for the scene
+    """
+    frames = sim_out.simulated_ego
+    agents_frames = filter_agents_by_frames(frames, sim_out.simulated_agents)
+    tls_frames = filter_tl_faces_by_frames(frames, sim_out.tls_frames)
+    agents_th = sim_out.agents_th
+    ego_ins_outs = sim_out.ego_ins_outs
+    agents_ins_outs = sim_out.agents_ins_outs
+
+    has_ego_info = len(ego_ins_outs) > 0
+    has_agents_info = len(agents_ins_outs) > 0
+
+    frames_vis: List[FrameVisualization] = []
+    for frame_idx in range(len(frames) - 2):
+        frame = frames[frame_idx]
+        tls_frame = tls_frames[frame_idx]
+
+        agents_frame = agents_frames[frame_idx]
+        agents_frame = filter_agents_by_labels(agents_frame, agents_th)
+        frame_vis = _get_frame_data(mapAPI, frame, agents_frame, tls_frame)
+        trajectories = []
+
+        if has_ego_info:
+            ego_in_out = ego_ins_outs[frame_idx]
+            replay_traj, sim_traj = _get_in_out_as_trajectories(ego_in_out)
+            scale = 10
+            ego_centroid = np.array([[frame_vis.ego.center_x, frame_vis.ego.center_y]])
+            ego_next_step_replay = ego_centroid + scale * (replay_traj[0:1] - ego_centroid)
+            ego_next_step_sim = ego_centroid + scale * (sim_traj[0:1] - ego_centroid)
+            single_step_replay = np.concatenate([ego_centroid, ego_next_step_replay])
+            single_step_sim = np.concatenate([ego_centroid, ego_next_step_sim])
+
+            trajectories.append(TrajectoryVisualization(xs=single_step_sim[:, 0], ys=single_step_sim[:, 1],
+                                                        color="green", legend_label="ego_simulated (10x scale)",
+                                                        track_id=-1))
+            trajectories.append(TrajectoryVisualization(xs=single_step_replay[:, 0], ys=single_step_replay[:, 1],
+                                                        color="yellow", legend_label="ego_replay (10x scale)",
+                                                        track_id=-1))
 
         if has_agents_info:
             agents_in_out = agents_ins_outs[frame_idx]

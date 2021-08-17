@@ -47,12 +47,22 @@ class UnrollInputOutput(NamedTuple):
     outputs: Dict[str, np.ndarray]
 
 
-class SimulationOutput:
+class ClosedLoopSimulatorModes(IntEnum):
+    """Defines the different modes for which the closed loop simulator can be used.
+
+    :param L5KIT: the index for using closed loop simulator for L5Kit environment
+    :param GYM: the index for using closed loop simulator for Gym environment
+    """
+    L5KIT = 0
+    GYM = 1
+
+
+class SimulationOutputCLE:
     def __init__(self, scene_id: int, sim_dataset: SimulationDataset,
                  ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]],
                  agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]]):
         """This object holds information about the result of the simulation loop
-        for a given scene dataset
+        for a given scene dataset for close loop evaluation.
 
         :param scene_id: the scene indices
         :param sim_dataset: the simulation dataset
@@ -63,13 +73,13 @@ class SimulationOutput:
             raise ValueError(f"scene: {scene_id} not in sim datasets: {sim_dataset.scene_dataset_batch}")
 
         self.scene_id = scene_id
-        self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
-        self.simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
+        recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
+        simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
 
-        self.simulated_agents = self.simulated_dataset.dataset.agents
-        self.recorded_agents = self.recorded_dataset.dataset.agents
-        self.recorded_ego = self.recorded_dataset.dataset.frames
-        self.simulated_ego = self.simulated_dataset.dataset.frames
+        self.simulated_agents = simulated_dataset.dataset.agents
+        self.recorded_agents = recorded_dataset.dataset.agents
+        self.recorded_ego = recorded_dataset.dataset.frames
+        self.simulated_ego = simulated_dataset.dataset.frames
 
         self.simulated_ego_states = self.build_trajectory_states(self.simulated_ego)
         self.recorded_ego_states = self.build_trajectory_states(self.recorded_ego)
@@ -106,12 +116,33 @@ class SimulationOutput:
         return trajectory_states
 
 
+class SimulationOutput(SimulationOutputCLE):
+    def __init__(self, scene_id: int, sim_dataset: SimulationDataset,
+                 ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]],
+                 agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]]):
+        """This object holds information about the result of the simulation loop
+        for a given scene dataset for close loop evaluation and visualization
+
+        :param scene_id: the scene indices
+        :param sim_dataset: the simulation dataset
+        :param ego_ins_outs: all inputs and outputs for ego (each frame of each scene has only one)
+        :param agents_ins_outs: all inputs and outputs for agents (multiple per frame in a scene)
+        """
+
+        super(SimulationOutput, self).__init__(scene_id, sim_dataset, ego_ins_outs, agents_ins_outs)
+
+        # Useful for visualization
+        self.recorded_dataset = sim_dataset.recorded_scene_dataset_batch[scene_id]
+        self.simulated_dataset = sim_dataset.scene_dataset_batch[scene_id]
+
+
 class ClosedLoopSimulator:
     def __init__(self, sim_cfg: SimulationConfig, dataset: EgoDataset,
                  device: torch.device,
                  model_ego: Optional[torch.nn.Module] = None,
                  model_agents: Optional[torch.nn.Module] = None,
-                 keys_to_exclude: Tuple[str] = ("image",)):
+                 keys_to_exclude: Tuple[str] = ("image",),
+                 mode: int = ClosedLoopSimulatorModes.L5KIT):
         """
         Create a simulation loop object capable of unrolling ego and agents
         :param sim_cfg: configuration for unroll
@@ -120,12 +151,17 @@ class ClosedLoopSimulator:
         :param model_ego: the model to be used for ego
         :param model_agents: the model to be used for agents
         :param keys_to_exclude: keys to exclude from input/output (e.g. huge blobs)
+        :param mode: the framework that uses the closed loop simulator
         """
         self.sim_cfg = sim_cfg
-        if not sim_cfg.use_ego_gt and model_ego is None:
+        if not sim_cfg.use_ego_gt and model_ego is None and mode == ClosedLoopSimulatorModes.L5KIT:
             raise ValueError("ego model should not be None when simulating ego")
-        if not sim_cfg.use_agents_gt and model_agents is None:
+        if not sim_cfg.use_agents_gt and model_agents is None and mode == ClosedLoopSimulatorModes.L5KIT:
             raise ValueError("agents model should not be None when simulating agent")
+        if sim_cfg.use_ego_gt and mode == ClosedLoopSimulatorModes.GYM:
+            raise ValueError("ego has to be simulated when using gym environment")
+        if not sim_cfg.use_agents_gt and mode == ClosedLoopSimulatorModes.GYM:
+            raise ValueError("agents need be log-replayed when using gym environment")
 
         self.model_ego = torch.nn.Sequential().to(device) if model_ego is None else model_ego.to(device)
         self.model_agents = torch.nn.Sequential().to(device) if model_agents is None else model_agents.to(device)

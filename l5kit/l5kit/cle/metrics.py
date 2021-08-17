@@ -8,7 +8,7 @@ from l5kit.data import get_agents_slice_from_frames
 from l5kit.evaluation import error_functions
 from l5kit.evaluation import metrics as l5metrics
 from l5kit.rasterization import EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH
-from l5kit.simulation.unroll import SimulationOutput, TrajectoryStateIndices
+from l5kit.simulation.unroll import SimulationOutputCLE, TrajectoryStateIndices
 
 
 class SupportsMetricCompute(Protocol):
@@ -16,7 +16,7 @@ class SupportsMetricCompute(Protocol):
     metric_name: str
 
     @abstractmethod
-    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
         """The compute method sould return the result of the metric
         computed at every frame of the scene.
 
@@ -57,7 +57,7 @@ class CollisionMetricBase(ABC):
 
         return 0.0
 
-    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
         """Compute the metric on all frames of the scene.
 
         :param simulation_output: the output from the closed-loop simulation
@@ -117,7 +117,7 @@ class DisplacementErrorMetric(SupportsMetricCompute):
     def __init__(self, error_function: error_functions.ErrorFunction) -> None:
         self.error_function = error_function
 
-    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
         """Compute the metric on all frames of the scene.
 
         :param simulation_output: the output from the closed-loop simulation
@@ -167,7 +167,7 @@ class DistanceToRefTrajectoryMetric(SupportsMetricCompute):
 
         self.scene_fraction = scene_fraction
 
-    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
         """Compute the metric on all frames of the scene.
 
         :param simulation_output: the output from the closed-loop simulation
@@ -198,7 +198,7 @@ class SimulatedDrivenMilesMetric:
     metric_name = "simulated_driven_miles"
     METER_TO_MILES = 0.000621371
 
-    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
         """Compute the metric on all frames of the scene.
 
         :param simulation_output: the output from the closed-loop simulation
@@ -221,7 +221,7 @@ class ReplayDrivenMilesMetric:
     metric_name = "replay_driven_miles"
     METER_TO_MILES = 0.000621371
 
-    def compute(self, simulation_output: SimulationOutput) -> torch.Tensor:
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
         """Compute the metric on all frames of the scene.
 
         :param simulation_output: the output from the closed-loop simulation
@@ -237,3 +237,42 @@ class ReplayDrivenMilesMetric:
         pad_drive_meters = torch.cat((pad, drive_meters))
         driven_miles = pad_drive_meters * self.METER_TO_MILES
         return driven_miles
+
+
+class YawErrorMetric(SupportsMetricCompute):
+    """Yaw error computes the difference between the
+    simulated trajectory yaw and the observed trajectory yaw.
+
+    :param error_function: error function to compute distance
+    """
+    metric_name = "yaw_error"
+
+    def __init__(self, error_function: error_functions.ErrorFunction = error_functions.closest_angle_error) -> None:
+        self.error_function = error_function
+
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
+        """Compute the metric on all frames of the scene.
+
+        :param simulation_output: the output from the closed-loop simulation
+        :returns: distance per frame [Shape: N, where N = timesteps]
+        """
+        simulated_scene_ego_state = simulation_output.simulated_ego_states
+        simulated_yaws = simulated_scene_ego_state[:, 2:3]  # [Timesteps,]
+        observed_ego_yaws = simulation_output.recorded_ego_states[:, 2:3]  # [Timesteps,]
+
+        if len(observed_ego_yaws) < len(simulated_yaws):
+            raise ValueError("More simulated timesteps than observed.")
+
+        # Don't have simulation for all steps, have to clip it
+        observed_ego_yaws_fraction = observed_ego_yaws[:len(simulated_yaws)]
+
+        error = self.error_function(simulated_yaws, observed_ego_yaws_fraction)
+        return error
+
+
+class YawErrorCAMetric(YawErrorMetric):
+    """Yaw error calculated with closest angle."""
+    metric_name = "yaw_error_closest_angle"
+
+    def __init__(self) -> None:
+        super().__init__(error_functions.closest_angle_error)

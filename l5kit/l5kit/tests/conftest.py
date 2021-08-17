@@ -14,26 +14,33 @@ from l5kit.rasterization import build_rasterizer
 
 @pytest.fixture(scope="session")
 def dmg() -> LocalDataManager:
-    """
-    Get a data manager for the artefacts folder.
+    """Get a data manager for the artefacts folder.
     Note: the scope of this fixture is "session"-> only one is created regardless the number of the tests
 
-    Returns:
-        LocalDataManager: the data manager object
+    :return: the data manager object
     """
     return LocalDataManager("./l5kit/tests/artefacts/")
 
 
 @pytest.fixture(scope="function")
 def cfg() -> dict:
-    """
-    Get a config file from artefacts
-        Note: the scope of this fixture is "function"-> one per test function
+    """Get a config file from artefacts.
+    Note: the scope of this fixture is "function"-> one per test function
 
-    Returns:
-        dict: the config python dict
+    :return: the config python dict
     """
     return load_config_data("./l5kit/tests/artefacts/config.yaml")
+
+
+@pytest.fixture(scope="session")
+def env_cfg_path() -> str:
+    """Get a L5 environment config file from artefacts.
+    Note: the scope of this fixture is "session"-> one per test session
+
+    :return: the L5Kit gym-compatible environment config python dict
+    """
+    env_cfg_path = "./l5kit/tests/artefacts/gym_config.yaml"
+    return env_cfg_path
 
 
 @pytest.fixture(scope="session")
@@ -64,8 +71,7 @@ def ego_cat_dataset(cfg: dict, dmg: LocalDataManager, zarr_cat_dataset: ChunkedD
 
 @pytest.fixture(scope="session", autouse=True)
 def clean_mask(zarr_dataset: ChunkedDataset) -> Iterator[None]:
-    """
-    Auto clean agents_mask for artefacts during tests tear down
+    """Auto clean agents_mask for artefacts during tests tear down
     """
     agents_mask_path = Path(zarr_dataset.path) / "agents_mask"
     if agents_mask_path.exists():

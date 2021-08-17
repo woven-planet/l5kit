@@ -32,7 +32,8 @@ setup(
         "ipywidgets",
         "shapely",
         "typing_extensions",
-        "bokeh"
+        "bokeh",
+        "gym"
     ],
     extras_require={
         "dev": ["pytest", "mypy", "types-PyYAML", "setuptools", "twine", "wheel", "pytest-cov",

@@ -14,6 +14,7 @@ recommonmark = "*"
 pre-commit = "*"
 importlib-metadata = "*"  # required for python 3.8
 typing-extensions = "*"
+types-pyyaml = "*"
 
 [packages]
 l5kit = {editable = true, path = "."}
@@ -37,3 +38,4 @@ shapely = "*"
 bokeh = "*"
 sphinx-press-theme = "*"
 types-pyyaml = "*"
+stable-baselines3 = {extras = ["extra"], version = "*"}
