@@ -3,6 +3,14 @@ Changelog
 In this section you'll find information about what's new in the newer
 releases of L5Kit.
 
+Release v.1.4.0 `(18 Aug 2021)`
+-------------------------------------------------------------------------------
+    * Added L5Kit gym-compatible environment;
+    * Added unicycle kinematic model;
+    * Added metric sets for closed loop evaluation;
+    * Updated the structure and style of L5Kit documentation;
+    * Small refactoring of closed loop simulator;
+
 Release v.1.3.1 `(8 Jun 2021)`
 -------------------------------------------------------------------------------
     * Hot-fix to add the visualizer package in the release wheel;
