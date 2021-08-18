@@ -25,6 +25,11 @@ Table of Contents
 ===============================================================================
 
    .. toctree::
+      :maxdepth: 2
+
+      changelog
+
+   .. toctree::
       :maxdepth: 1
 
       intro_index
