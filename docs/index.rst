@@ -12,6 +12,7 @@ L5Kit is a Python library with functionality for the development and training of
 News
 -------------------------------------------------------------------------------
 
+* **08-20-2021**: We've just released a new notebook tutorial describing our :ref:`L5Kit gym-compatible environment <reinforcement>`!
 * **04-16-2021**: We've just released a new notebook tutorial for the :ref:`ML simulation task <simulation>`!
 * **12-03-2020**: We've just released a series of notebooks to train and evaluate an :ref:`ML planning model <planning>`. We've also included pre-trained models!
 * **11-26-2020**: `2020 Kaggle Lyft Motion Prediction for Autonomous Vehicles Competition <https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview>`_ ended. We had more than 900 teams taking part in it!
