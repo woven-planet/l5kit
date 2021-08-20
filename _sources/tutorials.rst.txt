@@ -7,3 +7,4 @@ Tutorials
     prediction.rst
     planning.rst
     simulation.rst
+    reinforcement.rst
