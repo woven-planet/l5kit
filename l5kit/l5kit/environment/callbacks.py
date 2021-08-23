@@ -1,9 +1,10 @@
 from typing import List, Optional
 
-from stable_baselines3.common.callbacks import BaseCallback, CallbackList, CheckpointCallback
+import gym
+from stable_baselines3.common.callbacks import BaseCallback, CallbackList, CheckpointCallback, EvalCallback
 
 
-def get_callback_list(output_prefix: str, n_envs: int, save_freq: int = 50000,
+def get_callback_list(eval_env: gym.Env, output_prefix: str, n_envs: int, save_freq: int = 50000,
                       ckpt_prefix: Optional[str] = None) -> CallbackList:
     """ Generate the callback list to be used during model training in L5Kit gym.
 
@@ -31,6 +32,10 @@ def get_callback_list(output_prefix: str, n_envs: int, save_freq: int = 50000,
     # Save Model Config
     log_callback = LoggingCallback(output_prefix)
     callback_list.append(log_callback)
+
+    # Eval Model Config
+    eval_callback = EvalCallback(eval_env, eval_freq=(save_freq // n_envs), n_eval_episodes=1000)
+    callback_list.append(eval_callback)
 
     callback = CallbackList(callback_list)
     return callback

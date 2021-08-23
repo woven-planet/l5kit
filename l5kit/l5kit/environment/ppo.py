@@ -1,6 +1,5 @@
 import argparse
 import os
-import time
 
 import gym
 from stable_baselines3 import PPO
@@ -15,79 +14,69 @@ from l5kit.environment.monitor_utils import monitor_env
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('--output_prefix', required=True, type=str,
-                        help='Output prefix for tracking model outputs during training')
-    parser.add_argument('--data_path', type=str, default='/level5_data/',
-                        help='Environment configuration file')
-    parser.add_argument('--disable_cle', action='store_true',
-                        help='Flag to disable close loop environment')
-    parser.add_argument('--save_freq', default=50000, type=int,
-                        help='Frequency to save model states')
-    parser.add_argument('--n_envs', default=4, type=int,
-                        help='Number of parallel environments')
-    parser.add_argument('--eps_length', default=32, type=int,
-                        help='Number of time steps')
+    parser.add_argument('-d', '--data', type=str, required=True,
+                        help='Path to L5Kit data')
+    parser.add_argument('--config', type=str, required=True,
+                        help='Path to L5Kit environment config file')
+    parser.add_argument('-o', '--output', required=True, type=str,
+                        help='Output file for saving model states')
+    parser.add_argument('--load', type=str,
+                        help='Path to load model and continue training')
+    parser.add_argument('--tb_log', default=None, type=str,
+                        help='Tensorboard log folder')
+    parser.add_argument('--ckpt_prefix', default=None, type=str,
+                        help='Ckpt prefix for saving model')
+    parser.add_argument('--save_freq', default=100000, type=int,
+                        help='Frequency to save model state')
+    parser.add_argument('--eval_freq', default=100000, type=int,
+                        help='Frequency to evaluate model state')
+    parser.add_argument('--n_eval_episodes', default=10, type=int,
+                        help='Number of episodes to evaluate')
     parser.add_argument('--n_steps', default=1000000, type=int,
-                        help='Number of time steps')
+                        help='Total number of training time steps')
     parser.add_argument('--num_rollout_steps', default=256, type=int,
-                        help='Number of rollout steps per update')
+                        help='Number of rollout steps per environment per model update')
     parser.add_argument('--n_epochs', default=10, type=int,
-                        help='Number of model epochs per update')
+                        help='Number of model training epochs per update')
     parser.add_argument('--batch_size', default=64, type=int,
                         help='Mini batch size of model update')
     parser.add_argument('--gamma', default=0.95, type=float,
                         help='Discount factor')
     parser.add_argument('--gae_lambda', default=0.95, type=float,
-                        help='Discount factor')
-    parser.add_argument('--tb_log', default=None, type=str,
-                        help='Tensorboard Log folder')
-    parser.add_argument('--eval', action='store_true',
-                        help='Eval model at end of training')
-    parser.add_argument('--ckpt_prefix', default=None, type=str,
-                        help='Ckpt prefix for saving model')
-    parser.add_argument('--device', default="auto", type=str,
-                        help='Device for running model')
-    parser.add_argument('--rew_clip', default=15, type=float,
-                        help='Reward Clipping Threshold')
-    parser.add_argument('--kinematic', action='store_true',
-                        help='Use kinematic model')
+                        help='Factor for trade-off of bias vs variance for Generalized Advantage Estimator')
     parser.add_argument('--clip_start_val', default=0.2, type=float,
-                        help='Start value of clip in PPO')
+                        help='Start value of clipping in PPO')
     parser.add_argument('--clip_end_val', default=0.001, type=float,
-                        help='End value of clip in PPO')
+                        help='End value of clipping in PPO')
+    parser.add_argument('--clip_progress_ratio', default=1.0, type=float,
+                        help='Training progress ratio to end linear schedule of clipping')
     parser.add_argument('--model_arch', default='simple', type=str,
                         help='Model architecture of feature extractor')
-    parser.add_argument('--load_model_path', type=str,
-                        help='Path to load model and continue training')
-    parser.add_argument('--clip_range_vf', default=None, type=float,
-                        help='Clip value of value function in PPO')
-    parser.add_argument('--clip_progress_ratio', default=1.0, type=float,
-                        help='Clip progress for linear schedule')
+    parser.add_argument('--n_envs', default=4, type=int,
+                        help='Number of parallel environments')
+    parser.add_argument('--eps_length', default=32, type=int,
+                        help='Episode length of gym rollouts')
+    parser.add_argument('--rew_clip', default=15, type=float,
+                        help='Reward clipping threshold')
+    parser.add_argument('--kinematic', action='store_true',
+                        help='Flag to use kinematic model in the environment')
     parser.add_argument('--seed', default=42, type=int)
     args = parser.parse_args()
 
-    # By setting the L5KIT_DATA_FOLDER variable, we can point the script to the folder where the data lies.
-    # The path to 'l5_data_path' needs to be provided
-    os.environ["L5KIT_DATA_FOLDER"] = os.environ["HOME"] + args.data_path
-
     # Extra info keywords to monitor in addition to tensorboard logs
     info_keywords = ("reward_tot", "reward_dist", "reward_yaw")
-    monitor_dir = 'monitor_logs/{}'.format(args.output_prefix)
+    monitor_dir = 'monitor_logs/{}'.format(args.output)
     monitor_kwargs = {'info_keywords': info_keywords}
 
-    env_config_path = '../../../examples/RL/config.yaml'
-    # make gym env
-    if args.n_envs == 1:
-        print("Using 1 envt")
-        env = gym.make("L5-CLE-v0", env_config_path=env_config_path,
-                       use_kinematic=args.kinematic)
-        env = monitor_env(env, monitor_dir, monitor_kwargs)
+    args.config = '../../../examples/RL/config.yaml'
+    os.environ["L5KIT_DATA_FOLDER"] = os.environ["HOME"] + '/level5_data/'
 
-    # custom wrap env into VecEnv
+    # make train env
+    if args.n_envs == 1:
+        env = gym.make("L5-CLE-v0", env_config_path=args.config, use_kinematic=args.kinematic)
+        env = monitor_env(env, monitor_dir, monitor_kwargs)
     else:
-        print(f"Using {args.n_envs} parallel envts")
-        env_kwargs = {'env_config_path': env_config_path,
-                      'use_kinematic': args.kinematic}
+        env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'train': True}
         env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs, n_envs=args.n_envs,
                            vec_env_cls=SubprocVecEnv, vec_env_kwargs=dict(start_method='fork'),
                            monitor_dir=monitor_dir, monitor_kwargs=monitor_kwargs)
@@ -101,30 +90,23 @@ if __name__ == "__main__":
 
     # define model
     clip_schedule = get_linear_fn(args.clip_start_val, args.clip_end_val, args.clip_progress_ratio)
-    if args.load_model_path is not None:
+    if args.load is not None:
         print("Loading Model......")
-        model = PPO.load(args.load_model_path, env, clip_range=clip_schedule)
-        # _ = model.env.reset()  # Else, error thrown to reset the environment
-        # reset_num_timesteps = False
-        reset_num_timesteps = True
+        model = PPO.load(args.load, env, clip_range=clip_schedule)
     else:
         print("Creating Model.....")
         model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, n_steps=args.num_rollout_steps,
                     learning_rate=3e-4, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
-                    device=args.device, clip_range=clip_schedule, clip_range_vf=args.clip_range_vf,
-                    batch_size=args.batch_size, seed=args.seed, gae_lambda=args.gae_lambda)
-        reset_num_timesteps = True
+                    clip_range=clip_schedule, batch_size=args.batch_size, seed=args.seed, gae_lambda=args.gae_lambda)
 
-    # make eval env at start itself
-    print("Creating Eval env.....")
-    eval_env = gym.make("L5-CLE-v0", env_config_path=env_config_path,
-                        use_kinematic=args.kinematic, return_info=True)
-    model.eval_env = eval_env
+    # make eval env
+    eval_env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'train': False,
+                       'return_info': True}
+    eval_env = make_vec_env("L5-CLE-v0", env_kwargs=eval_env_kwargs, n_envs=4,
+                            vec_env_cls=SubprocVecEnv, vec_env_kwargs=dict(start_method='fork'))
 
     # init callback list
-    callback = get_callback_list(args.output_prefix, args.n_envs, args.save_freq)
+    callback = get_callback_list(eval_env, args.output, args.n_envs, args.save_freq)
 
     # train
-    start = time.time()
-    model.learn(args.n_steps, callback=callback, reset_num_timesteps=reset_num_timesteps)
-    print("Training Time: ", time.time() - start)
+    model.learn(args.n_steps, callback=callback)
