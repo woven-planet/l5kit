@@ -4,6 +4,7 @@ from typing import List, Optional
 
 import gym
 from stable_baselines3.common.base_class import BaseAlgorithm
+from stable_baselines3.common.vec_env import SubprocVecEnv
 
 from l5kit.environment.envs.l5_env import EpisodeOutputGym, L5Env
 
@@ -57,27 +58,43 @@ def rollout_multiple_scenes(model: BaseAlgorithm, env: gym.Env, indices: List[in
 
     return sim_outs
 
+
 def benchmark_scene_rollouts(model: BaseAlgorithm, env: gym.Env, num_scenes: int = 80) -> None:
-    """Benchmarks the time to rollout fixed number of scenes using a particular model and given environment. 
+    """Benchmarks the time to rollout fixed number of scenes using a particular model and given environment.
 
     :param model: the policy that predicts actions during the rollout
     :param env: the gym environment
     :param num_scenes: the number of scenes to rollout
     """
-
     num_scenes_rolled_out = 0
     start = time.time()
     obs = env.reset()
-    dummy_action, _ = model.predict(obs, deterministic=True)
-    it = 0
-    while True:
-        # action, _ = model.predict(obs, deterministic=True)
-        # obs, _, done, info = env.step(action)
-        obs, _, done, info = env.step(dummy_action)
+    # import collections
+    # import numpy as np
+    # dummy_action, _ = model.predict(obs, deterministic=True)
+    # SubProc
+    # n_envs = len(obs["image"])
+    # dummy_action = np.array([[0., 0., 0.]]).repeat(n_envs, axis=0)
+    # dummy_obs = collections.OrderedDict([("image", np.zeros((n_envs, 15, 224, 224)))])
+    # Sequential
+    # dummy_action = np.array([0., 0., 0.])
+    # dummy_obs = collections.OrderedDict([("image", np.zeros((15, 224, 224)))])
 
-        try:
+    while True:
+        # Full Rollout
+        action, _ = model.predict(obs, deterministic=True)
+        obs, _, done, info = env.step(action)
+
+        # Dummy Action (No Forward Pass)
+        # obs, _, done, info = env.step(dummy_action)
+
+        # Dummy Obs (IPC)
+        # _, _ = model.predict(dummy_obs, deterministic=True)
+        # obs, _, done, info = env.step(dummy_action)
+
+        if isinstance(env, SubprocVecEnv):
             num_scenes_rolled_out += sum(done)
-        except:
+        else:
             num_scenes_rolled_out += int(done)
             if int(done):
                 obs = env.reset()
