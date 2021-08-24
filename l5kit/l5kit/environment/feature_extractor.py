@@ -28,21 +28,9 @@ class CustomFeatureExtractor(BaseFeaturesExtractor):
         else:
             raise NotImplementedError
 
-        extractors = {}
-        total_concat_size = 0
-        # We need to know size of the output of this extractor,
-        # so go over all the spaces and compute output feature sizes
-        for key, subspace in observation_space.spaces.items():
-            if key == "image":
-                extractors[key] = model
-                total_concat_size += features_dim
-            elif key == "vector":
-                raise NotImplementedError("No vector attribute in observation space")
-
+        extractors = {"image": model}
         self.extractors = nn.ModuleDict(extractors)
-
-        # Update the features dim manually
-        self._features_dim = total_concat_size
+        self._features_dim = features_dim
 
     def forward(self, observations: gym.spaces.Dict) -> torch.Tensor:
         encoded_tensor_list = []
