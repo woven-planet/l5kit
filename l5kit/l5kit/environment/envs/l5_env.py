@@ -43,7 +43,7 @@ class SimulationConfigGym(SimulationConfig):
     distance_th_far: float = 30.0
     distance_th_close: float = 15.0
     start_frame_idx: int = 0
-    num_simulation_steps: int = 33
+    num_simulation_steps: Optional[int] = 33
 
 
 class EpisodeOutputGym(SimulationOutputCLE):

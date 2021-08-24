@@ -11,12 +11,11 @@ from l5kit.environment.callbacks import get_callback_list
 from l5kit.environment.feature_extractor import CustomFeatureExtractor
 from l5kit.environment.monitor_utils import monitor_env
 
+os.environ["L5KIT_DATA_FOLDER"] = os.environ["HOME"] + '/level5_data/'
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument('-d', '--data', type=str, required=True,
-                        help='Path to L5Kit data')
-    parser.add_argument('--config', type=str, required=True,
+    parser.add_argument('--config', type=str, default='../../../examples/RL/config.yaml',
                         help='Path to L5Kit environment config file')
     parser.add_argument('-o', '--output', required=True, type=str,
                         help='Output file for saving model states')
@@ -67,9 +66,6 @@ if __name__ == "__main__":
     info_keywords = ("reward_tot", "reward_dist", "reward_yaw")
     monitor_dir = 'monitor_logs/{}'.format(args.output)
     monitor_kwargs = {'info_keywords': info_keywords}
-
-    args.config = '../../../examples/RL/config.yaml'
-    os.environ["L5KIT_DATA_FOLDER"] = os.environ["HOME"] + '/level5_data/'
 
     # make train env
     if args.n_envs == 1:
