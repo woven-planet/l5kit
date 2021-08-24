@@ -13,7 +13,7 @@ from l5kit.environment.feature_extractor import CustomFeatureExtractor
 os.environ["L5KIT_DATA_FOLDER"] = "/tmp/l5kit_data"
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
-os.environ["L5KIT_DATA_FOLDER"] = os.environ["HOME"] + '/level5_data/'
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
