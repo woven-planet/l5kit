@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-      <title>l5kit.environment.gym_metric_set module</title>
+      <title>l5kit.environment.feature_extractor module</title>
     
           <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
           <link rel="stylesheet" href="../_static/theme.css " type="text/css" />
@@ -23,8 +23,8 @@
     
   <link rel="index" title="Index" href="../genindex.html" />
   <link rel="search" title="Search" href="../search.html" />
-  <link rel="next" title="l5kit.environment.kinematic_model module" href="l5kit.environment.kinematic_model.html" />
-  <link rel="prev" title="l5kit.environment.feature_extractor module" href="l5kit.environment.feature_extractor.html" /> 
+  <link rel="next" title="l5kit.environment.gym_metric_set module" href="l5kit.environment.gym_metric_set.html" />
+  <link rel="prev" title="l5kit.environment.envs.l5_env module" href="l5kit.environment.envs.l5_env.html" /> 
   </head>
 
   <body>
@@ -379,18 +379,18 @@
     
       <li><a href="l5kit.environment.html">l5kit.environment package</a> &raquo;</li>
     
-    <li>l5kit.environment.gym_metric_set module</li>
+    <li>l5kit.environment.feature_extractor module</li>
   </ul>
   
 
   <ul class="page-nav">
   <li class="prev">
-    <a href="l5kit.environment.feature_extractor.html"
-       title="previous chapter">← l5kit.environment.feature_extractor module</a>
+    <a href="l5kit.environment.envs.l5_env.html"
+       title="previous chapter">← l5kit.environment.envs.l5_env module</a>
   </li>
   <li class="next">
-    <a href="l5kit.environment.kinematic_model.html"
-       title="next chapter">l5kit.environment.kinematic_model module →</a>
+    <a href="l5kit.environment.gym_metric_set.html"
+       title="next chapter">l5kit.environment.gym_metric_set module →</a>
   </li>
 </ul>
   
@@ -398,36 +398,40 @@
 <hr>
           <div class="content" role="main" v-pre>
             
-  <section id="module-l5kit.environment.gym_metric_set">
-<span id="l5kit-environment-gym-metric-set-module"></span><h1>l5kit.environment.gym_metric_set module<a class="headerlink" href="#module-l5kit.environment.gym_metric_set" title="Permalink to this headline">¶</a></h1>
+  <section id="module-l5kit.environment.feature_extractor">
+<span id="l5kit-environment-feature-extractor-module"></span><h1>l5kit.environment.feature_extractor module<a class="headerlink" href="#module-l5kit.environment.feature_extractor" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
-<dt class="sig sig-object py" id="l5kit.environment.gym_metric_set.L2DisplacementYawMetricSet">
-<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.environment.gym_metric_set.</span></span><span class="sig-name descname"><span class="pre">L2DisplacementYawMetricSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric_prefix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'L2DisplacementYaw'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.environment.gym_metric_set.L2DisplacementYawMetricSet" title="Permalink to this definition">¶</a></dt>
-<dd><p>Bases: <a class="reference internal" href="l5kit.cle.metric_set.html#l5kit.cle.metric_set.L5MetricSet" title="l5kit.cle.metric_set.L5MetricSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metric_set.L5MetricSet</span></code></a></p>
-<p>This class is responsible for computing a set of metric parametrization
-for the L5Kit Gym-compatible environment. The metrics in this class comprise
-L2 displacement error for the (x, y) coordinates and closest-angle error for the yaw.</p>
+<dt class="sig sig-object py" id="l5kit.environment.feature_extractor.CustomFeatureExtractor">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.environment.feature_extractor.</span></span><span class="sig-name descname"><span class="pre">CustomFeatureExtractor</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observation_space</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">gym.spaces.dict.Dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">features_dim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">model_arch</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'simple_gn'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.environment.feature_extractor.CustomFeatureExtractor" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">stable_baselines3.common.torch_layers.BaseFeaturesExtractor</span></code></p>
+<p>Custom feature extractor from raster images for the RL Policy.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>metric_prefix</strong> – this is a prefix that will identify the metric set being used.</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>observation_space</strong> – the input observation space</p></li>
+<li><p><strong>features_dim</strong> – the number of features to extract from the input</p></li>
+<li><p><strong>model_arch</strong> – the model architecture used to extract the features</p></li>
+</ul>
 </dd>
 </dl>
 <dl class="py method">
-<dt class="sig sig-object py" id="l5kit.environment.gym_metric_set.L2DisplacementYawMetricSet.build_metrics">
-<span class="sig-name descname"><span class="pre">build_metrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.cle.metrics.html#l5kit.cle.metrics.SupportsMetricCompute" title="l5kit.cle.metrics.SupportsMetricCompute"><span class="pre">l5kit.cle.metrics.SupportsMetricCompute</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.environment.gym_metric_set.L2DisplacementYawMetricSet.build_metrics" title="Permalink to this definition">¶</a></dt>
-<dd><p>Returns a list of metrics that will be computed.</p>
+<dt class="sig sig-object py" id="l5kit.environment.feature_extractor.CustomFeatureExtractor.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">observations</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">gym.spaces.dict.Dict</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.environment.feature_extractor.CustomFeatureExtractor.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Defines the computation performed at every call.</p>
+<p>Should be overridden by all subclasses.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Although the recipe for forward pass needs to be defined within
+this function, one should call the <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code> instance afterwards
+instead of this since the former takes care of running the
+registered hooks while the latter silently ignores them.</p>
+</div>
 </dd></dl>
 
 <dl class="py attribute">
-<dt class="sig sig-object py" id="l5kit.environment.gym_metric_set.L2DisplacementYawMetricSet.evaluator">
-<span class="sig-name descname"><span class="pre">evaluator</span></span><em class="property"><span class="pre">:</span> <a class="reference internal" href="l5kit.cle.closed_loop_evaluator.html#l5kit.cle.closed_loop_evaluator.ClosedLoopEvaluator" title="l5kit.cle.closed_loop_evaluator.ClosedLoopEvaluator"><span class="pre">l5kit.cle.closed_loop_evaluator.ClosedLoopEvaluator</span></a></em><a class="headerlink" href="#l5kit.environment.gym_metric_set.L2DisplacementYawMetricSet.evaluator" title="Permalink to this definition">¶</a></dt>
+<dt class="sig sig-object py" id="l5kit.environment.feature_extractor.CustomFeatureExtractor.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#l5kit.environment.feature_extractor.CustomFeatureExtractor.training" title="Permalink to this definition">¶</a></dt>
 <dd></dd></dl>
-
-<dl class="py attribute">
-<dt class="sig sig-object py" id="l5kit.environment.gym_metric_set.L2DisplacementYawMetricSet.metric_prefix">
-<span class="sig-name descname"><span class="pre">metric_prefix</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#l5kit.environment.gym_metric_set.L2DisplacementYawMetricSet.metric_prefix" title="Permalink to this definition">¶</a></dt>
-<dd><p>The prefix that will identify this metric</p>
-</dd></dl>
 
 </dd></dl>
 
@@ -438,12 +442,12 @@ L2 displacement error for the (x, y) coordinates and closest-angle error for the
           <div class="page-nav">
             <div class="inner"><ul class="page-nav">
   <li class="prev">
-    <a href="l5kit.environment.feature_extractor.html"
-       title="previous chapter">← l5kit.environment.feature_extractor module</a>
+    <a href="l5kit.environment.envs.l5_env.html"
+       title="previous chapter">← l5kit.environment.envs.l5_env module</a>
   </li>
   <li class="next">
-    <a href="l5kit.environment.kinematic_model.html"
-       title="next chapter">l5kit.environment.kinematic_model module →</a>
+    <a href="l5kit.environment.gym_metric_set.html"
+       title="next chapter">l5kit.environment.gym_metric_set module →</a>
   </li>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car).

@@ -1,0 +1,7 @@
+l5kit.environment.feature\_extractor module
+===========================================
+
+.. automodule:: l5kit.environment.feature_extractor
+   :members:
+   :undoc-members:
+   :show-inheritance:

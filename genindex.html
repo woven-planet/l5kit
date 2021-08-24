@@ -644,6 +644,8 @@
 </li>
       <li><a href="API/l5kit.simulation.unroll.html#l5kit.simulation.unroll.TrajectoryStateIndices.CURVATURE">CURVATURE (l5kit.simulation.unroll.TrajectoryStateIndices attribute)</a>
 </li>
+      <li><a href="API/l5kit.environment.feature_extractor.html#l5kit.environment.feature_extractor.CustomFeatureExtractor">CustomFeatureExtractor (class in l5kit.environment.feature_extractor)</a>
+</li>
       <li><a href="API/l5kit.rasterization.semantic_rasterizer.html#l5kit.rasterization.semantic_rasterizer.cv2_subpixel">cv2_subpixel() (in module l5kit.rasterization.semantic_rasterizer)</a>
 </li>
       <li><a href="API/l5kit.visualization.visualizer.common.html#l5kit.visualization.visualizer.common.CWVisualization">CWVisualization (class in l5kit.visualization.visualizer.common)</a>
@@ -810,10 +812,10 @@
         <li><a href="API/l5kit.data.filter.html#l5kit.data.filter.filter_tl_faces_by_status">(in module l5kit.data.filter)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.final_displacement_error_mean">final_displacement_error_mean() (in module l5kit.evaluation.metrics)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.final_displacement_error_oracle">final_displacement_error_oracle() (in module l5kit.evaluation.metrics)</a>
 </li>
       <li><a href="API/l5kit.kinematic.html#l5kit.kinematic.fit_ackerman_model_approximate">fit_ackerman_model_approximate() (in module l5kit.kinematic)</a>
@@ -828,8 +830,12 @@
         <li><a href="API/l5kit.kinematic.ackerman_steering_model.html#l5kit.kinematic.ackerman_steering_model.fit_ackerman_model_exact">(in module l5kit.kinematic.ackerman_steering_model)</a>
 </li>
       </ul></li>
-      <li><a href="API/l5kit.planning.model.html#l5kit.planning.model.PlanningModel.forward">forward() (l5kit.planning.model.PlanningModel method)</a>
+      <li><a href="API/l5kit.environment.feature_extractor.html#l5kit.environment.feature_extractor.CustomFeatureExtractor.forward">forward() (l5kit.environment.feature_extractor.CustomFeatureExtractor method)</a>
+
+      <ul>
+        <li><a href="API/l5kit.planning.model.html#l5kit.planning.model.PlanningModel.forward">(l5kit.planning.model.PlanningModel method)</a>
 </li>
+      </ul></li>
       <li><a href="API/l5kit.cle.validators.html#l5kit.cle.validators.FailedFrame.frame_index">frame_index (l5kit.cle.validators.FailedFrame attribute)</a>
 </li>
       <li><a href="API/l5kit.visualization.visualizer.common.html#l5kit.visualization.visualizer.common.FrameVisualization">FrameVisualization (class in l5kit.visualization.visualizer.common)</a>
@@ -1352,6 +1358,13 @@
 </li>
       </ul></li>
       <li>
+    l5kit.environment.feature_extractor
+
+      <ul>
+        <li><a href="API/l5kit.environment.feature_extractor.html#module-l5kit.environment.feature_extractor">module</a>
+</li>
+      </ul></li>
+      <li>
     l5kit.environment.gym_metric_set
 
       <ul>
@@ -1363,6 +1376,13 @@
 
       <ul>
         <li><a href="API/l5kit.environment.kinematic_model.html#module-l5kit.environment.kinematic_model">module</a>
+</li>
+      </ul></li>
+      <li>
+    l5kit.environment.models
+
+      <ul>
+        <li><a href="API/l5kit.environment.models.html#module-l5kit.environment.models">module</a>
 </li>
       </ul></li>
       <li>
@@ -1442,6 +1462,8 @@
         <li><a href="API/l5kit.geometry.angle.html#module-l5kit.geometry.angle">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     l5kit.geometry.image
 
@@ -1449,8 +1471,6 @@
         <li><a href="API/l5kit.geometry.image.html#module-l5kit.geometry.image">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     l5kit.geometry.transform
 
@@ -1866,9 +1886,13 @@
 </li>
         <li><a href="API/l5kit.environment.envs.l5_env.html#module-l5kit.environment.envs.l5_env">l5kit.environment.envs.l5_env</a>
 </li>
+        <li><a href="API/l5kit.environment.feature_extractor.html#module-l5kit.environment.feature_extractor">l5kit.environment.feature_extractor</a>
+</li>
         <li><a href="API/l5kit.environment.gym_metric_set.html#module-l5kit.environment.gym_metric_set">l5kit.environment.gym_metric_set</a>
 </li>
         <li><a href="API/l5kit.environment.kinematic_model.html#module-l5kit.environment.kinematic_model">l5kit.environment.kinematic_model</a>
+</li>
+        <li><a href="API/l5kit.environment.models.html#module-l5kit.environment.models">l5kit.environment.models</a>
 </li>
         <li><a href="API/l5kit.environment.reward.html#module-l5kit.environment.reward">l5kit.environment.reward</a>
 </li>
@@ -2317,9 +2341,11 @@
 </li>
       <li><a href="API/l5kit.simulation.dataset.html#l5kit.simulation.dataset.SimulationConfig.show_info">show_info (l5kit.simulation.dataset.SimulationConfig attribute)</a>
 </li>
+      <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.CollisionType.SIDE">SIDE (l5kit.evaluation.metrics.CollisionType attribute)</a>
+</li>
   </ul></td>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="API/l5kit.evaluation.metrics.html#l5kit.evaluation.metrics.CollisionType.SIDE">SIDE (l5kit.evaluation.metrics.CollisionType attribute)</a>
+      <li><a href="API/l5kit.environment.models.html#l5kit.environment.models.SimpleCNN_GN">SimpleCNN_GN() (in module l5kit.environment.models)</a>
 </li>
       <li><a href="API/l5kit.cle.metrics.html#l5kit.cle.metrics.SimulatedDrivenMilesMetric">SimulatedDrivenMilesMetric (class in l5kit.cle.metrics)</a>
 </li>
@@ -2421,8 +2447,12 @@
         <li><a href="API/l5kit.visualization.visualizer.common.html#l5kit.visualization.visualizer.common.TrajectoryVisualization.track_id">(l5kit.visualization.visualizer.common.TrajectoryVisualization attribute)</a>
 </li>
       </ul></li>
-      <li><a href="API/l5kit.planning.model.html#l5kit.planning.model.PlanningModel.training">training (l5kit.planning.model.PlanningModel attribute)</a>
+      <li><a href="API/l5kit.environment.feature_extractor.html#l5kit.environment.feature_extractor.CustomFeatureExtractor.training">training (l5kit.environment.feature_extractor.CustomFeatureExtractor attribute)</a>
+
+      <ul>
+        <li><a href="API/l5kit.planning.model.html#l5kit.planning.model.PlanningModel.training">(l5kit.planning.model.PlanningModel attribute)</a>
 </li>
+      </ul></li>
       <li><a href="API/l5kit.visualization.visualizer.common.html#l5kit.visualization.visualizer.common.FrameVisualization.trajectories">trajectories (l5kit.visualization.visualizer.common.FrameVisualization attribute)</a>
 </li>
       <li><a href="API/l5kit.simulation.unroll.html#l5kit.simulation.unroll.TrajectoryStateIndices">TrajectoryStateIndices (class in l5kit.simulation.unroll)</a>
