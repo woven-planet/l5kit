@@ -9,10 +9,11 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 
 from l5kit.environment.feature_extractor import CustomFeatureExtractor
 
-
-os.environ["L5KIT_DATA_FOLDER"] = "/tmp/l5kit_data"
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
+# Please set the L5KIT_DATA_FOLDER environment variable
+if "L5KIT_DATA_FOLDER" not in os.environ:
+    raise KeyError("L5KIT_DATA_FOLDER environment variable not set")
 
 
 if __name__ == "__main__":
@@ -42,6 +43,8 @@ if __name__ == "__main__":
                         help='Number of model training epochs per update')
     parser.add_argument('--batch_size', default=64, type=int,
                         help='Mini batch size of model update')
+    parser.add_argument('--lr', default=3e-4, type=float,
+                        help='Learning rate')
     parser.add_argument('--gamma', default=0.95, type=float,
                         help='Discount factor')
     parser.add_argument('--gae_lambda', default=0.90, type=float,
@@ -54,8 +57,12 @@ if __name__ == "__main__":
                         help='Training progress ratio to end linear schedule of clipping')
     parser.add_argument('--model_arch', default='simple_gn', type=str,
                         help='Model architecture of feature extractor')
+    parser.add_argument('--features_dim', default=128, type=int,
+                        help='Output dimension of feature extractor')
     parser.add_argument('--n_envs', default=4, type=int,
                         help='Number of parallel environments')
+    parser.add_argument('--n_eval_envs', default=4, type=int,
+                        help='Number of parallel environments for evaluation')
     parser.add_argument('--eps_length', default=32, type=int,
                         help='Episode length of gym rollouts')
     parser.add_argument('--rew_clip', default=15, type=float,
@@ -73,7 +80,7 @@ if __name__ == "__main__":
     # Custom Feature Extractor backbone
     policy_kwargs = {
         "features_extractor_class": CustomFeatureExtractor,
-        "features_extractor_kwargs": {"features_dim": 128, "model_arch": args.model_arch},
+        "features_extractor_kwargs": {"features_dim": args.features_dim, "model_arch": args.model_arch},
         "normalize_images": False
     }
 
@@ -83,12 +90,12 @@ if __name__ == "__main__":
         model = PPO.load(args.load, env, clip_range=clip_schedule)
     else:
         model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, n_steps=args.num_rollout_steps,
-                    learning_rate=3e-4, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
+                    learning_rate=args.lr, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
                     clip_range=clip_schedule, batch_size=args.batch_size, seed=args.seed, gae_lambda=args.gae_lambda)
 
     # make eval env
     eval_env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'return_info': True}
-    eval_env = make_vec_env("L5-CLE-v0", env_kwargs=eval_env_kwargs, n_envs=4,
+    eval_env = make_vec_env("L5-CLE-v0", env_kwargs=eval_env_kwargs, n_envs=args.n_eval_envs,
                             vec_env_cls=SubprocVecEnv, vec_env_kwargs={"start_method": "fork"})
 
     # callbacks
