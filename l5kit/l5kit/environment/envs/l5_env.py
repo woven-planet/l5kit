@@ -142,8 +142,6 @@ class L5Env(gym.Env):
 
         # Simulator Config within Gym
         self.sim_cfg = sim_cfg if sim_cfg is not None else SimulationConfigGym()
-        assert self.sim_cfg.num_simulation_steps is not None
-        self.eps_length = self.sim_cfg.num_simulation_steps
         self.simulator = ClosedLoopSimulator(self.sim_cfg, self.dataset, device=torch.device("cpu"),
                                              mode=ClosedLoopSimulatorModes.GYM)
 
@@ -201,10 +199,12 @@ class L5Env(gym.Env):
         if self.reset_scene_id is not None:
             self.scene_index = self.reset_scene_id
 
-        # Select Frame ID
+        # Select Frame ID (within bounds of the scene)
         if self.randomize_start_frame:
-            assert self.eps_length < 240
-            self.sim_cfg.start_frame_index = self.np_random.randint(0, 240 - self.eps_length)
+            scene_length = len(self.dataset.get_scene_indices(self.scene_index))
+            self.eps_length = self.sim_cfg.num_simulation_steps or scene_length
+            end_frame = scene_length - self.eps_length
+            self.sim_cfg.start_frame_index = self.np_random.randint(0, end_frame + 1)
 
         # Prepare episode scene
         self.sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, [self.scene_index], self.sim_cfg)
