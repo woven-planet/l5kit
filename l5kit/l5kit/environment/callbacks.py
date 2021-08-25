@@ -1,10 +1,7 @@
-from typing import List
-
 import gym
 from stable_baselines3.common.callbacks import EvalCallback
 
 from l5kit.cle.validators import ValidationCountingAggregator
-from l5kit.environment.envs.l5_env import EpisodeOutputGym
 from l5kit.environment.gym_metric_set import DisplacementCollisionMetricSet
 
 
@@ -32,36 +29,34 @@ class L5KitEvalCallback(EvalCallback):
 
     def _on_step(self) -> bool:
         if self.eval_freq > 0 and self.n_calls % self.eval_freq == 0:
-            # Get episode outputs
-            episode_outputs = self.get_eval_info()
+            # Evaluate episode outputs
+            self.evaluate_scenes()
 
-            # Evaluate
-            self.metric_set.evaluator.evaluate(episode_outputs)
+            # Aggregate
             validation_results = self.metric_set.evaluator.validation_results()
-            _ = ValidationCountingAggregator().aggregate(validation_results)
+            agg = ValidationCountingAggregator().aggregate(validation_results)
 
-            # TODO Log the aggregated results
+            # Add to current Logger
+            assert self.logger is not None
+            for k, v in agg.items():
+                self.logger.record(f'eval/{k}', v.item())
 
-            # # Add to current Logger
-            # self.logger.record("eval/mean_reward", float(mean_reward))
-            # self.logger.record("eval/mean_ep_length", mean_ep_length)
+            # Dump log so the evaluation results are printed with the correct timestep
+            self.logger.record("time/total timesteps", self.num_timesteps, exclude="tensorboard")
+            self.logger.dump(self.num_timesteps)
 
-            # # Dump log so the evaluation results are printed with the correct timestep
-            # self.logger.record("time/total timesteps", self.num_timesteps, exclude="tensorboard")
-            # self.logger.dump(self.num_timesteps)
+            # reset
+            self.metric_set.reset()
 
         return True
 
-    def get_eval_info(self) -> List[EpisodeOutputGym]:
-        """Callback the episode outputs for `n_eval_episodes` episodes.
-
-        :return: the list of episode outputs
+    def evaluate_scenes(self) -> None:
+        """Evaluate the episode outputs for `n_eval_episodes` episodes.
         """
         assert self.model is not None
 
         obs = self.eval_env.reset()
         episodes_done = 0
-        episode_outputs: List[EpisodeOutputGym] = []
         while True:
             action, _ = self.model.predict(obs, deterministic=True)
             obs, _, done, info = self.eval_env.step(action)
@@ -69,7 +64,7 @@ class L5KitEvalCallback(EvalCallback):
             for idx in range(self.n_eval_envs):
                 if done[idx]:
                     episodes_done += 1
-                    episode_outputs.append(info[idx]["sim_outs"][0])
+                    self.metric_set.evaluate(info[idx]["sim_outs"])
 
                     if episodes_done == self.n_eval_episodes:
-                        return episode_outputs
+                        return
