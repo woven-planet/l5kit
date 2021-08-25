@@ -1,8 +1,11 @@
+from typing import Optional
+
 import gym
 from stable_baselines3.common.callbacks import EvalCallback
 
+from l5kit.cle.metric_set import L5MetricSet
 from l5kit.cle.validators import ValidationCountingAggregator
-from l5kit.environment.gym_metric_set import DisplacementCollisionMetricSet
+from l5kit.environment.gym_metric_set import CLEMetricSet
 
 
 class L5KitEvalCallback(EvalCallback):
@@ -11,18 +14,18 @@ class L5KitEvalCallback(EvalCallback):
     :param eval_env: The environment used for initialization
     :param n_eval_episodes: The number of episodes to test the agent
     :param eval_freq: Evaluate the agent every ``eval_freq`` call of the callback.
-    :param verbose:
     :param metric_set: computes a set of metric parametrization for the L5Kit environment
+    :param verbose:
     """
 
     def __init__(self, eval_env: gym.Env, eval_freq: int = 10000, n_eval_episodes: int = 10,
-                 n_eval_envs: int = 4, verbose: int = 0) -> None:
+                 n_eval_envs: int = 4, metric_set: Optional[L5MetricSet] = None, verbose: int = 0) -> None:
         super(L5KitEvalCallback, self).__init__(eval_env)
         self.eval_freq = eval_freq
         self.n_eval_episodes = n_eval_episodes
         self.n_eval_envs = n_eval_envs
         self.verbose = verbose
-        self.metric_set = DisplacementCollisionMetricSet()
+        self.metric_set = metric_set or CLEMetricSet()
 
     def _init_callback(self) -> None:
         pass

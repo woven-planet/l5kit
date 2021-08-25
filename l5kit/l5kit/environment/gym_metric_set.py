@@ -25,15 +25,15 @@ class L2DisplacementYawMetricSet(metric_set.L5MetricSet):
         ]
 
 
-class DisplacementCollisionMetricSet(metric_set.L5MetricSet):
+class CLEMetricSet(metric_set.L5MetricSet):
     """This class is responsible for computing a set of metric parametrization
     for the L5Kit Gym-compatible environment. The metrics in this class comprise
-    the displacement and collision related evaluation metrics of L5Kit.
+    the closed loop evaluation metrics of L5Kit.
 
     :param metric_prefix: this is a prefix that will identify the metric set being used.
     """
 
-    def __init__(self, metric_prefix: str = "DisplacementCollision") -> None:
+    def __init__(self, metric_prefix: str = "CLE") -> None:
         """Constructor method
         """
         super().__init__(metric_prefix)
