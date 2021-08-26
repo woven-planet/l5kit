@@ -401,6 +401,49 @@
   <section id="module-l5kit.environment.gym_metric_set">
 <span id="l5kit-environment-gym-metric-set-module"></span><h1>l5kit.environment.gym_metric_set module<a class="headerlink" href="#module-l5kit.environment.gym_metric_set" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
+<dt class="sig sig-object py" id="l5kit.environment.gym_metric_set.CLEMetricSet">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.environment.gym_metric_set.</span></span><span class="sig-name descname"><span class="pre">CLEMetricSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric_prefix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'CLE'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.environment.gym_metric_set.CLEMetricSet" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="l5kit.cle.metric_set.html#l5kit.cle.metric_set.L5MetricSet" title="l5kit.cle.metric_set.L5MetricSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metric_set.L5MetricSet</span></code></a></p>
+<p>This class is responsible for computing a set of metric parametrization
+for the L5Kit Gym-compatible environment. The metrics in this class comprise
+the closed loop evaluation metrics of L5Kit.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>metric_prefix</strong> – this is a prefix that will identify the metric set being used.</p>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.environment.gym_metric_set.CLEMetricSet.build_metrics">
+<span class="sig-name descname"><span class="pre">build_metrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.cle.metrics.html#l5kit.cle.metrics.SupportsMetricCompute" title="l5kit.cle.metrics.SupportsMetricCompute"><span class="pre">l5kit.cle.metrics.SupportsMetricCompute</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.environment.gym_metric_set.CLEMetricSet.build_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of metrics that will be computed.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.environment.gym_metric_set.CLEMetricSet.build_validators">
+<span class="sig-name descname"><span class="pre">build_validators</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.cle.validators.html#l5kit.cle.validators.SupportsMetricValidate" title="l5kit.cle.validators.SupportsMetricValidate"><span class="pre">l5kit.cle.validators.SupportsMetricValidate</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.environment.gym_metric_set.CLEMetricSet.build_validators" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of validators that will operate on the computed metrics.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="l5kit.environment.gym_metric_set.CLEMetricSet.evaluator">
+<span class="sig-name descname"><span class="pre">evaluator</span></span><em class="property"><span class="pre">:</span> <a class="reference internal" href="l5kit.cle.closed_loop_evaluator.html#l5kit.cle.closed_loop_evaluator.ClosedLoopEvaluator" title="l5kit.cle.closed_loop_evaluator.ClosedLoopEvaluator"><span class="pre">l5kit.cle.closed_loop_evaluator.ClosedLoopEvaluator</span></a></em><a class="headerlink" href="#l5kit.environment.gym_metric_set.CLEMetricSet.evaluator" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.environment.gym_metric_set.CLEMetricSet.get_validator_interventions">
+<span class="sig-name descname"><span class="pre">get_validator_interventions</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.environment.gym_metric_set.CLEMetricSet.get_validator_interventions" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns a list of validators that are considered an intervention.</p>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="l5kit.environment.gym_metric_set.CLEMetricSet.metric_prefix">
+<span class="sig-name descname"><span class="pre">metric_prefix</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><a class="headerlink" href="#l5kit.environment.gym_metric_set.CLEMetricSet.metric_prefix" title="Permalink to this definition">¶</a></dt>
+<dd><p>The prefix that will identify this metric</p>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="l5kit.environment.gym_metric_set.L2DisplacementYawMetricSet">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.environment.gym_metric_set.</span></span><span class="sig-name descname"><span class="pre">L2DisplacementYawMetricSet</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">metric_prefix</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">'L2DisplacementYaw'</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.environment.gym_metric_set.L2DisplacementYawMetricSet" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="l5kit.cle.metric_set.html#l5kit.cle.metric_set.L5MetricSet" title="l5kit.cle.metric_set.L5MetricSet"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metric_set.L5MetricSet</span></code></a></p>

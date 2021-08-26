@@ -20,6 +20,7 @@ Submodules
 .. toctree::
    :maxdepth: 4
 
+   l5kit.environment.callbacks
    l5kit.environment.feature_extractor
    l5kit.environment.gym_metric_set
    l5kit.environment.kinematic_model
