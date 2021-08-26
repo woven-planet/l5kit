@@ -8,6 +8,7 @@ from stable_baselines3.common.utils import get_linear_fn
 from stable_baselines3.common.vec_env import SubprocVecEnv
 
 from l5kit.environment.feature_extractor import CustomFeatureExtractor
+from l5kit.environment.callbacks import L5KitEvalCallback
 
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
@@ -107,8 +108,8 @@ if __name__ == "__main__":
                                              name_prefix=args.output)
 
     # Eval Model Periodically
-    eval_callback = EvalCallback(eval_env, eval_freq=(args.eval_freq // args.n_envs),
-                                 n_eval_episodes=args.n_eval_episodes)
+    eval_callback = L5KitEvalCallback(eval_env, eval_freq=(args.eval_freq // args.n_envs),
+                                      n_eval_episodes=args.n_eval_episodes, n_eval_envs=args.n_eval_envs)
 
     # train
     model.learn(args.n_steps, callback=[checkpoint_callback, eval_callback])

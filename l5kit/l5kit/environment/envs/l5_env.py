@@ -311,7 +311,7 @@ class L5Env(gym.Env):
 
         :return: Tuple of the action un-normalization parameters for kinematic model
         """
-        scene_ids = list(range(self.max_scene_id + 1)) if not self.overfit else [self.overfit_scene_id]
+        scene_ids = list(range(self.max_scene_id)) if not self.overfit else [self.overfit_scene_id]
         sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, scene_ids, self.sim_cfg)
         return calculate_kinematic_rescale_params(sim_dataset)
 
@@ -321,7 +321,7 @@ class L5Env(gym.Env):
 
         :return: Tuple of the action un-normalization parameters for non-kinematic model
         """
-        scene_ids = list(range(self.max_scene_id + 1)) if not self.overfit else [self.overfit_scene_id]
+        scene_ids = list(range(self.max_scene_id)) if not self.overfit else [self.overfit_scene_id]
         sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, scene_ids, self.sim_cfg)
         return calculate_non_kinematic_rescale_params(sim_dataset)
 
