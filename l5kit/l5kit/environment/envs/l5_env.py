@@ -22,8 +22,8 @@ from l5kit.simulation.unroll import (ClosedLoopSimulator, ClosedLoopSimulatorMod
                                      UnrollInputOutput)
 
 
-MAX_ACC = 0.6
-MAX_STEER = math.radians(20) * 0.1
+MAX_ACC = 6
+MAX_STEER = math.radians(20)
 
 
 @dataclass
@@ -345,7 +345,7 @@ class L5Env(gym.Env):
         :return: Tuple of the action un-normalization parameters for kinematic model
         """
         global MAX_ACC, MAX_STEER
-        return KinematicActionRescaleParams(MAX_STEER, MAX_ACC)
+        return KinematicActionRescaleParams(MAX_STEER * self.step_time, MAX_ACC * self.step_time)
 
     def _get_non_kin_rescale_params(self, max_num_scenes: int = 10) -> NonKinematicActionRescaleParams:
         """Determine the action un-normalization parameters for the non-kinematic model
