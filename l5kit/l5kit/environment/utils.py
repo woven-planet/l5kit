@@ -1,4 +1,3 @@
-import math
 from pathlib import Path
 from typing import NamedTuple
 
@@ -66,15 +65,6 @@ def calculate_non_kinematic_rescale_params(sim_dataset: SimulationDataset) -> No
 
     # Keeping scale = 10 * std so that extreme values are not clipped
     return NonKinematicActionRescaleParams(x_mu, 10 * x_std, y_mu, 10 * y_std, yaw_mu, 10 * yaw_std)
-
-
-def calculate_kinematic_rescale_params(sim_dataset: SimulationDataset) -> KinematicActionRescaleParams:
-    """Calculate the action un-normalization parameters from the simulation dataset for kinematic model.
-
-    :param sim_dataset: the input dataset to calculate the action rescale parameters
-    :return: the unnormalized action
-    """
-    return KinematicActionRescaleParams(math.radians(20) * 0.1, 0.6)
 
 
 def save_input_raster(rasterizer: Rasterizer, image: torch.Tensor, num_images: int = 20,

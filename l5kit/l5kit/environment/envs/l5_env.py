@@ -1,3 +1,4 @@
+import math
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, DefaultDict, Dict, List, NamedTuple, Optional
@@ -13,8 +14,8 @@ from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
 from l5kit.environment.kinematic_model import KinematicModel, UnicycleModel
 from l5kit.environment.reward import L2DisplacementYawReward, Reward
-from l5kit.environment.utils import (calculate_kinematic_rescale_params, calculate_non_kinematic_rescale_params,
-                                     KinematicActionRescaleParams, NonKinematicActionRescaleParams)
+from l5kit.environment.utils import (calculate_non_kinematic_rescale_params, KinematicActionRescaleParams,
+                                     NonKinematicActionRescaleParams)
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.simulation.unroll import (ClosedLoopSimulator, ClosedLoopSimulatorModes, SimulationOutputCLE,
@@ -340,11 +341,7 @@ class L5Env(gym.Env):
         :param max_num_scenes: maximum number of scenes to consider to determine parameters
         :return: Tuple of the action un-normalization parameters for kinematic model
         """
-        scene_ids = list(range(self.max_scene_id)) if not self.overfit else [self.overfit_scene_id]
-        if len(scene_ids) > max_num_scenes:  # If too many scenes, CPU crashes
-            scene_ids = scene_ids[:max_num_scenes]
-        sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, scene_ids, self.sim_cfg)
-        return calculate_kinematic_rescale_params(sim_dataset)
+        return KinematicActionRescaleParams(math.radians(20) * 0.1, 0.6)
 
     def _get_non_kin_rescale_params(self, max_num_scenes: int = 10) -> NonKinematicActionRescaleParams:
         """Determine the action un-normalization parameters for the non-kinematic model
