@@ -150,6 +150,7 @@ class L5Env(gym.Env):
         self.max_scene_id = cfg["gym_params"]["max_scene_id"]
         if not self.train:
             self.max_scene_id = cfg["gym_params"]["max_val_scene_id"]
+            self.randomize_start_frame = False
         if self.overfit:
             self.overfit_scene_id = cfg["gym_params"]["overfit_id"]
             self.randomize_start_frame = False
@@ -176,7 +177,7 @@ class L5Env(gym.Env):
         self.seed()
 
     def seed(self, seed: int = None) -> List[int]:
-        """ Generate the random seed.
+        """Generate the random seed.
 
         :param seed: the seed integer
         :return: the output random seed
@@ -184,6 +185,14 @@ class L5Env(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         # TODO : add a torch seed for future
         return [seed]
+
+    def set_reset_id(self, reset_id: int = None) -> None:
+        """Set the reset_id to unroll from specific scene_id.
+        Useful during deterministic evaluation.
+
+        :param reset_id: the scene_id to unroll
+        """
+        self.reset_scene_id = reset_id
 
     def reset(self) -> Dict[str, np.ndarray]:
         """ Resets the environment and outputs first frame of a new scene sample.
@@ -197,7 +206,8 @@ class L5Env(gym.Env):
         # Select Scene ID
         self.scene_index = self.np_random.randint(0, self.max_scene_id)
         if self.reset_scene_id is not None:
-            self.scene_index = self.reset_scene_id
+            self.scene_index = min(self.reset_scene_id, self.max_scene_id - 1)
+            self.reset_scene_id += 1
 
         # Select Frame ID (within bounds of the scene)
         if self.randomize_start_frame:
