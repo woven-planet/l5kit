@@ -22,6 +22,10 @@ from l5kit.simulation.unroll import (ClosedLoopSimulator, ClosedLoopSimulatorMod
                                      UnrollInputOutput)
 
 
+MAX_ACC = 0.6
+MAX_STEER = math.radians(20) * 0.1
+
+
 @dataclass
 class SimulationConfigGym(SimulationConfig):
     """Defines the default parameters used for the simulation of ego and agents around it in L5Kit Gym.
@@ -334,14 +338,14 @@ class L5Env(gym.Env):
                 action[2] = self.non_kin_rescale.yaw_mu + self.non_kin_rescale.yaw_scale * action[2]
         return action
 
-    def _get_kin_rescale_params(self, max_num_scenes: int = 10) -> KinematicActionRescaleParams:
+    def _get_kin_rescale_params(self) -> KinematicActionRescaleParams:
         """Determine the action un-normalization parameters for the kinematic model
         from the current dataset in the L5Kit environment.
 
-        :param max_num_scenes: maximum number of scenes to consider to determine parameters
         :return: Tuple of the action un-normalization parameters for kinematic model
         """
-        return KinematicActionRescaleParams(math.radians(20) * 0.1, 0.6)
+        global MAX_ACC, MAX_STEER
+        return KinematicActionRescaleParams(MAX_STEER, MAX_ACC)
 
     def _get_non_kin_rescale_params(self, max_num_scenes: int = 10) -> NonKinematicActionRescaleParams:
         """Determine the action un-normalization parameters for the non-kinematic model
