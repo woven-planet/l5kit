@@ -20,6 +20,7 @@ class L5KitEvalCallback(EvalCallback):
     :param metric_set: computes a set of metric parametrization for the L5Kit environment
     :param enable_scene_type_aggregation: enable evaluation according to scene type
     :param scene_id_to_type_path: path to the csv file mapping scene id to scene type
+    :param prefix: the prefix to save the computed metrics
     :param verbose:
     """
 
@@ -33,6 +34,7 @@ class L5KitEvalCallback(EvalCallback):
         self.n_eval_envs = n_eval_envs
         self.verbose = verbose
         self.metric_set = metric_set or CLEMetricSet()
+        self.prefix = prefix
 
         # For scene type-based aggregation
         self.enable_scene_type_aggregation = enable_scene_type_aggregation
@@ -73,7 +75,7 @@ class L5KitEvalCallback(EvalCallback):
             # Add to current Logger
             assert self.logger is not None
             for k, v in agg.items():
-                self.logger.record(f'eval/{k}', v.item())
+                self.logger.record(f'{self.prefix}/{k}', v.item())
 
             # If we should compute the scene-type aggregation metrics
             if self.enable_scene_type_aggregation:

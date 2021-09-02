@@ -9,10 +9,12 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 
 from l5kit.environment.feature_extractor import CustomFeatureExtractor
 from l5kit.environment.callbacks import L5KitEvalCallback
+from l5kit.environment.envs.l5_env import SimulationConfigGym
 
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
 # Please set the L5KIT_DATA_FOLDER environment variable
+os.environ["L5KIT_DATA_FOLDER"] = os.environ["HOME"] + '/level5_data/'
 if "L5KIT_DATA_FOLDER" not in os.environ:
     raise KeyError("L5KIT_DATA_FOLDER environment variable not set")
 
@@ -50,7 +52,7 @@ if __name__ == "__main__":
                         help='Discount factor')
     parser.add_argument('--gae_lambda', default=0.90, type=float,
                         help='Factor for trade-off of bias vs variance for Generalized Advantage Estimator')
-    parser.add_argument('--clip_start_val', default=0.2, type=float,
+    parser.add_argument('--clip_start_val', default=0.1, type=float,
                         help='Start value of clipping in PPO')
     parser.add_argument('--clip_end_val', default=0.001, type=float,
                         help='End value of clipping in PPO')
@@ -98,9 +100,17 @@ if __name__ == "__main__":
                     learning_rate=args.lr, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
                     clip_range=clip_schedule, batch_size=args.batch_size, seed=args.seed, gae_lambda=args.gae_lambda)
 
-    # make eval env
+    # make eval env (for Training)
+    eval_env_train_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'return_info': True,
+                             'train': True}
+    eval_env_train = make_vec_env("L5-CLE-v0", env_kwargs=eval_env_train_kwargs, n_envs=args.n_eval_envs,
+                                  vec_env_cls=SubprocVecEnv, vec_env_kwargs={"start_method": "fork"})
+
+    # make eval env (for Validation)
+    validation_sim_cfg = SimulationConfigGym()
+    validation_sim_cfg.num_simulation_steps = None
     eval_env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'return_info': True,
-                       'train': False}
+                       'train': False, 'sim_cfg': validation_sim_cfg}
     eval_env = make_vec_env("L5-CLE-v0", env_kwargs=eval_env_kwargs, n_envs=args.n_eval_envs,
                             vec_env_cls=SubprocVecEnv, vec_env_kwargs={"start_method": "fork"})
 
@@ -108,15 +118,30 @@ if __name__ == "__main__":
     # Note: When using multiple environments, each call to ``env.step()``
     # will effectively correspond to ``n_envs`` steps.
     # To account for that, you can use ``save_freq = max(save_freq // n_envs, 1)``
+    callback_list = []
     # Save Model Periodically
     checkpoint_callback = CheckpointCallback(save_freq=(args.save_freq // args.n_envs), save_path=args.save_path,
                                              name_prefix=args.output)
+    callback_list.append(checkpoint_callback)
 
     # Eval Model Periodically
-    eval_callback = L5KitEvalCallback(eval_env, eval_freq=(args.eval_freq // args.n_envs),
-                                      n_eval_episodes=args.n_eval_episodes, n_eval_envs=args.n_eval_envs,
-                                      enable_scene_type_aggregation=args.enable_scene_type_aggregation,
-                                      scene_id_to_type_path=args.scene_id_to_type_path)
+    # 1. Validation Environment (Episode Length 248, Aggregation Metrics)
+    val_eval_callback = L5KitEvalCallback(eval_env, eval_freq=(args.eval_freq // args.n_envs),
+                                          n_eval_episodes=args.n_eval_episodes, n_eval_envs=args.n_eval_envs,
+                                          prefix='l5_cle_eval', enable_scene_type_aggregation=args.enable_scene_type_aggregation,
+                                          scene_id_to_type_path=args.scene_id_to_type_path)
+    callback_list.append(val_eval_callback)
+
+    # 2. Train Environment (Episode Length 32, Aggregation Metrics)
+    train_eval_callback = L5KitEvalCallback(eval_env_train, eval_freq=(args.eval_freq // args.n_envs),
+                                            n_eval_episodes=args.n_eval_episodes, n_eval_envs=args.n_eval_envs,
+                                            prefix='train_eval')
+    callback_list.append(train_eval_callback)
+
+    # 3. Train Environment (Episode Length 32, Deterministic Step)
+    train_eval_callback2 = EvalCallback(eval_env_train, eval_freq=(args.eval_freq // args.n_envs),
+                                        n_eval_episodes=(args.n_eval_episodes // 10))
+    callback_list.append(train_eval_callback2)
 
     # train
-    model.learn(args.n_steps, callback=[checkpoint_callback, eval_callback])
+    model.learn(args.n_steps, callback=callback_list)

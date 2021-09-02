@@ -6,7 +6,7 @@ format_version: 4
 model_params:
   model_architecture: "resnet50"
 
-  history_num_frames: 1
+  history_num_frames: 3
   future_num_frames: 1
   step_time: 0.1
   render_ego_history: True
@@ -51,16 +51,16 @@ raster_params:
 ###################
 ## Data loader options
 train_data_loader:
-  key: "scenes/sample.zarr"
+  key: "scenes/train.zarr"
 
 val_data_loader:
-  key: "scenes/sample.zarr"
+  key: "scenes/validate.zarr"
 
 ###################
 ## Gym params
 gym_params:
-  max_scene_id: 1
-  max_val_scene_id: 1
-  randomize_start_frame: False
-  overfit: True
+  max_scene_id: 16000
+  max_val_scene_id: 10000
+  randomize_start_frame: True
+  overfit: False
   overfit_id: 0
