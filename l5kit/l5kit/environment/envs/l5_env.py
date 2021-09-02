@@ -22,7 +22,9 @@ from l5kit.simulation.unroll import (ClosedLoopSimulator, ClosedLoopSimulatorMod
                                      UnrollInputOutput)
 
 
+#: Maximum acceleration magnitude for kinematic model
 MAX_ACC = 6
+#: Maximum steer magnitude for kinematic model
 MAX_STEER = math.radians(20)
 
 
@@ -132,9 +134,10 @@ class L5Env(gym.Env):
         self.overfit = cfg["gym_params"]["overfit"]
         self.randomize_start_frame = cfg["gym_params"]["randomize_start_frame"]
         if self.train or self.overfit:
-            dataset_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
+            loader_key = cfg["train_data_loader"]["key"]
         else:
-            dataset_zarr = ChunkedDataset(dm.require(cfg["val_data_loader"]["key"])).open()
+            loader_key = cfg["val_data_loader"]["key"]
+        dataset_zarr = ChunkedDataset(dm.require(loader_key)).open()
         self.dataset = EgoDataset(cfg, dataset_zarr, rasterizer)
 
         # Define action and observation space
