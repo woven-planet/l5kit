@@ -1,3 +1,4 @@
+import math
 from typing import Optional
 
 import gym
@@ -58,6 +59,7 @@ class L5KitEvalCallback(EvalCallback):
         """
         assert self.model is not None
 
+        self._set_reset_ids()
         obs = self.eval_env.reset()
         episodes_done = 0
         while True:
@@ -71,3 +73,11 @@ class L5KitEvalCallback(EvalCallback):
 
                     if episodes_done == self.n_eval_episodes:
                         return
+
+    def _set_reset_ids(self) -> None:
+        """Reset scene_ids for deterministic unroll"""
+        reset_interval = math.ceil(self.n_eval_episodes / self.n_eval_envs)
+        reset_indices = [reset_interval * i for i in range(self.n_eval_envs)]
+        for idx in range(self.n_eval_envs):
+            self.eval_env.env_method("set_reset_id", reset_indices[idx], indices=[idx])
+        return

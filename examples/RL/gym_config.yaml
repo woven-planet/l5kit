@@ -52,14 +52,15 @@ raster_params:
 ## Data loader options
 train_data_loader:
   key: "scenes/sample.zarr"
-  batch_size: 16
-  shuffle: True
-  num_workers: 16
-  perturb_probability: 0.5
+
+val_data_loader:
+  key: "scenes/sample.zarr"
 
 ###################
 ## Gym params
 gym_params:
   max_scene_id: 1
+  max_val_scene_id: 1
+  randomize_start_frame: False
   overfit: True
   overfit_id: 0

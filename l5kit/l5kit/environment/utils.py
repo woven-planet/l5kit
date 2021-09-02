@@ -1,4 +1,3 @@
-import math
 from pathlib import Path
 from typing import NamedTuple
 
@@ -66,44 +65,6 @@ def calculate_non_kinematic_rescale_params(sim_dataset: SimulationDataset) -> No
 
     # Keeping scale = 10 * std so that extreme values are not clipped
     return NonKinematicActionRescaleParams(x_mu, 10 * x_std, y_mu, 10 * y_std, yaw_mu, 10 * yaw_std)
-
-
-def calculate_kinematic_rescale_params(sim_dataset: SimulationDataset) -> KinematicActionRescaleParams:
-    """Calculate the action un-normalization parameters from the simulation dataset for kinematic model.
-
-    :param sim_dataset: the input dataset to calculate the action rescale parameters
-    :return: the unnormalized action
-    """
-    v_component_frames = []
-    yaw_component_frames = []
-
-    for index in range(1, len(sim_dataset)):
-        ego_input = sim_dataset.rasterise_frame_batch(index)
-        v_component_frames.append([scene['curr_speed'].item() for scene in ego_input])
-        yaw_component_frames.append([scene['target_yaws'][0, 0] for scene in ego_input])
-
-    v_components = np.stack(v_component_frames)
-    acc_components = v_components[1:] - v_components[:-1]
-    acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
-    acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
-    acc_components = 0.5 * (acc_components[1:] + acc_components[:-1])
-
-    # import pdb; pdb.set_trace()
-
-    acc_components = acc_components.flatten()
-    # acc_mu, acc_std = np.mean(acc_components), np.std(acc_components)
-
-    yaw_components = np.concatenate(yaw_component_frames)
-    # yaw_mu, yaw_std = np.mean(yaw_components), np.std(yaw_components)
-
-    print(max(acc_components), min(acc_components))
-    print(max(yaw_components), min(yaw_components), math.radians(20) * 0.1)
-    # import pdb; pdb.set_trace()
-    # assert max(acc_components) <= 0.7
-    # assert -0.7 <= min(acc_components)
-
-    # 15, 0.3
-    return KinematicActionRescaleParams(math.radians(20) * 0.1, 0.6)
 
 
 def save_input_raster(rasterizer: Rasterizer, image: torch.Tensor, num_images: int = 20,

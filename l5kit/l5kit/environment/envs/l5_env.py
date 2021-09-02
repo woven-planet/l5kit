@@ -1,3 +1,4 @@
+import math
 from collections import defaultdict
 from dataclasses import dataclass
 from typing import Any, DefaultDict, Dict, List, NamedTuple, Optional
@@ -13,12 +14,18 @@ from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
 from l5kit.environment.kinematic_model import KinematicModel, UnicycleModel
 from l5kit.environment.reward import L2DisplacementYawReward, Reward
-from l5kit.environment.utils import (calculate_kinematic_rescale_params, calculate_non_kinematic_rescale_params,
-                                     KinematicActionRescaleParams, NonKinematicActionRescaleParams)
+from l5kit.environment.utils import (calculate_non_kinematic_rescale_params, KinematicActionRescaleParams,
+                                     NonKinematicActionRescaleParams)
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.simulation.unroll import (ClosedLoopSimulator, ClosedLoopSimulatorModes, SimulationOutputCLE,
                                      UnrollInputOutput)
+
+
+#: Maximum acceleration magnitude for kinematic model
+MAX_ACC = 6
+#: Maximum steer magnitude for kinematic model
+MAX_STEER = math.radians(20)
 
 
 @dataclass
@@ -90,6 +97,7 @@ class L5Env(gym.Env):
     :param env_config_path: path to the L5Kit environment configuration file
     :param dmg: local data manager object
     :param simulation_cfg: configuration of the L5Kit closed loop simulator
+    :param train: flag to determine whether to use train or validation dataset
     :param reward: calculates the reward for the gym environment
     :param cle: flag to enable close loop environment updates
     :param rescale_action: flag to rescale the model action back to the un-normalized action space
@@ -99,7 +107,7 @@ class L5Env(gym.Env):
     """
 
     def __init__(self, env_config_path: Optional[str] = None, dmg: Optional[LocalDataManager] = None,
-                 sim_cfg: Optional[SimulationConfig] = None,
+                 sim_cfg: Optional[SimulationConfig] = None, train: bool = True,
                  reward: Optional[Reward] = None, cle: bool = True, rescale_action: bool = True,
                  use_kinematic: bool = False, kin_model: Optional[KinematicModel] = None,
                  reset_scene_id: Optional[int] = None, return_info: bool = False) -> None:
@@ -121,9 +129,16 @@ class L5Env(gym.Env):
         raster_size = cfg["raster_params"]["raster_size"][0]
         n_channels = rasterizer.num_channels()
 
-        # init dataset
-        train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
-        self.dataset = EgoDataset(cfg, train_zarr, rasterizer)
+        # load dataset of environment
+        self.train = train
+        self.overfit = cfg["gym_params"]["overfit"]
+        self.randomize_start_frame = cfg["gym_params"]["randomize_start_frame"]
+        if self.train or self.overfit:
+            loader_key = cfg["train_data_loader"]["key"]
+        else:
+            loader_key = cfg["val_data_loader"]["key"]
+        dataset_zarr = ChunkedDataset(dm.require(loader_key)).open()
+        self.dataset = EgoDataset(cfg, dataset_zarr, rasterizer)
 
         # Define action and observation space
         # Continuous Action Space: gym.spaces.Box (X, Y, Yaw * number of future states)
@@ -141,9 +156,12 @@ class L5Env(gym.Env):
         self.reward = reward if reward is not None else L2DisplacementYawReward()
 
         self.max_scene_id = cfg["gym_params"]["max_scene_id"]
-        self.overfit = cfg["gym_params"]["overfit"]
+        if not self.train:
+            self.max_scene_id = cfg["gym_params"]["max_val_scene_id"]
+            self.randomize_start_frame = False
         if self.overfit:
             self.overfit_scene_id = cfg["gym_params"]["overfit_id"]
+            self.randomize_start_frame = False
 
         self.cle = cle
         self.rescale_action = rescale_action
@@ -167,7 +185,7 @@ class L5Env(gym.Env):
         self.seed()
 
     def seed(self, seed: int = None) -> List[int]:
-        """ Generate the random seed.
+        """Generate the random seed.
 
         :param seed: the seed integer
         :return: the output random seed
@@ -175,6 +193,14 @@ class L5Env(gym.Env):
         self.np_random, seed = seeding.np_random(seed)
         # TODO : add a torch seed for future
         return [seed]
+
+    def set_reset_id(self, reset_id: int = None) -> None:
+        """Set the reset_id to unroll from specific scene_id.
+        Useful during deterministic evaluation.
+
+        :param reset_id: the scene_id to unroll
+        """
+        self.reset_scene_id = reset_id
 
     def reset(self) -> Dict[str, np.ndarray]:
         """ Resets the environment and outputs first frame of a new scene sample.
@@ -185,10 +211,20 @@ class L5Env(gym.Env):
         self.agents_ins_outs: DefaultDict[int, List[List[UnrollInputOutput]]] = defaultdict(list)
         self.ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]] = defaultdict(list)
 
+        # Select Scene ID
+        self.scene_index = self.np_random.randint(0, self.max_scene_id)
         if self.reset_scene_id is not None:
-            self.scene_index = self.reset_scene_id
-        else:  # Sample a scene
-            self.scene_index = self.np_random.randint(0, self.max_scene_id)
+            self.scene_index = min(self.reset_scene_id, self.max_scene_id - 1)
+            self.reset_scene_id += 1
+
+        # Select Frame ID (within bounds of the scene)
+        if self.randomize_start_frame:
+            scene_length = len(self.dataset.get_scene_indices(self.scene_index))
+            self.eps_length = self.sim_cfg.num_simulation_steps or scene_length
+            end_frame = scene_length - self.eps_length
+            self.sim_cfg.start_frame_index = self.np_random.randint(0, end_frame + 1)
+
+        # Prepare episode scene
         self.sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, [self.scene_index], self.sim_cfg)
 
         # Reset CLE evaluator
@@ -311,17 +347,19 @@ class L5Env(gym.Env):
 
         :return: Tuple of the action un-normalization parameters for kinematic model
         """
-        scene_ids = list(range(self.max_scene_id)) if not self.overfit else [self.overfit_scene_id]
-        sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, scene_ids, self.sim_cfg)
-        return calculate_kinematic_rescale_params(sim_dataset)
+        global MAX_ACC, MAX_STEER
+        return KinematicActionRescaleParams(MAX_STEER * self.step_time, MAX_ACC * self.step_time)
 
-    def _get_non_kin_rescale_params(self) -> NonKinematicActionRescaleParams:
+    def _get_non_kin_rescale_params(self, max_num_scenes: int = 10) -> NonKinematicActionRescaleParams:
         """Determine the action un-normalization parameters for the non-kinematic model
         from the current dataset in the L5Kit environment.
 
+        :param max_num_scenes: maximum number of scenes to consider to determine parameters
         :return: Tuple of the action un-normalization parameters for non-kinematic model
         """
         scene_ids = list(range(self.max_scene_id)) if not self.overfit else [self.overfit_scene_id]
+        if len(scene_ids) > max_num_scenes:  # If too many scenes, CPU crashes
+            scene_ids = scene_ids[:max_num_scenes]
         sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, scene_ids, self.sim_cfg)
         return calculate_non_kinematic_rescale_params(sim_dataset)
 

@@ -74,7 +74,7 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # make train env
-    env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic}
+    env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'train': True}
     env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs, n_envs=args.n_envs,
                        vec_env_cls=SubprocVecEnv, vec_env_kwargs={"start_method": "fork"})
 
@@ -95,7 +95,8 @@ if __name__ == "__main__":
                     clip_range=clip_schedule, batch_size=args.batch_size, seed=args.seed, gae_lambda=args.gae_lambda)
 
     # make eval env
-    eval_env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'return_info': True}
+    eval_env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'return_info': True,
+                       'train': False}
     eval_env = make_vec_env("L5-CLE-v0", env_kwargs=eval_env_kwargs, n_envs=args.n_eval_envs,
                             vec_env_cls=SubprocVecEnv, vec_env_kwargs={"start_method": "fork"})
 
