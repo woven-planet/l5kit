@@ -10,6 +10,8 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 from l5kit.environment.feature_extractor import CustomFeatureExtractor
 from l5kit.environment.callbacks import L5KitEvalCallback
 from l5kit.environment.envs.l5_env import SimulationConfigGym
+import l5kit.environment.reward as reward
+
 
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
@@ -68,19 +70,29 @@ if __name__ == "__main__":
                         help='Number of parallel environments for evaluation')
     parser.add_argument('--eps_length', default=32, type=int,
                         help='Episode length of gym rollouts')
-    parser.add_argument('--rew_clip', default=15, type=float,
-                        help='Reward clipping threshold')
     parser.add_argument('--kinematic', action='store_true',
                         help='Flag to use kinematic model in the environment')
     parser.add_argument('--enable_scene_type_aggregation', action='store_true',
                         help='enable scene type aggregation of evaluation metrics')
     parser.add_argument('--scene_id_to_type_path', default=None, type=str,
                         help='Path to csv file mapping scene id to scene type')
+    parser.add_argument('--reward', default="l2", type=str,
+                        help='Type of reward')
     parser.add_argument('--seed', default=42, type=int)
     args = parser.parse_args()
 
+    # reward
+    env_reward: reward.Reward
+    if args.reward == "l2":
+        env_reward = reward.L2DisplacementYawReward()
+    elif args.reward == "cle":
+        env_reward = reward.CLEReward()
+    else:
+        raise NotImplementedError
+
     # make train env
-    env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'train': True}
+    env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'reward': env_reward,
+                  'train': True}
     env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs, n_envs=args.n_envs,
                        vec_env_cls=SubprocVecEnv, vec_env_kwargs={"start_method": "fork"})
 
@@ -101,16 +113,16 @@ if __name__ == "__main__":
                     clip_range=clip_schedule, batch_size=args.batch_size, seed=args.seed, gae_lambda=args.gae_lambda)
 
     # make eval env (for Training)
-    eval_env_train_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'return_info': True,
-                             'train': True}
+    eval_env_train_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'reward': env_reward,
+                             'return_info': True, 'train': True}
     eval_env_train = make_vec_env("L5-CLE-v0", env_kwargs=eval_env_train_kwargs, n_envs=args.n_eval_envs,
                                   vec_env_cls=SubprocVecEnv, vec_env_kwargs={"start_method": "fork"})
 
     # make eval env (for Validation)
     validation_sim_cfg = SimulationConfigGym()
     validation_sim_cfg.num_simulation_steps = None
-    eval_env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'return_info': True,
-                       'train': False, 'sim_cfg': validation_sim_cfg}
+    eval_env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'reward': env_reward,
+                       'return_info': True, 'train': False, 'sim_cfg': validation_sim_cfg}
     eval_env = make_vec_env("L5-CLE-v0", env_kwargs=eval_env_kwargs, n_envs=args.n_eval_envs,
                             vec_env_cls=SubprocVecEnv, vec_env_kwargs={"start_method": "fork"})
 
@@ -139,8 +151,8 @@ if __name__ == "__main__":
     callback_list.append(train_eval_callback)
 
     # 3. Train Environment (Episode Length 32, Deterministic Step)
-    train_eval_callback2 = EvalCallback(eval_env_train, eval_freq=(args.eval_freq // args.n_envs),
-                                        n_eval_episodes=(args.n_eval_episodes // 10))
+    train_eval_callback2 = EvalCallback(eval_env_train, eval_freq=(200000 // args.n_envs),
+                                        n_eval_episodes=320)
     callback_list.append(train_eval_callback2)
 
     # train
