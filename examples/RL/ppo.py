@@ -16,7 +16,7 @@ import l5kit.environment.reward as reward
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
 # Please set the L5KIT_DATA_FOLDER environment variable
-os.environ["L5KIT_DATA_FOLDER"] = os.environ["HOME"] + '/level5_data/'
+# !!! @Sergey / @Christian set the L5KIT_DATA_FOLDER variable here.
 if "L5KIT_DATA_FOLDER" not in os.environ:
     raise KeyError("L5KIT_DATA_FOLDER environment variable not set")
 
