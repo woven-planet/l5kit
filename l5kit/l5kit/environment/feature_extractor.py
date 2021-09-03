@@ -25,7 +25,7 @@ class CustomFeatureExtractor(BaseFeaturesExtractor):
         if model_arch == 'simple_gn':
             # A simplified feature extractor with GroupNorm.
             model = models.SimpleCNN_GN(num_input_channels, features_dim)
-        if model_arch == 'alex_gn':
+        elif model_arch == 'alex_gn':
             # An AlexNet-type feature extractor with GroupNorm.
             model = models.AlexCNN_GN(num_input_channels, features_dim)
         else:
