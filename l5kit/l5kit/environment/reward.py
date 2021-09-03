@@ -137,7 +137,7 @@ class CLEReward(Reward):
     def __init__(self, reward_prefix: str = "CLE", metric_set: Optional[L5MetricSet] = None,
                  enable_clip: bool = True, rew_clip_thresh: float = 15.0,
                  use_yaw: Optional[bool] = True, yaw_weight: Optional[float] = 20.0,
-                 col_weight: float = 10.0) -> None:
+                 col_weight: float = 5.0) -> None:
         """Constructor method
         """
         self.reward_prefix = reward_prefix
