@@ -7,6 +7,10 @@
 @ christian_ppo_alex_net:
 	OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python ppo.py --tb_log tb_log --n_steps 20000000 --save_freq 1000000 --eval_freq 500000 --n_envs 8 --n_eval_envs 16 --n_eval_episodes 1000 --kinematic --model_arch 'alex_gn' -o allscenes_alex_gn
 
+@ test_git_col:
+	# OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python ppo.py --tb_log tb_log --n_steps 4000000 --save_freq 1000000 --eval_freq 200000 --n_envs 8 --n_eval_envs 16 --n_eval_episodes 100 --kinematic --reward "cle" -o verify_100scenes_col5_100
+	OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python ppo.py --tb_log tb_log --n_steps 20000000 --save_freq 1000000 --eval_freq 500000 --n_envs 8 --n_eval_envs 16 --n_eval_episodes 1000 --kinematic --reward "cle" -o verify_allscenes_pk_col5
+
 
 # @ test_git_ppo:
 # 	# OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python ppo.py --tb_log tb_log --n_steps 300000 --save_freq 100000 --eval_freq 100000 --n_envs 8 --n_eval_envs 1 --kinematic -o verify
