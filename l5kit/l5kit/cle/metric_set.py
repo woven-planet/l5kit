@@ -82,3 +82,23 @@ class L5MetricSet(BaseMetricSet):
         """Perform all required aggregations and returns a dictionary composed by all results.
         """
         raise NotImplementedError
+
+    def aggregate_failed_frames(self) -> Dict[str, List[validators.FailedFrame]]:
+        """This method will aggregate the failed scenes and will return
+        a dictionary indexed by the validator name associated with a list
+        with FailedFrame items containing the scene_id and the frame index
+        that triggered the validator."""
+        # Do not aggregate and reduce if we don't have validators
+        if not self.build_validators():
+            return {}
+
+        validation_results = self.evaluator.validation_results()
+        val_scene_frames_agg = validators.ValidationFailedFramesAggregator()
+        # val_scene_frames_agg = validators.ValidationCountingAggregator()
+        val_scene_frames_results = val_scene_frames_agg.aggregate(validation_results)
+        return val_scene_frames_results
+
+    def get_frame_count_validators(self) -> List[str]:
+        """Return a list of validators that will be aggregated by
+        counting the total number of failed frames they triggered."""
+        return []
