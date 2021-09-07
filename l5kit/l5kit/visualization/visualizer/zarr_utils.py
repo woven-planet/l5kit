@@ -1,6 +1,8 @@
 from typing import List, Tuple
 
 import numpy as np
+from shapely.geometry import Point
+from shapely.geometry.polygon import Polygon
 
 from l5kit.data import ChunkedDataset
 from l5kit.data.filter import (filter_agents_by_frames, filter_agents_by_labels, filter_tl_faces_by_frames,
@@ -139,6 +141,37 @@ def _get_frame_data(mapAPI: MapAPI, frame: np.ndarray, agents_frame: np.ndarray,
 
     return FrameVisualization(ego=ego_vis, agents=agents_vis, lanes=lanes_vis,
                               crosswalks=crosswalks_vis, trajectories=[])
+
+
+def get_nearest_lane_to_ego(frame_vis: FrameVisualization) -> int:
+    """Given a FrameVisualization, get the nearest lane id to the ego.
+
+    :param frame_vis: a FrameVisualization
+    :return: the index of the nearest lane
+    """
+
+    ego = frame_vis.ego
+    ego_center = np.array([[ego.center_x, ego.center_y]])
+
+    lanes = frame_vis.lanes
+    concat_lanes = [np.array(list(zip(lane.xs, lane.ys))) for lane in lanes]
+    min_dist = 100000 * np.ones((len(concat_lanes),))
+    alpha = 1.0
+    for idx, lane in enumerate(concat_lanes):
+        polygon = Polygon(lane)
+        point = Point(ego.center_x, ego.center_y)
+        if polygon.contains(point):
+            lane_centroid = np.mean(lane, axis=0)
+            min_dist[idx] = np.linalg.norm(lane_centroid - ego_center) - alpha * polygon.area
+            # min_dist[idx] = np.min(np.linalg.norm(lane - ego_center, axis=1))
+
+    # nearest_lane_idx = get_nearest_lane_to_ego(frame_vis)
+    # frame_vis.lanes.append(LaneVisualization(frame_vis.lanes[nearest_lane_idx].xs,
+    #                                          frame_vis.lanes[nearest_lane_idx].ys,
+    #                                          'blue'))
+
+    nearest_lane_index = int(np.argmin(min_dist))
+    return nearest_lane_index
 
 
 def zarr_to_visualizer_scene(scene_dataset: ChunkedDataset, mapAPI: MapAPI,
