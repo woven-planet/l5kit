@@ -1,0 +1,219 @@
+# Config format schema number
+format_version: 7
+
+###################
+## Model options
+model_params:
+  model_architecture: "vectorized_mha"
+  history_num_frames_ego: 0  # this will also create raster history (we need to remove the raster from train/eval dataset - only visualization)
+  history_num_frames: 0
+  history_num_frames_agents: 3
+  future_num_frames: 12
+  step_time: 0.1
+  render_ego_history: True
+
+  # Only applicable for ... TODO
+  subgraph_arch: "local_subgraph"  # local_subgraph or local_subgraph_mha or pointnet
+  disable_other_agents: False
+  disable_map: False
+  disable_lane_boundaries: True
+
+  # Whether to use EgoDatasetVectorized ("ego") or AgentDatasetVectorized ("agent")
+  dataset_type: "ego"
+  
+  use_perturbation: True
+  perturbation_probability: 1.0
+  use_gaussian_perturbation: True
+  perturbation_min_displacement_m: 1.2
+
+  # Gaussian distribution params
+  perturbation_lateral_std_m: 0.5
+  perturbation_longitudinal_std_m: 1.5
+  perturbation_yaw_std_deg: 6
+
+###################
+## Data loader options
+train_data_loader:
+  key: "scenes/train.zarr"
+  batch_size: 12
+  shuffle: True
+  num_workers: 16
+  perturb_probability: 0.5
+
+val_data_loader:
+  key: "scenes/validate_0.zarr"
+  batch_size: 12
+  shuffle: False
+  num_workers: 16
+  
+###################
+## Input raster parameters
+raster_params:
+  # rasterization backend
+  render_engine: "OPENCV"
+  # raster image size [pixels]
+  raster_size:
+    - 224
+    - 224
+  # raster's spatial resolution [meters per pixel]: the size in the real world one pixel corresponds to.
+  pixel_size:
+    - 0.5
+    - 0.5
+  # From 0 to 1 per axis, [0.5,0.5] would show the ego centered in the image.
+  ego_center:
+    - 0.25
+    - 0.5
+  map_type: "py_semantic"
+  # the keys are relative to the dataset environment variable
+  satellite_map_key: "aerial_map/aerial_map.png"
+  semantic_map_key: "semantic_map/semantic_map.pb"
+  dataset_meta_key: "meta.json"
+  dataset_meta_key: "magicpony/meta.json"
+
+  # e.g. 0.0 include every obstacle, 0.5 show those obstacles with >0.5 probability of being
+  # one of the classes we care about (cars, bikes, peds, etc.), >=1.0 filter all other agents.
+  filter_agents_threshold: 0.5
+
+  # whether to completely disable traffic light faces in the semantic rasterizer
+  # this disable option is not supported in avsw_semantic
+  disable_traffic_light_faces: False
+
+  # When set to True, the rasterizer will set the raster origin at bottom left,
+  # i.e. vehicles are driving on the right side of the road.
+  # With this change, the vertical flipping on the raster used in the visualization code is no longer needed.
+  # Set it to False for models trained before v1.1.0-25-g3c517f0 (December 2020).
+  # In that case visualisation will be flipped (we've removed the flip there) but the model's input will be correct.
+  set_origin_to_bottom: False
+
+###################
+## Vectorized Params
+data_generation_params:
+  # maximum number of other agents to take (if less will be padded)
+  other_agents_num: 30
+  # maximum distance from AoI for another agent to be picked
+  max_agents_distance: 35
+  # Parameters defining which and how many lanes to be retrieved
+  lane_params:
+    # maximum number of lanes to take into account
+    # if less they will be padded; if more the closest to AoI are picked
+    max_num_lanes: 30
+    # max number of points per lane
+    max_points_per_lane: 20
+    # max number of points per crosswalk
+    max_points_per_crosswalk: 20
+    # maximum radius around the AoI for which we retrieve
+    max_retrieval_distance_m: 35
+    # max number of crosswalks
+    max_num_crosswalks: 20
+
+
+###################
+## Define run set (= collection of default parameter settings for certain datasets)
+## - choose one of the below
+
+runset:
+  name: "custom"
+  description: "custom configuration"
+  train_path: "s3://lyft-av-prod-pdx-avresearch/magicpony/scenes/v1.1/train.zarr.tar"
+  val_path: "s3://lyft-av-prod-pdx-avresearch/magicpony/scenes/v1.1/validate_small.zarr.tar"
+  num_epochs: 37
+  epochs_per_update: 31
+  eval_batch_size: 200
+  validation_freq: 6
+
+# runset:
+#   name: "MP1L"
+#   description: "one loop of MP"
+#   train_path: "s3://lyft-av-prod-pdx-avresearch/drivenet/datasets/20191114_mission3_one_mp_loop_tl.zarr.tar"
+#   val_path: "s3://lyft-av-prod-pdx-avresearch/drivenet/datasets/20191114_mission3_one_mp_loop_tl.zarr.tar"
+#   num_epochs: 143
+#   epochs_per_update: 120
+#   eval_batch_size: 10
+#   validation_freq: 6
+
+# runset:
+#   name: "MP10"
+#   description: "10h on MP"
+#   train_path: "s3://lyft-av-prod-pdx-avresearch/magicpony/scenes/v1.1/train_10hr.zarr.tar"
+#   val_path: "s3://lyft-av-prod-pdx-avresearch/magicpony/scenes/v1.1/validate_0.zarr.tar"
+#   num_epochs: 143
+#   epochs_per_update: 120
+#   eval_batch_size: 100
+#   validation_freq: 18
+
+
+###################
+## Evaluation params for closed loop
+eval_params:
+  # Selected metrics to compute in evaluation
+  selected_metric_types:
+    - "collision_detector"
+    - "displacement_error"
+    - "distance_to_ref_trajectory"
+    - "comfort_braking"
+    - "comfort_braking_in_prediction"
+
+  # Params for all available metrics
+  collision_detector:
+    dilation_size: 0.0
+    scene_fraction_to_evaluate: 1.0
+
+  offroad_detector:
+    dilation_size: 0.0
+    map_filepath: "magicpony/semantic_map/semantic_map.pb"
+    offroad_ratio_thr: 0.2
+    scene_fraction_to_evaluate: 1.0
+
+  displacement_error:
+    error_threshold: 30.0
+    scene_fraction_to_evaluate: 1.0
+
+  distance_to_ref_trajectory:
+    error_threshold: 4.0
+    scene_fraction_to_evaluate: 0.8
+
+  visualization_params:
+    plot_speed: False
+    plot_info: False
+
+  # Thresholds for the comfort braking metrics. One can add multiple 'buckets' for each metric.
+  # A bucket is described by its acceleration threshold, and (optinally) a speed range describing when the
+  # specified bucket is active.
+  # During evaluation, only one bucket in each metric can be violated, and the buckets are traversed
+  # in order of listing here. Example: In closed loop evalution we measure an acceleration of -4.5m/s2 while
+  # going 2m/s => violated bucket: brake_4_stopping.
+  comfort_braking:
+    brake_5:
+      acc_thresh_mps2: -5
+    brake_4:
+      acc_thresh_mps2: -4
+    brake_3:
+      acc_thresh_mps2: -3
+    acc_5:
+      acc_thresh_mps2: 5
+    acc_4:
+      acc_thresh_mps2: 4
+    acc_3:
+      acc_thresh_mps2: 3
+
+  comfort_braking_in_prediction:
+    brake_5:
+      acc_thresh_mps2: -5
+    brake_4:
+      acc_thresh_mps2: -4
+    brake_3:
+      acc_thresh_mps2: -3
+    acc_5:
+      acc_thresh_mps2: 5
+    acc_4:
+      acc_thresh_mps2: 4
+    acc_3:
+      acc_thresh_mps2: 3
+
+
+###################
+## Train params
+train_params:
+  checkpoint_every_n_steps: 10000
+  max_num_steps: 5
+  eval_every_n_steps: 10000
