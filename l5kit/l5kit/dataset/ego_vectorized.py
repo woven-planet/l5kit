@@ -24,95 +24,7 @@ from l5kit.rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT
 from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
 from l5kit.data.map_api import CACHE_SIZE, InterpolationMethod, MapAPI
 
-def vectorized_generate_agent_sample(
-    state_index: int,
-    frames: np.ndarray,
-    agents: np.ndarray,
-    tl_faces: np.ndarray,
-    selected_track_id: Optional[int],
-    render_context: RenderContext,
-    history_num_frames_ego: int,
-    history_num_frames_agents: int,
-    future_num_frames: int,
-    step_time: float,
-    filter_agents_threshold: float,
-    other_agents_num: int,
-    max_agents_distance: float,
-    mapAPI: MapAPI,
-    lane_cfg_params: dict,
-    rasterizer: Optional[Rasterizer] = None,
-    perturbation: Optional[Perturbation] = None,
-) -> dict:
-    """ This will add to the generate_agent_sample function in l5kit to include all agents' history,
-        needed for vectorized version.
-    """
-    history_num_frames_max = max(history_num_frames_ego, history_num_frames_agents)
-    (
-        history_frames,
-        future_frames,
-        history_agents,
-        future_agents,
-        history_tl_faces,
-        future_tl_faces,
-    ) = get_agent_context(state_index, frames, agents, tl_faces, history_num_frames_max, future_num_frames,)
-
-    if perturbation is not None and len(future_frames) == future_num_frames:
-        history_frames, future_frames = perturbation.perturb(
-            history_frames=history_frames, future_frames=future_frames
-        )
-
-    # State you want to predict the future of.
-    cur_frame = history_frames[0]
-    cur_agents = history_agents[0]
-
-    if selected_track_id is None:
-        agent_centroid_m = cur_frame["ego_translation"][:2]
-        agent_yaw_rad = rotation33_as_yaw(cur_frame["ego_rotation"])
-        agent_extent_m = np.asarray((EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, EGO_EXTENT_HEIGHT))
-        agent_type_idx = PERCEPTION_LABEL_TO_INDEX["PERCEPTION_LABEL_CAR"]
-        selected_agent = None
-    else:
-        # this will raise IndexError if the agent is not in the frame or under agent-threshold
-        # this is a strict error, we cannot recover from this situation
-        try:
-            agent = filter_agents_by_track_id(
-                filter_agents_by_labels(cur_agents, filter_agents_threshold), selected_track_id
-            )[0]
-        except IndexError:
-            raise ValueError(f" track_id {selected_track_id} not in frame or below threshold")
-        agent_centroid_m = agent["centroid"]
-        agent_yaw_rad = float(agent["yaw"])
-        agent_extent_m = agent["extent"]
-        agent_type_idx = np.argmax(agent["label_probabilities"])
-        selected_agent = agent
-
-    input_im = (
-        None
-        if not rasterizer
-        else rasterizer.rasterize(history_frames, history_agents, history_tl_faces, selected_agent)
-    )
-    world_from_agent = compute_agent_pose(agent_centroid_m, agent_yaw_rad)
-    agent_from_world = np.linalg.inv(world_from_agent)
-    raster_from_world = render_context.raster_from_world(agent_centroid_m, agent_yaw_rad)
-
-    future_coords_offset, future_yaws_offset, future_extents, future_availability = get_relative_poses(
-        future_num_frames, future_frames, selected_track_id, future_agents, agent_from_world, agent_yaw_rad
-    )
-
-    # For vectorized version we require both ego and agent history to be a Tensor of same length
-    # => fetch history_num_frames_max for both, and later zero out frames exceeding the set history length.
-    # Use history_num_frames_max + 1 because it also includes the current frame.
-    history_coords_offset, history_yaws_offset, history_extents, history_availability = get_relative_poses(
-        history_num_frames_max + 1, history_frames, selected_track_id, history_agents, agent_from_world, agent_yaw_rad
-    )
-
-    history_coords_offset[history_num_frames_ego + 1 :] *= 0
-    history_yaws_offset[history_num_frames_ego + 1 :] *= 0
-    history_extents[history_num_frames_ego + 1 :] *= 0
-    history_availability[history_num_frames_ego + 1 :] *= 0
-
-    history_vels_mps, future_vels_mps = compute_agent_velocity(history_coords_offset, future_coords_offset, step_time)
-
+def agents_func(history_coords_offset, history_yaws_offset, history_availability, history_agents, agent_centroid_m, max_agents_distance, selected_track_id, other_agents_num, history_num_frames_max, future_num_frames, history_frames, agent_from_world, agent_yaw_rad, future_frames, future_agents, history_num_frames_agents):
     # compute agent features
     # sequence_length x 2 (two being x, y)
     agent_points = history_coords_offset.copy()
@@ -193,7 +105,26 @@ def vectorized_generate_agent_sample(
     other_agents_polyline = np.concatenate([agents_points, agents_yaws], axis=-1)
     other_agents_polyline_availability = all_other_agents_history_availability.copy()
 
-    # START WORKING ON LANES
+    agent_dict = {
+        "all_other_agents_history_positions": all_other_agents_history_positions,
+        "all_other_agents_history_yaws": all_other_agents_history_yaws,
+        "all_other_agents_history_extents": all_other_agents_history_extents,
+        "all_other_agents_history_availability": all_other_agents_history_availability.astype(np.bool),
+        "all_other_agents_future_positions": all_other_agents_future_positions,
+        "all_other_agents_future_yaws": all_other_agents_future_yaws,
+        "all_other_agents_future_extents": all_other_agents_future_extents,
+        "all_other_agents_future_availability": all_other_agents_future_availability.astype(np.bool),
+        "all_other_agents_types": all_other_agents_types,
+        "agent_trajectory_polyline": agent_trajectory_polyline,
+        "agent_polyline_availability": agent_polyline_availability.astype(np.bool),
+        "other_agents_polyline": other_agents_polyline,
+        "other_agents_polyline_availability": other_agents_polyline_availability.astype(np.bool),
+    }
+
+    return agent_dict
+
+def map_func(lane_cfg_params, mapAPI, agent_centroid_m, agent_from_world, history_tl_faces):
+      # START WORKING ON LANES
     # TODO (lberg): this implementation is super ugly, I'll fix it
     # TODO (anasrferreira): clean up more and add interpolation params to configuration as well.
     MAX_LANES = lane_cfg_params["max_num_lanes"]
@@ -225,7 +156,7 @@ def vectorized_generate_agent_sample(
         distances.append(np.min(lane_dist))
     lanes_indices = lanes_indices[np.argsort(distances)]
 
-    # TODO: move below after traffic lights
+     # TODO: move below after traffic lights
     crosswalks_bounds = mapAPI.bounds_info["crosswalks"]["bounds"]
     crosswalks_indices = indices_in_bounds(agent_centroid_m, crosswalks_bounds, MAX_LANE_DISTANCE)
     crosswalks_points = np.zeros((MAX_CROSSWALKS, MAX_POINTS_CW, 2), dtype=np.float32)
@@ -287,9 +218,119 @@ def vectorized_generate_agent_sample(
     crosswalks = np.concatenate([crosswalks_points, np.zeros_like(crosswalks_points[..., [0]])], axis=-1)
     # MAX_LANES x MAX_VECTORS x 3 (XY + 1 TL-feature)
     lanes_mid = np.concatenate([lanes_mid_points, lanes_tl_feature], axis=-1)
+
     return {
+        "lanes": lanes,
+        "lanes_availabilities": lanes_availabilities.astype(np.bool),
+        "lanes_mid": lanes_mid,
+        "lanes_mid_availabilities": lanes_mid_availabilities.astype(np.bool),
+        "crosswalks": crosswalks,
+        "crosswalks_availabilities": crosswalks_availabilities.astype(np.bool),
+    }
+
+
+
+def vectorized_generate_agent_sample(
+    state_index: int,
+    frames: np.ndarray,
+    agents: np.ndarray,
+    tl_faces: np.ndarray,
+    selected_track_id: Optional[int],
+    render_context: RenderContext,
+    history_num_frames_ego: int,
+    history_num_frames_agents: int,
+    future_num_frames: int,
+    step_time: float,
+    filter_agents_threshold: float,
+    other_agents_num: int,
+    max_agents_distance: float,
+    mapAPI: MapAPI,
+    lane_cfg_params: dict,
+    rasterizer: Optional[Rasterizer] = None,
+    perturbation: Optional[Perturbation] = None,
+) -> dict:
+    # TODO: doc string
+    """ This will add to the generate_agent_sample function in l5kit to include all agents' history,
+        needed for vectorized version.
+    """
+    history_num_frames_max = max(history_num_frames_ego, history_num_frames_agents)
+    (
+        history_frames,
+        future_frames,
+        history_agents,
+        future_agents,
+        history_tl_faces,
+        future_tl_faces,
+    ) = get_agent_context(state_index, frames, agents, tl_faces, history_num_frames_max, future_num_frames,)
+
+    if perturbation is not None and len(future_frames) == future_num_frames:
+        history_frames, future_frames = perturbation.perturb(
+            history_frames=history_frames, future_frames=future_frames
+        )
+
+    # State you want to predict the future of.
+    cur_frame = history_frames[0]
+    cur_agents = history_agents[0]
+
+    if selected_track_id is None:
+        agent_centroid_m = cur_frame["ego_translation"][:2]
+        agent_yaw_rad = rotation33_as_yaw(cur_frame["ego_rotation"])
+        agent_extent_m = np.asarray((EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, EGO_EXTENT_HEIGHT))
+        agent_type_idx = PERCEPTION_LABEL_TO_INDEX["PERCEPTION_LABEL_CAR"]
+        selected_agent = None
+    else:
+        # this will raise IndexError if the agent is not in the frame or under agent-threshold
+        # this is a strict error, we cannot recover from this situation
+        try:
+            agent = filter_agents_by_track_id(
+                filter_agents_by_labels(cur_agents, filter_agents_threshold), selected_track_id
+            )[0]
+        except IndexError:
+            raise ValueError(f" track_id {selected_track_id} not in frame or below threshold")
+        agent_centroid_m = agent["centroid"]
+        agent_yaw_rad = float(agent["yaw"])
+        agent_extent_m = agent["extent"]
+        agent_type_idx = np.argmax(agent["label_probabilities"])
+        selected_agent = agent
+
+    input_im = (
+        None
+        if not rasterizer
+        else rasterizer.rasterize(history_frames, history_agents, history_tl_faces, selected_agent)
+    )
+
+    world_from_agent = compute_agent_pose(agent_centroid_m, agent_yaw_rad)
+    agent_from_world = np.linalg.inv(world_from_agent)
+    raster_from_world = render_context.raster_from_world(agent_centroid_m, agent_yaw_rad)
+
+    future_coords_offset, future_yaws_offset, future_extents, future_availability = get_relative_poses(
+        future_num_frames, future_frames, selected_track_id, future_agents, agent_from_world, agent_yaw_rad
+    )
+
+    # For vectorized version we require both ego and agent history to be a Tensor of same length
+    # => fetch history_num_frames_max for both, and later zero out frames exceeding the set history length.
+    # Use history_num_frames_max + 1 because it also includes the current frame.
+    history_coords_offset, history_yaws_offset, history_extents, history_availability = get_relative_poses(
+        history_num_frames_max + 1, history_frames, selected_track_id, history_agents, agent_from_world, agent_yaw_rad
+    )
+
+    history_coords_offset[history_num_frames_ego + 1 :] *= 0
+    history_yaws_offset[history_num_frames_ego + 1 :] *= 0
+    history_extents[history_num_frames_ego + 1 :] *= 0
+    history_availability[history_num_frames_ego + 1 :] *= 0
+
+    history_vels_mps, future_vels_mps = compute_agent_velocity(history_coords_offset, future_coords_offset, step_time)
+
+    d1 = {
         "image": input_im,
-        "target_positions": future_coords_offset,
+        "extent": agent_extent_m,
+        "type": agent_type_idx,
+        "world_to_image": raster_from_world,  # TODO deprecate
+        "raster_from_agent": raster_from_world @ world_from_agent,
+        "raster_from_world": raster_from_world,
+        "agent_from_world": agent_from_world,
+        "world_from_agent": world_from_agent,
+            "target_positions": future_coords_offset,
         "target_yaws": future_yaws_offset,
         "target_extents": future_extents,
         "target_availabilities": future_availability.astype(np.bool),
@@ -297,37 +338,15 @@ def vectorized_generate_agent_sample(
         "history_yaws": history_yaws_offset,
         "history_extents": history_extents,
         "history_availabilities": history_availability.astype(np.bool),
-        "world_to_image": raster_from_world,  # TODO deprecate
-        "raster_from_agent": raster_from_world @ world_from_agent,
-        "raster_from_world": raster_from_world,
-        "agent_from_world": agent_from_world,
-        "world_from_agent": world_from_agent,
         "centroid": agent_centroid_m,
         "yaw": agent_yaw_rad,
-        "extent": agent_extent_m,
-        "type": agent_type_idx,
-        "all_other_agents_history_positions": all_other_agents_history_positions,
-        "all_other_agents_history_yaws": all_other_agents_history_yaws,
-        "all_other_agents_history_extents": all_other_agents_history_extents,
-        "all_other_agents_history_availability": all_other_agents_history_availability.astype(np.bool),
-        "all_other_agents_future_positions": all_other_agents_future_positions,
-        "all_other_agents_future_yaws": all_other_agents_future_yaws,
-        "all_other_agents_future_extents": all_other_agents_future_extents,
-        "all_other_agents_future_availability": all_other_agents_future_availability.astype(np.bool),
-        "all_other_agents_types": all_other_agents_types,
-        "agent_trajectory_polyline": agent_trajectory_polyline,
-        "agent_polyline_availability": agent_polyline_availability.astype(np.bool),
-        "other_agents_polyline": other_agents_polyline,
-        "other_agents_polyline_availability": other_agents_polyline_availability.astype(np.bool),
-        "lanes": lanes,
-        "lanes_availabilities": lanes_availabilities.astype(np.bool),
-        "lanes_mid": lanes_mid,
-        "lanes_mid_availabilities": lanes_mid_availabilities.astype(np.bool),
-        "crosswalks": crosswalks,
-        "crosswalks_availabilities": crosswalks_availabilities.astype(np.bool),
         "speed": np.linalg.norm(future_vels_mps[0]),
     }
 
+    agent_dict = agents_func(history_coords_offset, history_yaws_offset, history_availability, history_agents, agent_centroid_m, max_agents_distance, selected_track_id, other_agents_num, history_num_frames_max, future_num_frames, history_frames, agent_from_world, agent_yaw_rad, future_frames, future_agents, history_num_frames_agents)
+    map_dict = map_func(lane_cfg_params, mapAPI, agent_centroid_m, agent_from_world, history_tl_faces)
+
+    return {**d1, **agent_dict, **map_dict}
 
 def filter_agents_by_distance(agents: np.ndarray, centroid: np.ndarray, max_distance: float) -> np.ndarray:
     """Filter agents by distance, cut to `max_distance` and sort the result
