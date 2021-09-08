@@ -70,6 +70,10 @@ if __name__ == "__main__":
                         help='Reward clipping threshold')
     parser.add_argument('--kinematic', action='store_true',
                         help='Flag to use kinematic model in the environment')
+    parser.add_argument('--enable_scene_type_aggregation', action='store_true',
+                        help='enable scene type aggregation of evaluation metrics')
+    parser.add_argument('--scene_id_to_type_path', default=None, type=str,
+                        help='Path to csv file mapping scene id to scene type')
     parser.add_argument('--seed', default=42, type=int)
     args = parser.parse_args()
 
@@ -110,7 +114,9 @@ if __name__ == "__main__":
 
     # Eval Model Periodically
     eval_callback = L5KitEvalCallback(eval_env, eval_freq=(args.eval_freq // args.n_envs),
-                                      n_eval_episodes=args.n_eval_episodes, n_eval_envs=args.n_eval_envs)
+                                      n_eval_episodes=args.n_eval_episodes, n_eval_envs=args.n_eval_envs,
+                                      enable_scene_type_aggregation=args.enable_scene_type_aggregation,
+                                      scene_id_to_type_path=args.scene_id_to_type_path)
 
     # train
     model.learn(args.n_steps, callback=[checkpoint_callback, eval_callback])
