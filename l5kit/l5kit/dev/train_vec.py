@@ -1,4 +1,3 @@
-from tempfile import gettempdir
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -17,8 +16,9 @@ from l5kit.kinematic import AckermanPerturbation
 from l5kit.random import GaussianRandomGenerator
 from l5kit.data.map_api import CACHE_SIZE, InterpolationMethod, MapAPI
 from l5kit.rasterization.rasterizer_builder import get_hardcoded_world_to_ecef
-
+from l5kit.vectorization.vectorizer import Vectorizer
 import os
+from l5kit.vectorization.vectorizer_builder import build_vectorizer
 
 # TODO: hacky (temp) run file
 
@@ -33,13 +33,9 @@ train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
 # rasterisation and perturbation
 rasterizer = None # build_rasterizer(cfg, dm)
 
-# dataset_meta = _load_metadata(self.cfg["raster_params"]["dataset_meta_key"], dm)
-# world_to_ecef = np.array(dataset_meta["world_to_ecef"], dtype=np.float64)
-world_to_ecef = get_hardcoded_world_to_ecef()
+vectorizer = build_vectorizer(cfg, dm)
 
-mapAPI = MapAPI(dm.require(cfg["raster_params"]["semantic_map_key"]), world_to_ecef)
-
-train_dataset = EgoDatasetVectorized(cfg, train_zarr, rasterizer, mapAPI)
+train_dataset = EgoDatasetVectorized(cfg, train_zarr, rasterizer, vectorizer)
 
 weights_scaling = [1.0, 1.0, 1.0]
 

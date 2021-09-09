@@ -363,6 +363,28 @@ class MapAPI:
                 return color_name
         raise ValueError(f"Face {face_id} has no valid color among {TLFacesColors.__members__}")
 
+    def get_tl_feature_for_lane(self, lane_id, active_tl_face_to_color) -> int:
+        """ Get traffic light feature for a lane given its active tl faces and a constant priority map.
+        """
+        # Map from traffic light state to its feature and priority index (to disambiguate multiple active tl faces)
+        # "None" state is special and mean that a lane does not have a traffic light. "Unknown" means that the traffic
+        # light exists but PCP cannot detect its state.
+        # Except for `none`, priority increases with numbers
+        tl_color_to_priority_idx = {"unknown": 0, "green": 1, "yellow": 2, "red": 3, "none": 4}
+
+        lane_tces = self.get_lane_traffic_control_ids(lane_id)
+        lane_tls = [tce for tce in lane_tces if self.is_traffic_light(tce)]
+        if len(lane_tls) == 0:
+            return tl_color_to_priority_idx["none"]
+
+        active_tl_faces = active_tl_face_to_color.keys() & lane_tces
+        # The active color with higher priority is kept
+        highest_priority_idx_active = tl_color_to_priority_idx["unknown"]
+        for active_tl_face in active_tl_faces:
+            active_color = active_tl_face_to_color[active_tl_face]
+            highest_priority_idx_active = max(highest_priority_idx_active, tl_color_to_priority_idx[active_color])
+        return highest_priority_idx_active
+
     def get_bounds(self) -> dict:
         """
         For each elements of interest returns bounds [[min_x, min_y],[max_x, max_y]] and proto ids
