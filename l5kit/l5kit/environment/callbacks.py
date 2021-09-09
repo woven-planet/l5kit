@@ -25,7 +25,7 @@ class L5KitEvalCallback(EvalCallback):
 
     def __init__(self, eval_env: gym.Env, eval_freq: int = 10000, n_eval_episodes: int = 10,
                  n_eval_envs: int = 4, metric_set: Optional[L5MetricSet] = None,
-                 enable_scene_type_aggregation: Optional[bool] = True, scene_id_to_type_path: Optional[str] = None,
+                 enable_scene_type_aggregation: Optional[bool] = False, scene_id_to_type_path: Optional[str] = None,
                  verbose: int = 0) -> None:
         super(L5KitEvalCallback, self).__init__(eval_env)
         self.eval_freq = eval_freq
