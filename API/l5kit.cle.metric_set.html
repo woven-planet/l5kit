@@ -447,6 +447,15 @@ composed by all results.</p>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="l5kit.cle.metric_set.L5MetricSet.aggregate_failed_frames">
+<span class="sig-name descname"><span class="pre">aggregate_failed_frames</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span> </span><span class="pre">Any</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.cle.metric_set.L5MetricSet.aggregate_failed_frames" title="Permalink to this definition">¶</a></dt>
+<dd><p>This method will aggregate the failed scenes and will return
+a dictionary indexed by the validator name associated with a list
+with FailedFrame items containing the scene_id and the frame index
+that triggered the validator.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="l5kit.cle.metric_set.L5MetricSet.build_composite_metrics">
 <span class="sig-name descname"><span class="pre">build_composite_metrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.cle.composite_metrics.html#l5kit.cle.composite_metrics.SupportsCompositeMetricCompute" title="l5kit.cle.composite_metrics.SupportsCompositeMetricCompute"><span class="pre">l5kit.cle.composite_metrics.SupportsCompositeMetricCompute</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.cle.metric_set.L5MetricSet.build_composite_metrics" title="Permalink to this definition">¶</a></dt>
 <dd><p>Return a list of composite metrics that should be computed. Composite

@@ -1,0 +1,7 @@
+l5kit.cle.scene\_type\_agg module
+=================================
+
+.. automodule:: l5kit.cle.scene_type_agg
+   :members:
+   :undoc-members:
+   :show-inheritance:

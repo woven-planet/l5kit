@@ -62,4 +62,4 @@ Table of Contents
 
 Contact
 ===============================================================================
-If you find problem or have questions about L5Kit please feel free to create `github issue <https://github.com/lyft/l5kit/issues>`_ or reach out to l5kit@lyft.com!
+If you find problem or have questions about L5Kit please feel free to create `github issue <https://github.com/lyft/l5kit/issues>`_ !
