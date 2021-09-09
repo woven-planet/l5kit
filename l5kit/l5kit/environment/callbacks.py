@@ -1,10 +1,12 @@
+import csv
 import math
-from typing import Optional
+from typing import Dict, List, Optional
 
 import gym
 from stable_baselines3.common.callbacks import EvalCallback
 
 from l5kit.cle.metric_set import L5MetricSet
+from l5kit.cle.scene_type_agg import compute_cle_scene_type_aggregations
 from l5kit.cle.validators import ValidationCountingAggregator
 from l5kit.environment.gym_metric_set import CLEMetricSet
 
@@ -16,11 +18,15 @@ class L5KitEvalCallback(EvalCallback):
     :param n_eval_episodes: The number of episodes to test the agent
     :param eval_freq: Evaluate the agent every ``eval_freq`` call of the callback.
     :param metric_set: computes a set of metric parametrization for the L5Kit environment
+    :param enable_scene_type_aggregation: enable evaluation according to scene type
+    :param scene_id_to_type_path: path to the csv file mapping scene id to scene type
     :param verbose:
     """
 
     def __init__(self, eval_env: gym.Env, eval_freq: int = 10000, n_eval_episodes: int = 10,
-                 n_eval_envs: int = 4, metric_set: Optional[L5MetricSet] = None, verbose: int = 0) -> None:
+                 n_eval_envs: int = 4, metric_set: Optional[L5MetricSet] = None,
+                 enable_scene_type_aggregation: Optional[bool] = True, scene_id_to_type_path: Optional[str] = None,
+                 verbose: int = 0) -> None:
         super(L5KitEvalCallback, self).__init__(eval_env)
         self.eval_freq = eval_freq
         self.n_eval_episodes = n_eval_episodes
@@ -28,8 +34,32 @@ class L5KitEvalCallback(EvalCallback):
         self.verbose = verbose
         self.metric_set = metric_set or CLEMetricSet()
 
+        # For scene type-based aggregation
+        self.enable_scene_type_aggregation = enable_scene_type_aggregation
+        if self.enable_scene_type_aggregation:
+            assert scene_id_to_type_path is not None
+            self.scene_id_to_type_path = scene_id_to_type_path
+            self.scene_ids_to_scene_types = self._get_scene_types()
+
     def _init_callback(self) -> None:
         pass
+
+    def _get_scene_types(self) -> List[List[str]]:
+        """Construct a list mapping scene types to their corresponding types.
+
+        :return: list of scene type tags per scene
+        """
+        # Read csv
+        scene_type_dict: Dict[int, str]
+        with open(self.scene_id_to_type_path, 'r') as f:
+            csv_reader = csv.reader(f)
+            scene_type_dict = {int(rows[0]): rows[1] for rows in csv_reader}
+
+        # Convert dict to List[List[str]]
+        scene_id_to_type_list: List[List[str]] = []
+        for k, v in scene_type_dict.items():
+            scene_id_to_type_list.append([v])
+        return scene_id_to_type_list
 
     def _on_step(self) -> bool:
         if self.eval_freq > 0 and self.n_calls % self.eval_freq == 0:
@@ -44,6 +74,15 @@ class L5KitEvalCallback(EvalCallback):
             assert self.logger is not None
             for k, v in agg.items():
                 self.logger.record(f'eval/{k}', v.item())
+
+            # If we should compute the scene-type aggregation metrics
+            if self.enable_scene_type_aggregation:
+                scene_type_results = \
+                    compute_cle_scene_type_aggregations(self.metric_set,
+                                                        self.scene_ids_to_scene_types,
+                                                        list_validator_table_to_publish=[])
+                for k, v in scene_type_results.items():
+                    self.logger.record(f'{k}', v)
 
             # Dump log so the evaluation results are printed with the correct timestep
             self.logger.record("time/total timesteps", self.num_timesteps, exclude="tensorboard")
