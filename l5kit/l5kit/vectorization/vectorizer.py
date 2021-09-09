@@ -1,6 +1,7 @@
-from typing import Optional, List, Set, Dict
+from typing import Dict
 
 import numpy as np
+import torch
 
 from l5kit.data import (
     filter_agents_by_labels,
@@ -15,7 +16,17 @@ from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
 from l5kit.geometry.transform import transform_points
 
 class Vectorizer:
+    """Object that processes parts of an input frame, and converts this frame to a vectorized representation - which
+    can e.g. be fed as input to a DNN using the corresponding input format.
+
+    """
     def __init__(self, cfg, mapAPI):
+        """Instantiates the class.
+
+        Arguments:
+            cfg: config to load settings from
+            mapAPI: mapAPI to query map information
+        """
         self.lane_cfg_params = cfg["data_generation_params"]["lane_params"]
         self.mapAPI = mapAPI
         self.max_agents_distance = cfg["data_generation_params"]["max_agents_distance"]
@@ -24,17 +35,63 @@ class Vectorizer:
         self.history_num_frames_max = max(cfg["model_params"]["history_num_frames_ego"], self.history_num_frames_agents)
         self.other_agents_num=cfg["data_generation_params"]["other_agents_num"]
 
-    def vectorize(self, selected_track_id, agent_centroid_m, agent_yaw_rad, agent_from_world, history_frames, history_agents, history_tl_faces, history_coords_offset, history_yaws_offset, history_availability, future_frames, future_agents):
-        agent_dict = self._vectorize_agents(selected_track_id, agent_centroid_m, agent_yaw_rad, agent_from_world, history_frames, history_agents, history_coords_offset, history_yaws_offset, history_availability, future_frames, future_agents)
-        map_dict = self._vectorize_map(agent_centroid_m, agent_from_world, history_tl_faces)
-        return {**agent_dict, **map_dict}
+    def vectorize(self, selected_track_id: int, agent_centroid_m: torch.Tensor, agent_yaw_rad: torch.Tensor, agent_from_world: torch.Tensor, 
+    history_frames: np.ndarray, history_agents, history_tl_faces, history_position_m, history_yaws_rad, history_availability, future_frames, future_agents):
+        """Base function to execute a vectorization process.
 
-    def _vectorize_agents(self, selected_track_id, agent_centroid_m, agent_yaw_rad, agent_from_world, history_frames, history_agents, history_coords_offset, history_yaws_offset, history_availability, future_frames, future_agents):
+        TODO: torch or np array input?
+
+        Arguments:
+            selected_track_id: selected_track_id: Either None for AV, or the ID of an agent that you want to 
+             predict the future of. This agent is centered in the representation and the returned targets are derived from
+            their future states.- TODO: can this be None / not None?
+            agent_centroid_m: position of the target agent
+            agent_yaw_rad: yaw angle of the target agent
+            agent_from_world: inverted agent pose as 3x3 matrix
+            history_frames: historical frames of the target frame
+            history_agents: agents appearing in history_frames
+            history_tl_faces: traffic light faces in history frames
+            history_position_m: historical positions of target agent
+            history_yaws_rad: historical yaws of target agent
+            history_availability: availability mask of history frames
+            future_frames: future frames of the target frame
+            future_agents: agents in future_frames
+
+        Returns:
+            dict: a dict containing the vectorized frame representation
+        """
+        agent_features = self._vectorize_agents(selected_track_id, agent_centroid_m, agent_yaw_rad, agent_from_world, history_frames, history_agents, history_position_m, history_yaws_rad, history_availability, future_frames, future_agents)
+        map_features = self._vectorize_map(agent_centroid_m, agent_from_world, history_tl_faces)
+        return {**agent_features, **map_features}
+
+    def _vectorize_agents(self, selected_track_id, agent_centroid_m, agent_yaw_rad, agent_from_world, history_frames, history_agents, history_position_m, 
+    history_yaws_rad, history_availability, future_frames, future_agents):
+        """Vectorize agents in a frame.
+
+        Arguments:
+            selected_track_id: selected_track_id: Either None for AV, or the ID of an agent that you want to 
+             predict the future of. This agent is centered in the representation and the returned targets are derived from
+            their future states.- TODO: can this be None / not None?
+            agent_centroid_m: position of the target agent
+            agent_yaw_rad: yaw angle of the target agent
+            agent_from_world: inverted agent pose as 3x3 matrix
+            history_frames: historical frames of the target frame
+            history_agents: agents appearing in history_frames
+            history_tl_faces: traffic light faces in history frames
+            history_position_m: historical positions of target agent
+            history_yaws_rad: historical yaws of target agent
+            history_availability: availability mask of history frames
+            future_frames: future frames of the target frame
+            future_agents: agents in future_frames
+
+        Returns:
+            dict: a dict containing the vectorized agent representation of the target frame
+        """
         # compute agent features
         # sequence_length x 2 (two being x, y)
-        agent_points = history_coords_offset.copy()
+        agent_points = history_position_m.copy()
         # sequence_length x 1
-        agent_yaws = history_yaws_offset.copy()
+        agent_yaws = history_yaws_rad.copy()
         # sequence_length x xy+yaw (3)
         agent_trajectory_polyline = np.concatenate([agent_points, agent_yaws], axis=-1)
         agent_polyline_availability = history_availability.copy()
@@ -129,6 +186,16 @@ class Vectorizer:
         return agent_dict
 
     def _vectorize_map(self, agent_centroid_m, agent_from_world, history_tl_faces):    
+        """Vectorize map elements in a frame.
+
+        Arguments:
+            agent_centroid_m: position of the target agent
+            agent_from_world: inverted agent pose as 3x3 matrix
+            history_tl_faces: traffic light faces in history frames
+
+        Returns:
+            dict: a dict containing the vectorized map representation of the target frame
+        """
         # START WORKING ON LANES
         # TODO (lberg): this implementation is super ugly, I'll fix it
         # TODO (anasrferreira): clean up more and add interpolation params to configuration as well.

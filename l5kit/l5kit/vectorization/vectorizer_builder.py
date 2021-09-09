@@ -7,19 +7,14 @@ from ..data import DataManager
 from l5kit.configs.config import load_metadata
 
 def build_vectorizer(cfg: dict, data_manager: DataManager) -> Vectorizer:
-    """Factory function for rasterizers, reads the config, loads required data and initializes the correct rasterizer.
+    """Factory function for vectorizers, reads the config, loads required data and initializes the vectorizer.
 
     Args:
         cfg (dict): Config.
         data_manager (DataManager): Datamanager that is used to require files to be present.
 
-    Raises:
-        NotImplementedError: Thrown when the ``map_type`` read from the config doesn't have an associated rasterizer
-        type in this factory function. If you have custom rasterizers, you can wrap this function in your own factory
-        function and catch this error.
-
     Returns:
-        Rasterizer: Rasterizer initialized given the supplied config.
+        Vectorizer: Vectorizer initialized given the supplied config.
     """
     dataset_meta_key = cfg["raster_params"]["dataset_meta_key"] # TODO positioning of key
     try:
