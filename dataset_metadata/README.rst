@@ -1,8 +1,8 @@
-L5Kit Scripts
+L5Kit Metadata
 ===============================================================================
 In this folder, we provide metadata of the L5Kit dataset.
 
-Turn Categories
+Turn Metadata
 -------------------------------------------------------------------------------
 The script :code:`scripts/categorize_scenes.py` categorizes the various scenes based on the turn taken by the ego.
 Currently, there exist three categories: :code:`left`, :code:`right` and :code:`straight`. Using this script, we generate 
