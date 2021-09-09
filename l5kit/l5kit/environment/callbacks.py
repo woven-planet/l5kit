@@ -44,10 +44,9 @@ class L5KitEvalCallback(EvalCallback):
     def _init_callback(self) -> None:
         pass
 
-    def _get_scene_types(self, path: Optional[str] = None) -> List[List[str]]:
+    def _get_scene_types(self) -> List[List[str]]:
         """Construct a list mapping scene types to their corresponding types.
 
-        :param path: Path to file contain the mapping from scene_id to scene tags
         :return: list of scene type tags per scene
         """
         # Read csv

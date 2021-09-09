@@ -62,7 +62,6 @@ def identify_turn(zarr_dataset: ChunkedDataset,
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
 # Please set the L5KIT_DATA_FOLDER environment variable
-os.environ["L5KIT_DATA_FOLDER"] = "/home/ubuntu/level5_data"
 if "L5KIT_DATA_FOLDER" not in os.environ:
     raise KeyError("L5KIT_DATA_FOLDER environment variable not set")
 
@@ -71,7 +70,7 @@ if __name__ == "__main__":
     parser.add_argument('--data_path', type=str, default='scenes/sample.zarr',
                         help='Path to L5Kit dataset to categorize')
     parser.add_argument('--output', type=str, default='sample_metadata.csv',
-                        help='CSV filename name for writing the metadata')
+                        help='CSV file name for writing the metadata')
     args = parser.parse_args()
 
     # load dataset
@@ -82,8 +81,8 @@ if __name__ == "__main__":
 
     # categorize
     turn_dict = identify_turn(zarr_dataset)
-    res = Counter(turn_dict.values())
-    print(res)
+    categories_counter = Counter(turn_dict.values())
+    print(categories_counter)
 
     # Write to csv
     with open(args.output, 'w') as f:
