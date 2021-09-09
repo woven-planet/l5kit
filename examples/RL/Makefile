@@ -13,6 +13,8 @@
 	# OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python ppo.py --tb_log tb_log --n_steps 20000000 --save_freq 1000000 --eval_freq 500000 --n_envs 8 --n_eval_envs 16 --n_eval_episodes 1000 --kinematic --reward "cle" -o verify_allscenes_pk_col15
 	OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python ppo.py --tb_log tb_log --n_steps 20000000 --save_freq 1000000 --eval_freq 500000 --n_envs 8 --n_eval_envs 16 --n_eval_episodes 1000 --kinematic --reward "cle" -o verify_allscenes_pk_col45
 
+@ test_full_val:
+	OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python ppo.py --n_steps 3000 --save_freq 500000 --eval_freq 1000 --n_envs 8 --n_eval_envs 16 --n_eval_episodes 16000 --kinematic --enable_scene_type_aggregation --load 'logs/verify_allscenes_20000000_steps'
 
 # @ test_git_ppo:
 # 	# OMP_NUM_THREADS=1 MKL_NUM_THREADS=1 python ppo.py --tb_log tb_log --n_steps 300000 --save_freq 100000 --eval_freq 100000 --n_envs 8 --n_eval_envs 1 --kinematic -o verify
