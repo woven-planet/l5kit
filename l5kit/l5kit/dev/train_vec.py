@@ -25,12 +25,15 @@ from l5kit.vectorization.vectorizer_builder import build_vectorizer
 # set env variable for data
 os.environ["L5KIT_DATA_FOLDER"] = "/tmp/l5kit_data"
 dm = LocalDataManager(None)
+
 # get config 
 cfg = load_config_data("/code/l5kit/l5kit/l5kit/dev/config.yaml")
 
 # ===== INIT DATASET
 train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
 # rasterisation and perturbation
+
+# TODO
 rasterizer = None # build_rasterizer(cfg, dm)
 
 vectorizer = build_vectorizer(cfg, dm)
