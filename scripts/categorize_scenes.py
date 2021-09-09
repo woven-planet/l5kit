@@ -62,6 +62,7 @@ def identify_turn(zarr_dataset: ChunkedDataset,
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
 # Please set the L5KIT_DATA_FOLDER environment variable
+os.environ["L5KIT_DATA_FOLDER"] = os.environ["HOME"] + '/level5_data/'
 if "L5KIT_DATA_FOLDER" not in os.environ:
     raise KeyError("L5KIT_DATA_FOLDER environment variable not set")
 
@@ -82,6 +83,7 @@ if __name__ == "__main__":
     # categorize
     turn_dict = identify_turn(zarr_dataset)
     categories_counter = Counter(turn_dict.values())
+    print("The number of scenes per category:")
     print(categories_counter)
 
     # Write to csv
