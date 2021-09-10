@@ -6,7 +6,9 @@ import torch.nn as nn
 from torchvision.models.resnet import resnet18, resnet50
 
 
-class PlanningModel(nn.Module):
+class RasterizedPlanningModel(nn.Module):
+    """Raster-based model for planning.
+    """
     def __init__(
             self,
             model_arch: str,

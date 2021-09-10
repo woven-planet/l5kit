@@ -11,7 +11,7 @@ from l5kit.dataset import EgoDatasetVectorized
 from l5kit.rasterization import build_rasterizer
 from l5kit.geometry import transform_points
 from l5kit.visualization import TARGET_POINTS_COLOR, draw_trajectory
-from l5kit.planning.vectorized.open_loop import VectorizedModel
+from l5kit.planning.vectorized.open_loop_model import VectorizedModel
 from l5kit.kinematic import AckermanPerturbation
 from l5kit.random import GaussianRandomGenerator
 from l5kit.data.map_api import CACHE_SIZE, InterpolationMethod, MapAPI

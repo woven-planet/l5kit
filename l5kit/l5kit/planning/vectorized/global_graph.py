@@ -13,7 +13,7 @@ class VectorizedEmbedding(nn.Module):
         :type embedding_dim: int
         """
         super(VectorizedEmbedding, self).__init__()
-        # Torch script did not like enums, so we are going more primitive.
+        # Torchscript did not like enums, so we are going more primitive.
         self.polyline_types = {
             "AGENT_OF_INTEREST": 0,
             "AGENT_NO": 1,
@@ -39,10 +39,15 @@ class VectorizedEmbedding(nn.Module):
         self.PERCEPTION_LABEL_CYCLIST: int = PERCEPTION_LABEL_TO_INDEX["PERCEPTION_LABEL_CYCLIST"]
 
     def forward(self, data_batch: Dict[str, torch.Tensor]) -> torch.Tensor:
-        # assumptions:
-        # agent of interest is the first one in the batch
-        # other agents follow
-        # then we have polylines
+        """
+        Model forward: embed the given elements based on their type.
+
+        Assumptions:
+        - agent of interest is the first one in the batch
+        - other agents follow
+        - then we have polylines (lanes)
+        """
+
         with torch.no_grad():
             polyline_types = data_batch["type"]
             other_agents_types = data_batch["all_other_agents_types"]
@@ -111,28 +116,10 @@ class MLP(nn.Module):
         return x
 
 
-class GlobalSelfAttentionLayer(nn.Module):
-    def __init__(self, dim_in: int, dim_emb: int, use_scaling: Optional[bool] = False, dropout: float = 0.1):
-        super(GlobalSelfAttentionLayer, self).__init__()
-        self.use_scaling = use_scaling
-        self.proj = nn.Linear(dim_in, dim_emb * 3, bias=False)
-        self.scaling = dim_emb ** -0.5
-        self.dropout = nn.Dropout(dropout)
-
-    def forward(self, x: torch.Tensor, valid_mask: Optional[torch.Tensor] = None) -> Tuple[torch.Tensor, torch.Tensor]:
-        q, k, v = self.proj(x).chunk(3, dim=-1)
-
-        scores = q @ k.transpose(1, 2)
-        if self.use_scaling:
-            scores *= self.scaling
-        if valid_mask is not None:
-            scores = scores.masked_fill(valid_mask.unsqueeze(1).expand(-1, x.shape[1], -1) == 0, float("-inf"))
-        attention_weights = torch.softmax(scores, dim=-1)
-        attention_weights = self.dropout(attention_weights)
-        return attention_weights @ v, attention_weights
-
 
 class MultiheadAttentionGlobalHead(nn.Module):
+    """Global graph making use of multi-head attention.
+    """
     def __init__(self, d_model: int, num_timesteps: int, num_outputs: int, nhead: int = 8, dropout: float = 0.1):
         super().__init__()
         self.num_timesteps = num_timesteps
@@ -143,6 +130,18 @@ class MultiheadAttentionGlobalHead(nn.Module):
     def forward(
         self, inputs: torch.Tensor, type_embedding: torch.Tensor, mask: torch.Tensor
     ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
+        """Model forward: 
+
+        :param inputs: model inputs
+        :param type_embedding: type embedding describing the different input types
+        :param mask: availability mask
+
+        :return tuple of outputs, attention
+        """
+        # dot-product attention: 
+        #   - query is ego's vector
+        #   - key is inputs plus type embedding
+        #   - value is inputs
         out, attns = self.encoder(inputs[[0]], inputs + type_embedding, inputs, mask)
         outputs = self.output_embed(out[0]).view(-1, self.num_timesteps, self.num_outputs)
         return outputs, attns

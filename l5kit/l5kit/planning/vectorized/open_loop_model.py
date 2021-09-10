@@ -5,15 +5,14 @@ import torch.nn.functional as F
 from torch import nn
 
 
-from .local_graph import LocalSubGraph_MHA, LocalSubGraph, SinusoidalPositionalEmbedding
+from .local_graph import LocalSubGraph, SinusoidalPositionalEmbedding
 from .global_graph import MultiheadAttentionGlobalHead, VectorizedEmbedding
 from .common import pad_avail, pad_points, build_target_normalization
 
 
 class VectorizedModel(nn.Module):
-    """ Vectorized architecture with subgraph and global attention
+    """ Vectorized planning model.
     """
-
     def __init__(
         self,
         model_arch: str,
@@ -22,12 +21,26 @@ class VectorizedModel(nn.Module):
         history_num_frames_agents: int,
         num_targets: int,
         weights_scaling: List[float],
-        criterion: nn.Module,  # criterion is only needed for training and not for evaluation
+        criterion: nn.Module, 
         disable_other_agents: bool,
         disable_map: bool,
         disable_lane_boundaries: bool,
         skip_self_attention: bool = False,
     ) -> None:
+        """ Initializes the model.
+
+        :param model_arch: 
+        :param subgraph_arch:
+        :history_num_frames_ego: number of history ego frames to include
+        :param history_num_frames_agents: number of history agent frames to include
+        :param num_targets: number of values to predict
+        :param weights_scaling:
+        :param criterion:
+        :param disable_other_agents:
+        :param disable_map:
+        :param disable_lane_boundaries:
+        :param skip_self_attention:
+        """
         super().__init__()
         self.disable_map = disable_map
         self.disable_other_agents = disable_other_agents
@@ -37,8 +50,6 @@ class VectorizedModel(nn.Module):
         self.subgraph_arch = subgraph_arch
         self._history_num_frames_ego = history_num_frames_ego
         self._history_num_frames_agents = history_num_frames_agents
-        # change output size
-        # X, Y  * number of future states
         self._num_targets = num_targets
 
         self._d_local = 256
@@ -92,12 +103,28 @@ class VectorizedModel(nn.Module):
             raise ValueError(f"Model arch {model_arch} unknown in agent_prediction/model.py")
 
     def embed_polyline(self, features: torch.Tensor, mask: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+        """ Embeds the inputs, generates the positional embedding and calls the local subgraph.
+
+        :param features: input features
+        :tensor features: [batch_size, num_elements, max_num_points, max_num_features]
+        :param mask: availability mask
+        :tensor mask: [batch_size, num_elements, max_num_points]
+
+        :return tuple of local subgraphout output, (in-)availability mask
+        """
+        # embed inputs
+        # [batch_size, num_elements, max_num_points, embed_dim]
         polys = self.input_embed(features)
+        # calculate positional embedding
+        # [1, 1, max_num_points, embed_dim]
         pos_embedding = self.positional_embedding(features).unsqueeze(0).transpose(1, 2)
-        # batch_size x total num polys x num vecs
+        # [batch_size, num_elements, max_num_points]
         invalid_mask = ~mask
         invalid_polys = invalid_mask.all(-1)
-        # batch_size x total num polys x num vecs
+        # input features to local subgraoh and return result -
+        # local subgraph reduces features over elements, i.e. creates one descriptor
+        # per element
+        # [batch_size, num_elements, embed_dim]
         polys = self.local_subgraph(polys, invalid_mask, pos_embedding)
         return polys, invalid_polys
 
@@ -110,8 +137,16 @@ class VectorizedModel(nn.Module):
         type_embedding: torch.Tensor,
         lane_bdry_len: int,
     ) -> Tuple[torch.Tensor, torch.Tensor]:
-        """ Encapsulates calling the global_head and preparing needed data.
+        """ Encapsulates calling the global_head (TODO?) and preparing needed data.
+
+        :param agents_polys: dynamic elements - i.e. vectors corresponding to agents
+        :param static_polys: static elements - i.e. vectors corresponding to map elements
+        :param agents_avail: availability of agents
+        :param static_avail: availability of map elements
+        :param type_embedding:
+        :param lane_bdry_len:
         """
+        # Standardize inputs
         agents_polys_feats = torch.cat(
             [agents_polys[:, :1] / self.agent_std, agents_polys[:, 1:] / self.other_agent_std], dim=1
         )
@@ -120,16 +155,18 @@ class VectorizedModel(nn.Module):
         all_polys = torch.cat([agents_polys_feats, static_polys_feats], dim=1)
         all_avail = torch.cat([agents_avail, static_avail], dim=1)
 
-        # Input embedding, positional embedding, and local subgraph
+        # Embed inputs, calculate positional embedding, call local subgraph
         all_embs, invalid_polys = self.embed_polyline(all_polys, all_avail)
         if hasattr(self, "global_from_local"):
             all_embs = self.global_from_local(all_embs)
 
-        # transformer
+        # transformer - TODO?
         all_embs = F.normalize(all_embs, dim=-1) * (self._d_global ** 0.5)
         all_embs = all_embs.transpose(0, 1)
 
         other_agents_len = agents_polys.shape[1] - 1
+
+        # disable certain elements on demand
         if self.disable_other_agents:
             invalid_polys[:, 1 : (1 + other_agents_len)] = 1  # agents won't create attention
 
@@ -141,9 +178,12 @@ class VectorizedModel(nn.Module):
 
         invalid_polys[:, 0] = 0  # make AoI always available in global graph
 
+        # call and return global graph
         return self.global_head(all_embs, type_embedding, invalid_polys)
 
     def forward(self, data_batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
+        # Load and prepare vectors for the model call, split into map and agents
+
         # ==== LANES ====
         # batch size x num lanes x num vectors x num features
         polyline_keys = ["lanes_mid", "crosswalks"]
@@ -181,10 +221,12 @@ class VectorizedModel(nn.Module):
         type_embedding = self.type_embedding(data_batch).transpose(0, 1)
         lane_bdry_len = data_batch["lanes"].shape[1]
 
+        # call the model with these features
         outputs, attns = self.model_call(
             agents_polys, map_polys, agents_availabilities, map_availabilities, type_embedding, lane_bdry_len
         )
 
+        # calculate loss or return predicted position for inference
         if self.training:
             if self.criterion is None:
                 raise NotImplementedError("Loss function is undefined.")

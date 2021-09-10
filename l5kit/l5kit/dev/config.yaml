@@ -13,7 +13,7 @@ model_params:
   render_ego_history: True
 
   # Only applicable for ... TODO
-  subgraph_arch: "local_subgraph"  # local_subgraph or local_subgraph_mha or pointnet
+  subgraph_arch: "local_subgraph"
   disable_other_agents: False
   disable_map: False
   disable_lane_boundaries: True
