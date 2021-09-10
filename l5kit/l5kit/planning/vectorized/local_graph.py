@@ -7,7 +7,7 @@ from typing import Optional, Tuple
 class SinusoidalPositionalEmbedding(nn.Module):
     def __init__(self, d_model: int, max_len: int = 5000):
         """A positional embedding module.
-        Useful to add inject the position of sequence's elements in local graphs
+        Useful to inject the position of sequence elements in local graphs
 
         :param d_model: feature size
         :type d_model: int
@@ -64,7 +64,7 @@ class LocalMLP(nn.Module):
 
 class LocalSubGraphLayer(nn.Module):
     def __init__(self, dim_in: int, dim_out: int) -> None:
-        """Local graph layer
+        """Local subgraph layer
 
         :param dim_in: input feat size
         :type dim_in: int
@@ -76,12 +76,12 @@ class LocalSubGraphLayer(nn.Module):
         self.linear_remap = nn.Linear(dim_in * 2, dim_out)
 
     def forward(self, x: torch.Tensor, invalid_mask: torch.Tensor) -> torch.Tensor:
-        """Forward of the model
+        """Forward of the model 
 
-        :param x: input tensor (B,N,P,dim_in)
-        :type x: torch.Tensor
-        :param invalid_mask: invalid mask for x (B,N,P)
-        :type invalid_mask: torch.Tensor
+        :param x: input tensor
+        :tensor (B,N,P,dim_in)
+        :param invalid_mask: invalid mask for x 
+        :tensor invalid_mask (B,N,P)
         :return: output tensor (B,N,P,dim_out)
         :rtype: torch.Tensor
         """
@@ -102,7 +102,7 @@ class LocalSubGraphLayer(nn.Module):
 
 class LocalSubGraph(nn.Module):
     def __init__(self, num_layers: int, dim_in: int) -> None:
-        """Local graph as a collection of local graph layer
+        """PointNet-like local subgraph - implemented as a collection of local graph layers
 
         :param num_layers: number of LocalSubGraphLayer
         :type num_layers: int
@@ -121,6 +121,7 @@ class LocalSubGraph(nn.Module):
         - Add positional encoding
         - Forward to layers
         - Aggregates using max
+        (calculates a feature descriptor per element - reduces over points)
 
         :param x: input tensor (B,N,P,dim_in)
         :type x: torch.Tensor
@@ -153,119 +154,5 @@ class LocalSubGraph(nn.Module):
         # restore back the batch
         x = torch.zeros_like(x_flat[:, 0])
         x[valid_polys] = x_to_process
-        x = x.view(batch_size, polys_num, self.dim_in)
-        return x
-
-
-class LocalSubGraphLayer_MHA(nn.Module):
-    def __init__(self, dim_in: int, n_head: int = 8, dropout: float = 0.1) -> None:
-        """a MHA-based layer for the local graph
-
-        :param dim_in: input, hidden, output dim for features
-        :type dim_in: int
-        :param n_head: number of heads to use for MHA, defaults to 8
-        :type n_head: int, optional
-        :param dropout: dropout to use, defaults to 0.1
-        :type dropout: float, optional
-        """
-        super(LocalSubGraphLayer_MHA, self).__init__()
-        self.encoder = nn.MultiheadAttention(dim_in, n_head, dropout=dropout)
-        self.output_embed = nn.Linear(dim_in, dim_in)
-
-        # Add some options in debug format here
-        self.dropout = nn.Dropout(dropout)
-        self.activation = F.relu
-        self.norm = nn.LayerNorm(dim_in)
-
-    def forward(self, x: torch.Tensor, invalid_mask: torch.Tensor, pos_enc: torch.Tensor) -> torch.Tensor:
-        """Forward for the layer
-
-        :param x: input tensor (B,N,P,dim_in)
-        :type x: torch.Tensor
-        :param invalid_mask: invalid mask for x (B,N,P)
-        :type invalid_mask: torch.Tensor
-        :param pos_enc: positional encoding
-        :type pos_enc: torch.Tensor
-        :return: output tensor (B,N,P,dim_in)
-        :rtype: torch.Tensor
-        """
-        q = k = x + pos_enc
-        v = x
-
-        out, _ = self.encoder(q, k, v, invalid_mask)
-
-        # use_skip:
-        out = x + self.dropout(out)
-
-        # use_norm:
-        out = self.norm(out)
-
-        out = self.activation(out)
-        outputs = self.output_embed(out)
-        return outputs
-
-
-class LocalSubGraph_MHA(nn.Module):
-    def __init__(
-        self, num_layers: int, dim_in: int, nhead: int = 8, dropout: float = 0.1, disable_pos_encode: bool = True,
-    ) -> None:
-        """A MHA local graph
-
-        :param num_layers: number of layers to use
-        :type num_layers: int
-        :param dim_in: input, hidden, out dim
-        :type dim_in: int
-        :param nhead: numfer of heads to use in the MHA, defaults to 8
-        :type nhead: int, optional
-        :param dropout: dropout value, defaults to 0.1
-        :type dropout: float, optional
-        :param disable_pos_encode: if to disable the pos encoding, defaults to True
-        :type disable_pos_encode: bool, optional
-        """
-        super(LocalSubGraph_MHA, self).__init__()
-        self.dim_in = dim_in
-        self.layers = nn.ModuleList()
-        for _ in range(num_layers):
-            self.layers.append(LocalSubGraphLayer_MHA(dim_in, nhead, dropout))
-        self.disable_pos_encode = disable_pos_encode
-
-    def forward(self, x: torch.Tensor, invalid_mask: torch.Tensor, pos_enc: torch.Tensor) -> torch.Tensor:
-        """Forward of the module
-
-        :param x: input tensor (B,N,P,dim_in)
-        :type x: torch.Tensor
-        :param invalid_mask: invalid mask for x (B,N,P)
-        :type invalid_mask: torch.Tensor
-        :param pos_enc: positional encoding
-        :type pos_enc: torch.Tensor
-        :return: output tensor (B,N,dim_in)
-        :rtype: torch.Tensor
-        """
-        batch_size, polys_num, seq_len, vector_size = x.shape
-
-        # exclude completely invalid sequences from local subgraph to avoid NaN in weights
-        x_flat = x.flatten(0, 1)
-        invalid_mask_flat = invalid_mask.view(-1, seq_len)
-
-        # (batch_size x (1 + M),)
-        valid_polys = ~invalid_mask.all(-1).flatten()
-        # valid_seq x seq_len x vector_size
-        x_to_process = x_flat[valid_polys]
-        mask_to_process = invalid_mask_flat[valid_polys]
-
-        pos_enc = pos_enc.flatten(0, 1)
-        if self.disable_pos_encode:
-            pos_enc = torch.zeros_like(pos_enc)
-
-        pos_enc = pos_enc.transpose(0, 1)
-        x_to_process = x_to_process.transpose(0, 1)
-
-        for layer in self.layers:
-            x_to_process = layer(x_to_process, mask_to_process, pos_enc)
-
-        # restore back the batch
-        x = torch.zeros_like(x_flat[:, 0])
-
-        x[valid_polys] = x_to_process[0]
         x = x.view(batch_size, polys_num, self.dim_in)
         return x
