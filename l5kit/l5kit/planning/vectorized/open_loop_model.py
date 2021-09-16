@@ -15,8 +15,6 @@ class VectorizedModel(nn.Module):
     """
     def __init__(
         self,
-        model_arch: str,
-        subgraph_arch: str,
         history_num_frames_ego: int,
         history_num_frames_agents: int,
         num_targets: int,
@@ -25,29 +23,23 @@ class VectorizedModel(nn.Module):
         disable_other_agents: bool,
         disable_map: bool,
         disable_lane_boundaries: bool,
-        skip_self_attention: bool = False,
     ) -> None:
         """ Initializes the model.
 
-        :param model_arch: 
-        :param subgraph_arch:
         :history_num_frames_ego: number of history ego frames to include
         :param history_num_frames_agents: number of history agent frames to include
         :param num_targets: number of values to predict
-        :param weights_scaling:
-        :param criterion:
-        :param disable_other_agents:
-        :param disable_map:
-        :param disable_lane_boundaries:
-        :param skip_self_attention:
+        :param weights_scaling: target weights for loss calculation
+        :param criterion: loss function to use
+        :param disable_other_agents: ignore agents
+        :param disable_map: ignore map
+        :param disable_lane_boundaries: ignore lane boundaries
         """
         super().__init__()
         self.disable_map = disable_map
         self.disable_other_agents = disable_other_agents
         self.disable_lane_boundaries = disable_lane_boundaries
 
-        self._model_arch = model_arch
-        self.subgraph_arch = subgraph_arch
         self._history_num_frames_ego = history_num_frames_ego
         self._history_num_frames_agents = history_num_frames_agents
         self._num_targets = num_targets
@@ -82,25 +74,15 @@ class VectorizedModel(nn.Module):
 
         self.disable_pos_encode = False
 
-        if self.subgraph_arch == "local_subgraph":
-            self.local_subgraph = LocalSubGraph(num_layers=self._subgraph_layers, dim_in=self._d_local)
-        elif self.subgraph_arch == "local_subgraph_mha":
-            self.local_subgraph = LocalSubGraph_MHA(
-                num_layers=self._subgraph_layers, dim_in=self._d_local, disable_pos_encode=self.disable_pos_encode,
-            )
-        else:
-            raise ValueError(f"Subgraph arch {subgraph_arch} unknown in agent_prediction/model.py")
+        self.local_subgraph = LocalSubGraph(num_layers=self._subgraph_layers, dim_in=self._d_local)
 
         if self._d_global != self._d_local:
             self.global_from_local = nn.Linear(self._d_local, self._d_global)
 
         dropout = 0.1
-        if model_arch == "vectorized_mha":
-            self.global_head = MultiheadAttentionGlobalHead(
-                self._d_global, num_timesteps, num_outputs, dropout=dropout
-            )
-        else:
-            raise ValueError(f"Model arch {model_arch} unknown in agent_prediction/model.py")
+        self.global_head = MultiheadAttentionGlobalHead(
+            self._d_global, num_timesteps, num_outputs, dropout=dropout
+        )
 
     def embed_polyline(self, features: torch.Tensor, mask: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
         """ Embeds the inputs, generates the positional embedding and calls the local subgraph.
