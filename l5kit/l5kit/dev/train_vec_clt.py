@@ -11,7 +11,7 @@ from l5kit.dataset import EgoDatasetVectorized
 from l5kit.rasterization import build_rasterizer
 from l5kit.geometry import transform_points
 from l5kit.visualization import TARGET_POINTS_COLOR, draw_trajectory
-from l5kit.planning.vectorized.open_loop_model import VectorizedModel
+from l5kit.planning.vectorized.closed_loop_model import VectorizedUnrollModel
 from l5kit.kinematic import AckermanPerturbation
 from l5kit.random import GaussianRandomGenerator
 from l5kit.data.map_api import CACHE_SIZE, InterpolationMethod, MapAPI
@@ -27,7 +27,7 @@ os.environ["L5KIT_DATA_FOLDER"] = "/tmp/l5kit_data"
 dm = LocalDataManager(None)
 
 # get config 
-cfg = load_config_data("/code/l5kit/l5kit/l5kit/dev/config.yaml")
+cfg = load_config_data("/code/l5kit/l5kit/l5kit/dev/config_clt.yaml")
 
 # ===== INIT DATASET
 train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
@@ -45,9 +45,7 @@ weights_scaling = [1.0, 1.0, 1.0]
 _num_predicted_frames = cfg["model_params"]["future_num_frames"]
 _num_predicted_params = len(weights_scaling)
 
-model = VectorizedModel(
-            model_arch=cfg["model_params"]["model_architecture"],
-            subgraph_arch=cfg["model_params"]["subgraph_arch"],
+model = VectorizedUnrollModel(
             history_num_frames_ego=cfg["model_params"]["history_num_frames_ego"],
             history_num_frames_agents=cfg["model_params"]["history_num_frames_agents"],
             num_targets=_num_predicted_params * _num_predicted_frames,
@@ -56,6 +54,7 @@ model = VectorizedModel(
             disable_other_agents=cfg["model_params"]["disable_other_agents"],
             disable_map=cfg["model_params"]["disable_map"],
             disable_lane_boundaries=cfg["model_params"]["disable_lane_boundaries"],
+            detach_unroll=cfg["model_params"]["detach_unroll"],
         )
 
 

@@ -6,17 +6,15 @@ from torch import nn
 
 
 from .common import pad_avail, pad_points, transform_points
-from .open_loop import VectorizedModel
+from .open_loop_model import VectorizedModel
 
 
 class VectorizedUnrollModel(VectorizedModel):
-    """ Vectorized model with unroll
+    """ Vectorized closed-loop planning model.
     """
 
     def __init__(
         self,
-        model_arch: str,
-        subgraph_arch: str,
         history_num_frames_ego: int,
         history_num_frames_agents: int,
         num_targets: int,
@@ -25,16 +23,24 @@ class VectorizedUnrollModel(VectorizedModel):
         disable_other_agents: bool,
         disable_map: bool,
         disable_lane_boundaries: bool,
-        schedule_sampling: bool,
         detach_unroll: bool,
-        noise_model: Dict[str, str],
     ) -> None:
+        """ Initializes the model.
+
+        :history_num_frames_ego: number of history ego frames to include
+        :param history_num_frames_agents: number of history agent frames to include
+        :param num_targets: number of values to predict
+        :param weights_scaling: target weights for loss calculation
+        :param criterion: loss function to use
+        :param disable_other_agents: ignore agents
+        :param disable_map: ignore map
+        :param disable_lane_boundaries: ignore lane boundaries
+        :param detach_unroll: detach gradient between steps (disable BPTT)
+        """
 
         num_targets = 3  # this will limit queries number to 1
 
         super().__init__(
-            model_arch,
-            subgraph_arch,
             history_num_frames_ego,
             history_num_frames_agents,
             num_targets,
@@ -43,21 +49,15 @@ class VectorizedUnrollModel(VectorizedModel):
             disable_other_agents,
             disable_map,
             disable_lane_boundaries,
-            skip_self_attention=True,
         )
 
-        self.schedule_sampling = schedule_sampling
         self.detach_unroll = detach_unroll
-        self.noise_model = noise_model
 
     def forward(self, data_batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         # ==== get additional info from the batch, or fall back to sensible defaults
         future_num_frames = 3  # this is to avoid crashing a metric, ideally it should be 1
         if "future_num_frames" in data_batch:
             future_num_frames = data_batch["future_num_frames"]
-        gt_transform_prob = 0.0
-        if "gt_transform_prob" in data_batch:
-            gt_transform_prob = data_batch["gt_transform_prob"]
 
         # ==== Past and Static info
         agents_past_polys = torch.cat(
@@ -124,7 +124,7 @@ class VectorizedUnrollModel(VectorizedModel):
 
         # ====== Transformation between local spaces
         # NOTE: we use the standard convention A_from_B to indicate that a matrix/yaw/translation
-        # convert a point from the B space into the A space
+        # converts a point from the B space into the A space
         # e.g. if pB = (1,0) and A_from_B = (-1, 1) then pA = (0, 1)
         # NOTE: we use the following convention for names:
         # t0 -> space at 0, i.e. the space we pull out of the data for which ego is in (0, 0) with no yaw
@@ -140,11 +140,6 @@ class VectorizedUnrollModel(VectorizedModel):
         ts_from_t0 = t0_from_ts.clone()
         yaw_t0_from_ts = zero
         yaw_ts_from_t0 = zero
-
-        if self.training and self.noise_model["name"] == "initial_state":
-            t0_from_ts, ts_from_t0, yaw_t0_from_ts, yaw_ts_from_t0, agents_polys = self.initial_state_noise(
-                t0_from_ts, ts_from_t0, yaw_t0_from_ts, yaw_ts_from_t0, agents_polys, current_timestep, zero, one
-            )
 
         for idx in range(future_num_frames):
             # === STEP FORWARD ====
@@ -164,7 +159,6 @@ class VectorizedUnrollModel(VectorizedModel):
             # max_history_num_frames + 1 (where the +1 comes from T0, which is the 0-th element)
             # so in general we want to add +1 to ensure we always keep T0
             # in case of max_history_num_frames=0 we effectively leave only T0
-
             # ego
             agents_polys_step[:, 0, self._history_num_frames_ego + 1 :] = 0
             agents_avail_step[:, 0, self._history_num_frames_ego + 1 :] = 0
@@ -220,24 +214,6 @@ class VectorizedUnrollModel(VectorizedModel):
             pred_xy_step_unnorm = pred_xy_step_unnorm.clone()
             pred_yaw_step = pred_yaw_step.clone()
 
-            # === OPTIONAL SCHEDULED SAMPLING DURING TRAIN
-            if self.training and self.schedule_sampling:
-                pred_xy_step_unnorm, pred_yaw_step = self.scheduled_sampling(
-                    data_batch["target_positions"][:, idx : idx + 1],
-                    data_batch["target_yaws"][:, idx],
-                    ts_from_t0,
-                    yaw_ts_from_t0,
-                    pred_xy_step_unnorm,
-                    pred_yaw_step,
-                    gt_transform_prob,
-                )
-                # also recompute the new "prediction" in t0 as we update agents_polys with this
-                pred_xy_step_t0 = pred_xy_step_unnorm[:, None, :] @ t0_from_ts[..., :2, :2].transpose(
-                    1, 2
-                ) + t0_from_ts[..., :2, -1:].transpose(1, 2)
-                pred_xy_step_t0 = pred_xy_step_t0[:, 0]
-                pred_yaw_step_t0 = pred_yaw_step + yaw_t0_from_ts
-
             # ==== UPDATE HISTORY WITH INFORMATION FROM PREDICTION
 
             # update transformation matrices
@@ -290,90 +266,6 @@ class VectorizedUnrollModel(VectorizedModel):
                 eval_dict["attention_weights"] = attns
             return eval_dict
 
-    def scheduled_sampling(
-        self,
-        target_positions,
-        target_yaws,
-        ts_from_t0,
-        yaw_ts_from_t0,
-        pred_xy_step_unnorm,
-        pred_yaw_step,
-        gt_transform_prob: float,
-    ):
-        """ Applies scheduled sampling.
-        """
-        # use the current probability to draw transforms from the GT (first move them into ts)
-        gt_xy_step_ts = target_positions @ ts_from_t0[..., :2, :2].transpose(1, 2) + ts_from_t0[
-            ..., :2, -1:
-        ].transpose(1, 2)
-        gt_xy_step_ts = gt_xy_step_ts[:, 0]
-        gt_yaw_ts = target_yaws + yaw_ts_from_t0
-
-        rnd_mask = torch.rand(pred_xy_step_unnorm.shape[0], device=pred_xy_step_unnorm.device) < gt_transform_prob
-        pred_xy_step_unnorm[rnd_mask] = gt_xy_step_ts[rnd_mask]
-        pred_yaw_step[rnd_mask] = gt_yaw_ts[rnd_mask]
-
-        return pred_xy_step_unnorm, pred_yaw_step
-
-    def initial_state_noise(
-        self, t0_from_ts, ts_from_t0, yaw_t0_from_ts, yaw_ts_from_t0, agents_polys, current_timestep: int, zero, one
-    ):
-        """ Applies initial state noise.
-        """
-        rot_noise = torch.normal(
-            mean=torch.zeros_like(zero[:, 0]) + float(self.noise_model["rot_mean"]),
-            std=torch.zeros_like(zero[:, 0]) + float(self.noise_model["rot_std"]),
-        )[..., None].float()
-        trans_noise = torch.normal(
-            mean=torch.zeros_like(zero[:, 0]) + float(self.noise_model["pos_mean"]),
-            std=torch.zeros_like(zero[:, 0]) + float(self.noise_model["pos_std"]),
-        )[..., None].float()
-
-        noise_from_t0 = torch.cat(
-            [
-                rot_noise.cos(),
-                -rot_noise.sin(),
-                rot_noise.cos() * trans_noise,
-                rot_noise.sin(),
-                rot_noise.cos(),
-                rot_noise.sin() * trans_noise,
-                zero,
-                zero,
-                one,
-            ],
-            dim=1,
-        ).view(-1, 3, 3)
-
-        t0_from_noise = torch.cat(
-            [
-                (-rot_noise).cos(),
-                -(-rot_noise).sin(),
-                -trans_noise,
-                (-rot_noise).sin(),
-                (-rot_noise).cos(),
-                zero,
-                zero,
-                zero,
-                one,
-            ],
-            dim=1,
-        ).view(-1, 3, 3)
-
-        t0_from_ts = t0_from_ts @ t0_from_noise
-        ts_from_t0 = noise_from_t0 @ ts_from_t0
-        yaw_t0_from_ts = yaw_t0_from_ts - rot_noise
-        yaw_ts_from_t0 = yaw_ts_from_t0 + rot_noise
-
-        # Apply reverse transformation to AoI only so that it will end up in (0, 0) when transformed with noise later.
-        # NOTE: we are not "correcting" ego history, i.e. ego at T = 0 will have moved relative to its history
-        ego_avail = torch.ones_like(agents_polys[:, 0:1, current_timestep : current_timestep + 1, 0])
-
-        ego_polys = transform_points(
-            agents_polys[:, 0:1, current_timestep : current_timestep + 1, :], t0_from_ts, ego_avail, yaw_t0_from_ts
-        )
-        agents_polys[:, 0:1, current_timestep : current_timestep + 1, :] = ego_polys
-
-        return t0_from_ts, ts_from_t0, yaw_t0_from_ts, yaw_ts_from_t0, agents_polys
 
     def update_transformation_matrices(
         self, pred_xy_step_unnorm, pred_yaw_step, t0_from_ts, ts_from_t0, yaw_t0_from_ts, yaw_ts_from_t0, zero, one
@@ -384,8 +276,8 @@ class VectorizedUnrollModel(VectorizedModel):
         yaw_tsplus_from_ts = -pred_yaw_step
         yaw_ts_from_tsplus = pred_yaw_step
 
-        # NOTE: these are full RT matrices. We use the closed form and not invert for performance reasons
-        # tsplus_from_ts will bring the current predictions at ts into 0
+        # NOTE: these are full roto-translation matrices. We use the closed form and not invert for performance reasons.
+        # tsplus_from_ts will bring the current predictions at ts into 0.
         tsplus_from_ts = torch.cat(
             [
                 yaw_tsplus_from_ts.cos(),

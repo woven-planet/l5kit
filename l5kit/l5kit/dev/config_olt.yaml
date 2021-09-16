@@ -4,15 +4,12 @@ format_version: 7
 ###################
 ## Model options
 model_params:
-  model_architecture: "vectorized_mha"
   history_num_frames_ego: 0  # this will also create raster history (we need to remove the raster from train/eval dataset - only visualization)
   history_num_frames: 0
   history_num_frames_agents: 3
   future_num_frames: 12
   step_time: 0.1
   render_ego_history: True
-
-  # Only applicable for ... TODO
   subgraph_arch: "local_subgraph"
   disable_other_agents: False
   disable_map: False
