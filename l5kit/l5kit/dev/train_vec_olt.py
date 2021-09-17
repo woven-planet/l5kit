@@ -1,4 +1,3 @@
-import matplotlib.pyplot as plt
 import numpy as np
 import torch
 from torch import nn, optim
@@ -8,15 +7,7 @@ from tqdm import tqdm
 from l5kit.configs import load_config_data
 from l5kit.data import LocalDataManager, ChunkedDataset
 from l5kit.dataset import EgoDatasetVectorized
-from l5kit.rasterization import build_rasterizer
-from l5kit.geometry import transform_points
-from l5kit.visualization import TARGET_POINTS_COLOR, draw_trajectory
 from l5kit.planning.vectorized.open_loop_model import VectorizedModel
-from l5kit.kinematic import AckermanPerturbation
-from l5kit.random import GaussianRandomGenerator
-from l5kit.data.map_api import CACHE_SIZE, InterpolationMethod, MapAPI
-from l5kit.rasterization.rasterizer_builder import get_hardcoded_world_to_ecef
-from l5kit.vectorization.vectorizer import Vectorizer
 import os
 from l5kit.vectorization.vectorizer_builder import build_vectorizer
 
@@ -68,7 +59,6 @@ tr_it = iter(train_dataloader)
 progress_bar = tqdm(range(cfg["train_params"]["max_num_steps"]))
 losses_train = []
 model.train()
-torch.set_grad_enabled(True)
 
 for _ in progress_bar:
     try:
