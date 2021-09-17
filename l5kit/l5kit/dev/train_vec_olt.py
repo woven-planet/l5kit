@@ -78,6 +78,10 @@ for _ in progress_bar:
         data = next(tr_it)
     # Forward pass
     data = {k: v.to(device) for k, v in data.items()}
+    for key in data:
+        print(f"{key}: {data[key].shape} - {data[key].dtype}")
+    import ipdb
+    ipdb.set_trace()
     result = model(data)
     loss = result["loss"]
     # Backward pass
