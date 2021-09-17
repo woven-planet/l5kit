@@ -45,7 +45,7 @@ class L2DisplacementYawReward(Reward):
 
     def __init__(self, reward_prefix: str = "L2DisplacementYaw", metric_set: Optional[L5MetricSet] = None,
                  enable_clip: bool = True, rew_clip_thresh: float = 15.0,
-                 use_yaw: Optional[bool] = True, yaw_weight: Optional[float] = 20.0) -> None:
+                 use_yaw: Optional[bool] = True, yaw_weight: Optional[float] = 1.0) -> None:
         """Constructor method
         """
         self.reward_prefix = reward_prefix
