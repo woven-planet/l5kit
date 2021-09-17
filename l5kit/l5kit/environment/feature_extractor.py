@@ -28,6 +28,12 @@ class CustomFeatureExtractor(BaseFeaturesExtractor):
         elif model_arch == 'alex_gn':
             # An AlexNet-type feature extractor with GroupNorm.
             model = models.AlexCNN_GN(num_input_channels, features_dim)
+        elif model_arch == 'deep_gn':
+            # An Deep CNN feature extractor with GroupNorm.
+            model = models.DeepCNN_GN(num_input_channels, features_dim)
+        elif model_arch == 'deep_gn2':
+            # An Deep CNN feature extractor with GroupNorm.
+            model = models.Deep_GN(num_input_channels, features_dim)
         else:
             raise NotImplementedError
 

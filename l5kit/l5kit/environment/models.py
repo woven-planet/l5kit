@@ -60,3 +60,81 @@ def AlexCNN_GN(num_input_channels: int, features_dim: int) -> nn.Module:
     )
 
     return model
+
+
+def DeepCNN_GN(num_input_channels: int, features_dim: int) -> nn.Module:
+    """A simplified feature extractor with GroupNorm.
+
+    :param num_input_channels: the number of input channels in the input
+    :param features_dim: the number of features to extract from input
+    """
+    model = nn.Sequential(
+        # Conv1
+        nn.Conv2d(num_input_channels, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
+        nn.GroupNorm(4, 64),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+        # Conv2
+        nn.Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
+        nn.GroupNorm(4, 64),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+        # Conv3
+        nn.Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
+        nn.GroupNorm(4, 64),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+        # Conv4
+        nn.Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
+        nn.GroupNorm(4, 64),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+        # Conv5
+        nn.Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=False),
+        nn.GroupNorm(4, 64),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+        nn.Flatten(),
+        nn.Linear(in_features=576, out_features=features_dim),
+    )
+
+    return model
+
+
+def Deep_GN(num_input_channels: int, features_dim: int) -> nn.Module:
+    """A simplified feature extractor with GroupNorm.
+
+    :param num_input_channels: the number of input channels in the input
+    :param features_dim: the number of features to extract from input
+    """
+    model = nn.Sequential(
+        # Conv1
+        nn.Conv2d(num_input_channels, 16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=True),
+        nn.GroupNorm(2, 16),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+        # Conv2
+        nn.Conv2d(16, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=True),
+        nn.GroupNorm(2, 32),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+        # Conv3
+        nn.Conv2d(32, 32, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=True),
+        nn.GroupNorm(2, 32),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+        # Conv4
+        nn.Conv2d(32, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=True),
+        nn.GroupNorm(4, 64),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+        # Conv5
+        nn.Conv2d(64, 64, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1), bias=True),
+        nn.GroupNorm(4, 64),
+        nn.ReLU(),
+        nn.MaxPool2d(kernel_size=2, stride=2),
+        nn.Flatten(),
+        nn.Linear(in_features=576, out_features=features_dim),
+    )
+
+    return model

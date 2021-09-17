@@ -25,7 +25,7 @@ from l5kit.simulation.unroll import (ClosedLoopSimulator, ClosedLoopSimulatorMod
 #: Maximum acceleration magnitude for kinematic model
 MAX_ACC = 6
 #: Maximum steer magnitude for kinematic model
-MAX_STEER = math.radians(20)
+MAX_STEER = math.radians(45)
 
 
 @dataclass
@@ -33,8 +33,8 @@ class SimulationConfigGym(SimulationConfig):
     """Defines the default parameters used for the simulation of ego and agents around it in L5Kit Gym.
     Note: num_simulation_steps should be eps_length + 1
     This is because we (may) require to extract the initial speed of the vehicle for the kinematic model
-    The speed at start_frame_idx is always 0 (not indicative of the true current speed).
-    We therefore simulate the episode from (start_frame_idx + 1, start_frame_idx + eps_length + 1)
+    The speed at start_frame_index is always 0 (not indicative of the true current speed).
+    We therefore simulate the episode from (start_frame_index + 1, start_frame_index + eps_length + 1)
 
     :param use_ego_gt: whether to use GT annotations for ego instead of model's outputs
     :param use_agents_gt: whether to use GT annotations for agents instead of model's outputs
@@ -49,7 +49,7 @@ class SimulationConfigGym(SimulationConfig):
     disable_new_agents: bool = False
     distance_th_far: float = 30.0
     distance_th_close: float = 15.0
-    start_frame_idx: int = 0
+    start_frame_index: int = 0
     num_simulation_steps: int = 33
 
 
@@ -104,13 +104,15 @@ class L5Env(gym.Env):
     :param use_kinematic: flag to use the kinematic model
     :param kin_model: the kinematic model
     :param return_info: flag to return info when a episode ends
+    :param randomize_start: flag to randomize the start frame of episode
     """
 
     def __init__(self, env_config_path: Optional[str] = None, dmg: Optional[LocalDataManager] = None,
                  sim_cfg: Optional[SimulationConfig] = None, train: bool = True,
                  reward: Optional[Reward] = None, cle: bool = True, rescale_action: bool = True,
                  use_kinematic: bool = False, kin_model: Optional[KinematicModel] = None,
-                 reset_scene_id: Optional[int] = None, return_info: bool = False) -> None:
+                 reset_scene_id: Optional[int] = None, return_info: bool = False,
+                 randomize_start: bool = True) -> None:
         """Constructor method
         """
         super(L5Env, self).__init__()
@@ -132,7 +134,7 @@ class L5Env(gym.Env):
         # load dataset of environment
         self.train = train
         self.overfit = cfg["gym_params"]["overfit"]
-        self.randomize_start_frame = cfg["gym_params"]["randomize_start_frame"]
+        self.randomize_start_frame = randomize_start
         if self.train or self.overfit:
             loader_key = cfg["train_data_loader"]["key"]
         else:
