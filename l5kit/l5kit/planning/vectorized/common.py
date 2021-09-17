@@ -56,10 +56,14 @@ def transform_points(
     """
     tr = matrix[:, :-1, -1:].view(-1, 1, 1, 2)
     rot = matrix[:, None, :2, :2].transpose(2, 3)  # NOTE: required because we post-multiply
-    element[..., :2] = element[..., :2] @ rot + tr
-    if yaw is not None:
-        element[..., 2:3] = element[..., 2:3] + yaw.view(-1, 1, 1, 1)
 
+    # NOTE: before we did this differently - why?
+    transformed_xy = element[..., :2] @ rot + tr
+    transformed_yaw = element[..., 2:3]
+    if yaw is not None:
+        transformed_yaw = element[..., 2:3] + yaw.view(-1, 1, 1, 1)
+
+    element = torch.cat([transformed_xy, transformed_yaw], axis=3)
     element = element * avail[..., None].clone()  # NOTE: no idea why clone is required actually
     return element
 
