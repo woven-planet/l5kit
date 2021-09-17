@@ -78,7 +78,10 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     # make train env
-    env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'train': True}
+    train_sim_cfg = SimulationConfigGym()
+    train_sim_cfg.num_simulation_steps = args.eps_length + 1
+    env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'train': True,
+                  'sim_cfg': train_sim_cfg}
     env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs, n_envs=args.n_envs,
                        vec_env_cls=SubprocVecEnv, vec_env_kwargs={"start_method": "fork"})
 
