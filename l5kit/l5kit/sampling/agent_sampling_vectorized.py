@@ -1,18 +1,16 @@
-from typing import List, Optional, Tuple
+from typing import Optional
 
 import numpy as np
 
-from ..data import filter_agents_by_labels
+from ..data import filter_agents_by_labels, PERCEPTION_LABEL_TO_INDEX
 from ..data.filter import filter_agents_by_track_id
 from ..geometry import compute_agent_pose, rotation33_as_yaw
 from ..kinematic import Perturbation
-from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer, RenderContext
+from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, RenderContext
 from l5kit.vectorization.vectorizer import Vectorizer
-from l5kit.data import (
-    filter_agents_by_labels,
-    PERCEPTION_LABEL_TO_INDEX,
-)
+
 from ..sampling import get_agent_context, get_relative_poses, compute_agent_velocity
+
 
 def generate_agent_sample_vectorized(
     state_index: int,
@@ -27,7 +25,6 @@ def generate_agent_sample_vectorized(
     step_time: float,
     filter_agents_threshold: float,
     vectorizer: Vectorizer,
-    rasterizer: Optional[Rasterizer] = None,
     perturbation: Optional[Perturbation] = None,
 ) -> dict:
     """Generates the inputs and targets to train a deep prediction model with vectorized inputs. A deep prediction model takes as input
@@ -89,7 +86,6 @@ def generate_agent_sample_vectorized(
         agent_yaw_rad = rotation33_as_yaw(cur_frame["ego_rotation"])
         agent_extent_m = np.asarray((EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, EGO_EXTENT_HEIGHT))
         agent_type_idx = PERCEPTION_LABEL_TO_INDEX["PERCEPTION_LABEL_CAR"]
-        selected_agent = None
     else:
         # this will raise IndexError if the agent is not in the frame or under agent-threshold
         # this is a strict error, we cannot recover from this situation
@@ -103,13 +99,11 @@ def generate_agent_sample_vectorized(
         agent_yaw_rad = float(agent["yaw"])
         agent_extent_m = agent["extent"]
         agent_type_idx = np.argmax(agent["label_probabilities"])
-        selected_agent = agent
 
-    input_im = (
-        None
-        if not rasterizer
-        else rasterizer.rasterize(history_frames, history_agents, history_tl_faces, selected_agent)
-    )
+    # TODO (@lberg): this should be removed from the keys
+    # The only reason we can't do it now is that get_frame expects this key to perform a channel flip
+    # that flip should be in the rasterizer
+    input_im = None
 
     world_from_agent = compute_agent_pose(agent_centroid_m, agent_yaw_rad)
     agent_from_world = np.linalg.inv(world_from_agent)

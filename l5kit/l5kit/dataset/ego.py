@@ -1,7 +1,7 @@
 import bisect
 import warnings
 from functools import partial
-from typing import Optional
+from typing import Callable, Optional
 
 import numpy as np
 from torch.utils.data import Dataset
@@ -13,13 +13,11 @@ from ..sampling import generate_agent_sample
 from .utils import convert_str_to_fixed_length_tensor
 
 
-class EgoDataset(Dataset):
+class BaseEgoDataset(Dataset):
     def __init__(
             self,
             cfg: dict,
             zarr_dataset: ChunkedDataset,
-            rasterizer: Rasterizer,
-            perturbation: Optional[Perturbation] = None,
     ):
         """
         Get a PyTorch dataset object that can be used to train DNN
@@ -27,35 +25,16 @@ class EgoDataset(Dataset):
         Args:
             cfg (dict): configuration file
             zarr_dataset (ChunkedDataset): the raw zarr dataset
-            rasterizer (Rasterizer): an object that support rasterisation around an agent (AV or not)
-            perturbation (Optional[Perturbation]): an object that takes care of applying trajectory perturbations.
-None if not desired
         """
-        self.perturbation = perturbation
         self.cfg = cfg
         self.dataset = zarr_dataset
-        self.rasterizer = rasterizer
-
         self.cumulative_sizes = self.dataset.scenes["frame_index_interval"][:, 1]
 
-        render_context = RenderContext(
-            raster_size_px=np.array(cfg["raster_params"]["raster_size"]),
-            pixel_size_m=np.array(cfg["raster_params"]["pixel_size"]),
-            center_in_raster_ratio=np.array(cfg["raster_params"]["ego_center"]),
-            set_origin_to_bottom=cfg["raster_params"]["set_origin_to_bottom"],
-        )
-
         # build a partial so we don't have to access cfg each time
-        self.sample_function = partial(
-            generate_agent_sample,
-            render_context=render_context,
-            history_num_frames=cfg["model_params"]["history_num_frames"],
-            future_num_frames=cfg["model_params"]["future_num_frames"],
-            step_time=cfg["model_params"]["step_time"],
-            filter_agents_threshold=cfg["raster_params"]["filter_agents_threshold"],
-            rasterizer=rasterizer,
-            perturbation=perturbation,
-        )
+        self.sample_function = self._get_sample_function()
+
+    def _get_sample_function(self) -> Callable:
+        raise NotImplementedError()
 
     def __len__(self) -> int:
         """
@@ -132,7 +111,7 @@ None if not desired
             state_index = index - self.cumulative_sizes[scene_index - 1]
         return self.get_frame(scene_index, state_index)
 
-    def get_scene_dataset(self, scene_index: int) -> "EgoDataset":
+    def get_scene_dataset(self, scene_index: int) -> "BaseEgoDataset":
         """
         Returns another EgoDataset dataset where the underlying data can be modified.
         This is possible because, even if it supports the same interface, this dataset is np.ndarray based.
@@ -145,7 +124,7 @@ None if not desired
 
         """
         dataset = self.dataset.get_scene_dataset(scene_index)
-        return EgoDataset(self.cfg, dataset, self.rasterizer, self.perturbation)
+        return BaseEgoDataset(self.cfg, dataset)
 
     def get_scene_indices(self, scene_idx: int) -> np.ndarray:
         """
@@ -176,3 +155,60 @@ None if not desired
 
     def __str__(self) -> str:
         return self.dataset.__str__()
+
+
+class EgoDataset(BaseEgoDataset):
+    def __init__(
+            self,
+            cfg: dict,
+            zarr_dataset: ChunkedDataset,
+            rasterizer: Rasterizer,
+            perturbation: Optional[Perturbation] = None,
+    ):
+        """
+        Get a PyTorch dataset object that can be used to train DNN
+
+        Args:
+            cfg (dict): configuration file
+            zarr_dataset (ChunkedDataset): the raw zarr dataset
+            rasterizer (Rasterizer): an object that support rasterisation around an agent (AV or not)
+            perturbation (Optional[Perturbation]): an object that takes care of applying trajectory perturbations.
+            None if not desired
+        """
+        self.perturbation = perturbation
+        self.rasterizer = rasterizer
+        super().__init__(cfg, zarr_dataset)
+
+    def _get_sample_function(self) -> Callable:
+        render_context = RenderContext(
+            raster_size_px=np.array(self.cfg["raster_params"]["raster_size"]),
+            pixel_size_m=np.array(self.cfg["raster_params"]["pixel_size"]),
+            center_in_raster_ratio=np.array(self.cfg["raster_params"]["ego_center"]),
+            set_origin_to_bottom=self.cfg["raster_params"]["set_origin_to_bottom"],
+        )
+
+        return partial(
+            generate_agent_sample,
+            render_context=render_context,
+            history_num_frames=self.cfg["model_params"]["history_num_frames"],
+            future_num_frames=self.cfg["model_params"]["future_num_frames"],
+            step_time=self.cfg["model_params"]["step_time"],
+            filter_agents_threshold=self.cfg["raster_params"]["filter_agents_threshold"],
+            rasterizer=self.rasterizer,
+            perturbation=self.perturbation,
+        )
+
+    def get_scene_dataset(self, scene_index: int) -> "EgoDataset":
+        """
+        Returns another EgoDataset dataset where the underlying data can be modified.
+        This is possible because, even if it supports the same interface, this dataset is np.ndarray based.
+
+        Args:
+            scene_index (int): the scene index of the new dataset
+
+        Returns:
+            EgoDataset: A valid EgoDataset dataset with a copy of the data
+
+        """
+        dataset = self.dataset.get_scene_dataset(scene_index)
+        return EgoDataset(self.cfg, dataset, self.rasterizer, self.perturbation)
