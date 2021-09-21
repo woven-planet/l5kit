@@ -1,5 +1,4 @@
 import bisect
-import warnings
 from functools import partial
 from typing import Callable, Optional
 
@@ -62,15 +61,10 @@ class BaseEgoDataset(Dataset):
         frames = self.dataset.frames[get_frames_slice_from_scenes(self.dataset.scenes[scene_index])]
 
         tl_faces = self.dataset.tl_faces
-        try:
-            if self.cfg["raster_params"]["disable_traffic_light_faces"]:
-                tl_faces = np.empty(0, dtype=self.dataset.tl_faces.dtype)  # completely disable traffic light faces
-        except KeyError:
-            warnings.warn(
-                "disable_traffic_light_faces not found in config, this will raise an error in the future",
-                RuntimeWarning,
-                stacklevel=2,
-            )
+        # TODO (@lberg): this should be done in the sample function
+        if self.cfg["raster_params"]["disable_traffic_light_faces"]:
+            tl_faces = np.empty(0, dtype=self.dataset.tl_faces.dtype)  # completely disable traffic light faces
+
         data = self.sample_function(state_index, frames, self.dataset.agents, tl_faces, track_id)
 
         # add information only, so that all data keys are always preserved
@@ -78,13 +72,6 @@ class BaseEgoDataset(Dataset):
         data["host_id"] = np.uint8(convert_str_to_fixed_length_tensor(self.dataset.scenes[scene_index]["host"]).cpu())
         data["timestamp"] = frames[state_index]["timestamp"]
         data["track_id"] = np.int64(-1 if track_id is None else track_id)  # always a number to avoid crashing torch
-        data["world_to_image"] = data["raster_from_world"]  # TODO deprecate
-
-        # when rast is None, image could be None. In that case we remove the key
-        if data["image"] is not None:
-            data["image"] = data["image"].transpose(2, 0, 1)  # 0,1,C -> C,0,1
-        else:
-            del data["image"]
 
         return data
 
@@ -197,6 +184,16 @@ class EgoDataset(BaseEgoDataset):
             rasterizer=self.rasterizer,
             perturbation=self.perturbation,
         )
+
+    def get_frame(self, scene_index: int, state_index: int, track_id: Optional[int] = None) -> dict:
+        data = super().get_frame(scene_index, state_index, track_id=track_id)
+        # TODO (@lberg): I've left this, but the rasterizer should not really be None
+        # when rast is None, image could be None. In that case we remove the key
+        if data["image"] is not None:
+            data["image"] = data["image"].transpose(2, 0, 1)  # 0,1,C -> C,0,1
+        else:
+            del data["image"]
+        return data
 
     def get_scene_dataset(self, scene_index: int) -> "EgoDataset":
         """

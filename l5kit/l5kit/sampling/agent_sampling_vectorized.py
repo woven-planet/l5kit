@@ -18,7 +18,6 @@ def generate_agent_sample_vectorized(
     agents: np.ndarray,
     tl_faces: np.ndarray,
     selected_track_id: Optional[int],
-    render_context: RenderContext,
     history_num_frames_ego: int,
     history_num_frames_agents: int,
     future_num_frames: int,
@@ -100,14 +99,8 @@ def generate_agent_sample_vectorized(
         agent_extent_m = agent["extent"]
         agent_type_idx = np.argmax(agent["label_probabilities"])
 
-    # TODO (@lberg): this should be removed from the keys
-    # The only reason we can't do it now is that get_frame expects this key to perform a channel flip
-    # that flip should be in the rasterizer
-    input_im = None
-
     world_from_agent = compute_agent_pose(agent_centroid_m, agent_yaw_rad)
     agent_from_world = np.linalg.inv(world_from_agent)
-    raster_from_world = render_context.raster_from_world(agent_centroid_m, agent_yaw_rad)
 
     future_coords_offset, future_yaws_offset, future_extents, future_availability = get_relative_poses(
         future_num_frames, future_frames, selected_track_id, future_agents, agent_from_world, agent_yaw_rad
@@ -128,12 +121,8 @@ def generate_agent_sample_vectorized(
     history_vels_mps, future_vels_mps = compute_agent_velocity(history_coords_offset, future_coords_offset, step_time)
 
     frame_info = {
-        "image": input_im,
         "extent": agent_extent_m,
         "type": agent_type_idx,
-        "world_to_image": raster_from_world,  # TODO deprecate
-        "raster_from_agent": raster_from_world @ world_from_agent,
-        "raster_from_world": raster_from_world,
         "agent_from_world": agent_from_world,
         "world_from_agent": world_from_agent,
         "target_positions": future_coords_offset,
@@ -149,6 +138,8 @@ def generate_agent_sample_vectorized(
         "speed": np.linalg.norm(future_vels_mps[0]),
     }
 
-    vectorized_features = vectorizer.vectorize(selected_track_id, agent_centroid_m, agent_yaw_rad, agent_from_world, history_frames, history_agents, history_tl_faces, history_coords_offset, history_yaws_offset, history_availability, future_frames, future_agents)
+    vectorized_features = vectorizer.vectorize(selected_track_id, agent_centroid_m, agent_yaw_rad, agent_from_world,
+                                               history_frames, history_agents, history_tl_faces, history_coords_offset,
+                                               history_yaws_offset, history_availability, future_frames, future_agents)
 
     return {**frame_info, **vectorized_features}
