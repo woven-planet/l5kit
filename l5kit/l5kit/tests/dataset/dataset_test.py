@@ -116,6 +116,5 @@ def test_vector_ego(zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: di
     dataset = EgoDatasetVectorized(cfg, zarr_dataset, vect)
     indexes = [0, 1, 10, -1]
     for idx in indexes:
-        # TODO (@lberg): check shapes
         dataset[idx]
     check_torch_loading(dataset)
