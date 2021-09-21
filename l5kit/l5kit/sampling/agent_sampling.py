@@ -10,6 +10,7 @@ from ..kinematic import Perturbation
 from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer, RenderContext
 from .slicing import get_future_slice, get_history_slice
 
+
 def get_agent_context(
         state_index: int,
         frames: np.ndarray,

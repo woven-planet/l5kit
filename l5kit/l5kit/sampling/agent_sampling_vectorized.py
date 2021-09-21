@@ -6,7 +6,7 @@ from ..data import filter_agents_by_labels, PERCEPTION_LABEL_TO_INDEX
 from ..data.filter import filter_agents_by_track_id
 from ..geometry import compute_agent_pose, rotation33_as_yaw
 from ..kinematic import Perturbation
-from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, RenderContext
+from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH
 from l5kit.vectorization.vectorizer import Vectorizer
 
 from ..sampling import get_agent_context, get_relative_poses, compute_agent_velocity
@@ -26,9 +26,9 @@ def generate_agent_sample_vectorized(
     vectorizer: Vectorizer,
     perturbation: Optional[Perturbation] = None,
 ) -> dict:
-    """Generates the inputs and targets to train a deep prediction model with vectorized inputs. A deep prediction model takes as input
-    the state of the world in vectorized form, and outputs where that agent will be some
-    seconds into the future.
+    """Generates the inputs and targets to train a deep prediction model with vectorized inputs.
+    A deep prediction model takes as input the state of the world in vectorized form,
+    and outputs where that agent will be some seconds into the future.
 
     This function has a lot of arguments and is intended for internal use, you should try to use higher level classes
     and partials that use this function.
@@ -41,14 +41,12 @@ def generate_agent_sample_vectorized(
         selected_track_id (Optional[int]): Either None for AV, or the ID of an agent that you want to
         predict the future of. This agent is centered in the representation and the returned targets are derived from
         their future states.
-        render_context (RenderContext): The context for rasterisation & vectorization
         history_num_frames_ego (int): Amount of ego history frames to include
         history_num_frames_agents (int): Amount of agent history frames to include
         future_num_frames (int): Amount of future frames to include
         step_time (float): seconds between consecutive steps
         filter_agents_threshold (float): Value between 0 and 1 to use as cutoff value for agent filtering
         based on their probability of being a relevant agent
-        rasterizer (Optional[Rasterizer]): Rasterizer of some sort that draws a map image - is here used for visualization only [TODO]
         perturbation (Optional[Perturbation]): Object that perturbs the input and targets, used
         to train models that can recover from slight divergence from training set data
 
@@ -113,10 +111,10 @@ def generate_agent_sample_vectorized(
         history_num_frames_max + 1, history_frames, selected_track_id, history_agents, agent_from_world, agent_yaw_rad
     )
 
-    history_coords_offset[history_num_frames_ego + 1 :] *= 0
-    history_yaws_offset[history_num_frames_ego + 1 :] *= 0
-    history_extents[history_num_frames_ego + 1 :] *= 0
-    history_availability[history_num_frames_ego + 1 :] *= 0
+    history_coords_offset[history_num_frames_ego + 1:] *= 0
+    history_yaws_offset[history_num_frames_ego + 1:] *= 0
+    history_extents[history_num_frames_ego + 1:] *= 0
+    history_availability[history_num_frames_ego + 1:] *= 0
 
     history_vels_mps, future_vels_mps = compute_agent_velocity(history_coords_offset, future_coords_offset, step_time)
 
