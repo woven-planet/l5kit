@@ -265,9 +265,10 @@ class VectorizedUnrollModel(VectorizedModel):
                 eval_dict["attention_weights"] = attns
             return eval_dict
 
-    def update_transformation_matrices(
-        self, pred_xy_step_unnorm, pred_yaw_step, t0_from_ts, ts_from_t0, yaw_t0_from_ts, yaw_ts_from_t0, zero, one
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    def update_transformation_matrices(self, pred_xy_step_unnorm: torch.Tensor, pred_yaw_step: torch.Tensor,
+                                       t0_from_ts: torch.Tensor, ts_from_t0: torch.Tensor, yaw_t0_from_ts: torch.Tensor,
+                                       yaw_ts_from_t0: torch.Tensor, zero: torch.Tensor, one: torch.Tensor
+                                       ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """ Updates the used transformation matrices to reflect AoI's new position.
         """
         tr_tsplus_from_ts = -pred_xy_step_unnorm

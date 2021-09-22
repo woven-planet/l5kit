@@ -161,7 +161,7 @@ class VectorizedModel(nn.Module):
         invalid_polys[:, 0] = 0  # make AoI always available in global graph
 
         # call and return global graph
-        return self.global_head(all_embs, type_embedding, invalid_polys)
+        return self.global_head(all_embs, type_embedding, invalid_polys)  # type: ignore
 
     def forward(self, data_batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         # Load and prepare vectors for the model call, split into map and agents

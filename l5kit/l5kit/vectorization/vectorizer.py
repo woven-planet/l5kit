@@ -1,11 +1,10 @@
-from typing import Dict
+from typing import Dict, List, Optional
 
 import numpy as np
-import torch
 
 from l5kit.data import filter_agents_by_distance, filter_agents_by_labels, filter_tl_faces_by_status
 from l5kit.data.filter import filter_agents_by_track_id, get_other_agents_ids
-from l5kit.data.map_api import InterpolationMethod
+from l5kit.data.map_api import InterpolationMethod, MapAPI
 from l5kit.geometry.transform import transform_points
 from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
 from l5kit.sampling.agent_sampling import get_relative_poses
@@ -17,7 +16,7 @@ class Vectorizer:
 
     """
 
-    def __init__(self, cfg, mapAPI):
+    def __init__(self, cfg: dict, mapAPI: MapAPI):
         """Instantiates the class.
 
         Arguments:
@@ -32,9 +31,11 @@ class Vectorizer:
         self.history_num_frames_max = max(cfg["model_params"]["history_num_frames_ego"], self.history_num_frames_agents)
         self.other_agents_num = cfg["data_generation_params"]["other_agents_num"]
 
-    def vectorize(self, selected_track_id: int, agent_centroid_m: torch.Tensor, agent_yaw_rad: torch.Tensor,
-                  agent_from_world: torch.Tensor, history_frames: np.ndarray, history_agents, history_tl_faces,
-                  history_position_m, history_yaws_rad, history_availability, future_frames, future_agents):
+    # TODO (@lberg): this args name are not clear
+    def vectorize(self, selected_track_id: Optional[int], agent_centroid_m: np.ndarray, agent_yaw_rad: float,
+                  agent_from_world: np.ndarray, history_frames: np.ndarray, history_agents: List[np.ndarray],
+                  history_tl_faces: List[np.ndarray], history_position_m: np.ndarray, history_yaws_rad: np.ndarray,
+                  history_availability: np.ndarray, future_frames: np.ndarray, future_agents: List[np.ndarray]) -> dict:
         """Base function to execute a vectorization process.
 
         TODO: torch or np array input?
@@ -43,7 +44,6 @@ class Vectorizer:
             selected_track_id: selected_track_id: Either None for AV, or the ID of an agent that you want to
             predict the future of.
             This agent is centered in the representation and the returned targets are derived from their future states.
-            - TODO: can this be None / not None?
             agent_centroid_m: position of the target agent
             agent_yaw_rad: yaw angle of the target agent
             agent_from_world: inverted agent pose as 3x3 matrix
@@ -65,16 +65,17 @@ class Vectorizer:
         map_features = self._vectorize_map(agent_centroid_m, agent_from_world, history_tl_faces)
         return {**agent_features, **map_features}
 
-    def _vectorize_agents(self, selected_track_id, agent_centroid_m, agent_yaw_rad, agent_from_world, history_frames,
-                          history_agents, history_position_m, history_yaws_rad, history_availability,
-                          future_frames, future_agents):
+    def _vectorize_agents(self, selected_track_id: Optional[int], agent_centroid_m: np.ndarray,
+                          agent_yaw_rad: float, agent_from_world: np.ndarray, history_frames: np.ndarray,
+                          history_agents: List[np.ndarray], history_position_m: np.ndarray,
+                          history_yaws_rad: np.ndarray, history_availability: np.ndarray, future_frames: np.ndarray,
+                          future_agents: List[np.ndarray]) -> dict:
         """Vectorize agents in a frame.
 
         Arguments:
             selected_track_id: selected_track_id: Either None for AV, or the ID of an agent that you want to
             predict the future of.
             This agent is centered in the representation and the returned targets are derived from their future states.
-            - TODO: can this be None / not None?
             agent_centroid_m: position of the target agent
             agent_yaw_rad: yaw angle of the target agent
             agent_from_world: inverted agent pose as 3x3 matrix
@@ -193,7 +194,8 @@ class Vectorizer:
 
         return agent_dict
 
-    def _vectorize_map(self, agent_centroid_m, agent_from_world, history_tl_faces):
+    def _vectorize_map(self, agent_centroid_m: np.ndarray, agent_from_world: np.ndarray,
+                       history_tl_faces: List[np.ndarray]) -> dict:
         """Vectorize map elements in a frame.
 
         Arguments:

@@ -1,8 +1,8 @@
 import torch
 
 
-def mock_vectorizer_data(batch_size, num_steps, num_history, num_agents, num_lanes, num_crosswalks,
-                         num_points_per_element, TYPE_MAX):
+def mock_vectorizer_data(batch_size: int, num_steps: int, num_history: int, num_agents: int, num_lanes: int,
+                         num_crosswalks: int, num_points_per_element: int, TYPE_MAX: int) -> dict:
     return {
         "extent": torch.rand(batch_size, 3),
         "type": torch.randint(0, TYPE_MAX, (batch_size,)),

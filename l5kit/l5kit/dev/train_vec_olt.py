@@ -26,12 +26,10 @@ cfg = load_config_data("/code/l5kit/l5kit/l5kit/dev/config_olt.yaml")
 train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
 # rasterisation and perturbation
 
-# TODO
-rasterizer = None  # build_rasterizer(cfg, dm)
 
 vectorizer = build_vectorizer(cfg, dm)
 
-train_dataset = EgoDatasetVectorized(cfg, train_zarr, rasterizer, vectorizer)
+train_dataset = EgoDatasetVectorized(cfg, train_zarr, vectorizer)
 
 weights_scaling = [1.0, 1.0, 1.0]
 

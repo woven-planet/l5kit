@@ -32,7 +32,7 @@ class EgoDatasetVectorized(BaseEgoDataset):
         self.vectorizer = vectorizer
         super().__init__(cfg, zarr_dataset)
 
-    def _get_sample_function(self) -> Callable:
+    def _get_sample_function(self) -> Callable[..., dict]:
         return partial(
             generate_agent_sample_vectorized,
             history_num_frames_ego=self.cfg["model_params"]["history_num_frames_ego"],

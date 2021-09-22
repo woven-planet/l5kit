@@ -7,9 +7,10 @@ from l5kit.planning.vectorized.closed_loop_model import VectorizedUnrollModel
 from l5kit.tests.planning.common import mock_vectorizer_data
 
 
-batch_size = 15
+batch_size = 15  # TODO (@lberg): don't use global
 
 
+# TODO (@lberg): remove probably, we can use just one
 @pytest.fixture(scope="session")
 def cfg() -> dict:
     """Get a config file from artefacts.
@@ -21,7 +22,7 @@ def cfg() -> dict:
 
 
 @pytest.fixture(scope="session")
-def data_batch(cfg) -> dict:
+def data_batch(cfg: dict) -> dict:
     """Mocks the output of the vectorizer to create a data batch.
     """
     num_steps = cfg["model_params"]["future_num_frames"]
@@ -38,7 +39,7 @@ def data_batch(cfg) -> dict:
 
 
 @pytest.fixture(scope="session")
-def model(cfg):
+def model(cfg: dict) -> VectorizedUnrollModel:
     weights_scaling = [1.0, 1.0, 1.0]
     _num_predicted_frames = cfg["model_params"]["future_num_frames"]
     _num_predicted_params = len(weights_scaling)
@@ -58,13 +59,13 @@ def model(cfg):
     return model
 
 
-def test_model_train(model, data_batch) -> None:
+def test_model_train(model: VectorizedUnrollModel, data_batch: dict) -> None:
     res = model(data_batch)
     assert "loss" in res
     assert res['loss'] > 0
 
 
-def test_model_eval(model, data_batch, cfg) -> None:
+def test_model_eval(model: VectorizedUnrollModel, data_batch: dict, cfg: dict) -> None:
     model = model.eval()
     data_batch["future_num_frames"] = cfg["model_params"]["future_num_frames"]
     res = model(data_batch)
