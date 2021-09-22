@@ -43,3 +43,8 @@ def test_vectorizer_output_shape(zarr_dataset: ChunkedDataset, dmg: LocalDataMan
     assert data["all_other_agents_future_extents"].shape == (num_agents, cfg["model_params"]["future_num_frames"], 2)
     assert data["all_other_agents_future_availability"].shape == (num_agents, cfg["model_params"]["future_num_frames"],)
     assert data["all_other_agents_types"].shape == (num_agents,)
+
+    assert data["agent_trajectory_polyline"].shape == (max_history_num_frames + 1, 3)
+    assert data["agent_polyline_availability"].shape == (max_history_num_frames + 1,)
+    assert data["other_agents_polyline"].shape == (num_agents, max_history_num_frames + 1, 3)
+    assert data["other_agents_polyline_availability"].shape == (num_agents, max_history_num_frames + 1,)
