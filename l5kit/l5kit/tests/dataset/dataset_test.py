@@ -5,8 +5,9 @@ import pytest
 from torch.utils.data import DataLoader, Dataset, Subset
 
 from l5kit.data import ChunkedDataset, LocalDataManager
-from l5kit.dataset import AgentDataset, EgoDataset
+from l5kit.dataset import AgentDataset, EgoDataset, EgoDatasetVectorized
 from l5kit.rasterization import build_rasterizer, RenderContext, StubRasterizer
+from l5kit.vectorization.vectorizer_builder import build_vectorizer
 
 
 def check_sample(cfg: dict, dataset: Dataset) -> None:
@@ -101,4 +102,19 @@ def test_no_rast_dataset(
     for idx in indexes:
         data = dataset[idx]
         assert "image" not in data
+    check_torch_loading(dataset)
+
+
+@pytest.mark.parametrize("history_num_frames_ego", [0, 1, 2, 3, 4])
+@pytest.mark.parametrize("history_num_frames_agents", [0, 1, 2, 3, 4])
+def test_vector_ego(zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict, history_num_frames_ego: int,
+                    history_num_frames_agents: int) -> None:
+    cfg["model_params"]["history_num_frames_ego"] = history_num_frames_ego
+    cfg["model_params"]["history_num_frames_agents"] = history_num_frames_agents
+
+    vect = build_vectorizer(cfg, dmg)
+    dataset = EgoDatasetVectorized(cfg, zarr_dataset, vect)
+    indexes = [0, 1, 10, -1]
+    for idx in indexes:
+        dataset[idx]
     check_torch_loading(dataset)
