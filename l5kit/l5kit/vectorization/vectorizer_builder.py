@@ -1,10 +1,11 @@
 import numpy as np
 
-from l5kit.vectorization.vectorizer import Vectorizer
-from l5kit.rasterization.rasterizer_builder import get_hardcoded_world_to_ecef
-from l5kit.data.map_api import MapAPI
-from ..data import DataManager
 from l5kit.configs.config import load_metadata
+from l5kit.data.map_api import MapAPI
+from l5kit.rasterization.rasterizer_builder import get_hardcoded_world_to_ecef
+from l5kit.vectorization.vectorizer import Vectorizer
+
+from ..data import DataManager
 
 
 def build_vectorizer(cfg: dict, data_manager: DataManager) -> Vectorizer:

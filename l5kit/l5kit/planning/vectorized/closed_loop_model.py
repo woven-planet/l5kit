@@ -4,7 +4,6 @@ from typing import Dict, List, Tuple
 import torch
 from torch import nn
 
-
 from .common import pad_avail, pad_points, transform_points
 from .open_loop_model import VectorizedModel
 

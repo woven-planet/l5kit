@@ -1,6 +1,7 @@
-from l5kit.sampling.agent_sampling_vectorized import generate_agent_sample_vectorized
 import pytest
-from l5kit.data import ChunkedDataset, LocalDataManager, get_frames_slice_from_scenes
+
+from l5kit.data import ChunkedDataset, get_frames_slice_from_scenes, LocalDataManager
+from l5kit.sampling.agent_sampling_vectorized import generate_agent_sample_vectorized
 from l5kit.vectorization.vectorizer_builder import build_vectorizer
 
 

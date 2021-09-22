@@ -1,3 +1,5 @@
+import os
+
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -6,16 +8,14 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from l5kit.configs import load_config_data
-from l5kit.data import LocalDataManager, ChunkedDataset
+from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
-from l5kit.rasterization import build_rasterizer
 from l5kit.geometry import transform_points
-from l5kit.visualization import TARGET_POINTS_COLOR, draw_trajectory
-from l5kit.planning.model import PlanningModel
 from l5kit.kinematic import AckermanPerturbation
+from l5kit.planning.model import PlanningModel
 from l5kit.random import GaussianRandomGenerator
-
-import os
+from l5kit.rasterization import build_rasterizer
+from l5kit.visualization import draw_trajectory, TARGET_POINTS_COLOR
 
 
 # set env variable for data

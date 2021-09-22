@@ -3,16 +3,12 @@ from typing import Dict
 import numpy as np
 import torch
 
-from l5kit.data import (
-    filter_agents_by_labels,
-    filter_agents_by_distance,
-    filter_tl_faces_by_status,
-)
-from l5kit.sampling.agent_sampling import get_relative_poses
+from l5kit.data import filter_agents_by_distance, filter_agents_by_labels, filter_tl_faces_by_status
 from l5kit.data.filter import filter_agents_by_track_id, get_other_agents_ids
 from l5kit.data.map_api import InterpolationMethod
-from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
 from l5kit.geometry.transform import transform_points
+from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
+from l5kit.sampling.agent_sampling import get_relative_poses
 
 
 class Vectorizer:

@@ -1,7 +1,9 @@
+from typing import Dict, Optional, Tuple
+
 import torch
-from typing import Dict, Tuple, Optional
 from torch import nn
 from torch.nn import functional as F
+
 from l5kit.data import PERCEPTION_LABEL_TO_INDEX
 
 

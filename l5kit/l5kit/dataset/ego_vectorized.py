@@ -1,11 +1,12 @@
 
-from typing import Optional, Callable
 from functools import partial
+from typing import Callable, Optional
 
-from l5kit.kinematic import Perturbation
-from l5kit.dataset import BaseEgoDataset
 from l5kit.data import ChunkedDataset
+from l5kit.dataset import BaseEgoDataset
+from l5kit.kinematic import Perturbation
 from l5kit.vectorization.vectorizer import Vectorizer
+
 from ..sampling import generate_agent_sample_vectorized
 
 

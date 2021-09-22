@@ -1,10 +1,11 @@
 import pytest
+import torch
+from torch import nn
 
 from l5kit.configs import load_config_data
 from l5kit.planning.vectorized.closed_loop_model import VectorizedUnrollModel
-from torch import nn
-import torch
 from l5kit.tests.planning.common import mock_vectorizer_data
+
 
 batch_size = 15
 

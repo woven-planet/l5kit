@@ -4,10 +4,9 @@ import torch
 import torch.nn.functional as F
 from torch import nn
 
-
-from .local_graph import LocalSubGraph, SinusoidalPositionalEmbedding
+from .common import build_target_normalization, pad_avail, pad_points
 from .global_graph import MultiheadAttentionGlobalHead, VectorizedEmbedding
-from .common import pad_avail, pad_points, build_target_normalization
+from .local_graph import LocalSubGraph, SinusoidalPositionalEmbedding
 
 
 class VectorizedModel(nn.Module):

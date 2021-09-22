@@ -1,3 +1,5 @@
+import os
+
 import numpy as np
 import torch
 from torch import nn, optim
@@ -5,11 +7,11 @@ from torch.utils.data import DataLoader
 from tqdm import tqdm
 
 from l5kit.configs import load_config_data
-from l5kit.data import LocalDataManager, ChunkedDataset
+from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDatasetVectorized
 from l5kit.planning.vectorized.open_loop_model import VectorizedModel
-import os
 from l5kit.vectorization.vectorizer_builder import build_vectorizer
+
 
 # TODO: hacky (temp) run file
 
