@@ -3,7 +3,9 @@
 model_params:
   model_architecture: "resnet50"
 
+  history_num_frames_ego: 0  # this will also create raster history (we need to remove the raster from train/eval dataset - only visualization)
   history_num_frames: 0
+  history_num_frames_agents: 3
   future_num_frames: 50
   step_time: 0.1
   render_ego_history: True
@@ -43,3 +45,24 @@ raster_params:
   # Set it to False for models trained before v1.1.0-25-g3c517f0 (December 2020).
   # In that case visualisation will be flipped (we've removed the flip there) but the model's input will be correct.
   set_origin_to_bottom: True
+
+###################
+## VectorNet Params
+data_generation_params:
+  # maximum number of other agents to take (if less will be padded)
+  other_agents_num: 30
+  # maximum distance from AoI for another agent to be picked
+  max_agents_distance: 35
+  # Parameters defining which and how many lanes to be retrieved
+  lane_params:
+    # maximum number of lanes to take into account
+    # if less they will be padded; if more the closest to AoI are picked
+    max_num_lanes: 30
+    # max number of points per lane
+    max_points_per_lane: 20
+    # max number of points per crosswalk
+    max_points_per_crosswalk: 20
+    # maximum radius around the AoI for which we retrieve
+    max_retrieval_distance_m: 35
+    # max number of crosswalks
+    max_num_crosswalks: 20
