@@ -1,7 +1,9 @@
+from typing import Dict, Optional, Tuple
+
 import torch
-from typing import Dict, Tuple, Optional
 from torch import nn
 from torch.nn import functional as F
+
 from l5kit.data import PERCEPTION_LABEL_TO_INDEX
 
 
@@ -90,7 +92,7 @@ class VectorizedEmbedding(nn.Module):
 
             indices[:, crosswalks_start_idx:lanes_bdry_start_idx].fill_(self.polyline_types["CROSSWALK"])
             indices[:, lanes_bdry_start_idx::2].fill_(self.polyline_types["LANE_BDRY_LEFT"])
-            indices[:, lanes_bdry_start_idx + 1 :: 2].fill_(self.polyline_types["LANE_BDRY_RIGHT"])
+            indices[:, lanes_bdry_start_idx + 1:: 2].fill_(self.polyline_types["LANE_BDRY_RIGHT"])
 
         return self.embedding.forward(indices)
 
@@ -116,10 +118,10 @@ class MLP(nn.Module):
         return x
 
 
-
 class MultiheadAttentionGlobalHead(nn.Module):
     """Global graph making use of multi-head attention.
     """
+
     def __init__(self, d_model: int, num_timesteps: int, num_outputs: int, nhead: int = 8, dropout: float = 0.1):
         super().__init__()
         self.num_timesteps = num_timesteps
@@ -130,7 +132,7 @@ class MultiheadAttentionGlobalHead(nn.Module):
     def forward(
         self, inputs: torch.Tensor, type_embedding: torch.Tensor, mask: torch.Tensor
     ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
-        """Model forward: 
+        """Model forward:
 
         :param inputs: model inputs
         :param type_embedding: type embedding describing the different input types
@@ -138,7 +140,7 @@ class MultiheadAttentionGlobalHead(nn.Module):
 
         :return tuple of outputs, attention
         """
-        # dot-product attention: 
+        # dot-product attention:
         #   - query is ego's vector
         #   - key is inputs plus type embedding
         #   - value is inputs

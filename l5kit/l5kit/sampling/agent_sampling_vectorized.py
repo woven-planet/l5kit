@@ -2,14 +2,14 @@ from typing import Optional
 
 import numpy as np
 
+from l5kit.vectorization.vectorizer import Vectorizer
+
 from ..data import filter_agents_by_labels, PERCEPTION_LABEL_TO_INDEX
 from ..data.filter import filter_agents_by_track_id
 from ..geometry import compute_agent_pose, rotation33_as_yaw
 from ..kinematic import Perturbation
 from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH
-from l5kit.vectorization.vectorizer import Vectorizer
-
-from ..sampling import get_agent_context, get_relative_poses, compute_agent_velocity
+from ..sampling import compute_agent_velocity, get_agent_context, get_relative_poses
 
 
 def generate_agent_sample_vectorized(
