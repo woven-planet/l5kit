@@ -7,19 +7,20 @@ from l5kit.data import (
     filter_agents_by_labels,
     filter_agents_by_distance,
     filter_tl_faces_by_status,
-    PERCEPTION_LABEL_TO_INDEX,
 )
 from l5kit.sampling.agent_sampling import get_relative_poses
 from l5kit.data.filter import filter_agents_by_track_id, get_other_agents_ids
-from l5kit.data.map_api import CACHE_SIZE, InterpolationMethod
+from l5kit.data.map_api import InterpolationMethod
 from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
 from l5kit.geometry.transform import transform_points
+
 
 class Vectorizer:
     """Object that processes parts of an input frame, and converts this frame to a vectorized representation - which
     can e.g. be fed as input to a DNN using the corresponding input format.
 
     """
+
     def __init__(self, cfg, mapAPI):
         """Instantiates the class.
 
@@ -30,21 +31,23 @@ class Vectorizer:
         self.lane_cfg_params = cfg["data_generation_params"]["lane_params"]
         self.mapAPI = mapAPI
         self.max_agents_distance = cfg["data_generation_params"]["max_agents_distance"]
-        self.history_num_frames_agents=cfg["model_params"]["history_num_frames_agents"]
-        self.future_num_frames=cfg["model_params"]["future_num_frames"]
+        self.history_num_frames_agents = cfg["model_params"]["history_num_frames_agents"]
+        self.future_num_frames = cfg["model_params"]["future_num_frames"]
         self.history_num_frames_max = max(cfg["model_params"]["history_num_frames_ego"], self.history_num_frames_agents)
-        self.other_agents_num=cfg["data_generation_params"]["other_agents_num"]
+        self.other_agents_num = cfg["data_generation_params"]["other_agents_num"]
 
-    def vectorize(self, selected_track_id: int, agent_centroid_m: torch.Tensor, agent_yaw_rad: torch.Tensor, agent_from_world: torch.Tensor, 
-    history_frames: np.ndarray, history_agents, history_tl_faces, history_position_m, history_yaws_rad, history_availability, future_frames, future_agents):
+    def vectorize(self, selected_track_id: int, agent_centroid_m: torch.Tensor, agent_yaw_rad: torch.Tensor,
+                  agent_from_world: torch.Tensor, history_frames: np.ndarray, history_agents, history_tl_faces,
+                  history_position_m, history_yaws_rad, history_availability, future_frames, future_agents):
         """Base function to execute a vectorization process.
 
         TODO: torch or np array input?
 
         Arguments:
-            selected_track_id: selected_track_id: Either None for AV, or the ID of an agent that you want to 
-             predict the future of. This agent is centered in the representation and the returned targets are derived from
-            their future states.- TODO: can this be None / not None?
+            selected_track_id: selected_track_id: Either None for AV, or the ID of an agent that you want to
+            predict the future of.
+            This agent is centered in the representation and the returned targets are derived from their future states.
+            - TODO: can this be None / not None?
             agent_centroid_m: position of the target agent
             agent_yaw_rad: yaw angle of the target agent
             agent_from_world: inverted agent pose as 3x3 matrix
@@ -60,18 +63,22 @@ class Vectorizer:
         Returns:
             dict: a dict containing the vectorized frame representation
         """
-        agent_features = self._vectorize_agents(selected_track_id, agent_centroid_m, agent_yaw_rad, agent_from_world, history_frames, history_agents, history_position_m, history_yaws_rad, history_availability, future_frames, future_agents)
+        agent_features = self._vectorize_agents(selected_track_id, agent_centroid_m, agent_yaw_rad, agent_from_world,
+                                                history_frames, history_agents, history_position_m, history_yaws_rad,
+                                                history_availability, future_frames, future_agents)
         map_features = self._vectorize_map(agent_centroid_m, agent_from_world, history_tl_faces)
         return {**agent_features, **map_features}
 
-    def _vectorize_agents(self, selected_track_id, agent_centroid_m, agent_yaw_rad, agent_from_world, history_frames, history_agents, history_position_m, 
-    history_yaws_rad, history_availability, future_frames, future_agents):
+    def _vectorize_agents(self, selected_track_id, agent_centroid_m, agent_yaw_rad, agent_from_world, history_frames,
+                          history_agents, history_position_m, history_yaws_rad, history_availability,
+                          future_frames, future_agents):
         """Vectorize agents in a frame.
 
         Arguments:
-            selected_track_id: selected_track_id: Either None for AV, or the ID of an agent that you want to 
-             predict the future of. This agent is centered in the representation and the returned targets are derived from
-            their future states.- TODO: can this be None / not None?
+            selected_track_id: selected_track_id: Either None for AV, or the ID of an agent that you want to
+            predict the future of.
+            This agent is centered in the representation and the returned targets are derived from their future states.
+            - TODO: can this be None / not None?
             agent_centroid_m: position of the target agent
             agent_yaw_rad: yaw angle of the target agent
             agent_from_world: inverted agent pose as 3x3 matrix
@@ -108,16 +115,22 @@ class Vectorizer:
         )
 
         # Loop to grab history and future for all other agents
-        all_other_agents_history_positions = np.zeros((self.other_agents_num, self.history_num_frames_max + 1, 2), dtype=np.float32)
-        all_other_agents_history_yaws = np.zeros((self.other_agents_num, self.history_num_frames_max + 1, 1), dtype=np.float32)
-        all_other_agents_history_extents = np.zeros((self.other_agents_num, self.history_num_frames_max + 1, 2), dtype=np.float32)
-        all_other_agents_history_availability = np.zeros((self.other_agents_num, self.history_num_frames_max + 1), dtype=np.float32)
+        all_other_agents_history_positions = np.zeros(
+            (self.other_agents_num, self.history_num_frames_max + 1, 2), dtype=np.float32)
+        all_other_agents_history_yaws = np.zeros(
+            (self.other_agents_num, self.history_num_frames_max + 1, 1), dtype=np.float32)
+        all_other_agents_history_extents = np.zeros(
+            (self.other_agents_num, self.history_num_frames_max + 1, 2), dtype=np.float32)
+        all_other_agents_history_availability = np.zeros(
+            (self.other_agents_num, self.history_num_frames_max + 1), dtype=np.float32)
         all_other_agents_types = np.zeros((self.other_agents_num,), dtype=np.int64)
 
-        all_other_agents_future_positions = np.zeros((self.other_agents_num, self.future_num_frames, 2), dtype=np.float32)
+        all_other_agents_future_positions = np.zeros(
+            (self.other_agents_num, self.future_num_frames, 2), dtype=np.float32)
         all_other_agents_future_yaws = np.zeros((self.other_agents_num, self.future_num_frames, 1), dtype=np.float32)
         all_other_agents_future_extents = np.zeros((self.other_agents_num, self.future_num_frames, 2), dtype=np.float32)
-        all_other_agents_future_availability = np.zeros((self.other_agents_num, self.future_num_frames), dtype=np.float32)
+        all_other_agents_future_availability = np.zeros(
+            (self.other_agents_num, self.future_num_frames), dtype=np.float32)
 
         for idx, track_id in enumerate(list_agents_to_take):
             (
@@ -125,9 +138,8 @@ class Vectorizer:
                 agent_history_yaws_offset,
                 agent_history_extent,
                 agent_history_availability,
-            ) = get_relative_poses(
-                self.history_num_frames_max + 1, history_frames, track_id, history_agents, agent_from_world, agent_yaw_rad
-            )
+            ) = get_relative_poses(self.history_num_frames_max + 1, history_frames, track_id, history_agents,
+                                   agent_from_world, agent_yaw_rad)
 
             all_other_agents_history_positions[idx] = agent_history_coords_offset
             all_other_agents_history_yaws[idx] = agent_history_yaws_offset
@@ -152,10 +164,10 @@ class Vectorizer:
             all_other_agents_future_availability[idx] = agent_future_availability
 
         # crop similar to ego above
-        all_other_agents_history_positions[:, self.history_num_frames_agents + 1 :] *= 0
-        all_other_agents_history_yaws[:, self.history_num_frames_agents + 1 :] *= 0
-        all_other_agents_history_extents[:, self.history_num_frames_agents + 1 :] *= 0
-        all_other_agents_history_availability[:, self.history_num_frames_agents + 1 :] *= 0
+        all_other_agents_history_positions[:, self.history_num_frames_agents + 1:] *= 0
+        all_other_agents_history_yaws[:, self.history_num_frames_agents + 1:] *= 0
+        all_other_agents_history_extents[:, self.history_num_frames_agents + 1:] *= 0
+        all_other_agents_history_availability[:, self.history_num_frames_agents + 1:] *= 0
 
         # compute other agents features
         # num_other_agents (M) x sequence_length x 2 (two being x, y)
@@ -185,7 +197,7 @@ class Vectorizer:
 
         return agent_dict
 
-    def _vectorize_map(self, agent_centroid_m, agent_from_world, history_tl_faces):    
+    def _vectorize_map(self, agent_centroid_m, agent_from_world, history_tl_faces):
         """Vectorize map elements in a frame.
 
         Arguments:
@@ -245,7 +257,7 @@ class Vectorizer:
         active_tl_face_to_color: Dict[str, str] = {}
         for face in active_tl_faces:
             try:
-                active_tl_face_to_color[face] = self.mapAPI.get_color_for_face(face).lower() # TODO: why lower()?
+                active_tl_face_to_color[face] = self.mapAPI.get_color_for_face(face).lower()  # TODO: why lower()?
             except KeyError:
                 continue  # this happens only on KIRBY, 2 TLs have no match in the map
 
@@ -275,7 +287,8 @@ class Vectorizer:
             lanes_mid_points[out_idx, :num_vectors_mid] = midlane
             lanes_mid_availabilities[out_idx, :num_vectors_mid] = 1
 
-            lanes_tl_feature[out_idx, :num_vectors_mid] = self.mapAPI.get_tl_feature_for_lane(lane_id, active_tl_face_to_color)
+            lanes_tl_feature[out_idx, :num_vectors_mid] = self.mapAPI.get_tl_feature_for_lane(
+                lane_id, active_tl_face_to_color)
 
         # disable all points over the distance threshold
         valid_distances = np.linalg.norm(lanes_points, axis=-1) < MAX_LANE_DISTANCE

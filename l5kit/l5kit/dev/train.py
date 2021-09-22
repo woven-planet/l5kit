@@ -1,4 +1,3 @@
-from tempfile import gettempdir
 import matplotlib.pyplot as plt
 import numpy as np
 import torch
@@ -19,7 +18,6 @@ from l5kit.random import GaussianRandomGenerator
 import os
 
 
-
 # set env variable for data
 os.environ["L5KIT_DATA_FOLDER"] = "/tmp/l5kit_data"
 dm = LocalDataManager(None)
@@ -34,7 +32,7 @@ rasterizer = build_rasterizer(cfg, dm)
 mean = np.array([0.0, 0.0, 0.0])  # lateral, longitudinal and angular
 std = np.array([0.5, 1.5, np.pi / 6])
 perturbation = AckermanPerturbation(
-        random_offset_generator=GaussianRandomGenerator(mean=mean, std=std), perturb_prob=perturb_prob)
+    random_offset_generator=GaussianRandomGenerator(mean=mean, std=std), perturb_prob=perturb_prob)
 
 # ===== INIT DATASET
 train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
@@ -56,19 +54,18 @@ for perturbation_value in [1, 0]:
 perturbation.perturb_prob = perturb_prob
 
 
-
 model = PlanningModel(
-        model_arch="resnet50",
-        num_input_channels=rasterizer.num_channels(),
-        num_targets=3 * cfg["model_params"]["future_num_frames"],  # X, Y, Yaw * number of future states,
-        weights_scaling= [1., 1., 1.],
-        criterion=nn.MSELoss(reduction="none")
-        )
+    model_arch="resnet50",
+    num_input_channels=rasterizer.num_channels(),
+    num_targets=3 * cfg["model_params"]["future_num_frames"],  # X, Y, Yaw * number of future states,
+    weights_scaling=[1., 1., 1.],
+    criterion=nn.MSELoss(reduction="none")
+)
 
 
 train_cfg = cfg["train_data_loader"]
-train_dataloader = DataLoader(train_dataset, shuffle=train_cfg["shuffle"], batch_size=train_cfg["batch_size"], 
-                             num_workers=train_cfg["num_workers"])
+train_dataloader = DataLoader(train_dataset, shuffle=train_cfg["shuffle"], batch_size=train_cfg["batch_size"],
+                              num_workers=train_cfg["num_workers"])
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 optimizer = optim.Adam(model.parameters(), lr=1e-3)

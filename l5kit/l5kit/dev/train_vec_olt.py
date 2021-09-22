@@ -17,7 +17,7 @@ from l5kit.vectorization.vectorizer_builder import build_vectorizer
 os.environ["L5KIT_DATA_FOLDER"] = "/tmp/l5kit_data"
 dm = LocalDataManager(None)
 
-# get config 
+# get config
 cfg = load_config_data("/code/l5kit/l5kit/l5kit/dev/config_olt.yaml")
 
 # ===== INIT DATASET
@@ -25,7 +25,7 @@ train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
 # rasterisation and perturbation
 
 # TODO
-rasterizer = None # build_rasterizer(cfg, dm)
+rasterizer = None  # build_rasterizer(cfg, dm)
 
 vectorizer = build_vectorizer(cfg, dm)
 
@@ -37,19 +37,19 @@ _num_predicted_frames = cfg["model_params"]["future_num_frames"]
 _num_predicted_params = len(weights_scaling)
 
 model = VectorizedModel(
-            history_num_frames_ego=cfg["model_params"]["history_num_frames_ego"],
-            history_num_frames_agents=cfg["model_params"]["history_num_frames_agents"],
-            num_targets=_num_predicted_params * _num_predicted_frames,
-            weights_scaling=weights_scaling,
-            criterion=nn.L1Loss(reduction="none"),
-            disable_other_agents=cfg["model_params"]["disable_other_agents"],
-            disable_map=cfg["model_params"]["disable_map"],
-            disable_lane_boundaries=cfg["model_params"]["disable_lane_boundaries"],
-        )
+    history_num_frames_ego=cfg["model_params"]["history_num_frames_ego"],
+    history_num_frames_agents=cfg["model_params"]["history_num_frames_agents"],
+    num_targets=_num_predicted_params * _num_predicted_frames,
+    weights_scaling=weights_scaling,
+    criterion=nn.L1Loss(reduction="none"),
+    disable_other_agents=cfg["model_params"]["disable_other_agents"],
+    disable_map=cfg["model_params"]["disable_map"],
+    disable_lane_boundaries=cfg["model_params"]["disable_lane_boundaries"],
+)
 
 train_cfg = cfg["train_data_loader"]
-train_dataloader = DataLoader(train_dataset, shuffle=train_cfg["shuffle"], batch_size=train_cfg["batch_size"], 
-                             num_workers=train_cfg["num_workers"])
+train_dataloader = DataLoader(train_dataset, shuffle=train_cfg["shuffle"], batch_size=train_cfg["batch_size"],
+                              num_workers=train_cfg["num_workers"])
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 optimizer = optim.Adam(model.parameters(), lr=1e-3)

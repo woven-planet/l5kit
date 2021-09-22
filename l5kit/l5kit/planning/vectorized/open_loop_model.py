@@ -13,13 +13,14 @@ from .common import pad_avail, pad_points, build_target_normalization
 class VectorizedModel(nn.Module):
     """ Vectorized planning model.
     """
+
     def __init__(
         self,
         history_num_frames_ego: int,
         history_num_frames_agents: int,
         num_targets: int,
         weights_scaling: List[float],
-        criterion: nn.Module, 
+        criterion: nn.Module,
         disable_other_agents: bool,
         disable_map: bool,
         disable_lane_boundaries: bool,
@@ -150,10 +151,10 @@ class VectorizedModel(nn.Module):
 
         # disable certain elements on demand
         if self.disable_other_agents:
-            invalid_polys[:, 1 : (1 + other_agents_len)] = 1  # agents won't create attention
+            invalid_polys[:, 1: (1 + other_agents_len)] = 1  # agents won't create attention
 
         if self.disable_map:  # lanes (mid), crosswalks, and lanes boundaries.
-            invalid_polys[:, (1 + other_agents_len) :] = 1  # lanes won't create attention
+            invalid_polys[:, (1 + other_agents_len):] = 1  # lanes won't create attention
 
         if self.disable_lane_boundaries:
             type_embedding = type_embedding[:-lane_bdry_len]
