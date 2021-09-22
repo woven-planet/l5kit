@@ -1,6 +1,7 @@
-import torch
 from typing import Optional
+
 import numpy as np
+import torch
 
 
 def pad_points(polylines: torch.Tensor, pad_to: int) -> torch.Tensor:

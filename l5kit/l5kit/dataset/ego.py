@@ -32,7 +32,7 @@ class BaseEgoDataset(Dataset):
         # build a partial so we don't have to access cfg each time
         self.sample_function = self._get_sample_function()
 
-    def _get_sample_function(self) -> Callable:
+    def _get_sample_function(self) -> Callable[..., dict]:
         raise NotImplementedError()
 
     def __len__(self) -> int:
@@ -166,7 +166,7 @@ class EgoDataset(BaseEgoDataset):
         self.rasterizer = rasterizer
         super().__init__(cfg, zarr_dataset)
 
-    def _get_sample_function(self) -> Callable:
+    def _get_sample_function(self) -> Callable[..., dict]:
         render_context = RenderContext(
             raster_size_px=np.array(self.cfg["raster_params"]["raster_size"]),
             pixel_size_m=np.array(self.cfg["raster_params"]["pixel_size"]),

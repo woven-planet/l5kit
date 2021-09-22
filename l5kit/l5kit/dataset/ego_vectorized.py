@@ -1,11 +1,12 @@
 
-from typing import Optional, Callable
 from functools import partial
+from typing import Callable, Optional
 
-from l5kit.kinematic import Perturbation
-from l5kit.dataset import BaseEgoDataset
 from l5kit.data import ChunkedDataset
+from l5kit.dataset import BaseEgoDataset
+from l5kit.kinematic import Perturbation
 from l5kit.vectorization.vectorizer import Vectorizer
+
 from ..sampling import generate_agent_sample_vectorized
 
 
@@ -31,7 +32,7 @@ class EgoDatasetVectorized(BaseEgoDataset):
         self.vectorizer = vectorizer
         super().__init__(cfg, zarr_dataset)
 
-    def _get_sample_function(self) -> Callable:
+    def _get_sample_function(self) -> Callable[..., dict]:
         return partial(
             generate_agent_sample_vectorized,
             history_num_frames_ego=self.cfg["model_params"]["history_num_frames_ego"],

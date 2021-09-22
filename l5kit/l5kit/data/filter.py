@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Set
 
 import numpy as np
 
@@ -58,7 +58,7 @@ def filter_agents_by_labels(agents: np.ndarray, threshold: float = 0.5) -> np.nd
     return agents[label_indices]
 
 
-def filter_agents_by_distance(agents: np.ndarray, centroid: np.ndarray, max_distance: float) -> np.ndarray: 
+def filter_agents_by_distance(agents: np.ndarray, centroid: np.ndarray, max_distance: float) -> np.ndarray:
     """Filter agents by distance, cut to `max_distance` and sort the result
     Args:
         agents (np.ndarray): array of agents
@@ -72,6 +72,7 @@ def filter_agents_by_distance(agents: np.ndarray, centroid: np.ndarray, max_dist
     agents_dist = agents_dist[agents_dist < max_distance]
     agents = agents[np.argsort(agents_dist)]
     return agents
+
 
 def filter_agents_by_track_id(agents: np.ndarray, track_id: int) -> np.ndarray:
     """Return all agent object (np.ndarray) of a given track_id.
@@ -186,6 +187,8 @@ def get_tl_faces_slice_from_frames(frame_a: np.ndarray, frame_b: Optional[np.nda
     return slice(tl_faces_index_start, tl_faces_index_end)
 
 # TODO @lberg: we're missing the AV
+
+
 def get_other_agents_ids(
     all_agents_ids: np.ndarray, priority_ids: np.ndarray, selected_track_id: Optional[int], max_agents: int
 ) -> List[np.uint64]:

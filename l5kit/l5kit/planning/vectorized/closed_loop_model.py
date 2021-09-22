@@ -4,7 +4,6 @@ from typing import Dict, List, Tuple
 import torch
 from torch import nn
 
-
 from .common import pad_avail, pad_points, transform_points
 from .open_loop_model import VectorizedModel
 
@@ -145,10 +144,10 @@ class VectorizedUnrollModel(VectorizedModel):
             # === STEP FORWARD ====
             # pick the right point in time
             agents_polys_step = torch.flip(
-                agents_polys[:, :, current_timestep - window_size + 1 : current_timestep + 1], [2]
+                agents_polys[:, :, current_timestep - window_size + 1: current_timestep + 1], [2]
             ).clone()
             agents_avail_step = torch.flip(
-                agents_avail[:, :, current_timestep - window_size + 1 : current_timestep + 1].contiguous(), [2]
+                agents_avail[:, :, current_timestep - window_size + 1: current_timestep + 1].contiguous(), [2]
             ).clone()
             # PAD
             agents_polys_step = pad_points(agents_polys_step, max_num_vectors)
@@ -160,11 +159,11 @@ class VectorizedUnrollModel(VectorizedModel):
             # so in general we want to add +1 to ensure we always keep T0
             # in case of max_history_num_frames=0 we effectively leave only T0
             # ego
-            agents_polys_step[:, 0, self._history_num_frames_ego + 1 :] = 0
-            agents_avail_step[:, 0, self._history_num_frames_ego + 1 :] = 0
+            agents_polys_step[:, 0, self._history_num_frames_ego + 1:] = 0
+            agents_avail_step[:, 0, self._history_num_frames_ego + 1:] = 0
             # agents
-            agents_polys_step[:, 1:, self._history_num_frames_agents + 1 :] = 0
-            agents_avail_step[:, 1:, self._history_num_frames_agents + 1 :] = 0
+            agents_polys_step[:, 1:, self._history_num_frames_agents + 1:] = 0
+            agents_avail_step[:, 1:, self._history_num_frames_agents + 1:] = 0
 
             # transform agents and statics into right coordinate system (ts)
             agents_polys_step = transform_points(agents_polys_step, ts_from_t0, agents_avail_step, yaw_ts_from_t0)
@@ -190,7 +189,7 @@ class VectorizedUnrollModel(VectorizedModel):
                 pred_xy_step_unnorm = pred_xy_step * self.xy_scale[0]
 
             # ==== SAVE PREDICTIONS & GT
-            gt_xy_step_ts = data_batch["target_positions"][:, idx : idx + 1] @ ts_from_t0[..., :2, :2].transpose(
+            gt_xy_step_ts = data_batch["target_positions"][:, idx: idx + 1] @ ts_from_t0[..., :2, :2].transpose(
                 1, 2
             ) + ts_from_t0[..., :2, -1:].transpose(1, 2)
             gt_xy_step_ts = gt_xy_step_ts[:, 0]
@@ -266,10 +265,10 @@ class VectorizedUnrollModel(VectorizedModel):
                 eval_dict["attention_weights"] = attns
             return eval_dict
 
-
-    def update_transformation_matrices(
-        self, pred_xy_step_unnorm, pred_yaw_step, t0_from_ts, ts_from_t0, yaw_t0_from_ts, yaw_ts_from_t0, zero, one
-    ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
+    def update_transformation_matrices(self, pred_xy_step_unnorm: torch.Tensor, pred_yaw_step: torch.Tensor,
+                                       t0_from_ts: torch.Tensor, ts_from_t0: torch.Tensor, yaw_t0_from_ts: torch.Tensor,
+                                       yaw_ts_from_t0: torch.Tensor, zero: torch.Tensor, one: torch.Tensor
+                                       ) -> Tuple[torch.Tensor, torch.Tensor, torch.Tensor, torch.Tensor]:
         """ Updates the used transformation matrices to reflect AoI's new position.
         """
         tr_tsplus_from_ts = -pred_xy_step_unnorm

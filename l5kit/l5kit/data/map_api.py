@@ -363,7 +363,7 @@ class MapAPI:
                 return color_name
         raise ValueError(f"Face {face_id} has no valid color among {TLFacesColors.__members__}")
 
-    def get_tl_feature_for_lane(self, lane_id, active_tl_face_to_color) -> int:
+    def get_tl_feature_for_lane(self, lane_id: str, active_tl_face_to_color: dict) -> int:
         """ Get traffic light feature for a lane given its active tl faces and a constant priority map.
         """
         # Map from traffic light state to its feature and priority index (to disambiguate multiple active tl faces)

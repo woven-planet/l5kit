@@ -1,7 +1,6 @@
 import torch
 from torch import nn
 from torch.nn import functional as F
-from typing import Optional, Tuple
 
 
 class SinusoidalPositionalEmbedding(nn.Module):
@@ -76,11 +75,11 @@ class LocalSubGraphLayer(nn.Module):
         self.linear_remap = nn.Linear(dim_in * 2, dim_out)
 
     def forward(self, x: torch.Tensor, invalid_mask: torch.Tensor) -> torch.Tensor:
-        """Forward of the model 
+        """Forward of the model
 
         :param x: input tensor
         :tensor (B,N,P,dim_in)
-        :param invalid_mask: invalid mask for x 
+        :param invalid_mask: invalid mask for x
         :tensor invalid_mask (B,N,P)
         :return: output tensor (B,N,P,dim_out)
         :rtype: torch.Tensor
