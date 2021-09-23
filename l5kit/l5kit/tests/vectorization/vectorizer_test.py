@@ -2,7 +2,19 @@ import pytest
 
 from l5kit.data import ChunkedDataset, get_frames_slice_from_scenes, LocalDataManager
 from l5kit.sampling.agent_sampling_vectorized import generate_agent_sample_vectorized
+from l5kit.vectorization.vectorizer import Vectorizer
 from l5kit.vectorization.vectorizer_builder import build_vectorizer
+
+
+def test_vectorizer_builder(dmg: LocalDataManager, cfg: dict) -> None:
+    # default call should work
+    vectorizer = build_vectorizer(cfg, dmg)
+    assert isinstance(vectorizer, Vectorizer)
+
+    # vectorizer requires meta to build the map
+    cfg["raster_params"]["dataset_meta_key"] = "invalid_path"
+    with pytest.raises(FileNotFoundError):
+        build_vectorizer(cfg, dmg)
 
 
 @pytest.mark.parametrize("history_num_frames_ego", [0, 1, 2, 3, 4])

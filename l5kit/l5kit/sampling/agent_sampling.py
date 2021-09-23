@@ -170,7 +170,7 @@ def generate_agent_sample(
         future_num_frames: int,
         step_time: float,
         filter_agents_threshold: float,
-        rasterizer: Optional[Rasterizer] = None,
+        rasterizer: Rasterizer,
         perturbation: Optional[Perturbation] = None,
 ) -> dict:
     """Generates the inputs and targets to train a deep prediction model. A deep prediction model takes as input
@@ -194,7 +194,7 @@ def generate_agent_sample(
         step_time (float): seconds between consecutive steps
         filter_agents_threshold (float): Value between 0 and 1 to use as cutoff value for agent filtering
         based on their probability of being a relevant agent
-        rasterizer (Optional[Rasterizer]): Rasterizer of some sort that draws a map image
+        rasterizer Rasterizer: Rasterizer of some sort that draws a map image
         perturbation (Optional[Perturbation]): Object that perturbs the input and targets, used
         to train models that can recover from slight divergence from training set data
 
@@ -239,11 +239,7 @@ def generate_agent_sample(
         agent_extent_m = agent["extent"]
         selected_agent = agent
 
-    input_im = (
-        None
-        if not rasterizer
-        else rasterizer.rasterize(history_frames, history_agents, history_tl_faces, selected_agent)
-    )
+    input_im = rasterizer.rasterize(history_frames, history_agents, history_tl_faces, selected_agent)
 
     world_from_agent = compute_agent_pose(agent_centroid_m, agent_yaw_rad)
     agent_from_world = np.linalg.inv(world_from_agent)
