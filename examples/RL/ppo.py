@@ -7,6 +7,7 @@ from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.utils import get_linear_fn
 from stable_baselines3.common.vec_env import SubprocVecEnv
 
+from l5kit.environment.envs.l5_env import SimulationConfigGym
 from l5kit.environment.feature_extractor import CustomFeatureExtractor
 from l5kit.environment.callbacks import L5KitEvalCallback
 
