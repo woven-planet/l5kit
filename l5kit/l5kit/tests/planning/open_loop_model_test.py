@@ -3,14 +3,13 @@ import torch
 from torch import nn
 
 from l5kit.configs import load_config_data
-from l5kit.planning.vectorized.closed_loop_model import VectorizedUnrollModel
-from l5kit.tests.planning.common import mock_vectorizer_data
+from l5kit.planning.vectorized.open_loop_model import VectorizedModel
+from l5kit.tests.planning.common_test import mock_vectorizer_data
 
 
-batch_size = 15  # TODO (@lberg): don't use global
+batch_size = 15
 
 
-# TODO (@lberg): remove probably, we can use just one
 @pytest.fixture(scope="session")
 def cfg() -> dict:
     """Get a config file from artefacts.
@@ -26,11 +25,12 @@ def data_batch(cfg: dict) -> dict:
     """Mocks the output of the vectorizer to create a data batch.
     """
     num_steps = cfg["model_params"]["future_num_frames"]
-    num_history = 3
-    num_agents = 30
-    num_lanes = 60
-    num_crosswalks = 20
-    num_points_per_element = 20
+    num_history = max(cfg["model_params"]["history_num_frames_ego"], cfg["model_params"]["history_num_frames_agents"])
+    num_agents = cfg["data_generation_params"]["other_agents_num"]
+    num_lanes = cfg["data_generation_params"]["lane_params"]["max_num_lanes"]
+    num_crosswalks = cfg["data_generation_params"]["lane_params"]["max_num_crosswalks"]
+    num_points_per_element = max(cfg["data_generation_params"]["lane_params"]["max_points_per_lane"],
+                                 cfg["data_generation_params"]["lane_params"]["max_points_per_crosswalk"])
 
     TYPE_MAX = 99  # TODO
 
@@ -39,12 +39,12 @@ def data_batch(cfg: dict) -> dict:
 
 
 @pytest.fixture(scope="session")
-def model(cfg: dict) -> VectorizedUnrollModel:
+def model(cfg: dict) -> VectorizedModel:
     weights_scaling = [1.0, 1.0, 1.0]
     _num_predicted_frames = cfg["model_params"]["future_num_frames"]
     _num_predicted_params = len(weights_scaling)
 
-    model = VectorizedUnrollModel(
+    model = VectorizedModel(
         history_num_frames_ego=cfg["model_params"]["history_num_frames_ego"],
         history_num_frames_agents=cfg["model_params"]["history_num_frames_agents"],
         num_targets=_num_predicted_params * _num_predicted_frames,
@@ -53,21 +53,19 @@ def model(cfg: dict) -> VectorizedUnrollModel:
         disable_other_agents=cfg["model_params"]["disable_other_agents"],
         disable_map=cfg["model_params"]["disable_map"],
         disable_lane_boundaries=cfg["model_params"]["disable_lane_boundaries"],
-        detach_unroll=False,
     )
 
     return model
 
 
-def test_model_train(model: VectorizedUnrollModel, data_batch: dict) -> None:
+def test_model_train(model: VectorizedModel, data_batch: dict) -> None:
     res = model(data_batch)
     assert "loss" in res
     assert res['loss'] > 0
 
 
-def test_model_eval(model: VectorizedUnrollModel, data_batch: dict, cfg: dict) -> None:
+def test_model_eval(model: VectorizedModel, data_batch: dict, cfg: dict) -> None:
     model = model.eval()
-    data_batch["future_num_frames"] = cfg["model_params"]["future_num_frames"]
     res = model(data_batch)
     assert 'positions' in res
     assert 'yaws' in res
