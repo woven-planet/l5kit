@@ -210,7 +210,8 @@ class VectorizedUnrollModel(VectorizedModel):
             outputs_ts.append(torch.cat([pred_xy_step, pred_yaw_step], -1))
             outputs_t0.append(torch.cat([pred_xy_step_t0, pred_yaw_step_t0], -1))
             gts_ts.append(torch.cat([gt_xy_step_ts, gt_yaw_ts], -1))
-            attns.append(attn)
+            if attn is not None:
+                attns.append(attn)
 
             # clone as we might change in place
             pred_xy_step_unnorm = pred_xy_step_unnorm.clone()
@@ -264,8 +265,7 @@ class VectorizedUnrollModel(VectorizedModel):
             pred_yaws = outputs_t0[:, :, 2:3]
 
             eval_dict = {"positions": pred_positions, "yaws": pred_yaws}
-            if attns is not None:
-                eval_dict["attention_weights"] = attns
+            eval_dict["attention_weights"] = attns
             return eval_dict
 
     def update_transformation_matrices(self, pred_xy_step_unnorm: torch.Tensor, pred_yaw_step: torch.Tensor,
