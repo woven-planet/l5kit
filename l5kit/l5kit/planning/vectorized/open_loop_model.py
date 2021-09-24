@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import torch
 import torch.nn.functional as F
@@ -121,7 +121,7 @@ class VectorizedModel(nn.Module):
         static_avail: torch.Tensor,
         type_embedding: torch.Tensor,
         lane_bdry_len: int,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
         """ Encapsulates calling the global_head (TODO?) and preparing needed data.
 
         :param agents_polys: dynamic elements - i.e. vectors corresponding to agents
@@ -164,7 +164,8 @@ class VectorizedModel(nn.Module):
         invalid_polys[:, 0] = 0  # make AoI always available in global graph
 
         # call and return global graph
-        return self.global_head(all_embs, type_embedding, invalid_polys)  # type: ignore
+        outputs, attns = self.global_head(all_embs, type_embedding, invalid_polys)
+        return outputs, attns
 
     def forward(self, data_batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         # Load and prepare vectors for the model call, split into map and agents
