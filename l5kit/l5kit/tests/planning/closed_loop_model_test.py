@@ -50,6 +50,7 @@ def model(cfg: dict) -> VectorizedUnrollModel:
         num_targets=_num_predicted_params * _num_predicted_frames,
         weights_scaling=weights_scaling,
         criterion=nn.L1Loss(reduction="none"),
+        gobal_head_dropout=cfg["model_params"]["gobal_head_dropout"],
         disable_other_agents=cfg["model_params"]["disable_other_agents"],
         disable_map=cfg["model_params"]["disable_map"],
         disable_lane_boundaries=cfg["model_params"]["disable_lane_boundaries"],

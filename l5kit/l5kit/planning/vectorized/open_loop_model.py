@@ -20,6 +20,7 @@ class VectorizedModel(nn.Module):
         num_targets: int,
         weights_scaling: List[float],
         criterion: nn.Module,
+        gobal_head_dropout: float,
         disable_other_agents: bool,
         disable_map: bool,
         disable_lane_boundaries: bool,
@@ -30,6 +31,7 @@ class VectorizedModel(nn.Module):
         :param history_num_frames_agents: number of history agent frames to include
         :param num_targets: number of values to predict
         :param weights_scaling: target weights for loss calculation
+        :param gobal_head_dropout: float in range [0,1] for the dropout in the MHA global head. Set to 0 to disable it
         :param criterion: loss function to use
         :param disable_other_agents: ignore agents
         :param disable_map: ignore map
@@ -43,6 +45,8 @@ class VectorizedModel(nn.Module):
         self._history_num_frames_ego = history_num_frames_ego
         self._history_num_frames_agents = history_num_frames_agents
         self._num_targets = num_targets
+
+        self._gobal_head_dropout = gobal_head_dropout
 
         self._d_local = 256
         self._d_global = 256
@@ -79,9 +83,8 @@ class VectorizedModel(nn.Module):
         if self._d_global != self._d_local:
             self.global_from_local = nn.Linear(self._d_local, self._d_global)
 
-        dropout = 0.1
         self.global_head = MultiheadAttentionGlobalHead(
-            self._d_global, num_timesteps, num_outputs, dropout=dropout
+            self._d_global, num_timesteps, num_outputs, dropout=self._gobal_head_dropout
         )
 
     def embed_polyline(self, features: torch.Tensor, mask: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
