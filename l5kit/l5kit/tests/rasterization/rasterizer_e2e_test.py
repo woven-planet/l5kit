@@ -3,7 +3,7 @@ import pytest
 
 from l5kit.data import ChunkedDataset, filter_agents_by_frames, LocalDataManager, TL_FACE_DTYPE
 from l5kit.rasterization import build_rasterizer, Rasterizer
-from l5kit.sampling import get_history_slice
+from l5kit.sampling.slicing import get_history_slice
 
 
 def check_rasterizer(cfg: dict, rasterizer: Rasterizer, zarr_dataset: ChunkedDataset) -> None:
