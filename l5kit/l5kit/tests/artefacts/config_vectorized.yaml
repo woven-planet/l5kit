@@ -10,6 +10,7 @@ model_params:
   disable_other_agents: False
   disable_map: False
   disable_lane_boundaries: True
+  gobal_head_dropout: 0.0
 
 ###################
 ## Vectorized Params

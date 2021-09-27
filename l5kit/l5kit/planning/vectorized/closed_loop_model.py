@@ -19,6 +19,7 @@ class VectorizedUnrollModel(VectorizedModel):
         num_targets: int,
         weights_scaling: List[float],
         criterion: nn.Module,  # criterion is only needed for training and not for evaluation
+        gobal_head_dropout: float,
         disable_other_agents: bool,
         disable_map: bool,
         disable_lane_boundaries: bool,
@@ -31,6 +32,7 @@ class VectorizedUnrollModel(VectorizedModel):
         :param num_targets: number of values to predict
         :param weights_scaling: target weights for loss calculation
         :param criterion: loss function to use
+        :param gobal_head_dropout: float in range [0,1] for the dropout in the MHA global head. Set to 0 to disable it
         :param disable_other_agents: ignore agents
         :param disable_map: ignore map
         :param disable_lane_boundaries: ignore lane boundaries
@@ -45,6 +47,7 @@ class VectorizedUnrollModel(VectorizedModel):
             num_targets,
             weights_scaling,
             criterion,
+            gobal_head_dropout,
             disable_other_agents,
             disable_map,
             disable_lane_boundaries,
