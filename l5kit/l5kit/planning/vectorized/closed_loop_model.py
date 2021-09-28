@@ -44,7 +44,8 @@ class VectorizedUnrollModel(VectorizedModel):
         :param warmup_num_frames: "sample" warmup_num_frames by following the model's policy
         :param unroll_num_frames: number of frames to use for loss calculation
         :param discount_factor: discount future_timesteps via discount_factor**t
-        :param limit_predicted_yaw: limit predicted yaw to 0.3 * tanh(x) if enabled - recommended for more stable training
+        :param limit_predicted_yaw: limit predicted yaw to 0.3 * tanh(x) if enabled - recommended for more stable
+            training
         """
 
         num_targets = 3  # this will limit queries number to 1
@@ -160,7 +161,7 @@ class VectorizedUnrollModel(VectorizedModel):
         # number of steps in [0, self.warmup_num_frames) -> calculate corresponding start /
         # end indices here for unrolling / loss calculation.
         start_idx_to_consider = int(torch.randint(0, self.warmup_num_frames + 1, (1,)).item())
-        end_idx_to_consider = start_idx_to_consider + self.unroll_num_frames 
+        end_idx_to_consider = start_idx_to_consider + self.unroll_num_frames
 
         for idx in range(future_num_frames):
             # === STEP FORWARD ====
@@ -281,7 +282,8 @@ class VectorizedUnrollModel(VectorizedModel):
 
             if self.discount_factor < 1:
                 # discount timesteps t via discount_factor**t
-                target_weights *= torch.tensor([self.discount_factor**(t-start_idx_to_consider) for t in range(target_weights.shape[0])])[..., None, None].to(target_weights.device)
+                target_weights *= torch.tensor([self.discount_factor**(t - start_idx_to_consider) for t in range(
+                    target_weights.shape[0])])[..., None, None].to(target_weights.device)
 
             loss = torch.mean(self.criterion(outputs_ts, targets) * target_weights)
             train_dict = {"loss": loss}

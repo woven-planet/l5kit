@@ -10,7 +10,10 @@ model_params:
   disable_other_agents: False
   disable_map: False
   disable_lane_boundaries: True
-  gobal_head_dropout: 0.0
+  global_head_dropout: 0.0
+  warmup_num_frames: 0
+  unroll_num_frames: 12
+  discount_factor: 0.8
 
 ###################
 ## Vectorized Params
