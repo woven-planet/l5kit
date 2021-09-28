@@ -7,12 +7,24 @@ model_params:
   history_num_frames_ego: 0  # this will also create raster history (we need to remove the raster from train/eval dataset - only visualization)
   history_num_frames: 0
   history_num_frames_agents: 3
-  future_num_frames: 12
   step_time: 0.1
   disable_other_agents: False
   disable_map: False
   disable_lane_boundaries: True
-  detach_unroll: True # if to deatch between steps when training with unroll
+  detach_unroll: True # if to detach between steps when training with unroll
+  # NOTE: During training, we can employ an initial sampling phase, in which we want to
+  # improve sampling from the policy: instead of sampling from the expert distribution
+  # we aim to sample from the model distribution, which we mimic by following it for 
+  # warmup_num_frames. These frames are not considered for loss calculation in any way,
+  # i.e. their weight is set to 0 and we detach gradients. After that, we unroll
+  # for another unroll_num_frames and propagate loss. The total number of frames loaded
+  # from the dataset is controlled via future_num_frames - thus you have to ensure
+  # that warmup_num_frames + unroll_num_frames <= future_num_frames!
+  warmup_num_frames: 0 # "sample" warmup_num_steps by following the model's policy
+  unroll_num_frames: 12 # number of steps used for calculating loss
+  future_num_frames: 12 # total number of loaded frames from data
+  discount_factor: 0.8 # discount future timesteps via discount_factor**t
+  global_head_dropout: 0
 
 ###################
 ## Data loader options
