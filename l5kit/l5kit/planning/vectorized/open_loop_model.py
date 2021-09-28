@@ -1,4 +1,4 @@
-from typing import Dict, List, Tuple
+from typing import Dict, List, Optional, Tuple
 
 import torch
 import torch.nn.functional as F
@@ -20,7 +20,7 @@ class VectorizedModel(nn.Module):
         num_targets: int,
         weights_scaling: List[float],
         criterion: nn.Module,
-        gobal_head_dropout: float,
+        global_head_dropout: float,
         disable_other_agents: bool,
         disable_map: bool,
         disable_lane_boundaries: bool,
@@ -31,7 +31,7 @@ class VectorizedModel(nn.Module):
         :param history_num_frames_agents: number of history agent frames to include
         :param num_targets: number of values to predict
         :param weights_scaling: target weights for loss calculation
-        :param gobal_head_dropout: float in range [0,1] for the dropout in the MHA global head. Set to 0 to disable it
+        :param global_head_dropout: float in range [0,1] for the dropout in the MHA global head. Set to 0 to disable it
         :param criterion: loss function to use
         :param disable_other_agents: ignore agents
         :param disable_map: ignore map
@@ -46,7 +46,7 @@ class VectorizedModel(nn.Module):
         self._history_num_frames_agents = history_num_frames_agents
         self._num_targets = num_targets
 
-        self._gobal_head_dropout = gobal_head_dropout
+        self._global_head_dropout = global_head_dropout
 
         self._d_local = 256
         self._d_global = 256
@@ -84,7 +84,7 @@ class VectorizedModel(nn.Module):
             self.global_from_local = nn.Linear(self._d_local, self._d_global)
 
         self.global_head = MultiheadAttentionGlobalHead(
-            self._d_global, num_timesteps, num_outputs, dropout=self._gobal_head_dropout
+            self._d_global, num_timesteps, num_outputs, dropout=self._global_head_dropout
         )
 
     def embed_polyline(self, features: torch.Tensor, mask: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
@@ -121,7 +121,7 @@ class VectorizedModel(nn.Module):
         static_avail: torch.Tensor,
         type_embedding: torch.Tensor,
         lane_bdry_len: int,
-    ) -> Tuple[torch.Tensor, torch.Tensor]:
+    ) -> Tuple[torch.Tensor, Optional[torch.Tensor]]:
         """ Encapsulates calling the global_head (TODO?) and preparing needed data.
 
         :param agents_polys: dynamic elements - i.e. vectors corresponding to agents
@@ -164,7 +164,8 @@ class VectorizedModel(nn.Module):
         invalid_polys[:, 0] = 0  # make AoI always available in global graph
 
         # call and return global graph
-        return self.global_head(all_embs, type_embedding, invalid_polys)  # type: ignore
+        outputs, attns = self.global_head(all_embs, type_embedding, invalid_polys)
+        return outputs, attns
 
     def forward(self, data_batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         # Load and prepare vectors for the model call, split into map and agents

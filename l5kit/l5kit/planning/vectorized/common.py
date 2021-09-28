@@ -64,7 +64,7 @@ def transform_points(
     if yaw is not None:
         transformed_yaw = element[..., 2:3] + yaw.view(-1, 1, 1, 1)
 
-    element = torch.cat([transformed_xy, transformed_yaw], axis=3)
+    element = torch.cat([transformed_xy, transformed_yaw], dim=3)
     element = element * avail[..., None].clone()  # NOTE: no idea why clone is required actually
     return element
 

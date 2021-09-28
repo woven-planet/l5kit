@@ -244,5 +244,5 @@ class EgoDatasetVectorized(BaseEgoDataset):
         )
 
     def get_scene_dataset(self, scene_index: int) -> "EgoDatasetVectorized":
-        dataset = super().get_scene_dataset(scene_index).dataset
+        dataset = self.dataset.get_scene_dataset(scene_index)
         return EgoDatasetVectorized(self.cfg, dataset, self.vectorizer, self.perturbation)
