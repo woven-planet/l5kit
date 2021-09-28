@@ -264,8 +264,7 @@ class VectorizedUnrollModel(VectorizedModel):
                 raise NotImplementedError("Loss function is undefined.")
 
             target_weights = data_batch["target_availabilities"][:, :future_num_frames]
-            # Only calculate loss for the correct frames, i.e. not during the warmup phase,
-            # and only up to self.unroll_num_frames (in case more frames are loaded).
+            # only calculate loss for the correct frames, i.e. not during the warmup phase,
             target_weights[:, :self.warmup_num_frames] = 0
             target_weights = target_weights.unsqueeze(-1) * self.weights_scaling
 
