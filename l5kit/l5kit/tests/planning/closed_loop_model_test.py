@@ -56,7 +56,6 @@ def model(cfg: dict) -> VectorizedUnrollModel:
         disable_lane_boundaries=cfg["model_params"]["disable_lane_boundaries"],
         detach_unroll=False,
         warmup_num_frames=cfg["model_params"]["warmup_num_frames"],
-        unroll_num_frames=cfg["model_params"]["unroll_num_frames"],
         discount_factor=cfg["model_params"]["discount_factor"],
     )
 

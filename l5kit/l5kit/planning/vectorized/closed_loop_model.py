@@ -25,7 +25,6 @@ class VectorizedUnrollModel(VectorizedModel):
         disable_lane_boundaries: bool,
         detach_unroll: bool,
         warmup_num_frames: int,
-        unroll_num_frames: int,
         discount_factor: float,
         limit_predicted_yaw: bool = True,
     ) -> None:
@@ -42,7 +41,6 @@ class VectorizedUnrollModel(VectorizedModel):
         :param disable_lane_boundaries: ignore lane boundaries
         :param detach_unroll: detach gradient between steps (disable BPTT)
         :param warmup_num_frames: "sample" warmup_num_frames by following the model's policy
-        :param unroll_num_frames: number of frames to use for loss calculation
         :param discount_factor: discount future_timesteps via discount_factor**t
         :param limit_predicted_yaw: limit predicted yaw to 0.3 * tanh(x) if enabled - recommended for more stable
             training
@@ -64,7 +62,6 @@ class VectorizedUnrollModel(VectorizedModel):
 
         self.detach_unroll = detach_unroll
         self.warmup_num_frames = warmup_num_frames
-        self.unroll_num_frames = unroll_num_frames
         self.discount_factor = discount_factor
         self.limit_predicted_yaw = limit_predicted_yaw
 
@@ -156,13 +153,6 @@ class VectorizedUnrollModel(VectorizedModel):
         yaw_t0_from_ts = zero
         yaw_ts_from_t0 = zero
 
-        # With self.warmup_num_frames > 0 we introduce an initial "sampling" period, meaning
-        # we simulate sampling from the model distribution by following it for a random
-        # number of steps in [0, self.warmup_num_frames) -> calculate corresponding start /
-        # end indices here for unrolling / loss calculation.
-        start_idx_to_consider = int(torch.randint(0, self.warmup_num_frames + 1, (1,)).item())
-        end_idx_to_consider = start_idx_to_consider + self.unroll_num_frames
-
         for idx in range(future_num_frames):
             # === STEP FORWARD ====
             # pick the right point in time
@@ -253,7 +243,7 @@ class VectorizedUnrollModel(VectorizedModel):
             current_timestep += 1
 
             # detach if requested, or if in initial sampling phase
-            if self.detach_unroll or idx < start_idx_to_consider:
+            if self.detach_unroll or idx < self.warmup_num_frames:
                 t0_from_ts.detach_()
                 ts_from_t0.detach_()
                 yaw_t0_from_ts.detach_()
@@ -276,14 +266,12 @@ class VectorizedUnrollModel(VectorizedModel):
             target_weights = data_batch["target_availabilities"][:, :future_num_frames]
             # Only calculate loss for the correct frames, i.e. not during the warmup phase,
             # and only up to self.unroll_num_frames (in case more frames are loaded).
-            target_weights[:, :start_idx_to_consider] = 0
-            target_weights[:, end_idx_to_consider:] = 0
+            target_weights[:, :self.warmup_num_frames] = 0
             target_weights = target_weights.unsqueeze(-1) * self.weights_scaling
 
-            if self.discount_factor < 1:
-                # discount timesteps t via discount_factor**t
-                target_weights *= torch.tensor([self.discount_factor**(t - start_idx_to_consider) for t in range(
-                    target_weights.shape[0])])[..., None, None].to(target_weights.device)
+            # discount timesteps t via discount_factor**t
+            target_weights *= torch.tensor([self.discount_factor**(t - self.warmup_num_frames) for t in range(
+                target_weights.shape[0])])[..., None, None].to(target_weights.device)
 
             loss = torch.mean(self.criterion(outputs_ts, targets) * target_weights)
             train_dict = {"loss": loss}
