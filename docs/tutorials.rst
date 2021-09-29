@@ -8,3 +8,4 @@ Tutorials
     planning.rst
     simulation.rst
     reinforcement.rst
+    urban_driver.rst
