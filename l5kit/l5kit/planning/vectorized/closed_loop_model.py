@@ -261,15 +261,17 @@ class VectorizedUnrollModel(VectorizedModel):
             if self.criterion is None:
                 raise NotImplementedError("Loss function is undefined.")
 
+            # [batch_size, future_num_frames, 3]
             target_weights = data_batch["target_availabilities"][:, :future_num_frames]
             # only calculate loss for the correct frames, i.e. not during the warmup phase,
             target_weights[:, :self.warmup_num_frames] = 0
             target_weights = target_weights.unsqueeze(-1) * self.weights_scaling
 
             # discount timesteps t via discount_factor**t
-            target_weights *= torch.tensor([self.discount_factor**(t - self.warmup_num_frames) for t in range(
-                target_weights.shape[1])])[None, ..., None].to(target_weights.device)
-
+            # [future_num_frames]
+            discount_weights = torch.tensor([self.discount_factor**(t - self.warmup_num_frames) for t in range(
+                target_weights.shape[1])])
+            target_weights *= discount_weights[None, ..., None].to(target_weights.device)
             loss = torch.mean(self.criterion(outputs_ts, targets) * target_weights)
             train_dict = {"loss": loss}
             return train_dict
