@@ -67,9 +67,7 @@ class VectorizedUnrollModel(VectorizedModel):
 
     def forward(self, data_batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         # ==== get additional info from the batch, or fall back to sensible defaults
-        future_num_frames = 3  # this is to avoid crashing a metric, ideally it should be 1
-        if "future_num_frames" in data_batch:
-            future_num_frames = data_batch["future_num_frames"]
+        future_num_frames = data_batch["target_availabilities"].shape[1]
 
         # ==== Past and Static info
         agents_past_polys = torch.cat(
@@ -270,7 +268,7 @@ class VectorizedUnrollModel(VectorizedModel):
 
             # discount timesteps t via discount_factor**t
             target_weights *= torch.tensor([self.discount_factor**(t - self.warmup_num_frames) for t in range(
-                target_weights.shape[0])])[..., None, None].to(target_weights.device)
+                target_weights.shape[1])])[None, ..., None].to(target_weights.device)
 
             loss = torch.mean(self.criterion(outputs_ts, targets) * target_weights)
             train_dict = {"loss": loss}
