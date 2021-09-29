@@ -1,0 +1,7 @@
+l5kit.planning.vectorized.closed\_loop\_model module
+====================================================
+
+.. automodule:: l5kit.planning.vectorized.closed_loop_model
+   :members:
+   :undoc-members:
+   :show-inheritance:

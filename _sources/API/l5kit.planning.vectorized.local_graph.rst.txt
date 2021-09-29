@@ -1,0 +1,7 @@
+l5kit.planning.vectorized.local\_graph module
+=============================================
+
+.. automodule:: l5kit.planning.vectorized.local_graph
+   :members:
+   :undoc-members:
+   :show-inheritance:

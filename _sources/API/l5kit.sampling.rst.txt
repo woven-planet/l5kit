@@ -13,4 +13,5 @@ Submodules
    :maxdepth: 4
 
    l5kit.sampling.agent_sampling
+   l5kit.sampling.agent_sampling_vectorized
    l5kit.sampling.slicing

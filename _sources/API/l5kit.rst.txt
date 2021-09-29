@@ -25,4 +25,5 @@ Subpackages
    l5kit.rasterization
    l5kit.sampling
    l5kit.simulation
+   l5kit.vectorization
    l5kit.visualization

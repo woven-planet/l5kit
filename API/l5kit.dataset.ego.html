@@ -298,6 +298,15 @@
           </li>
 
         
+          <li class="toctree-l1 ">
+            
+              <a href="../urban_driver.html" class="reference internal ">Urban Driver</a>
+            
+
+            
+          </li>
+
+        
       </ul>
     </div>
   
@@ -401,6 +410,86 @@
   <section id="module-l5kit.dataset.ego">
 <span id="l5kit-dataset-ego-module"></span><h1>l5kit.dataset.ego module<a class="headerlink" href="#module-l5kit.dataset.ego" title="Permalink to this headline">¶</a></h1>
 <dl class="py class">
+<dt class="sig sig-object py" id="l5kit.dataset.ego.BaseEgoDataset">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.dataset.ego.</span></span><span class="sig-name descname"><span class="pre">BaseEgoDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zarr_dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset"><span class="pre">l5kit.data.zarr_dataset.ChunkedDataset</span></a></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.dataset.ego.BaseEgoDataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.utils.data.dataset.T_co</span></code>]</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.dataset.ego.BaseEgoDataset.get_frame">
+<span class="sig-name descname"><span class="pre">get_frame</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">state_index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#l5kit.dataset.ego.BaseEgoDataset.get_frame" title="Permalink to this definition">¶</a></dt>
+<dd><p>A utility function to get the rasterisation and trajectory target for a given agent in a given frame</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>scene_index</strong> (<em>int</em>) – the index of the scene in the zarr</p></li>
+<li><p><strong>state_index</strong> (<em>int</em>) – a relative frame index in the scene</p></li>
+<li><p><strong>track_id</strong> (<em>Optional</em><em>[</em><em>int</em><em>]</em>) – the agent to rasterize or None for the AV</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>the rasterised image in (Cx0x1) if the rast is not None, the target trajectory
+(position and yaw) along with their availability, the 2D matrix to center that agent,
+the agent track (-1 if ego) and the timestamp</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p>dict</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.dataset.ego.BaseEgoDataset.get_frame_indices">
+<span class="sig-name descname"><span class="pre">get_frame_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_idx</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.dataset.ego.BaseEgoDataset.get_frame_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get indices for the given frame. EgoDataset iterates over frames, so this will be a single element
+:param frame_idx: index of the scene
+:type frame_idx: int</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>indices that can be used for indexing with __getitem__</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.dataset.ego.BaseEgoDataset.get_scene_dataset">
+<span class="sig-name descname"><span class="pre">get_scene_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#l5kit.dataset.ego.BaseEgoDataset" title="l5kit.dataset.ego.BaseEgoDataset"><span class="pre">l5kit.dataset.ego.BaseEgoDataset</span></a></span></span><a class="headerlink" href="#l5kit.dataset.ego.BaseEgoDataset.get_scene_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns another EgoDataset dataset where the underlying data can be modified.
+This is possible because, even if it supports the same interface, this dataset is np.ndarray based.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scene_index</strong> (<em>int</em>) – the scene index of the new dataset</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A valid EgoDataset dataset with a copy of the data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#l5kit.dataset.ego.EgoDataset" title="l5kit.dataset.ego.EgoDataset">EgoDataset</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.dataset.ego.BaseEgoDataset.get_scene_indices">
+<span class="sig-name descname"><span class="pre">get_scene_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_idx</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.dataset.ego.BaseEgoDataset.get_scene_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get indices for the given scene. EgoDataset iterates over frames, so this is just a matter
+of finding the scene boundaries.
+:param scene_idx: index of the scene
+:type scene_idx: int</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>indices that can be used for indexing with __getitem__</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="l5kit.dataset.ego.EgoDataset">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.dataset.ego.</span></span><span class="sig-name descname"><span class="pre">EgoDataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zarr_dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset"><span class="pre">l5kit.data.zarr_dataset.ChunkedDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">rasterizer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer"><span class="pre">l5kit.rasterization.rasterizer.Rasterizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturbation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.kinematic.perturbation.html#l5kit.kinematic.perturbation.Perturbation" title="l5kit.kinematic.perturbation.Perturbation"><span class="pre">l5kit.kinematic.perturbation.Perturbation</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.dataset.ego.EgoDataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.utils.data.dataset.T_co</span></code>]</p>
@@ -428,22 +517,6 @@ the agent track (-1 if ego) and the timestamp</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="l5kit.dataset.ego.EgoDataset.get_frame_indices">
-<span class="sig-name descname"><span class="pre">get_frame_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_idx</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.dataset.ego.EgoDataset.get_frame_indices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get indices for the given frame. EgoDataset iterates over frames, so this will be a single element
-:param frame_idx: index of the scene
-:type frame_idx: int</p>
-<dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>indices that can be used for indexing with __getitem__</p>
-</dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>np.ndarray</p>
-</dd>
-</dl>
-</dd></dl>
-
-<dl class="py method">
 <dt class="sig sig-object py" id="l5kit.dataset.ego.EgoDataset.get_scene_dataset">
 <span class="sig-name descname"><span class="pre">get_scene_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#l5kit.dataset.ego.EgoDataset" title="l5kit.dataset.ego.EgoDataset"><span class="pre">l5kit.dataset.ego.EgoDataset</span></a></span></span><a class="headerlink" href="#l5kit.dataset.ego.EgoDataset.get_scene_dataset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns another EgoDataset dataset where the underlying data can be modified.
@@ -461,19 +534,26 @@ This is possible because, even if it supports the same interface, this dataset i
 </dl>
 </dd></dl>
 
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="l5kit.dataset.ego.EgoDatasetVectorized">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.dataset.ego.</span></span><span class="sig-name descname"><span class="pre">EgoDatasetVectorized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zarr_dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset"><span class="pre">l5kit.data.zarr_dataset.ChunkedDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectorizer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.vectorization.vectorizer.html#l5kit.vectorization.vectorizer.Vectorizer" title="l5kit.vectorization.vectorizer.Vectorizer"><span class="pre">l5kit.vectorization.vectorizer.Vectorizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturbation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.kinematic.perturbation.html#l5kit.kinematic.perturbation.Perturbation" title="l5kit.kinematic.perturbation.Perturbation"><span class="pre">l5kit.kinematic.perturbation.Perturbation</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.dataset.ego.EgoDatasetVectorized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.utils.data.dataset.T_co</span></code>]</p>
 <dl class="py method">
-<dt class="sig sig-object py" id="l5kit.dataset.ego.EgoDataset.get_scene_indices">
-<span class="sig-name descname"><span class="pre">get_scene_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_idx</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.dataset.ego.EgoDataset.get_scene_indices" title="Permalink to this definition">¶</a></dt>
-<dd><p>Get indices for the given scene. EgoDataset iterates over frames, so this is just a matter
-of finding the scene boundaries.
-:param scene_idx: index of the scene
-:type scene_idx: int</p>
+<dt class="sig sig-object py" id="l5kit.dataset.ego.EgoDatasetVectorized.get_scene_dataset">
+<span class="sig-name descname"><span class="pre">get_scene_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="#l5kit.dataset.ego.EgoDatasetVectorized" title="l5kit.dataset.ego.EgoDatasetVectorized"><span class="pre">l5kit.dataset.ego.EgoDatasetVectorized</span></a></span></span><a class="headerlink" href="#l5kit.dataset.ego.EgoDatasetVectorized.get_scene_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns another EgoDataset dataset where the underlying data can be modified.
+This is possible because, even if it supports the same interface, this dataset is np.ndarray based.</p>
 <dl class="field-list simple">
-<dt class="field-odd">Returns</dt>
-<dd class="field-odd"><p>indices that can be used for indexing with __getitem__</p>
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scene_index</strong> (<em>int</em>) – the scene index of the new dataset</p>
 </dd>
-<dt class="field-even">Return type</dt>
-<dd class="field-even"><p>np.ndarray</p>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A valid EgoDataset dataset with a copy of the data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#l5kit.dataset.ego.EgoDataset" title="l5kit.dataset.ego.EgoDataset">EgoDataset</a></p>
 </dd>
 </dl>
 </dd></dl>

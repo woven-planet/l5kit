@@ -1,0 +1,15 @@
+l5kit.planning.rasterized package
+=================================
+
+.. automodule:: l5kit.planning.rasterized
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   l5kit.planning.rasterized.model

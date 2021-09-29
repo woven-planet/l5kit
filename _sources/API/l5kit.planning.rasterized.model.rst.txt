@@ -1,0 +1,7 @@
+l5kit.planning.rasterized.model module
+======================================
+
+.. automodule:: l5kit.planning.rasterized.model
+   :members:
+   :undoc-members:
+   :show-inheritance:

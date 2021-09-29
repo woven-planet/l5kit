@@ -1,0 +1,7 @@
+l5kit.sampling.agent\_sampling\_vectorized module
+=================================================
+
+.. automodule:: l5kit.sampling.agent_sampling_vectorized
+   :members:
+   :undoc-members:
+   :show-inheritance:

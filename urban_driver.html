@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+      <title>Urban Driver</title>
+    
+          <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+          <link rel="stylesheet" href="_static/theme.css " type="text/css" />
+          <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+      
+      <!-- sphinx script_files -->
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+
+      
+      <!-- bundled in js (rollup iife) -->
+      <!-- <script src="_static/theme-vendors.js"></script> -->
+      <script src="_static/theme.js" defer></script>
+    
+  <link rel="index" title="Index" href="genindex.html" />
+  <link rel="search" title="Search" href="search.html" />
+  <link rel="next" title="Competitions" href="competitions.html" />
+  <link rel="prev" title="Reinforcement Learning" href="reinforcement.html" /> 
+  </head>
+
+  <body>
+    <div id="app">
+    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
+  <router-link to="index.html" class="home-link">
+    
+      <img class="logo" src="_static/L5logo_small_v2.png" alt="logo"/>
+    
+  </router-link>
+
+  <div class="links">
+    <navlinks class="can-hide">
+
+  
+    <div class="nav-item">
+      <a href="index.html#"
+         class="nav-link ">
+         None
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="gettingstarted.html#getting-started"
+         class="nav-link ">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="tutorials.html#tutorials"
+         class="nav-link  router-link-active">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+    </navlinks>
+  </div>
+</navbar>
+
+      
+      <div class="sidebar-mask" @click="toggleSidebar(false)">
+      </div>
+        <sidebar @toggle-sidebar="toggleSidebar">
+          
+          <navlinks>
+            
+
+  
+    <div class="nav-item">
+      <a href="index.html#"
+         class="nav-link ">
+         None
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="intro_index.html#introduction-and-overview"
+         class="nav-link ">
+         introduction and overview
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="gettingstarted.html#getting-started"
+         class="nav-link ">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="tutorials.html#tutorials"
+         class="nav-link  router-link-active">
+         tutorials
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="competitions.html#competitions"
+         class="nav-link ">
+         competitions
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="contribute_index.html#contribute"
+         class="nav-link ">
+         contribute
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/lyft/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+            
+          </navlinks><div id="searchbox" class="searchbox" role="search">
+  <div class="caption"><span class="caption-text">Quick search</span>
+    <div class="searchformwrapper">
+      <form class="search" action="search.html" method="get">
+        <input type="text" name="q" />
+        <input type="submit" value="Search" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="index.html#">None</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="changelog.html" class="reference internal ">Changelog</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="intro_index.html#introduction-and-overview">introduction and overview</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="introduction.html" class="reference internal ">Introduction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="overview.html" class="reference internal ">Overview</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="gettingstarted.html#getting-started">getting started</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="installation.html" class="reference internal ">Installation</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="data_format.html" class="reference internal ">Dataset Formats in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="coords_systems.html" class="reference internal ">Coordinate Systems in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="tutorials.html#tutorials">tutorials</a></span>
+      </p>
+      <ul class="current">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="prediction.html" class="reference internal ">Prediction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="planning.html" class="reference internal ">Planning</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="simulation.html" class="reference internal ">Simulation</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="reinforcement.html" class="reference internal ">Reinforcement Learning</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 current">
+            
+              <a href="#" class="reference internal current">Urban Driver</a>
+            
+
+            
+              <ul>
+                
+                  <li class="toctree-l2"><a href="#model" class="reference internal">Model</a></li>
+                
+                  <li class="toctree-l2"><a href="#notebook-tutorial" class="reference internal">Notebook Tutorial</a></li>
+                
+                  <li class="toctree-l2"><a href="#video-tutorial" class="reference internal">Video Tutorial</a></li>
+                
+              </ul>
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="competitions.html#competitions">competitions</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="prediction_competition.html" class="reference internal ">Prediction Competition</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="contribute_index.html#contribute">contribute</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="how_to_contribute.html" class="reference internal ">How to contribute</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="api_reference.html" class="reference internal ">API Reference</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="license.html" class="reference internal ">License</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="credits.html" class="reference internal ">Credits</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+</div>
+        </sidebar>
+
+      <page>
+          <div class="body-header" role="navigation" aria-label="navigation">
+  
+  <ul class="breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+    
+      <li><a href="tutorials.html">Tutorials</a> &raquo;</li>
+    
+    <li>Urban Driver</li>
+  </ul>
+  
+
+  <ul class="page-nav">
+  <li class="prev">
+    <a href="reinforcement.html"
+       title="previous chapter">← Reinforcement Learning</a>
+  </li>
+  <li class="next">
+    <a href="competitions.html"
+       title="next chapter">Competitions →</a>
+  </li>
+</ul>
+  
+</div>
+<hr>
+          <div class="content" role="main" v-pre>
+            
+  <section id="urban-driver">
+<span id="urbandriver"></span><h1>Urban Driver<a class="headerlink" href="#urban-driver" title="Permalink to this headline">¶</a></h1>
+<p>Our paper <a class="reference external" href="https://openreview.net/pdf?id=ibktAcINCaj">Urban Driver: Learning to Drive from Real-world Demonstrations Using Policy Gradients</a>
+has been accepted for publication at <a class="reference external" href="https://www.robot-learning.org/">CoRL 2021</a>.</p>
+<p>We also have a <a class="reference external" href="https://www.self-driving-cars.org/papers/corl2021-clt">dedicated webpage</a> , so check that out for additional visual results.</p>
+<p>In this series of notebooks you will train and evaluate Urban Driver.</p>
+<p><strong>Before starting, please download the Lyft L5 Prediction Dataset 2020 and follow the instructions to correctly organise it.</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://self-driving.lyft.com/level5/prediction/">Lyft L5 Prediction Dataset 2020</a></p></li>
+<li><p><a class="reference external" href="https://github.com/lyft/l5kit#download-the-datasets">Instructions</a></p></li>
+</ul>
+<section id="model">
+<h2>Model<a class="headerlink" href="#model" title="Permalink to this headline">¶</a></h2>
+<p>From the paper:</p>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">We</span> <span class="pre">use</span> <span class="pre">a</span> <span class="pre">graph</span> <span class="pre">neural</span> <span class="pre">network</span> <span class="pre">for</span> <span class="pre">parametrizing</span> <span class="pre">our</span> <span class="pre">policy.</span>
+<span class="pre">It</span> <span class="pre">combines</span> <span class="pre">a</span> <span class="pre">PointNet-like</span> <span class="pre">architecture</span> <span class="pre">for</span> <span class="pre">local</span> <span class="pre">inputs</span> <span class="pre">processing</span> <span class="pre">followed</span> <span class="pre">by</span> <span class="pre">an</span> <span class="pre">attention</span> <span class="pre">mechanism</span> <span class="pre">for</span> <span class="pre">global</span> <span class="pre">reasoning.</span>
+<span class="pre">In</span> <span class="pre">contrast</span> <span class="pre">to</span> <span class="pre">VectorNet,</span> <span class="pre">we</span> <span class="pre">use</span> <span class="pre">points</span> <span class="pre">instead</span> <span class="pre">of</span> <span class="pre">vectors.</span>
+<span class="pre">Given</span> <span class="pre">the</span> <span class="pre">set</span> <span class="pre">of</span> <span class="pre">points</span> <span class="pre">corresponding</span> <span class="pre">to</span> <span class="pre">each</span> <span class="pre">input</span> <span class="pre">element,</span> <span class="pre">we</span> <span class="pre">employ</span> <span class="pre">3</span> <span class="pre">PointNet</span> <span class="pre">layers</span> <span class="pre">to</span> <span class="pre">calculate</span> <span class="pre">a</span> <span class="pre">128-dimensional</span> <span class="pre">feature</span> <span class="pre">descriptor.</span>
+<span class="pre">Subsequently,</span> <span class="pre">a</span> <span class="pre">single</span> <span class="pre">layer</span> <span class="pre">of</span> <span class="pre">scaled</span> <span class="pre">dot-product</span> <span class="pre">attention</span> <span class="pre">performs</span> <span class="pre">global</span> <span class="pre">feature</span> <span class="pre">aggregation,</span> <span class="pre">yielding</span> <span class="pre">the</span> <span class="pre">predicted</span> <span class="pre">trajectory</span> <span class="pre">[...]</span>
+<span class="pre">In</span> <span class="pre">total,</span> <span class="pre">our</span> <span class="pre">model</span> <span class="pre">contains</span> <span class="pre">around</span> <span class="pre">3.5</span> <span class="pre">million</span> <span class="pre">trainable</span> <span class="pre">parameters,</span> <span class="pre">and</span> <span class="pre">training</span> <span class="pre">takes</span> <span class="pre">30h</span> <span class="pre">on</span> <span class="pre">32</span> <span class="pre">Tesla</span> <span class="pre">V100</span> <span class="pre">GPUs.</span>
+<span class="pre">`</span></code></p>
+<img alt="model" src="_images/model1.svg" /></section>
+<section id="notebook-tutorial">
+<h2>Notebook Tutorial<a class="headerlink" href="#notebook-tutorial" title="Permalink to this headline">¶</a></h2>
+<p>We provide 2 notebooks.</p>
+<section id="training-notebook">
+<h3>Training Notebook<a class="headerlink" href="#training-notebook" title="Permalink to this headline">¶</a></h3>
+<p>You can train your own Urban Driver using our <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/examples/urban_driver/train.ipynb">training notebook</a></p>
+<a class="reference external image-reference" href="https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/urban_driver/train.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+<section id="pre-trained-models">
+<h4>Pre-Trained Models<a class="headerlink" href="#pre-trained-models" title="Permalink to this headline">¶</a></h4>
+<p>We trained Urban Driver in a distributed system using multiple GPUs. We understand that not everybody has access to this kind of resources.
+For this reason, we provide trained models you can experiment with in our evaluations notebooks,
+without requiring to train one yourself.
+Scroll to the end of the training notebook to download them.</p>
+</section>
+</section>
+<section id="closed-loop-evaluation-notebook">
+<h3>Closed-Loop Evaluation Notebook<a class="headerlink" href="#closed-loop-evaluation-notebook" title="Permalink to this headline">¶</a></h3>
+<p>You can evaluate Urban Planner in closed-loop setting using our <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/examples/urban_driver/closed_loop_test.ipynb">closed-loop evaluation notebook</a></p>
+<a class="reference external image-reference" href="https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/urban_driver/closed_loop_test.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+</section>
+</section>
+<section id="video-tutorial">
+<h2>Video Tutorial<a class="headerlink" href="#video-tutorial" title="Permalink to this headline">¶</a></h2>
+<p>As part of our submissions to CoRL 2021 we have recorded a short presentation video, which includes some visual results of Urban Driver in action.</p>
+<iframe width="560" height="315" src="https://www.youtube.com/embed/4YNEUrRUHTk" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></section>
+</section>
+
+
+          </div>
+          <div class="page-nav">
+            <div class="inner"><ul class="page-nav">
+  <li class="prev">
+    <a href="reinforcement.html"
+       title="previous chapter">← Reinforcement Learning</a>
+  </li>
+  <li class="next">
+    <a href="competitions.html"
+       title="next chapter">Competitions →</a>
+  </li>
+</ul><div class="footer" role="contentinfo">
+      &#169; Copyright 2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car).
+    <br>
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
+</div>
+            </div>
+          </div>
+      </page>
+    </div></div>
+    
+    
+  </body>
+</html>

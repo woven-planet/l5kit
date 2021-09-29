@@ -1,0 +1,7 @@
+l5kit.planning.vectorized.global\_graph module
+==============================================
+
+.. automodule:: l5kit.planning.vectorized.global_graph
+   :members:
+   :undoc-members:
+   :show-inheritance:

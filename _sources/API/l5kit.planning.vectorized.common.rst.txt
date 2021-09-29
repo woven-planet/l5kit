@@ -1,0 +1,7 @@
+l5kit.planning.vectorized.common module
+=======================================
+
+.. automodule:: l5kit.planning.vectorized.common
+   :members:
+   :undoc-members:
+   :show-inheritance:

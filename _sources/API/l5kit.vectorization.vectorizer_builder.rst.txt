@@ -1,0 +1,7 @@
+l5kit.vectorization.vectorizer\_builder module
+==============================================
+
+.. automodule:: l5kit.vectorization.vectorizer_builder
+   :members:
+   :undoc-members:
+   :show-inheritance:

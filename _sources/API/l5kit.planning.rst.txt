@@ -6,11 +6,19 @@ l5kit.planning package
    :undoc-members:
    :show-inheritance:
 
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   l5kit.planning.rasterized
+   l5kit.planning.vectorized
+
 Submodules
 ----------
 
 .. toctree::
    :maxdepth: 4
 
-   l5kit.planning.model
    l5kit.planning.utils

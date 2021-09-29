@@ -1,0 +1,7 @@
+l5kit.vectorization.vectorizer module
+=====================================
+
+.. automodule:: l5kit.vectorization.vectorizer
+   :members:
+   :undoc-members:
+   :show-inheritance:

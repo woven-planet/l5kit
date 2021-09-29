@@ -1,0 +1,19 @@
+l5kit.planning.vectorized package
+=================================
+
+.. automodule:: l5kit.planning.vectorized
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   l5kit.planning.vectorized.closed_loop_model
+   l5kit.planning.vectorized.common
+   l5kit.planning.vectorized.global_graph
+   l5kit.planning.vectorized.local_graph
+   l5kit.planning.vectorized.open_loop_model

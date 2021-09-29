@@ -1,0 +1,7 @@
+l5kit.planning.vectorized.open\_loop\_model module
+==================================================
+
+.. automodule:: l5kit.planning.vectorized.open_loop_model
+   :members:
+   :undoc-members:
+   :show-inheritance:

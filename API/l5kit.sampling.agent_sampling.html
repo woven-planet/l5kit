@@ -23,7 +23,7 @@
     
   <link rel="index" title="Index" href="../genindex.html" />
   <link rel="search" title="Search" href="../search.html" />
-  <link rel="next" title="l5kit.sampling.slicing module" href="l5kit.sampling.slicing.html" />
+  <link rel="next" title="l5kit.sampling.agent_sampling_vectorized module" href="l5kit.sampling.agent_sampling_vectorized.html" />
   <link rel="prev" title="l5kit.sampling package" href="l5kit.sampling.html" /> 
   </head>
 
@@ -298,6 +298,15 @@
           </li>
 
         
+          <li class="toctree-l1 ">
+            
+              <a href="../urban_driver.html" class="reference internal ">Urban Driver</a>
+            
+
+            
+          </li>
+
+        
       </ul>
     </div>
   
@@ -389,8 +398,8 @@
        title="previous chapter">← l5kit.sampling package</a>
   </li>
   <li class="next">
-    <a href="l5kit.sampling.slicing.html"
-       title="next chapter">l5kit.sampling.slicing module →</a>
+    <a href="l5kit.sampling.agent_sampling_vectorized.html"
+       title="next chapter">l5kit.sampling.agent_sampling_vectorized module →</a>
   </li>
 </ul>
   
@@ -425,7 +434,7 @@ compared to (pos(T+t) - pos(T-t))/2t on v1.1/sample.zarr.tar.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="l5kit.sampling.agent_sampling.generate_agent_sample">
-<span class="sig-prename descclassname"><span class="pre">l5kit.sampling.agent_sampling.</span></span><span class="sig-name descname"><span class="pre">generate_agent_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agents</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tl_faces</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_track_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_context</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.rasterization.render_context.html#l5kit.rasterization.render_context.RenderContext" title="l5kit.rasterization.render_context.RenderContext"><span class="pre">l5kit.rasterization.render_context.RenderContext</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_num_frames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">future_num_frames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_time</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_agents_threshold</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rasterizer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer"><span class="pre">l5kit.rasterization.rasterizer.Rasterizer</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturbation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.kinematic.perturbation.html#l5kit.kinematic.perturbation.Perturbation" title="l5kit.kinematic.perturbation.Perturbation"><span class="pre">l5kit.kinematic.perturbation.Perturbation</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#l5kit.sampling.agent_sampling.generate_agent_sample" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">l5kit.sampling.agent_sampling.</span></span><span class="sig-name descname"><span class="pre">generate_agent_sample</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">state_index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agents</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tl_faces</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_track_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">render_context</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.rasterization.render_context.html#l5kit.rasterization.render_context.RenderContext" title="l5kit.rasterization.render_context.RenderContext"><span class="pre">l5kit.rasterization.render_context.RenderContext</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">history_num_frames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">future_num_frames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step_time</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filter_agents_threshold</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">rasterizer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.rasterization.rasterizer.html#l5kit.rasterization.rasterizer.Rasterizer" title="l5kit.rasterization.rasterizer.Rasterizer"><span class="pre">l5kit.rasterization.rasterizer.Rasterizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturbation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.kinematic.perturbation.html#l5kit.kinematic.perturbation.Perturbation" title="l5kit.kinematic.perturbation.Perturbation"><span class="pre">l5kit.kinematic.perturbation.Perturbation</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#l5kit.sampling.agent_sampling.generate_agent_sample" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generates the inputs and targets to train a deep prediction model. A deep prediction model takes as input
 the state of the world (here: an image we will call the “raster”), and outputs where that agent will be some
 seconds into the future.</p>
@@ -447,7 +456,7 @@ and partials that use this function.</p>
 <li><p><strong>step_time</strong> (<em>float</em>) – seconds between consecutive steps</p></li>
 <li><p><strong>filter_agents_threshold</strong> (<em>float</em>) – Value between 0 and 1 to use as cutoff value for agent filtering</p></li>
 <li><p><strong>agent</strong> (<em>based on their probability of being a relevant</em>) – </p></li>
-<li><p><strong>rasterizer</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="l5kit.rasterization.html#l5kit.rasterization.Rasterizer" title="l5kit.rasterization.Rasterizer"><em>Rasterizer</em></a><em>]</em>) – Rasterizer of some sort that draws a map image</p></li>
+<li><p><strong>Rasterizer</strong> (<em>rasterizer</em>) – Rasterizer of some sort that draws a map image</p></li>
 <li><p><strong>perturbation</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="l5kit.kinematic.html#l5kit.kinematic.Perturbation" title="l5kit.kinematic.Perturbation"><em>Perturbation</em></a><em>]</em>) – Object that perturbs the input and targets, used</p></li>
 <li><p><strong>data</strong> (<em>to train models that can recover from slight divergence from training set</em>) – </p></li>
 </ul>
@@ -528,8 +537,8 @@ between space is performed in float64 to ensure precision</p>
        title="previous chapter">← l5kit.sampling package</a>
   </li>
   <li class="next">
-    <a href="l5kit.sampling.slicing.html"
-       title="next chapter">l5kit.sampling.slicing module →</a>
+    <a href="l5kit.sampling.agent_sampling_vectorized.html"
+       title="next chapter">l5kit.sampling.agent_sampling_vectorized module →</a>
   </li>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car).

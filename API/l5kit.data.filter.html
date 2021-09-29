@@ -298,6 +298,15 @@
           </li>
 
         
+          <li class="toctree-l1 ">
+            
+              <a href="../urban_driver.html" class="reference internal ">Urban Driver</a>
+            
+
+            
+          </li>
+
+        
       </ul>
     </div>
   
@@ -400,6 +409,26 @@
             
   <section id="module-l5kit.data.filter">
 <span id="l5kit-data-filter-module"></span><h1>l5kit.data.filter module<a class="headerlink" href="#module-l5kit.data.filter" title="Permalink to this headline">¶</a></h1>
+<dl class="py function">
+<dt class="sig sig-object py" id="l5kit.data.filter.filter_agents_by_distance">
+<span class="sig-prename descclassname"><span class="pre">l5kit.data.filter.</span></span><span class="sig-name descname"><span class="pre">filter_agents_by_distance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">agents</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">centroid</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_distance</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.data.filter.filter_agents_by_distance" title="Permalink to this definition">¶</a></dt>
+<dd><p>Filter agents by distance, cut to <cite>max_distance</cite> and sort the result
+:param agents: array of agents
+:type agents: np.ndarray
+:param centroid: centroid towards which compute distance
+:type centroid: np.ndarray
+:param max_distance: max distance to cut off
+:type max_distance: float</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>agents sorted and cut to max_distance</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
 <dl class="py function">
 <dt class="sig sig-object py" id="l5kit.data.filter.filter_agents_by_frames">
 <span class="sig-prename descclassname"><span class="pre">l5kit.data.filter.</span></span><span class="sig-name descname"><span class="pre">filter_agents_by_frames</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agents</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.data.filter.filter_agents_by_frames" title="Permalink to this definition">¶</a></dt>
@@ -525,6 +554,29 @@ This functions mimics <cite>filter_agents_by_frames</cite> for traffic light fac
 </dd>
 <dt class="field-odd">Return type</dt>
 <dd class="field-odd"><p>slice</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py function">
+<dt class="sig sig-object py" id="l5kit.data.filter.get_other_agents_ids">
+<span class="sig-prename descclassname"><span class="pre">l5kit.data.filter.</span></span><span class="sig-name descname"><span class="pre">get_other_agents_ids</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">all_agents_ids</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">priority_ids</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">selected_track_id</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">int</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_agents</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.uint64</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.data.filter.get_other_agents_ids" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get ids of agents around selected_track_id. Give precedence to <cite>priority_ids</cite>
+over <cite>all_agents_ids</cite> and cut to <cite>max_agents</cite>
+:param all_agents_ids: ids of all the agents from present to past
+:type all_agents_ids: np.ndarray
+:param priority_ids: ids of agents we know are reliable in the present
+:type priority_ids: np.ndarray
+:param selected_track_id: current id of the agent of interest
+:type selected_track_id: Optional[int]
+:param max_agents: max agents to take
+:type max_agents: int</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>the list of track ids of agents to take</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>List[np.uint64]</p>
 </dd>
 </dl>
 </dd></dl>
