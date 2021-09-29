@@ -5,8 +5,9 @@ import pytest
 from torch.utils.data import DataLoader, Dataset, Subset
 
 from l5kit.data import ChunkedDataset, LocalDataManager
-from l5kit.dataset import AgentDataset, EgoDataset
+from l5kit.dataset import AgentDataset, EgoDataset, EgoDatasetVectorized
 from l5kit.rasterization import build_rasterizer, RenderContext, StubRasterizer
+from l5kit.vectorization.vectorizer_builder import build_vectorizer
 
 
 def check_sample(cfg: dict, dataset: Dataset) -> None:
@@ -89,16 +90,16 @@ def test_non_zero_history(
         assert data["image"].shape == (2 * (history_num_frames + 1), *rast_params["raster_size"])
 
 
-@pytest.mark.parametrize("history_num_frames", [1, 2, 3, 4])
-@pytest.mark.parametrize("dataset_cls", [EgoDataset, AgentDataset])
-def test_no_rast_dataset(
-        history_num_frames: int, dataset_cls: Callable, zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict
-) -> None:
-    cfg["model_params"]["history_num_frames"] = history_num_frames
-    rasterizer = None
-    dataset = dataset_cls(cfg, zarr_dataset, rasterizer, None)
-    indexes = [0, 1, 10, -1]  # because we pad, even the first index should have an (entire black) history
+@pytest.mark.parametrize("history_num_frames_ego", [0, 1, 2, 3, 4])
+@pytest.mark.parametrize("history_num_frames_agents", [0, 1, 2, 3, 4])
+def test_vector_ego(zarr_dataset: ChunkedDataset, dmg: LocalDataManager, cfg: dict, history_num_frames_ego: int,
+                    history_num_frames_agents: int) -> None:
+    cfg["model_params"]["history_num_frames_ego"] = history_num_frames_ego
+    cfg["model_params"]["history_num_frames_agents"] = history_num_frames_agents
+
+    vect = build_vectorizer(cfg, dmg)
+    dataset = EgoDatasetVectorized(cfg, zarr_dataset, vect)
+    indexes = [0, 1, 10, -1]
     for idx in indexes:
-        data = dataset[idx]
-        assert "image" not in data
+        dataset[idx]
     check_torch_loading(dataset)

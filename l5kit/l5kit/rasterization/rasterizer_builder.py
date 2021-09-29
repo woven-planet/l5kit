@@ -1,5 +1,3 @@
-import warnings
-
 import cv2
 import numpy as np
 
@@ -35,58 +33,6 @@ def _load_satellite_map(image_key: str, data_manager: DataManager) -> np.ndarray
     return image
 
 
-def get_hardcoded_world_to_ecef() -> np.ndarray:  # TODO remove when new dataset version is available
-    """
-    Return and hardcoded world_to_ecef matrix for dataset V1.0
-
-    Returns:
-        np.ndarray: 4x4 matrix
-    """
-    warnings.warn(
-        "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
-        "This will be deprecated in future releases",
-        PendingDeprecationWarning,
-        stacklevel=3,
-    )
-
-    world_to_ecef = np.asarray(
-        [
-            [8.46617444e-01, 3.23463078e-01, -4.22623402e-01, -2.69876744e06],
-            [-5.32201938e-01, 5.14559352e-01, -6.72301845e-01, -4.29315158e06],
-            [-3.05311332e-16, 7.94103464e-01, 6.07782600e-01, 3.85516476e06],
-            [0.00000000e00, 0.00000000e00, 0.00000000e00, 1.00000000e00],
-        ],
-        dtype=np.float64,
-    )
-    return world_to_ecef
-
-
-def get_hardcoded_ecef_to_aerial() -> np.ndarray:  # TODO remove when new dataset version is available
-    """
-    Return and hardcoded ecef_to_aerial matrix for dataset V1.0
-
-    Returns:
-        np.ndarray: 4x4 matrix
-    """
-    warnings.warn(
-        "!!dataset metafile not found!! the hard-coded matrix will be loaded.\n"
-        "This will be deprecated in future releases",
-        PendingDeprecationWarning,
-        stacklevel=3,
-    )
-
-    ecef_to_aerial = np.asarray(
-        [
-            [-0.717416495, -1.14606296, -1.62854453, -572869.824],
-            [1.80065798, -1.08914046, -0.0287877303, 300171.963],
-            [0.0, 0.0, 0.0, 0.0],
-            [0.0, 0.0, 0.0, 1.0],
-        ],
-        dtype=np.float64,
-    )
-    return ecef_to_aerial
-
-
 def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
     """Factory function for rasterizers, reads the config, loads required data and initializes the correct rasterizer.
 
@@ -120,14 +66,9 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
     if map_type in ["py_satellite", "satellite_debug"]:
         sat_image = _load_satellite_map(raster_cfg["satellite_map_key"], data_manager)
 
-        try:
-            dataset_meta = load_metadata(data_manager.require(dataset_meta_key))
-            world_to_ecef = np.array(dataset_meta["world_to_ecef"], dtype=np.float64)
-            ecef_to_aerial = np.array(dataset_meta["ecef_to_aerial"], dtype=np.float64)
-
-        except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
-            world_to_ecef = get_hardcoded_world_to_ecef()
-            ecef_to_aerial = get_hardcoded_ecef_to_aerial()
+        dataset_meta = load_metadata(data_manager.require(dataset_meta_key))
+        world_to_ecef = np.array(dataset_meta["world_to_ecef"], dtype=np.float64)
+        ecef_to_aerial = np.array(dataset_meta["ecef_to_aerial"], dtype=np.float64)
 
         world_to_aerial = np.matmul(ecef_to_aerial, world_to_ecef)
         if map_type == "py_satellite":
@@ -140,11 +81,9 @@ def build_rasterizer(cfg: dict, data_manager: DataManager) -> Rasterizer:
 
     elif map_type in ["py_semantic", "semantic_debug"]:
         semantic_map_filepath = data_manager.require(raster_cfg["semantic_map_key"])
-        try:
-            dataset_meta = load_metadata(data_manager.require(dataset_meta_key))
-            world_to_ecef = np.array(dataset_meta["world_to_ecef"], dtype=np.float64)
-        except (KeyError, FileNotFoundError):  # TODO remove when new dataset version is available
-            world_to_ecef = get_hardcoded_world_to_ecef()
+        dataset_meta = load_metadata(data_manager.require(dataset_meta_key))
+        world_to_ecef = np.array(dataset_meta["world_to_ecef"], dtype=np.float64)
+
         if map_type == "py_semantic":
             return SemBoxRasterizer(
                 render_context, filter_agents_threshold, history_num_frames, semantic_map_filepath, world_to_ecef,

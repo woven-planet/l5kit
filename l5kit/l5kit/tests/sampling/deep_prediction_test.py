@@ -6,7 +6,7 @@ import pytest
 
 from l5kit.data import AGENT_DTYPE, ChunkedDataset, FRAME_DTYPE
 from l5kit.rasterization import RenderContext, StubRasterizer
-from l5kit.sampling import generate_agent_sample
+from l5kit.sampling.agent_sampling import generate_agent_sample
 
 
 def get_partial(cfg: dict, history_num_frames: int, future_num_frames: int, step_time: float, ) -> Callable:

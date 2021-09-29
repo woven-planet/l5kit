@@ -1,0 +1,37 @@
+# Config format schema number
+format_version: 7
+
+###################
+## Model options
+model_params:
+  history_num_frames_ego: 0  # this will also create raster history (we need to remove the raster from train/eval dataset - only visualization)
+  history_num_frames_agents: 3
+  future_num_frames: 12
+  disable_other_agents: False
+  disable_map: False
+  disable_lane_boundaries: True
+  global_head_dropout: 0.0
+  warmup_num_frames: 0
+  unroll_num_frames: 12
+  discount_factor: 0.8
+
+###################
+## Vectorized Params
+data_generation_params:
+  # maximum number of other agents to take (if less will be padded)
+  other_agents_num: 30
+  # maximum distance from AoI for another agent to be picked
+  max_agents_distance: 35
+  # Parameters defining which and how many lanes to be retrieved
+  lane_params:
+    # maximum number of lanes to take into account
+    # if less they will be padded; if more the closest to AoI are picked
+    max_num_lanes: 30
+    # max number of points per lane
+    max_points_per_lane: 20
+    # max number of points per crosswalk
+    max_points_per_crosswalk: 20
+    # maximum radius around the AoI for which we retrieve
+    max_retrieval_distance_m: 35
+    # max number of crosswalks
+    max_num_crosswalks: 20

@@ -167,6 +167,7 @@ class CompositeMetricAggregator(SupportsCompositeMetricAggregation):
                         local scenes and also across distributed
                         nodes.
     """
+
     def __init__(self, reduce_mode: ReduceMode = ReduceMode.SUM):
         # Supporting only ReduceMode.SUM for the moment
         if reduce_mode not in set(ReduceMode):

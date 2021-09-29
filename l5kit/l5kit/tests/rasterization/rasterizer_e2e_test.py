@@ -3,7 +3,7 @@ import pytest
 
 from l5kit.data import ChunkedDataset, filter_agents_by_frames, LocalDataManager, TL_FACE_DTYPE
 from l5kit.rasterization import build_rasterizer, Rasterizer
-from l5kit.sampling import get_history_slice
+from l5kit.sampling.slicing import get_history_slice
 
 
 def check_rasterizer(cfg: dict, rasterizer: Rasterizer, zarr_dataset: ChunkedDataset) -> None:
@@ -35,3 +35,9 @@ def test_rasterizer_created_from_config(
     cfg["raster_params"]["map_type"] = map_type
     rasterizer = build_rasterizer(cfg, dmg)
     check_rasterizer(cfg, rasterizer, zarr_dataset)
+
+    # rasterizer requires meta to build the map if semantic or satellite
+    if "semantic" in map_type or "satellite" in map_type:
+        cfg["raster_params"]["dataset_meta_key"] = "invalid_path"
+        with pytest.raises(FileNotFoundError):
+            build_rasterizer(cfg, dmg)

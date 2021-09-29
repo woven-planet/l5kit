@@ -1,4 +1,4 @@
-from l5kit.sampling import get_future_slice, get_history_slice
+from l5kit.sampling.slicing import get_future_slice, get_history_slice
 
 
 def test_future_slice() -> None:

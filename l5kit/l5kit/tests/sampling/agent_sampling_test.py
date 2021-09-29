@@ -3,7 +3,7 @@ import pytest
 
 from l5kit.data import (ChunkedDataset, filter_agents_by_frames, filter_tl_faces_by_frames,
                         get_agents_slice_from_frames, get_frames_slice_from_scenes, get_tl_faces_slice_from_frames)
-from l5kit.sampling import get_agent_context
+from l5kit.sampling.agent_sampling import get_agent_context
 
 
 @pytest.mark.parametrize("state_index", [0, 10, 40])

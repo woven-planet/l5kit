@@ -11,7 +11,7 @@ from l5kit.environment.envs.l5_env import EpisodeOutputGym
 from l5kit.geometry import transform_points
 from l5kit.rasterization.box_rasterizer import get_box_world_coords, get_ego_as_agent
 from l5kit.rasterization.semantic_rasterizer import indices_in_bounds
-from l5kit.sampling import get_relative_poses
+from l5kit.sampling.agent_sampling import get_relative_poses
 from l5kit.simulation.unroll import SimulationOutput, UnrollInputOutput
 from l5kit.visualization.visualizer.common import (AgentVisualization, CWVisualization, EgoVisualization,
                                                    FrameVisualization, LaneVisualization, TrajectoryVisualization)
