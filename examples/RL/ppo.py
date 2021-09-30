@@ -30,6 +30,8 @@ if __name__ == "__main__":
                         help='File name for saving model states')
     parser.add_argument('--load', type=str,
                         help='Path to load model and continue training')
+    parser.add_argument('--simnet', action='store_true',
+                        help='Use simnet to control agents')
     parser.add_argument('--tb_log', default=None, type=str,
                         help='Tensorboard log folder')
     parser.add_argument('--save_path', default='./logs/', type=str,
@@ -95,6 +97,7 @@ if __name__ == "__main__":
     # make train env
     train_sim_cfg = SimulationConfigGym()
     train_sim_cfg.num_simulation_steps = args.eps_length + 1
+    train_sim_cfg.use_agents_gt = (not args.simnet)
     env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'reward': env_reward,
                   'train': True, 'sim_cfg': train_sim_cfg}
     env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs, n_envs=args.n_envs,
@@ -114,7 +117,7 @@ if __name__ == "__main__":
         lr_sched = get_linear_fn(args.lr, (args.lr / 100), args.clip_progress_ratio)
 
     if args.load is not None:
-        model = PPO.load(args.load, env, clip_range=clip_schedule)
+        model = PPO.load(args.load, env, clip_range=clip_schedule, learning_rate=lr_sched)
     else:
         model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, n_steps=args.num_rollout_steps,
                     learning_rate=lr_sched, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
@@ -123,6 +126,7 @@ if __name__ == "__main__":
     # make eval env (for Training)
     eval_sim_cfg = SimulationConfigGym()
     eval_sim_cfg.num_simulation_steps = None
+    eval_sim_cfg.use_agents_gt = (not args.simnet)
     eval_env_train_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'reward': env_reward,
                              'return_info': True, 'train': True, 'sim_cfg': eval_sim_cfg, 'randomize_start': False}
     eval_env_train = make_vec_env("L5-CLE-v0", env_kwargs=eval_env_train_kwargs, n_envs=args.n_eval_envs,
@@ -131,6 +135,7 @@ if __name__ == "__main__":
     # make eval env (for Validation)
     validation_sim_cfg = SimulationConfigGym()
     validation_sim_cfg.num_simulation_steps = None
+    validation_sim_cfg.use_agents_gt = (not args.simnet)
     eval_env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'reward': env_reward,
                        'return_info': True, 'train': False, 'sim_cfg': validation_sim_cfg}
     eval_env = make_vec_env("L5-CLE-v0", env_kwargs=eval_env_kwargs, n_envs=args.n_eval_envs,
@@ -161,4 +166,7 @@ if __name__ == "__main__":
     callback_list.append(train_eval_callback)
 
     # train
+    import time
+    st = time.time()
     model.learn(args.n_steps, callback=callback_list)
+    print("Time: ",  time.time() - st)

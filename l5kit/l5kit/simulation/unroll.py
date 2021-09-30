@@ -160,8 +160,8 @@ class ClosedLoopSimulator:
             raise ValueError("agents model should not be None when simulating agent")
         if sim_cfg.use_ego_gt and mode == ClosedLoopSimulatorModes.GYM:
             raise ValueError("ego has to be simulated when using gym environment")
-        if not sim_cfg.use_agents_gt and mode == ClosedLoopSimulatorModes.GYM:
-            raise ValueError("agents need be log-replayed when using gym environment")
+        # if not sim_cfg.use_agents_gt and mode == ClosedLoopSimulatorModes.GYM:
+        #     raise ValueError("agents need be log-replayed when using gym environment")
 
         self.model_ego = torch.nn.Sequential().to(device) if model_ego is None else model_ego.to(device)
         self.model_agents = torch.nn.Sequential().to(device) if model_agents is None else model_agents.to(device)
