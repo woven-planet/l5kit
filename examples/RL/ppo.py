@@ -1,5 +1,10 @@
 import argparse
 import os
+import subprocess
+from pathlib import Path
+
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'
 
 from stable_baselines3 import PPO
 from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
@@ -14,14 +19,18 @@ from l5kit.environment.callbacks import L5KitEvalCallback
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
 # Please set the L5KIT_DATA_FOLDER environment variable
+DEFAULT_L5KIT_DATA_FOLDER = '/tmp/datasets/l5kit_data'
 if "L5KIT_DATA_FOLDER" not in os.environ:
-    raise KeyError("L5KIT_DATA_FOLDER environment variable not set")
+    os.environ["L5KIT_DATA_FOLDER"] = DEFAULT_L5KIT_DATA_FOLDER
+    if not os.path.exists(DEFAULT_L5KIT_DATA_FOLDER):
+        # Download data
+        subprocess.call(str( Path(__file__).parents[1] / 'download_data.sh'))
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument('--config', type=str,
-                        default='./gym_config.yaml',
+                        default=str(Path(__file__).parent / 'gym_config.yaml'),
                         help='Path to L5Kit environment config file')
     parser.add_argument('-o', '--output', type=str, default='PPO',
                         help='File name for saving model states')
