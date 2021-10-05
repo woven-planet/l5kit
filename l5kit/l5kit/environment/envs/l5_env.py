@@ -163,7 +163,6 @@ class L5Env(gym.Env):
             self.randomize_start_frame = False
         if self.overfit:
             self.overfit_scene_id = cfg["gym_params"]["overfit_id"]
-            self.randomize_start_frame = False
 
         self.cle = cle
         self.rescale_action = rescale_action
