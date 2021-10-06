@@ -7,7 +7,7 @@ from stable_baselines3.common.callbacks import EvalCallback
 
 from l5kit.cle.metric_set import L5MetricSet
 from l5kit.cle.scene_type_agg import compute_cle_scene_type_aggregations
-from l5kit.cle.validators import ValidationCountingAggregator
+from l5kit.cle.validators import ValidationCountingAggregator, ValidatorOutput
 from l5kit.environment.gym_metric_set import CLEMetricSet
 
 
@@ -83,6 +83,17 @@ class L5KitEvalCallback(EvalCallback):
                 self.logger.record(f'{self.prefix}/ade', ade_error)
                 self.logger.record(f'{self.prefix}/fde', fde_error)
 
+            # Calculate replayed/simulated driven miles
+            if 'replay_driven_miles' in self.metric_set.evaluation_plan.metrics_dict():
+                replay_driven_miles, simulated_driven_miles = self.compute_driven_miles()
+                self.logger.record(f'{self.prefix}/replay_driven_miles', replay_driven_miles)
+                self.logger.record(f'{self.prefix}/simulated_driven_miles', simulated_driven_miles)
+
+            # Calculate total collisions
+            if 'collision_front' in self.metric_set.evaluation_plan.metrics_dict():
+                total_collision = self.compute_total_collision(validation_results)
+                self.logger.record(f'{self.prefix}/total_collision', total_collision)
+
             # If we should compute the scene-type aggregation metrics
             if self.enable_scene_type_aggregation:
                 scene_type_results = \
@@ -130,7 +141,7 @@ class L5KitEvalCallback(EvalCallback):
         return
 
     def compute_ade_fde(self) -> Tuple[float, float]:
-        """Compute the Average displacement error (ADE) and Final displacement error (FDE)
+        """Aggregate the Average displacement error (ADE) and Final displacement error (FDE)
         of the simulation outputs.
 
         :return: Tuple [ADE, FDE]"""
@@ -145,3 +156,34 @@ class L5KitEvalCallback(EvalCallback):
         average_fde = sum(scene_fde_list) / len(scene_fde_list)
 
         return (average_ade, average_fde)
+
+    def compute_driven_miles(self) -> Tuple[float, float]:
+        """Aggregate the replay driven miles and simulated driven miles.
+
+        :return: Tuple [replay_driven_miles, simulated_driven_miles]"""
+        scenes_result = self.metric_set.evaluator.metric_results()
+        replay_driven_miles_list: List[float] = []
+        simulated_driven_miles_list: List[float] = []
+        for _, scene_result in scenes_result.items():
+            replay_driven_miles_list.append(scene_result["replay_driven_miles"][-1].item())
+            simulated_driven_miles_list.append(scene_result['simulated_driven_miles'][-1].item())
+
+        replay_driven_miles = sum(replay_driven_miles_list) / len(replay_driven_miles_list)
+        simulated_driven_miles = sum(simulated_driven_miles_list) / len(simulated_driven_miles_list)
+
+        return (replay_driven_miles, simulated_driven_miles)
+
+    def compute_total_collision(self, validation_results: Dict[int, Dict[str, ValidatorOutput]]) -> int:
+        """Aggregate the front, side and rear collisions per scene.
+        If there are two types of collision in a scene, they are counted as 1 total collision per scene.
+
+        :params: The validation results of all the scenes.
+        :return: Total collision in all the scenes."""
+        total_collision = 0
+        for scene_id, scene_validation in validation_results.items():
+            is_valid_scene = scene_validation['collision_side'].is_valid_scene and \
+                             scene_validation['collision_rear'].is_valid_scene and \
+                             scene_validation['collision_front'].is_valid_scene
+            total_collision += not is_valid_scene
+
+        return total_collision

@@ -276,3 +276,26 @@ class YawErrorCAMetric(YawErrorMetric):
 
     def __init__(self) -> None:
         super().__init__(error_functions.closest_angle_error)
+
+
+class SimulatedVsRecordedEgoSpeedMetric(SupportsMetricCompute):
+    """This metric computes the speed delta between recorded and simulated ego.
+    When simulated ego is traveling faster than recorded ego, this metric is > 0.
+    When simulated ego is traveling slower than recorded ego, this metric is < 0.
+    We can use this metric in conjunction with a RangeValidator to identify cases
+    where simulated ego is consistently traveling much faster (or much slower) than recorded ego.
+    """
+    metric_name = "simulated_minus_recorded_ego_speed"
+
+    def compute(self, simulation_output: SimulationOutputCLE) -> torch.Tensor:
+        # calculate the speed error between simulated and recorded ego over the course of the simulation.
+        simulated_centroid = simulation_output.simulated_ego_states[:, :2]
+        simulated_velocity = simulated_centroid[1:] - simulated_centroid[:-1]
+        simulated_speed = torch.linalg.norm(simulated_velocity, dim=1)
+
+        recorded_centroid = simulation_output.recorded_ego_states[:, :2]
+        recorded_velocity = recorded_centroid[1:] - recorded_centroid[:-1]
+        recorded_speed = torch.linalg.norm(recorded_velocity, dim=1)
+
+        # TODO: Replace 10 by (1 / step_time)
+        return (simulated_speed - recorded_speed) * 10
