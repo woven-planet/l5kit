@@ -623,6 +623,37 @@ trajectory (as opposed to the one in the log replay).</p>
 </dd></dl>
 
 <dl class="py class">
+<dt class="sig sig-object py" id="l5kit.cle.metrics.SimulatedVsRecordedEgoSpeedMetric">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></span><span class="sig-name descname"><span class="pre">SimulatedVsRecordedEgoSpeedMetric</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.SimulatedVsRecordedEgoSpeedMetric" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <a class="reference internal" href="#l5kit.cle.metrics.SupportsMetricCompute" title="l5kit.cle.metrics.SupportsMetricCompute"><code class="xref py py-class docutils literal notranslate"><span class="pre">l5kit.cle.metrics.SupportsMetricCompute</span></code></a></p>
+<p>This metric computes the speed delta between recorded and simulated ego.
+When simulated ego is traveling faster than recorded ego, this metric is &gt; 0.
+When simulated ego is traveling slower than recorded ego, this metric is &lt; 0.
+We can use this metric in conjunction with a RangeValidator to identify cases
+where simulated ego is consistently traveling much faster (or much slower) than recorded ego.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.cle.metrics.SimulatedVsRecordedEgoSpeedMetric.compute">
+<span class="sig-name descname"><span class="pre">compute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">simulation_output</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.simulation.unroll.html#l5kit.simulation.unroll.SimulationOutputCLE" title="l5kit.simulation.unroll.SimulationOutputCLE"><span class="pre">l5kit.simulation.unroll.SimulationOutputCLE</span></a></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.cle.metrics.SimulatedVsRecordedEgoSpeedMetric.compute" title="Permalink to this definition">¶</a></dt>
+<dd><p>The compute method sould return the result of the metric
+computed at every frame of the scene.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>simulation_output</strong> – the output from the closed-loop simulation</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>a tensor with the result of the metric per frame</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="l5kit.cle.metrics.SimulatedVsRecordedEgoSpeedMetric.metric_name">
+<span class="sig-name descname"><span class="pre">metric_name</span></span><em class="property"><span class="pre">:</span> <span class="pre">str</span></em><em class="property"> <span class="pre">=</span> <span class="pre">'simulated_minus_recorded_ego_speed'</span></em><a class="headerlink" href="#l5kit.cle.metrics.SimulatedVsRecordedEgoSpeedMetric.metric_name" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
 <dt class="sig sig-object py" id="l5kit.cle.metrics.SupportsMetricCompute">
 <em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.cle.metrics.</span></span><span class="sig-name descname"><span class="pre">SupportsMetricCompute</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.cle.metrics.SupportsMetricCompute" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Protocol</span></code></p>

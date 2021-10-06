@@ -422,6 +422,13 @@ the closed loop evaluation metrics of L5Kit.</p>
 </dd>
 </dl>
 <dl class="py method">
+<dt class="sig sig-object py" id="l5kit.environment.gym_metric_set.CLEMetricSet.build_composite_metrics">
+<span class="sig-name descname"><span class="pre">build_composite_metrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.cle.composite_metrics.html#l5kit.cle.composite_metrics.SupportsCompositeMetricCompute" title="l5kit.cle.composite_metrics.SupportsCompositeMetricCompute"><span class="pre">l5kit.cle.composite_metrics.SupportsCompositeMetricCompute</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.environment.gym_metric_set.CLEMetricSet.build_composite_metrics" title="Permalink to this definition">¶</a></dt>
+<dd><p>Return a list of composite metrics that should be computed. Composite
+metrics are metrics that depend upon metrics and validator results.</p>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="l5kit.environment.gym_metric_set.CLEMetricSet.build_metrics">
 <span class="sig-name descname"><span class="pre">build_metrics</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.cle.metrics.html#l5kit.cle.metrics.SupportsMetricCompute" title="l5kit.cle.metrics.SupportsMetricCompute"><span class="pre">l5kit.cle.metrics.SupportsMetricCompute</span></a><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.environment.gym_metric_set.CLEMetricSet.build_metrics" title="Permalink to this definition">¶</a></dt>
 <dd><p>Returns a list of metrics that will be computed.</p>
