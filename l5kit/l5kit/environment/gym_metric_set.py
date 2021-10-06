@@ -1,5 +1,6 @@
 from typing import List
 
+from l5kit.cle import composite_metrics as cm
 from l5kit.cle import metric_set, metrics, validators
 
 
@@ -83,6 +84,29 @@ class CLEMetricSet(metric_set.L5MetricSet):
             "collision_front",
             "collision_rear",
             "collision_side",
-            "passive_ego",
-            "aggressive_ego",
+        ]
+
+    def build_composite_metrics(self) -> List[cm.SupportsCompositeMetricCompute]:
+        """Return a list of composite metrics that should be computed. Composite
+        metrics are metrics that depend upon metrics and validator results."""
+        interventions_val_list = ["collision_front",
+                                  "collision_side",
+                                  "collision_rear",
+                                  "displacement_error_l2"]
+
+        return [
+            # Passed driven miles
+            cm.PassedDrivenMilesCompositeMetric("passed_driven_miles_simulated",
+                                                interventions_val_list,
+                                                metrics.SimulatedDrivenMilesMetric,
+                                                ignore_entire_scene=False),
+            cm.PassedDrivenMilesCompositeMetric("passed_driven_miles_replay",
+                                                interventions_val_list,
+                                                metrics.ReplayDrivenMilesMetric,
+                                                ignore_entire_scene=False),
+            # Total driven miles
+            cm.DrivenMilesCompositeMetric("total_driven_miles_simulated",
+                                          metrics.SimulatedDrivenMilesMetric),
+            cm.DrivenMilesCompositeMetric("total_driven_miles_replay",
+                                          metrics.ReplayDrivenMilesMetric),
         ]
