@@ -182,8 +182,8 @@ class L5KitEvalCallback(EvalCallback):
         total_collision = 0
         for scene_id, scene_validation in validation_results.items():
             is_valid_scene = scene_validation['collision_side'].is_valid_scene and \
-                             scene_validation['collision_rear'].is_valid_scene and \
-                             scene_validation['collision_front'].is_valid_scene
+                scene_validation['collision_rear'].is_valid_scene and \
+                scene_validation['collision_front'].is_valid_scene
             total_collision += not is_valid_scene
 
         return total_collision
