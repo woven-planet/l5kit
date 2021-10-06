@@ -111,6 +111,8 @@ class SimulationOutputCLE:
             trajectory_states[idx_frame, TrajectoryStateIndices.X] = translations[idx_frame, 0]
             trajectory_states[idx_frame, TrajectoryStateIndices.Y] = translations[idx_frame, 1]
             trajectory_states[idx_frame, TrajectoryStateIndices.THETA] = rotation33_as_yaw(rotations[idx_frame])
+            # TODO: Replace 0.1 by step_time
+            trajectory_states[idx_frame, TrajectoryStateIndices.TIME] = 0.1 * idx_frame
             # TODO: we may need to fill other fields
 
         return trajectory_states
