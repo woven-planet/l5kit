@@ -6,12 +6,12 @@ format_version: 4
 model_params:
   model_architecture: "simple_cnn"
 
-  history_num_frames: 3
+  history_num_frames: 0
   future_num_frames: 12
   step_time: 0.1
   render_ego_history: True
   use_kinematic: False
-  history_num_frames_train: 3
+  history_num_frames_train: 0
 
 ###################
 ## Input raster parameters
@@ -56,7 +56,7 @@ train_data_loader:
   batch_size: 12
   shuffle: False
   num_workers: 12
-  perturb_probability: 0.0
+  perturb_probability: 0.5
   max_scene_id: 99
 
 val_data_loader:
@@ -72,4 +72,4 @@ train_params:
   checkpoint_every_n_steps: 100000
   max_num_steps: 2000000
   eval_every_n_steps: 100000
-  output_name: "dn_h3_p00_run3"
+  output_name: "drivenet_h0_p05"
