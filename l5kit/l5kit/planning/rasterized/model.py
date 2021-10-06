@@ -5,6 +5,8 @@ import torch
 import torch.nn as nn
 from torchvision.models.resnet import resnet18, resnet50
 
+from l5kit.environment import models
+
 
 class RasterizedPlanningModel(nn.Module):
     """Raster-based model for planning.
@@ -36,10 +38,12 @@ class RasterizedPlanningModel(nn.Module):
         elif model_arch == "resnet50":
             self.model = resnet50(pretrained=pretrained)
             self.model.fc = nn.Linear(in_features=2048, out_features=num_targets)
+        elif model_arch == "simple_cnn":
+            self.model = models.SimpleCNN_GN(self.num_input_channels, num_targets)
         else:
             raise NotImplementedError(f"Model arch {model_arch} unknown")
 
-        if self.num_input_channels != 3:
+        if model_arch in {"resnet18", "resnet50"} and self.num_input_channels != 3:
             self.model.conv1 = nn.Conv2d(
                 self.num_input_channels, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False
             )
