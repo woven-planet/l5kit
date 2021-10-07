@@ -131,8 +131,10 @@ class L5KitEvalCallback(EvalCallback):
 
             for idx in range(self.n_eval_envs):
                 if done[idx]:
-                    episodes_done += 1
-                    self.metric_set.evaluate(info[idx]["sim_outs"])
+                    if info[idx]["sim_outs"][0].scene_id not in \
+                            self.metric_set.evaluator.scene_metric_results.keys():
+                        episodes_done += 1
+                        self.metric_set.evaluate(info[idx]["sim_outs"])
 
                     if episodes_done == self.n_eval_episodes:
                         return
