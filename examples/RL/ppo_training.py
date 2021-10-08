@@ -51,7 +51,7 @@ if __name__ == "__main__":
                         help='Discount factor')
     parser.add_argument('--gae_lambda', default=0.90, type=float,
                         help='Factor for trade-off of bias vs variance for Generalized Advantage Estimator')
-    parser.add_argument('--clip_start_val', default=0.2, type=float,
+    parser.add_argument('--clip_start_val', default=0.1, type=float,
                         help='Start value of clipping in PPO')
     parser.add_argument('--clip_end_val', default=0.001, type=float,
                         help='End value of clipping in PPO')
@@ -121,7 +121,7 @@ if __name__ == "__main__":
     # Eval Model Periodically
     eval_callback = L5KitEvalCallback(eval_env, eval_freq=(args.eval_freq // args.n_envs),
                                       n_eval_episodes=args.n_eval_episodes, n_eval_envs=args.n_eval_envs,
-                                      enable_scene_type_aggregation=args.enable_scene_type_aggregation,
+                                      prefix='l5_cle_eval', enable_scene_type_aggregation=args.enable_scene_type_aggregation,
                                       scene_id_to_type_path=args.scene_id_to_type_path)
 
     # train
