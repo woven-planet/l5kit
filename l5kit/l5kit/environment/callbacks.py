@@ -49,19 +49,21 @@ class L5KitEvalCallback(EvalCallback):
         if self.enable_scene_type_aggregation:
             assert scene_id_to_type_path is not None
             self.scene_id_to_type_path = scene_id_to_type_path
-            self.scene_ids_to_scene_types = self._get_scene_types()
+            self.scene_ids_to_scene_types = self.get_scene_types(self.scene_id_to_type_path)
 
     def _init_callback(self) -> None:
         pass
 
-    def _get_scene_types(self) -> List[List[str]]:
+    @staticmethod
+    def get_scene_types(scene_id_to_type_path: str) -> List[List[str]]:
         """Construct a list mapping scene types to their corresponding types.
 
+        :param scene_id_to_type_path: path to the mapping.
         :return: list of scene type tags per scene
         """
         # Read csv
         scene_type_dict: Dict[int, str]
-        with open(self.scene_id_to_type_path, 'r') as f:
+        with open(scene_id_to_type_path, 'r') as f:
             csv_reader = csv.reader(f)
             scene_type_dict = {int(rows[0]): rows[1] for rows in csv_reader}
 
@@ -131,8 +133,10 @@ class L5KitEvalCallback(EvalCallback):
 
             for idx in range(self.n_eval_envs):
                 if done[idx]:
-                    episodes_done += 1
-                    self.metric_set.evaluate(info[idx]["sim_outs"])
+                    if info[idx]["sim_outs"][0].scene_id not in \
+                            self.metric_set.evaluator.scene_metric_results.keys():
+                        episodes_done += 1
+                        self.metric_set.evaluate(info[idx]["sim_outs"])
 
                     if episodes_done == self.n_eval_episodes:
                         return

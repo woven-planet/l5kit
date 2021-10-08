@@ -51,7 +51,7 @@ if __name__ == "__main__":
                         help='Discount factor')
     parser.add_argument('--gae_lambda', default=0.90, type=float,
                         help='Factor for trade-off of bias vs variance for Generalized Advantage Estimator')
-    parser.add_argument('--clip_start_val', default=0.2, type=float,
+    parser.add_argument('--clip_start_val', default=0.1, type=float,
                         help='Start value of clipping in PPO')
     parser.add_argument('--clip_end_val', default=0.001, type=float,
                         help='End value of clipping in PPO')
@@ -96,15 +96,17 @@ if __name__ == "__main__":
     # define model
     clip_schedule = get_linear_fn(args.clip_start_val, args.clip_end_val, args.clip_progress_ratio)
     if args.load is not None:
-        model = PPO.load(args.load, env, clip_range=clip_schedule)
+        model = PPO.load(args.load, env, clip_range=clip_schedule, learning_rate=args.lr)
     else:
         model = PPO("CnnPolicy", env, policy_kwargs=policy_kwargs, verbose=1, n_steps=args.num_rollout_steps,
                     learning_rate=args.lr, gamma=args.gamma, tensorboard_log=args.tb_log, n_epochs=args.n_epochs,
                     clip_range=clip_schedule, batch_size=args.batch_size, seed=args.seed, gae_lambda=args.gae_lambda)
 
     # make eval env
+    eval_sim_cfg = SimulationConfigGym()
+    eval_sim_cfg.num_simulation_steps = None
     eval_env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'return_info': True,
-                       'train': False}
+                       'train': False, 'sim_cfg': eval_sim_cfg}
     eval_env = make_vec_env("L5-CLE-v0", env_kwargs=eval_env_kwargs, n_envs=args.n_eval_envs,
                             vec_env_cls=SubprocVecEnv, vec_env_kwargs={"start_method": "fork"})
 
@@ -119,7 +121,7 @@ if __name__ == "__main__":
     # Eval Model Periodically
     eval_callback = L5KitEvalCallback(eval_env, eval_freq=(args.eval_freq // args.n_envs),
                                       n_eval_episodes=args.n_eval_episodes, n_eval_envs=args.n_eval_envs,
-                                      enable_scene_type_aggregation=args.enable_scene_type_aggregation,
+                                      prefix='l5_cle_eval', enable_scene_type_aggregation=args.enable_scene_type_aggregation,
                                       scene_id_to_type_path=args.scene_id_to_type_path)
 
     # train
