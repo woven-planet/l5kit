@@ -50,7 +50,6 @@ def eval_model(model: torch.nn.Module, dataset: EgoDataset, logger: Logger, d_se
         end_idx = min(num_scenes_to_unroll, start_idx + batch_unroll)
         scenes_to_unroll = list(range(start_idx, end_idx))
         sim_outs = sim_loop.unroll(scenes_to_unroll)
-        print(len(sim_outs))
         metric_set.evaluator.evaluate(sim_outs)
 
     # Aggregate metrics (ADE, FDE)
