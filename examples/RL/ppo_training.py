@@ -10,6 +10,8 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 from l5kit.environment.envs.l5_env import SimulationConfigGym
 from l5kit.environment.feature_extractor import CustomFeatureExtractor
 from l5kit.environment.callbacks import L5KitEvalCallback
+from l5kit.environment.utils import get_scene_types_as_dict
+
 
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
@@ -75,16 +77,27 @@ if __name__ == "__main__":
                         help='enable scene type aggregation of evaluation metrics')
     parser.add_argument('--scene_id_to_type_path', default=None, type=str,
                         help='Path to csv file mapping scene id to scene type')
+    parser.add_argument('--training_scheme', default='default', type=str,
+                        help='training schemes to tackle data imbalance')
     parser.add_argument('--seed', default=42, type=int)
     args = parser.parse_args()
+
+    scene_type_to_id_dict = None
+    if args.training_scheme in {'weighted_sampling', 'weighted_reward'}:
+        if "SCENE_ID_TO_TYPE" not in os.environ:
+            raise KeyError("SCENE_ID_TO_TYPE environment variable not set")
+        scene_id_to_type_mapping_file = os.environ["SCENE_ID_TO_TYPE"]
+        scene_type_to_id_dict = get_scene_types_as_dict(scene_id_to_type_mapping_file)
 
     # make train env
     train_sim_cfg = SimulationConfigGym()
     train_sim_cfg.num_simulation_steps = args.eps_length + 1
     env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'train': True,
-                  'sim_cfg': train_sim_cfg}
+                  'sim_cfg': train_sim_cfg, 'training_scheme': args.training_scheme,
+                  'scene_type_to_id': scene_type_to_id_dict}
     env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs, n_envs=args.n_envs,
                        vec_env_cls=SubprocVecEnv, vec_env_kwargs={"start_method": "fork"})
+    # env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs, n_envs=args.n_envs)
 
     # Custom Feature Extractor backbone
     policy_kwargs = {

@@ -1,5 +1,6 @@
+import csv
 from pathlib import Path
-from typing import NamedTuple
+from typing import Dict, List, NamedTuple
 
 import numpy as np
 import torch
@@ -100,3 +101,44 @@ def save_input_raster(rasterizer: Rasterizer, image: torch.Tensor, num_images: i
     # exit code once num_images images saved
     if i == num_images:
         exit()
+
+
+def get_scene_types(scene_id_to_type_path: str) -> List[List[str]]:
+    """Construct a list mapping scene ids to their corresponding types.
+
+    :param scene_id_to_type_path: path to the mapping.
+    :return: list of scene type tags per scene
+    """
+    # Read csv
+    scene_type_dict: Dict[int, str]
+    with open(scene_id_to_type_path, 'r') as f:
+        csv_reader = csv.reader(f)
+        scene_type_dict = {int(rows[0]): rows[1] for rows in csv_reader}
+
+    # Convert dict to List[List[str]]
+    scene_id_to_type_list: List[List[str]] = []
+    for k, v in scene_type_dict.items():
+        scene_id_to_type_list.append([v])
+    return scene_id_to_type_list
+
+
+def get_scene_types_as_dict(scene_id_to_type_path: str) -> Dict[str, List[int]]:
+    """Construct a list mapping scene ids to their corresponding types.
+
+    :param scene_id_to_type_path: path to the mapping.
+    :return: dict of scene types and the corresponding scene_id list
+    """
+    # Read csv
+    scene_type_dict: Dict[int, str]
+    with open(scene_id_to_type_path, 'r') as f:
+        csv_reader = csv.reader(f)
+        scene_type_dict = {int(rows[0]): rows[1] for rows in csv_reader}
+
+    # Convert dict to List[List[str]]
+    scene_id_to_type_dict: Dict[str, List[int]] = {}
+    for k, v in scene_type_dict.items():
+        if v not in scene_id_to_type_dict:
+            scene_id_to_type_dict[v] = [k]
+        else:
+            scene_id_to_type_dict[v].append(k)
+    return scene_id_to_type_dict

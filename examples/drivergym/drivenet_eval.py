@@ -7,6 +7,7 @@ from l5kit.cle.validators import ValidationCountingAggregator
 from l5kit.dataset import EgoDataset
 from l5kit.environment.callbacks import L5KitEvalCallback
 from l5kit.environment.gym_metric_set import CLEMetricSet
+from l5kit.environment.utils import get_scene_types
 from l5kit.simulation.dataset import SimulationConfig
 from l5kit.simulation.unroll import ClosedLoopSimulator
 from stable_baselines3.common.logger import Logger
@@ -75,7 +76,7 @@ def eval_model(model: torch.nn.Module, dataset: EgoDataset, logger: Logger, d_se
     # If we should compute the scene-type aggregation metrics
     if enable_scene_type_aggregation:
         assert scene_id_to_type_path is not None
-        scene_ids_to_scene_types = L5KitEvalCallback.get_scene_types(scene_id_to_type_path)
+        scene_ids_to_scene_types = get_scene_types(scene_id_to_type_path)
         scene_type_results = \
             compute_cle_scene_type_aggregations(metric_set,
                                                 scene_ids_to_scene_types,

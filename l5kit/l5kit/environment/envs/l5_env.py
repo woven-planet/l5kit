@@ -14,8 +14,8 @@ from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
 from l5kit.environment.kinematic_model import KinematicModel, UnicycleModel
 from l5kit.environment.reward import L2DisplacementYawReward, Reward
-from l5kit.environment.utils import (calculate_non_kinematic_rescale_params, KinematicActionRescaleParams,
-                                     NonKinematicActionRescaleParams)
+from l5kit.environment.utils import (calculate_non_kinematic_rescale_params, get_scene_types,
+                                     KinematicActionRescaleParams, NonKinematicActionRescaleParams)
 from l5kit.rasterization import build_rasterizer
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.simulation.unroll import (ClosedLoopSimulator, ClosedLoopSimulatorModes, SimulationOutputCLE,
@@ -105,6 +105,8 @@ class L5Env(gym.Env):
     :param kin_model: the kinematic model
     :param return_info: flag to return info when a episode ends
     :param randomize_start: flag to randomize the start frame of episode
+    :param training_scheme: the training scheme to sample episode and weight rewards
+    :param scene_type_to_id: a dict mapping scene types to their corresponding ids
     """
 
     def __init__(self, env_config_path: Optional[str] = None, dmg: Optional[LocalDataManager] = None,
@@ -112,7 +114,8 @@ class L5Env(gym.Env):
                  reward: Optional[Reward] = None, cle: bool = True, rescale_action: bool = True,
                  use_kinematic: bool = False, kin_model: Optional[KinematicModel] = None,
                  reset_scene_id: Optional[int] = None, return_info: bool = False,
-                 randomize_start: bool = True) -> None:
+                 randomize_start: bool = True, training_scheme: str = 'default',
+                 scene_type_to_id: Optional[Dict[str, List[int]]] = None) -> None:
         """Constructor method
         """
         super(L5Env, self).__init__()
@@ -183,6 +186,9 @@ class L5Env(gym.Env):
         # helps to limit the IPC
         self.return_info = return_info
 
+        # training scheme
+        self.training_scheme = training_scheme
+        self._process_groups(scene_type_to_id)
         self.seed()
 
     def seed(self, seed: int = None) -> List[int]:
@@ -213,10 +219,7 @@ class L5Env(gym.Env):
         self.ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]] = defaultdict(list)
 
         # Select Scene ID
-        self.scene_index = self.np_random.randint(0, self.max_scene_id)
-        if self.reset_scene_id is not None:
-            self.scene_index = min(self.reset_scene_id, self.max_scene_id - 1)
-            self.reset_scene_id += 1
+        self.scene_index = self._sample_scene_id()
 
         # Select Frame ID (within bounds of the scene)
         if self.randomize_start_frame:
@@ -230,6 +233,7 @@ class L5Env(gym.Env):
 
         # Reset CLE evaluator
         self.reward.reset()
+        self._set_reward_weight()  # according to scene type
 
         # Output first observation
         self.frame_index = 1  # Frame_index 1 has access to the true ego speed
@@ -276,6 +280,8 @@ class L5Env(gym.Env):
 
         # reward calculation
         reward = self.reward.get_reward(self.frame_index, [simulated_outputs])
+        # TODO: Make cleaner
+        reward["total"] = self.reward_scale * reward["total"]
 
         # done is True when episode ends
         done = episode_over
@@ -308,6 +314,48 @@ class L5Env(gym.Env):
         """Render a frame during the simulation
         """
         raise NotImplementedError
+
+    def _process_groups(self, scene_type_to_id: Optional[Dict[str, List[int]]]) -> None:
+        """Given the scene_type_to_id dictionary, finds the total number of groups and
+        filters the scenes_ids less than max_scene_id"""
+        self.scene_type_to_id: Dict[str, List[int]] = {}
+        if scene_type_to_id is None:
+            self.num_groups = 0
+            self.scene_type = 'straight'
+            return
+
+        self.num_groups = len(scene_type_to_id.keys())
+        for group in scene_type_to_id.keys():
+            self.scene_type_to_id[group] = [v for v in scene_type_to_id[group] if v < self.max_scene_id]
+        self.scene_type = 'straight'  # Dummy
+
+    def _sample_scene_id(self) -> str:
+        """Get the scene_id of episode rollout given the training scheme."""
+        if self.reset_scene_id is not None:
+            scene_index = min(self.reset_scene_id, self.max_scene_id - 1)
+            self.reset_scene_id += 1
+            return scene_index
+
+        if self.training_scheme == 'weighted_sampling':
+            # Randomly sample group and then a scene_id belonging to that group
+            self.scene_type = self.np_random.choice(list(self.scene_type_to_id.keys()))
+            scene_index = self.np_random.choice(self.scene_type_to_id[self.scene_type])
+        elif self.training_scheme == 'weighted_reward':
+            scene_index = self.np_random.randint(0, self.max_scene_id)
+            for scene_type, id_list in self.scene_type_to_id.items():
+                if scene_index in id_list:
+                   self.scene_type = scene_type
+                   break
+        else:
+            scene_index = self.np_random.randint(0, self.max_scene_id)
+        return scene_index
+
+    def _set_reward_weight(self) -> None:
+        """Set the reward scaling based on the scene type sampled for the episode"""
+        if self.training_scheme != 'weighted_reward':
+            self.reward_scale = 1.0
+        else:
+            self.reward_scale = len(self.scene_type_to_id["straight"]) / len(self.scene_type_to_id[self.scene_type])
 
     def _get_obs(self, frame_index: int, episode_over: bool) -> Dict[str, np.ndarray]:
         """Get the observation corresponding to a given frame index in the scene.
