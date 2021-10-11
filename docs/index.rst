@@ -12,8 +12,7 @@ L5Kit is a Python library with functionality for the development and training of
 News
 -------------------------------------------------------------------------------
 
-* **10-06-2021**: We've just released a series of notebooks to train and evaluate the model introduced in our paper `Urban Driver: Learning to Drive from Real-world Demonstrations Using Policy Gradients
- <https://arxiv.org/abs/2109.13333>`_ !
+* **10-06-2021**: We've just released a series of notebooks to train and evaluate the model introduced in our paper `Urban Driver: Learning to Drive from Real-world Demonstrations Using Policy Gradients <https://arxiv.org/abs/2109.13333>`_ !
 * **08-20-2021**: We've just released a new notebook tutorial describing our :ref:`L5Kit gym-compatible environment <reinforcement>`!
 * **04-16-2021**: We've just released a new notebook tutorial for the :ref:`ML simulation task <simulation>`!
 * **12-03-2020**: We've just released a series of notebooks to train and evaluate an :ref:`ML planning model <planning>`. We've also included pre-trained models!
