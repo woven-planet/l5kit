@@ -1,11 +1,9 @@
-Tutorials
-=========
+Training Models
+===============
 
 .. toctree::
-    :maxdepth: 2
+    :maxdepth: 3
 
     prediction.rst
-    planning.rst
     simulation.rst
-    reinforcement.rst
-    urban_driver.rst
+    planning.rst

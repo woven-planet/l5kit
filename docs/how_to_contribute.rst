@@ -3,6 +3,9 @@
 How to contribute
 =================
 
+.. toctree::
+   :maxdepth: 1
+
 You are invited to contribute to the L5Kit with your examples and improvements.
 These are peer-reviewed by the development team to maintain quality and reproducibility.
 
@@ -21,7 +24,7 @@ Run:
 
 .. code-block:: console
 
-    pip install -r requirements.txt 
+    pip install -r requirements.txt
 
 to install all developer dependencies along with l5kit in editable (-e) mode.
 
@@ -32,7 +35,7 @@ Before starting a PR, it is highly recommended to also install the git pre-commi
 
 .. code-block:: console
 
-    pre-commit install 
+    pre-commit install
 
 This will run all required code checks before each commit and it ensures your builds won't fail in CI.
 

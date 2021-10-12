@@ -1,7 +1,7 @@
 .. _install:
 
-Installation
-============
+Installing L5Kit
+================
 
 Installing as a User
 --------------------
@@ -10,12 +10,12 @@ Follow this workflow if:
 
 * you're not interested in developing and/or contributing to L5Kit;
 * you don't need any features from a specific branch or latest master and you're fine with the latest release;
- 
+
 1. Install the package from pypy (in your project venv)
 +++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
 .. code-block:: console
-    
+
     pip install l5kit
 
 You should now be able to import from L5Kit (e.g. :code:`from l5kit.data import ChunkedDataset` should work)
@@ -47,7 +47,7 @@ Follow this workflow if:
 +++++++++++++++++
 
 .. code-block:: console
-    
+
     git clone https://github.com/lyft/l5kit.git
     cd l5kit/l5kit
 
