@@ -26,36 +26,46 @@ News
 Table of Contents
 ===============================================================================
 
-   .. toctree::
-      :maxdepth: 2
+.. toctree::
+   :maxdepth: 2
 
-      changelog
+   gettingstarted
 
-   .. toctree::
-      :maxdepth: 1
+.. toctree::
+   :maxdepth: 3
 
-      intro_index
+   tutorials
 
-   .. toctree::
-      :maxdepth: 2
 
-      gettingstarted
+.. toctree::
+   :maxdepth: 1
 
-   .. toctree::
-      :maxdepth: 3
+   additional_resources_index
 
-      tutorials
+.. toctree::
+   :maxdepth: 1
 
-   .. toctree::
-      :maxdepth: 2
+   api_reference
 
-      competitions
+.. toctree::
+   :maxdepth: 1
 
-   .. toctree::
-      :maxdepth: 1
+   how_to_contribute
 
-      contribute_index
+.. toctree::
+    :maxdepth: 1
 
+    license
+
+.. toctree::
+    :maxdepth: 1
+
+    credits
+
+.. toctree::
+   :maxdepth: 2
+
+   changelog
 
 .. image:: images/L5logo.png
    :width: 200

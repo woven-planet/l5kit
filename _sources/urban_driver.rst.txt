@@ -1,7 +1,7 @@
 .. _urbandriver:
 
-Urban Driver
-========
+Closed-loop Planning
+====================
 
 Our paper `Urban Driver: Learning to Drive from Real-world Demonstrations Using Policy Gradients <https://openreview.net/pdf?id=ibktAcINCaj>`_
 has been accepted for publication at `CoRL 2021 <https://www.robot-learning.org/>`_.

@@ -1,8 +1,8 @@
-Introduction and Overview
+Additional Resources
 ===============================================================================
 
 .. toctree::
     :maxdepth: 1
 
-    introduction
-    overview
+    data_format
+    prediction_competition.rst

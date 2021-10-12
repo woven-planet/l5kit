@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
 
-      <title>Introduction</title>
+      <title>Downloading the Datasets</title>
     
           <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
           <link rel="stylesheet" href="_static/theme.css " type="text/css" />
@@ -23,8 +23,8 @@
     
   <link rel="index" title="Index" href="genindex.html" />
   <link rel="search" title="Search" href="search.html" />
-  <link rel="next" title="Installing L5Kit" href="installation.html" />
-  <link rel="prev" title="Getting started" href="gettingstarted.html" /> 
+  <link rel="next" title="Training Models" href="tutorials.html" />
+  <link rel="prev" title="Installing L5Kit" href="installation.html" /> 
   </head>
 
   <body>
@@ -209,17 +209,11 @@
       </p>
       <ul class="current">
         
-          <li class="toctree-l1 current">
+          <li class="toctree-l1 ">
             
-              <a href="#" class="reference internal current">Introduction</a>
+              <a href="introduction.html" class="reference internal ">Introduction</a>
             
 
-            
-              <ul>
-                
-                  <li class="toctree-l2"><a href="#video-tutorial" class="reference internal">Video Tutorial</a></li>
-                
-              </ul>
             
           </li>
 
@@ -233,11 +227,17 @@
           </li>
 
         
-          <li class="toctree-l1 ">
+          <li class="toctree-l1 current">
             
-              <a href="dataset.html" class="reference internal ">Downloading the Datasets</a>
+              <a href="#" class="reference internal current">Downloading the Datasets</a>
             
 
+            
+              <ul>
+                
+                  <li class="toctree-l2"><a href="#download-the-datasets" class="reference internal">Download the datasets</a></li>
+                
+              </ul>
             
           </li>
 
@@ -454,18 +454,18 @@
     
       <li><a href="gettingstarted.html">Getting started</a> &raquo;</li>
     
-    <li>Introduction</li>
+    <li>Downloading the Datasets</li>
   </ul>
   
 
   <ul class="page-nav">
   <li class="prev">
-    <a href="gettingstarted.html"
-       title="previous chapter">← Getting started</a>
+    <a href="installation.html"
+       title="previous chapter">← Installing L5Kit</a>
   </li>
   <li class="next">
-    <a href="installation.html"
-       title="next chapter">Installing L5Kit →</a>
+    <a href="tutorials.html"
+       title="next chapter">Training Models →</a>
   </li>
 </ul>
   
@@ -473,24 +473,33 @@
 <hr>
           <div class="content" role="main" v-pre>
             
-  <section id="introduction">
-<span id="intro"></span><h1>Introduction<a class="headerlink" href="#introduction" title="Permalink to this headline">¶</a></h1>
-<p>This repository and the associated datasets constitute a framework for developing learning-based solutions to prediction, planning and simulation problems in self-driving. State-of-the-art solutions to these problems still require significant amounts of hand-engineering and unlike, for example, perception systems, have not benefited much from deep learning and the vast amount of driving data available.</p>
-<p>The purpose of this framework is to enable engineers and researchers to experiment with data-driven approaches to planning and simulation problems using real world driving data and contribute to state-of-the-art solutions.</p>
-<a class="reference internal image-reference" href="_images/pipeline.png"><img alt="Modern AV pipeline" src="_images/pipeline.png" style="width: 800px;" /></a>
-<p>You can use this framework to build systems which:</p>
+  <section id="downloading-the-datasets">
+<h1>Downloading the Datasets<a class="headerlink" href="#downloading-the-datasets" title="Permalink to this headline">¶</a></h1>
+<p>To use L5Kit you will need to download the Lyft Level 5 Prediction dataset from <a class="reference external" href="https://self-driving.lyft.com/level5/data/">https://self-driving.lyft.com/level5/data/</a>.
+It consists of the following components:</p>
 <ul class="simple">
-<li><p>Turn prediction, planning and simulation problems into data problems and train them on real data.</p></li>
-<li><p>Use neural networks to model key components of the Autonomous Vehicle (AV) stack.</p></li>
-<li><p>Use historical observations to predict future movement of cars around an AV.</p></li>
-<li><p>Plan behavior of an AV in order to imitate human driving.</p></li>
-<li><p>Study the improvement in performance of these systems as the amount of data increases.</p></li>
+<li><p>1000 hours of perception output logged by Lyft AVs operating in Palo Alto. This data is stored in 30 second chunks using the [zarr format](data_format.md).</p></li>
+<li><p><a class="reference external" href="https://medium.com/lyftlevel5/semantic-maps-for-autonomous-vehicles-470830ee28b6">A hand-annotated, HD semantic map</a>. This data is stored using protobuf format.</p></li>
+<li><p>A high-definition aerial map of the Palo Alto area. This image has 8cm per pixel resolution and is provided by <a class="reference external" href="https://www.nearmap.com/">NearMap</a>.</p></li>
 </ul>
-<p>This software is developed by Lyft Level 5 self-driving division and is <a class="reference internal" href="how_to_contribute.html#contribute"><span class="std std-ref">open to external contributors</span></a>.</p>
-<section id="video-tutorial">
-<h2>Video Tutorial<a class="headerlink" href="#video-tutorial" title="Permalink to this headline">¶</a></h2>
-<p>Here is a short video tour introducing the L5Kit and the functionalities of the library.</p>
-<iframe width="560" height="315" src="https://www.youtube.com/embed/1cfXBS0i92Q" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe></section>
+<p>To read more about the dataset and how it was generated, read the <a class="reference external" href="https://arxiv.org/abs/2006.14480">dataset whitepaper</a>.</p>
+<section id="download-the-datasets">
+<h2>Download the datasets<a class="headerlink" href="#download-the-datasets" title="Permalink to this headline">¶</a></h2>
+<p>Register at <a class="reference external" href="https://self-driving.lyft.com/level5/data/">https://self-driving.lyft.com/level5/data/</a> and download the <a class="reference external" href="https://arxiv.org/abs/2006.14480">2020 Lyft prediction dataset</a>.
+Store all files in a single folder to match this structure:</p>
+<div class="highlight-default notranslate"><div class="highlight"><pre><span></span><span class="n">prediction</span><span class="o">-</span><span class="n">dataset</span><span class="o">/</span>
+      <span class="o">+-</span> <span class="n">scenes</span><span class="o">/</span>
+            <span class="o">+-</span> <span class="n">sample</span><span class="o">.</span><span class="n">zarr</span>
+                  <span class="o">+-</span> <span class="n">train</span><span class="o">.</span><span class="n">zarr</span>
+                  <span class="o">+-</span> <span class="n">train_full</span><span class="o">.</span><span class="n">zarr</span>
+      <span class="o">+-</span> <span class="n">aerial_map</span><span class="o">/</span>
+            <span class="o">+-</span> <span class="n">aerial_map</span><span class="o">.</span><span class="n">png</span>
+      <span class="o">+-</span> <span class="n">semantic_map</span><span class="o">/</span>
+            <span class="o">+-</span> <span class="n">semantic_map</span><span class="o">.</span><span class="n">pb</span>
+      <span class="o">+-</span> <span class="n">meta</span><span class="o">.</span><span class="n">json</span>
+</pre></div>
+</div>
+</section>
 </section>
 
 
@@ -498,12 +507,12 @@
           <div class="page-nav">
             <div class="inner"><ul class="page-nav">
   <li class="prev">
-    <a href="gettingstarted.html"
-       title="previous chapter">← Getting started</a>
+    <a href="installation.html"
+       title="previous chapter">← Installing L5Kit</a>
   </li>
   <li class="next">
-    <a href="installation.html"
-       title="next chapter">Installing L5Kit →</a>
+    <a href="tutorials.html"
+       title="next chapter">Training Models →</a>
   </li>
 </ul><div class="footer" role="contentinfo">
       &#169; Copyright 2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car).

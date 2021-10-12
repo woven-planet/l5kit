@@ -1,7 +1,10 @@
 .. _license:
 
 License
-=======
+=========
+
+.. toctree::
+   :maxdepth: 1
 
 We use Apache 2 license for the code in this repo.
 
