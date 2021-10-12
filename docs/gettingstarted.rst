@@ -4,6 +4,6 @@ Getting started
 .. toctree::
     :maxdepth: 1
 
+    introduction.rst
     installation.rst
-    data_format.rst
-    coords_systems.rst
+    dataset.rst

@@ -3,6 +3,9 @@
 Credits
 =======
 
+.. toctree::
+   :maxdepth: 1
+
 The framework was developed at Level 5 and the contributors with their contributions can be viewed `here <https://github.com/lyft/l5kit/graphs/contributors>`_
 
 .. * [Guido Zuidhof](https://www.linkedin.com/in/guido-zuidhof-377b6947/)
