@@ -36,6 +36,12 @@ Table of Contents
 
    tutorials
 
+
+.. toctree::
+   :maxdepth: 1
+
+   additional_resources_index
+
 .. toctree::
    :maxdepth: 1
 
