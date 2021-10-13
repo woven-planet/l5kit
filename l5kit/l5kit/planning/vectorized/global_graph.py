@@ -22,7 +22,6 @@ class VectorizedEmbedding(nn.Module):
             "AGENT_CAR": 2,
             "AGENT_BIKE": 3,
             "AGENT_PEDESTRIAN": 4,
-            # "LANES"
             "TL_UNKNOWN": 5,  # unknown TL state for lane
             "TL_RED": 6,
             "TL_YELLOW": 7,

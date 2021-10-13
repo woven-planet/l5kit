@@ -27,7 +27,7 @@ class VectorizedModel(nn.Module):
     ) -> None:
         """ Initializes the model.
 
-        :history_num_frames_ego: number of history ego frames to include
+        :param history_num_frames_ego: number of history ego frames to include
         :param history_num_frames_agents: number of history agent frames to include
         :param num_targets: number of values to predict
         :param weights_scaling: target weights for loss calculation
@@ -145,7 +145,6 @@ class VectorizedModel(nn.Module):
         if hasattr(self, "global_from_local"):
             all_embs = self.global_from_local(all_embs)
 
-        # transformer - TODO?
         all_embs = F.normalize(all_embs, dim=-1) * (self._d_global ** 0.5)
         all_embs = all_embs.transpose(0, 1)
 

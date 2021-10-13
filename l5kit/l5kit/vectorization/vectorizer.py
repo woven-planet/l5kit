@@ -31,14 +31,11 @@ class Vectorizer:
         self.history_num_frames_max = max(cfg["model_params"]["history_num_frames_ego"], self.history_num_frames_agents)
         self.other_agents_num = cfg["data_generation_params"]["other_agents_num"]
 
-    # TODO (@lberg): this args name are not clear
     def vectorize(self, selected_track_id: Optional[int], agent_centroid_m: np.ndarray, agent_yaw_rad: float,
                   agent_from_world: np.ndarray, history_frames: np.ndarray, history_agents: List[np.ndarray],
                   history_tl_faces: List[np.ndarray], history_position_m: np.ndarray, history_yaws_rad: np.ndarray,
                   history_availability: np.ndarray, future_frames: np.ndarray, future_agents: List[np.ndarray]) -> dict:
         """Base function to execute a vectorization process.
-
-        TODO: torch or np array input?
 
         Arguments:
             selected_track_id: selected_track_id: Either None for AV, or the ID of an agent that you want to
@@ -207,8 +204,6 @@ class Vectorizer:
             dict: a dict containing the vectorized map representation of the target frame
         """
         # START WORKING ON LANES
-        # TODO (lberg): this implementation is super ugly, I'll fix it
-        # TODO (anasrferreira): clean up more and add interpolation params to configuration as well.
         MAX_LANES = self.lane_cfg_params["max_num_lanes"]
         MAX_POINTS_LANES = self.lane_cfg_params["max_points_per_lane"]
         MAX_POINTS_CW = self.lane_cfg_params["max_points_per_crosswalk"]

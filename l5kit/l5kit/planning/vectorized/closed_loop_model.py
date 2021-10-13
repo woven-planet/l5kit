@@ -30,7 +30,7 @@ class VectorizedUnrollModel(VectorizedModel):
     ) -> None:
         """ Initializes the model.
 
-        :history_num_frames_ego: number of history ego frames to include
+        :param history_num_frames_ego: number of history ego frames to include
         :param history_num_frames_agents: number of history agent frames to include
         :param num_targets: number of values to predict
         :param weights_scaling: target weights for loss calculation
