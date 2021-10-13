@@ -1,4 +1,3 @@
-import csv
 import math
 from typing import Dict, List, Optional, Tuple
 
@@ -10,6 +9,7 @@ from l5kit.cle.metric_set import L5MetricSet
 from l5kit.cle.scene_type_agg import compute_cle_scene_type_aggregations
 from l5kit.cle.validators import ValidationCountingAggregator
 from l5kit.environment.gym_metric_set import CLEMetricSet
+from l5kit.environment.utils import get_scene_types
 
 
 class L5KitEvalCallback(EvalCallback):
@@ -49,29 +49,10 @@ class L5KitEvalCallback(EvalCallback):
         if self.enable_scene_type_aggregation:
             assert scene_id_to_type_path is not None
             self.scene_id_to_type_path = scene_id_to_type_path
-            self.scene_ids_to_scene_types = self.get_scene_types(self.scene_id_to_type_path)
+            self.scene_ids_to_scene_types = get_scene_types(self.scene_id_to_type_path)
 
     def _init_callback(self) -> None:
         pass
-
-    @staticmethod
-    def get_scene_types(scene_id_to_type_path: str) -> List[List[str]]:
-        """Construct a list mapping scene types to their corresponding types.
-
-        :param scene_id_to_type_path: path to the mapping.
-        :return: list of scene type tags per scene
-        """
-        # Read csv
-        scene_type_dict: Dict[int, str]
-        with open(scene_id_to_type_path, 'r') as f:
-            csv_reader = csv.reader(f)
-            scene_type_dict = {int(rows[0]): rows[1] for rows in csv_reader}
-
-        # Convert dict to List[List[str]]
-        scene_id_to_type_list: List[List[str]] = []
-        for k, v in scene_type_dict.items():
-            scene_id_to_type_list.append([v])
-        return scene_id_to_type_list
 
     def _on_step(self) -> bool:
         if self.eval_freq > 0 and self.n_calls % self.eval_freq == 0:

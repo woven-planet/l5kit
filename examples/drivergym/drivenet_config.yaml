@@ -53,23 +53,32 @@ raster_params:
 ## Data loader options
 train_data_loader:
   key: "scenes/train.zarr"
-  batch_size: 12
-  shuffle: False
-  num_workers: 12
+  ratio: 1.0
+  step: 5
+  epochs: 15
+  batch_size: 16
+  shuffle: True
+  num_workers: 8
   perturb_probability: 0.5
-  max_scene_id: 100
+  # scheme: "weighted_reward"
+  scheme: "default"
+  # scheme: "weighted_sampling"
+  scheduler: "default"
+  # scheduler: "one_cycle"
 
 val_data_loader:
   key: "scenes/validate.zarr"
-  batch_size: 12
+  batch_size: 16
   shuffle: False
-  num_workers: 2
+  num_workers: 8
   max_scene_id: 100
 
 ###################
 ## Train params
 train_params:
-  checkpoint_every_n_steps: 100000
-  max_num_steps: 2000000
-  eval_every_n_steps: 100000
-  output_name: "drivenet_h0_p05"
+  seed: 42
+  checkpoint_every_n_epochs: 1
+  eval_every_n_epochs: 1
+  output_name: "drivenet_h0_p05_default_schedule_step5_full"
+  # output_name: "DEL"
+  # max_num_steps: 2000000

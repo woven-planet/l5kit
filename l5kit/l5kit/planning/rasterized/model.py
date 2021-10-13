@@ -67,7 +67,10 @@ class RasterizedPlanningModel(nn.Module):
             target_weights = (data_batch["target_availabilities"].unsqueeze(-1) * self.weights_scaling).view(
                 batch_size, -1
             )
-            loss = torch.mean(self.criterion(outputs, targets) * target_weights)
+            loss = self.criterion(outputs, targets) * target_weights
+            if "reward_scaling" in data_batch:
+                loss = loss * data_batch["reward_scaling"].unsqueeze(-1)
+            loss = torch.mean(loss)
             train_dict = {"loss": loss}
             return train_dict
         else:
