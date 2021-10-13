@@ -11,7 +11,7 @@ model_params:
   disable_other_agents: False
   disable_map: False
   disable_lane_boundaries: True
-  global_head_dropout: 0
+  global_head_dropout: 0.0
   future_num_frames: 12 # total number of loaded frames from data -> for closed-loop: frames to unroll with loss = future_num_frames - warmup_num_frames
   ###################
   ## Closed-loop specific properties
