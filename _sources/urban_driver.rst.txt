@@ -25,7 +25,7 @@ We use a graph neural network for parametrizing our policy.
 It combines a PointNet-like architecture for local inputs processing followed by an attention mechanism for global reasoning.
 In contrast to VectorNet, we use points instead of vectors.
 Given the set of points corresponding to each input element, we employ 3 PointNet layers to calculate a 128-dimensional feature descriptor.
-Subsequently, a single layer of scaled dot-product attention performs global feature aggregation, yielding the predicted trajectory [...]
+Subsequently, a single layer of scaled dot-product attention performs global feature aggregation, yielding the predicted trajectory. [...] 
 In total, our model contains around 3.5 million trainable parameters, and training takes 30h on 32 Tesla V100 GPUs.
 ```
 
@@ -41,7 +41,7 @@ We provide 2 notebooks.
 Training Notebook
 ~~~~~~~~~~~~~~~~~
 
-You can train your own Urban Driver using our `training notebook <https://github.com/lyft/l5kit/blob/master/examples/urban_driver/train.ipynb>`_
+You can train your own Urban Driver using our `training notebook <https://github.com/lyft/l5kit/blob/master/examples/urban_driver/train.ipynb>`_.
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/urban_driver/train.ipynb
@@ -59,7 +59,7 @@ Scroll to the end of the training notebook to download them.
 Closed-Loop Evaluation Notebook
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can evaluate Urban Planner in closed-loop setting using our `closed-loop evaluation notebook <https://github.com/lyft/l5kit/blob/master/examples/urban_driver/closed_loop_test.ipynb>`_
+You can evaluate Urban Planner in closed-loop setting using our `closed-loop evaluation notebook <https://github.com/lyft/l5kit/blob/master/examples/urban_driver/closed_loop_test.ipynb>`_.
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/urban_driver/closed_loop_test.ipynb
