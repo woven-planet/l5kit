@@ -32,7 +32,7 @@ def data_batch(cfg: dict) -> dict:
     num_crosswalks = 20
     num_points_per_element = 20
 
-    TYPE_MAX = 99  # TODO
+    TYPE_MAX = 99  # generate dummy types up to this index
 
     return mock_vectorizer_data(batch_size, num_steps, num_history, num_agents, num_lanes, num_crosswalks,
                                 num_points_per_element, TYPE_MAX)
