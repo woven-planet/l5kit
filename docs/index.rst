@@ -1,6 +1,6 @@
 .. _index:
 
-.. image:: images/smart_car_logo.png
+.. image:: images/logo_l5kit_wp.png
    :alt: logocar
    :align: center
    :width: 840px
