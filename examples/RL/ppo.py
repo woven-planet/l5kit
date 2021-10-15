@@ -15,6 +15,9 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 from l5kit.environment.envs.l5_env import SimulationConfigGym
 from l5kit.environment.feature_extractor import CustomFeatureExtractor
 from l5kit.environment.callbacks import L5KitEvalCallback
+from l5kit.mutables.loaders import get_runtime_params
+
+RUNTIME_PARAMS = get_runtime_params()
 
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
@@ -86,6 +89,10 @@ if __name__ == "__main__":
                         help='Path to csv file mapping scene id to scene type')
     parser.add_argument('--seed', default=42, type=int)
     args = parser.parse_args()
+
+    # Runtime Params
+    print(RUNTIME_PARAMS)
+
 
     # make train env
     train_sim_cfg = SimulationConfigGym()
