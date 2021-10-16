@@ -21,7 +21,7 @@ class VersionPrioritizer(Prioritizes):
     """Prioritizes higher version numbers over lower ones, eg. 'v1' > 'v0'"""
     def __init__(self) -> None:
         super().__init__()
-    
+
     def get_prioritized_item(self, versions: List[str]) -> str:
         """Accepts versions in either format of 'v<INT>' as 'v0' or '<INT>' as '0'"""
         highest_version_idx: int = sorted(
@@ -34,10 +34,10 @@ class VersionPrioritizer(Prioritizes):
 def _obtain_loader(registry_name: str, prioritizer: Prioritizes = VersionPrioritizer()) -> Tuple[Any, str]:
     """
     Obtains the most prioritized loader according to the given prioritizer
-    
+
     :returns: Tuple of the loader function, and its corresponing key in the given registry
     """
-    module_path: str = os.getenv(f'PROTEAN_MODULE_{registry_name.upper()}', f'l5kit.mutables.registry.{registry_name}')
+    module_path: str = os.getenv(f'X_MODULE_{registry_name.upper()}', f'l5kit.mutables.registry.{registry_name}')
     spec = importlib.util.find_spec(module_path)
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
@@ -55,4 +55,3 @@ def get_runtime_params() -> Dict[str, Any]:
         loader_fcn, _ = _obtain_loader(registers.RUNTIME_PARAMS_REGISTER)
         _RUNTIME_PARAMS = loader_fcn()
     return copy.deepcopy(_RUNTIME_PARAMS)
-
