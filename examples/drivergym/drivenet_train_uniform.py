@@ -7,7 +7,7 @@ import torch
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
-from l5kit.environment.utils import get_scene_types_as_dict
+from l5kit.environment.utils import get_scene_types, get_scene_types_as_dict
 from l5kit.kinematic import AckermanPerturbation
 from l5kit.planning.rasterized.model import RasterizedPlanningModel
 from l5kit.random import GaussianRandomGenerator
@@ -42,12 +42,14 @@ perturbation = AckermanPerturbation(
 # Train Dataset
 train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
 train_dataset = EgoDataset(cfg, train_zarr, rasterizer, perturbation)
+cumulative_sizes = train_dataset.cumulative_sizes
 
 if "SCENE_ID_TO_TYPE" not in os.environ:
     raise KeyError("SCENE_ID_TO_TYPE environment variable not set")
 scene_id_to_type_mapping_file = os.environ["SCENE_ID_TO_TYPE"]
 scene_type_to_id_dict = get_scene_types_as_dict(scene_id_to_type_mapping_file)
-reward_scale = {"straight": 1.0, "left": 20.6, "right": 18.5}
+scene_id_to_type_list = get_scene_types(scene_id_to_type_mapping_file)
+reward_scale = {"straight": 1.0, "left": 19.5, "right": 16.6}
 
 # Validation Dataset
 eval_cfg = cfg["val_data_loader"]
@@ -78,9 +80,11 @@ train_dataset = subset_and_subsample(train_dataset, ratio=train_cfg['ratio'], st
 #     scene_type_to_id_dict[group] = [v for v in scene_type_to_id_dict[group] if v < max_scene_id]
 
 if train_scheme == 'weighted_sampling':
-    sample_weights = get_sample_weights(scene_type_to_id_dict, max_scene_id, train_dataset.cumulative_sizes)
+    # sample_weights = get_sample_weights(scene_type_to_id_dict, max_scene_id, train_dataset.cumulative_sizes)
     # sampler = torch.utils.data.WeightedRandomSampler(sample_weights, train_cfg["batch_size"] * cfg["train_params"]["max_num_steps"])
+    sample_weights = get_sample_weights(scene_type_to_id_dict, cumulative_sizes, ratio=train_cfg['ratio'], step=train_cfg['step'])
     sampler = torch.utils.data.WeightedRandomSampler(sample_weights, len(train_dataset))
+    train_cfg["shuffle"] = False
 else: 
     sampler = None
     # max_train_frame_id = train_dataset.cumulative_sizes[max_scene_id]
@@ -137,7 +141,7 @@ for epoch in range(train_cfg['epochs']):
         total_steps += 1
         # Append Reward scaling
         if train_scheme == 'weighted_reward':
-            data = append_reward_scaling(data, reward_scale, scene_type_to_id_dict)
+            data = append_reward_scaling(data, reward_scale, scene_id_to_type_list)
 
         # Forward pass
         data = {k: v.to(device) for k, v in data.items()}
@@ -158,7 +162,7 @@ for epoch in range(train_cfg['epochs']):
 
     # Eval
     if (epoch + 1) % cfg["train_params"]["eval_every_n_epochs"] == 0:
-        eval_model(model, train_dataset.dataset, logger, "train", total_steps, num_scenes_to_unroll)
+        # eval_model(model, train_dataset.dataset, logger, "train", total_steps, num_scenes_to_unroll)
         eval_model(model, eval_dataset, logger, "eval", total_steps, num_scenes_to_unroll)
         model.train()
 
@@ -172,7 +176,7 @@ for epoch in range(train_cfg['epochs']):
 print("Time: ", time.time() - start)
 
 # Final Eval
-eval_model(model, train_dataset.dataset, logger, "train", total_steps, num_scenes_to_unroll)
+# eval_model(model, train_dataset.dataset, logger, "train", total_steps, num_scenes_to_unroll)
 eval_model(model, eval_dataset, logger, "eval", total_steps, num_scenes_to_unroll)
 
 # Final Checkpoint

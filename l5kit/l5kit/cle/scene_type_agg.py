@@ -48,3 +48,30 @@ def compute_cle_scene_type_aggregations(mset: L5MetricSet,
             scene_type_results[result_key] = failed_scene_type_results[scene_type, vname]
 
     return scene_type_results
+
+
+def compute_scene_type_ade_fde(mset: L5MetricSet,
+                               scene_ids_to_scene_types: List[List[str]]) -> Dict[str, float]:
+    """Compute the scene-type metric aggregations for metrics ADE/FDE.
+
+    :param mset: metric set to aggregate by scene type
+    :param scene_ids_to_scene_types: list of scene type tags per scene
+    :return: dict of result key "scene_type/validator_name" to scale tensor aggregation value.
+    """
+    scenes_results = mset.evaluator.metric_results()
+    scene_type_results: Dict[str, List[float]] = defaultdict(list)
+    scene_type_agg_results: DefaultDict[str, float] = defaultdict(float)
+
+    for scene_id, scene_result in scenes_results.items():
+        scene_types = scene_ids_to_scene_types[scene_id]
+        l2_error = scene_result["displacement_error_l2"]
+        ade, fde = l2_error[1:].mean().item(), l2_error[-1].item()
+        # Add to dict
+        for scene_type in scene_types:
+            scene_type_results[f'fde/{scene_type}'].append(fde)
+            scene_type_results[f'ade/{scene_type}'].append(ade)
+
+    for key, value in scene_type_results.items():
+        scene_type_agg_results[key] = sum(value) / len(value)
+
+    return scene_type_agg_results

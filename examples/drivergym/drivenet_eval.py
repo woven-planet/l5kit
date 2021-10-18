@@ -2,7 +2,7 @@ from typing import Optional
 
 import torch
 from l5kit.cle.composite_metrics import CompositeMetricAggregator
-from l5kit.cle.scene_type_agg import compute_cle_scene_type_aggregations
+from l5kit.cle.scene_type_agg import compute_cle_scene_type_aggregations, compute_scene_type_ade_fde
 from l5kit.cle.validators import ValidationCountingAggregator
 from l5kit.dataset import EgoDataset
 from l5kit.environment.callbacks import L5KitEvalCallback
@@ -77,6 +77,12 @@ def eval_model(model: torch.nn.Module, dataset: EgoDataset, logger: Logger, d_se
     if enable_scene_type_aggregation:
         assert scene_id_to_type_path is not None
         scene_ids_to_scene_types = get_scene_types(scene_id_to_type_path)
+        # Metrics
+        scene_type_ade_fde = compute_scene_type_ade_fde(metric_set, scene_ids_to_scene_types)
+        for k, v in scene_type_ade_fde.items():
+            logger.record(f'{k}', v)
+
+        # Validators
         scene_type_results = \
             compute_cle_scene_type_aggregations(metric_set,
                                                 scene_ids_to_scene_types,

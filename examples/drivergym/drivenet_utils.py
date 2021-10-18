@@ -6,13 +6,12 @@ import torch
 from l5kit.dataset import EgoDataset
 from torch.utils.data import Subset
 
-def get_sample_weights(scene_type_to_id: Dict[str, List[int]], 
-                       max_scene_id: int, cumulative_sizes: np.array) -> List[float]:
+def get_sample_weights(scene_type_to_id: Dict[str, List[int]], cumulative_sizes: np.array,
+                       ratio: float, step: int) -> List[float]:
     """This Sampler first uniformly selects a group-type and then randomly samples a
     frame belonging to that group.
 
     :param scene_type_to_id: a dict mapping scene types to their corresponding ids
-    :param max_scene_id: the maximum scene id to sample
     :param cumulative_sizes: List of frame demarcations of the dataset
     """
 
@@ -28,7 +27,7 @@ def get_sample_weights(scene_type_to_id: Dict[str, List[int]],
     total_frames = cumulative_sizes[-1]
     cumulative_sizes = np.insert(cumulative_sizes, 0, 0)
     sample_weights = [0] * total_frames
-    for index in range(max_scene_id):
+    for index in range(len(cumulative_sizes)-1):
         # Determine boundaries
         start_frame = cumulative_sizes[index]
         end_frame = cumulative_sizes[index+1]
@@ -40,31 +39,26 @@ def get_sample_weights(scene_type_to_id: Dict[str, List[int]],
             if index in id_list:
                 scene_type = group
                 break
-
         # Assign frame weights based on Scene type
         sample_weights[start_frame : end_frame] = [group_weight[scene_type]] * len_scene
 
-    return sample_weights
+    # Filter according to ratio and step
+    frames_to_use = range(0, int(ratio * len(sample_weights)), step)
+    sample_weights_filtered = [sample_weights[f] for f in frames_to_use]
+    return sample_weights_filtered
 
 
 def append_reward_scaling(data_batch: Dict[str, torch.Tensor], reward_scale: Dict[str, float],
-                          scene_type_to_id_dict: Dict[str, List[int]]) -> Dict[str, torch.Tensor]:
+                          scene_id_to_type_list: List[List[str]]) -> Dict[str, torch.Tensor]:
     """Determine reward scaling for each sample based on the group the sample belongs to.
 
     :param data_batch: the current data batch
     :param reward_scale: the dict that determines the reward scaling per group
-    :param scene_type_to_id: a dict mapping scene types to their corresponding ids
+    :param scene_id_to_type_list: a list mapping scene id to their corresponding types
     :return: The updated data_batch with "reward_scaling" key
     """
-    reward_scaling = torch.ones_like(data_batch['scene_index'])
-    for idx, scene_id in enumerate(data_batch['scene_index']):
-        if scene_id in scene_type_to_id_dict["left"]:
-            reward_scaling[idx] = reward_scale["left"]
-        elif scene_id in scene_type_to_id_dict["right"]:
-            reward_scaling[idx] = reward_scale["right"]
-        else:
-            reward_scaling[idx] = reward_scale["straight"]
-    data_batch["reward_scaling"] = reward_scaling
+    reward_scaling = [reward_scale[scene_id_to_type_list[scene_id][0]] for scene_id in data_batch['scene_index']]
+    data_batch["reward_scaling"] = torch.FloatTensor(reward_scaling)
     return data_batch
 
 
