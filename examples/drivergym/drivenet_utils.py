@@ -70,3 +70,17 @@ def subset_and_subsample(dataset: EgoDataset, ratio: float, step: int) -> Subset
     scene_samples = np.concatenate(scene_samples).ravel()
     scene_samples = np.sort(scene_samples)
     return Subset(dataset, scene_samples)
+
+
+def append_group_index(data_batch: Dict[str, torch.Tensor], group_str: List[str],
+                       scene_id_to_type_list: List[List[str]]) -> Dict[str, torch.Tensor]:
+    """Determine reward scaling for each sample based on the group the sample belongs to.
+
+    :param data_batch: the current data batch
+    :param group_str: the list of group names to identify index
+    :param scene_id_to_type_list: a list mapping scene id to their corresponding types
+    :return: The updated data_batch with "reward_scaling" key
+    """
+    group_index = [group_str.index(scene_id_to_type_list[scene_id][0]) for scene_id in data_batch['scene_index']]
+    data_batch["group_index"] = torch.IntTensor(group_index)
+    return data_batch

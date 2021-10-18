@@ -19,7 +19,8 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from tqdm import tqdm
 
 from drivenet_eval import eval_model
-from drivenet_utils import append_reward_scaling, get_sample_weights, subset_and_subsample
+from drivenet_utils import append_group_index, append_reward_scaling, get_sample_weights, subset_and_subsample
+from l5_dro_loss import LossComputer
 
 
 dm = LocalDataManager(None)
@@ -49,6 +50,9 @@ if "SCENE_ID_TO_TYPE" not in os.environ:
 scene_id_to_type_mapping_file = os.environ["SCENE_ID_TO_TYPE"]
 scene_type_to_id_dict = get_scene_types_as_dict(scene_id_to_type_mapping_file)
 scene_id_to_type_list = get_scene_types(scene_id_to_type_mapping_file)
+num_groups = len(scene_type_to_id_dict)
+group_counts = torch.IntTensor([len(v) for k, v in scene_type_to_id_dict.items()])
+group_str = [k for k in scene_type_to_id_dict.keys()]
 reward_scale = {"straight": 1.0, "left": 19.5, "right": 16.6}
 
 # Validation Dataset
@@ -57,14 +61,17 @@ eval_zarr = ChunkedDataset(dm.require(eval_cfg["key"])).open()
 eval_dataset = EgoDataset(cfg, eval_zarr, rasterizer)
 # For evaluation
 num_scenes_to_unroll = eval_cfg["max_scene_id"]
+device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
+dro_loss_computer = LossComputer(num_groups, group_counts, group_str, device)
 # Planning Model
 model = RasterizedPlanningModel(
     model_arch="simple_cnn",
     num_input_channels=rasterizer.num_channels(),
     num_targets=3 * cfg["model_params"]["future_num_frames"],  # X, Y, Yaw * number of future states
     weights_scaling=[1., 1., 1.],
-    criterion=nn.MSELoss(reduction="none"),)
+    criterion=nn.MSELoss(reduction="none"),
+    dro_loss_computer=dro_loss_computer)
 
 # Load train data
 train_cfg = cfg["train_data_loader"]
@@ -79,7 +86,7 @@ train_dataset = subset_and_subsample(train_dataset, ratio=train_cfg['ratio'], st
 # for group in scene_type_to_id_dict.keys():
 #     scene_type_to_id_dict[group] = [v for v in scene_type_to_id_dict[group] if v < max_scene_id]
 
-if train_scheme == 'weighted_sampling':
+if train_scheme in {'weighted_sampling', 'group_dro'}:
     # sample_weights = get_sample_weights(scene_type_to_id_dict, max_scene_id, train_dataset.cumulative_sizes)
     # sampler = torch.utils.data.WeightedRandomSampler(sample_weights, train_cfg["batch_size"] * cfg["train_params"]["max_num_steps"])
     sample_weights = get_sample_weights(scene_type_to_id_dict, cumulative_sizes, ratio=train_cfg['ratio'], step=train_cfg['step'])
@@ -102,7 +109,6 @@ train_dataloader = DataLoader(train_dataset, shuffle=train_cfg["shuffle"], batch
                               num_workers=train_cfg["num_workers"], sampler=sampler, worker_init_fn=seed_worker,
                               generator=g)
 
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 model = model.to(device)
 optimizer = optim.Adam(model.parameters(), lr=5e-4)
 
@@ -142,6 +148,10 @@ for epoch in range(train_cfg['epochs']):
         # Append Reward scaling
         if train_scheme == 'weighted_reward':
             data = append_reward_scaling(data, reward_scale, scene_id_to_type_list)
+
+        # Append Group Index
+        if train_scheme == 'group_dro':
+            data = append_group_index(data, group_str, scene_id_to_type_list)
 
         # Forward pass
         data = {k: v.to(device) for k, v in data.items()}

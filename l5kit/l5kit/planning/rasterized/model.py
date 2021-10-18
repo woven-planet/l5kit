@@ -20,6 +20,7 @@ class RasterizedPlanningModel(nn.Module):
             weights_scaling: List[float],
             criterion: nn.Module,
             pretrained: bool = True,
+            dro_loss_computer = None
     ) -> None:
         super().__init__()
         self.model_arch = model_arch
@@ -47,6 +48,7 @@ class RasterizedPlanningModel(nn.Module):
             self.model.conv1 = nn.Conv2d(
                 self.num_input_channels, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False
             )
+        self.dro_loss_computer = dro_loss_computer
 
     def forward(self, data_batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         # [batch_size, channels, height, width]
@@ -68,9 +70,15 @@ class RasterizedPlanningModel(nn.Module):
                 batch_size, -1
             )
             loss = self.criterion(outputs, targets) * target_weights
+            # Reward Scaling
             if "reward_scaling" in data_batch:
                 loss = loss * data_batch["reward_scaling"].unsqueeze(-1)
-            loss = torch.mean(loss)
+
+            # DRO Group Index
+            if "group_index" in data_batch:
+                loss = self.dro_loss_computer.loss(loss, data_batch["group_index"])
+            else:
+                loss = torch.mean(loss)
             train_dict = {"loss": loss}
             return train_dict
         else:
