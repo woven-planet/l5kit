@@ -3,9 +3,10 @@ import torch.nn as nn
 import torch.nn.functional as F
 import numpy as np
 
-class LossComputer:
+class LossComputer(nn.Module):
     def __init__(self, n_groups, group_counts, group_str, device, alpha=None, gamma=0.1,
                  adj=None, min_var_weight=0, step_size=0.01, normalize_loss=False, btl=False):
+        super(LossComputer, self).__init__()
         self.is_robust = True
         self.gamma = gamma
         self.alpha = alpha
@@ -34,7 +35,7 @@ class LossComputer:
 
         self.device = device
 
-    def loss(self, per_sample_losses, group_idx=None):
+    def loss(self, per_sample_losses, group_idx):
         per_sample_losses = per_sample_losses.mean(dim=1)
         # compute per-group losses
         group_loss, group_count = self.compute_group_avg(per_sample_losses, group_idx)
@@ -45,8 +46,8 @@ class LossComputer:
         # compute overall loss
         if self.is_robust and not self.btl:
             actual_loss, weights = self.compute_robust_loss(group_loss, group_count)
-        elif self.is_robust and self.btl:
-             actual_loss, weights = self.compute_robust_loss_btl(group_loss, group_count)
+        # elif self.is_robust and self.btl:
+        #      actual_loss, weights = self.compute_robust_loss_btl(group_loss, group_count)
         else:
             actual_loss = per_sample_losses.mean()
             weights = None
@@ -65,27 +66,27 @@ class LossComputer:
         robust_loss = group_loss @ self.adv_probs
         return robust_loss, self.adv_probs
 
-    def compute_robust_loss_btl(self, group_loss, group_count):
-        adjusted_loss = self.exp_avg_loss + self.adj/torch.sqrt(self.group_counts)
-        return self.compute_robust_loss_greedy(group_loss, adjusted_loss)
+    # def compute_robust_loss_btl(self, group_loss, group_count):
+    #     adjusted_loss = self.exp_avg_loss + self.adj/torch.sqrt(self.group_counts)
+    #     return self.compute_robust_loss_greedy(group_loss, adjusted_loss)
 
-    def compute_robust_loss_greedy(self, group_loss, ref_loss):
-        sorted_idx = ref_loss.sort(descending=True)[1]
-        sorted_loss = group_loss[sorted_idx]
-        sorted_frac = self.group_frac[sorted_idx]
+    # def compute_robust_loss_greedy(self, group_loss, ref_loss):
+    #     sorted_idx = ref_loss.sort(descending=True)[1]
+    #     sorted_loss = group_loss[sorted_idx]
+    #     sorted_frac = self.group_frac[sorted_idx]
 
-        mask = torch.cumsum(sorted_frac, dim=0)<=self.alpha
-        weights = mask.float() * sorted_frac /self.alpha
-        last_idx = mask.sum()
-        weights[last_idx] = 1 - weights.sum()
-        weights = sorted_frac*self.min_var_weight + weights*(1-self.min_var_weight)
+    #     mask = torch.cumsum(sorted_frac, dim=0)<=self.alpha
+    #     weights = mask.float() * sorted_frac /self.alpha
+    #     last_idx = mask.sum()
+    #     weights[last_idx] = 1 - weights.sum()
+    #     weights = sorted_frac*self.min_var_weight + weights*(1-self.min_var_weight)
 
-        robust_loss = sorted_loss @ weights
+    #     robust_loss = sorted_loss @ weights
 
-        # sort the weights back
-        _, unsort_idx = sorted_idx.sort()
-        unsorted_weights = weights[unsort_idx]
-        return robust_loss, unsorted_weights
+    #     # sort the weights back
+    #     _, unsort_idx = sorted_idx.sort()
+    #     unsorted_weights = weights[unsort_idx]
+    #     return robust_loss, unsorted_weights
 
     def compute_group_avg(self, losses, group_idx):
         # compute observed counts and mean loss for each group
