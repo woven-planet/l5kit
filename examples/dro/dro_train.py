@@ -19,14 +19,20 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from tqdm import tqdm
 
 from drivenet_eval import eval_model
-from drivenet_utils import append_group_index, append_reward_scaling, get_sample_weights, subset_and_subsample
-from l5_dro_loss import LossComputer
+from dro_utils import append_group_index, append_reward_scaling, get_sample_weights, subset_and_subsample
+from group_dro_loss import LossComputer
 
 
 scene_id_to_type_path = '../../dataset_metadata/validate_turns_metadata.csv'
 dm = LocalDataManager(None)
 # get config
 cfg = load_config_data("./drivenet_config.yaml")
+
+# Logging and Saving
+output_name = cfg["train_params"]["output_name"]
+save_path = pathlib.Path("./checkpoints/")
+save_path.mkdir(parents=True, exist_ok=True)
+logger = utils.configure_logger(0, "./drivenet_logs/", output_name, True)
 
 seed = cfg['train_params']['seed']
 torch.manual_seed(seed)
@@ -64,7 +70,7 @@ eval_dataset = EgoDataset(cfg, eval_zarr, rasterizer)
 num_scenes_to_unroll = eval_cfg["max_scene_id"]
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-dro_loss_computer = LossComputer(num_groups, group_counts, group_str, device)
+dro_loss_computer = LossComputer(num_groups, group_counts, group_str, device, logger)
 # Planning Model
 model = RasterizedPlanningModel(
     model_arch="simple_cnn",
@@ -125,11 +131,6 @@ else:
 model.train()
 torch.set_grad_enabled(True)
 
-# Logging and Saving
-output_name = cfg["train_params"]["output_name"]
-save_path = pathlib.Path("./checkpoints/")
-save_path.mkdir(parents=True, exist_ok=True)
-logger = utils.configure_logger(0, "./drivenet_logs/", output_name, True)
 
 import time
 start = time.time()

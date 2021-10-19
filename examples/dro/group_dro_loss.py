@@ -4,7 +4,7 @@ import torch.nn.functional as F
 import numpy as np
 
 class LossComputer(nn.Module):
-    def __init__(self, n_groups, group_counts, group_str, device, alpha=None, gamma=0.1,
+    def __init__(self, n_groups, group_counts, group_str, device, logger=None, alpha=None, gamma=0.1,
                  adj=None, min_var_weight=0, step_size=0.01, normalize_loss=False, btl=False):
         super(LossComputer, self).__init__()
         self.is_robust = True
@@ -34,6 +34,8 @@ class LossComputer(nn.Module):
         self.exp_avg_initialized = torch.zeros(self.n_groups).byte().to(device)
 
         self.device = device
+        self.logger = logger
+        self.time_steps = 0
 
     def loss(self, per_sample_losses, group_idx):
         per_sample_losses = per_sample_losses.mean(dim=1)
@@ -63,30 +65,17 @@ class LossComputer(nn.Module):
         self.adv_probs = self.adv_probs * torch.exp(self.step_size*adjusted_loss.data)
         self.adv_probs = self.adv_probs/(self.adv_probs.sum())
 
+        self.log_group_weights()
         robust_loss = group_loss @ self.adv_probs
         return robust_loss, self.adv_probs
 
-    # def compute_robust_loss_btl(self, group_loss, group_count):
-    #     adjusted_loss = self.exp_avg_loss + self.adj/torch.sqrt(self.group_counts)
-    #     return self.compute_robust_loss_greedy(group_loss, adjusted_loss)
-
-    # def compute_robust_loss_greedy(self, group_loss, ref_loss):
-    #     sorted_idx = ref_loss.sort(descending=True)[1]
-    #     sorted_loss = group_loss[sorted_idx]
-    #     sorted_frac = self.group_frac[sorted_idx]
-
-    #     mask = torch.cumsum(sorted_frac, dim=0)<=self.alpha
-    #     weights = mask.float() * sorted_frac /self.alpha
-    #     last_idx = mask.sum()
-    #     weights[last_idx] = 1 - weights.sum()
-    #     weights = sorted_frac*self.min_var_weight + weights*(1-self.min_var_weight)
-
-    #     robust_loss = sorted_loss @ weights
-
-    #     # sort the weights back
-    #     _, unsort_idx = sorted_idx.sort()
-    #     unsorted_weights = weights[unsort_idx]
-    #     return robust_loss, unsorted_weights
+    @torch.jit.unused
+    def log_group_weights(self):
+        if self.logger is not None:
+            self.time_steps += 1
+            for idx, g_name in enumerate(self.group_str):
+                self.logger.record(f'group_weight/{g_name}', self.adv_probs[idx].item())
+                self.logger.dump(self.time_steps)
 
     def compute_group_avg(self, losses, group_idx):
         # compute observed counts and mean loss for each group
