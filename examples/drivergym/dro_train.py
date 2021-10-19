@@ -116,14 +116,10 @@ if train_cfg["scheduler"] == "one_cycle":
         max_lr=5e-4,
         pct_start=0.3)
 else:
-    scheduler = torch.optim.lr_scheduler.ReduceLROnPlateau(
+    scheduler = torch.optim.lr_scheduler.StepLR(
         optimizer,
-        'min',
-        factor=0.1,
-        patience=5,
-        threshold=0.0001,
-        min_lr=0,
-        eps=1e-08)
+        step_size=len(train_dataloader) * num_epochs + 1,
+        gamma=0.1)
 
 # Train
 model.train()
