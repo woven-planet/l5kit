@@ -125,7 +125,7 @@ model = model.to(device)
 #            lr=5e-4,
 #            momentum=0.9,
 #            weight_decay=train_cfg["w_decay"])
-optimizer = optim.Adam(model.parameters(), lr=5e-4)
+optimizer = optim.Adam(model.parameters(), lr=5e-4, weight_decay=train_cfg["w_decay"])
 
 if train_cfg["scheduler"] == "one_cycle":
     scheduler = torch.optim.lr_scheduler.OneCycleLR(

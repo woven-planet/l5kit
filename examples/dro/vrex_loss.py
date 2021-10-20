@@ -5,7 +5,7 @@ import numpy as np
 
 class VRexLossComputer(nn.Module):
     def __init__(self, n_groups, group_counts, group_str, device, logger=None,
-                 penalty_weight=0.1):
+                 penalty_weight=1.0):
         super(VRexLossComputer, self).__init__()
         self.is_robust = True
         self.n_groups = n_groups
@@ -24,16 +24,22 @@ class VRexLossComputer(nn.Module):
         # Variance
         rex_penalty = torch.sum((group_loss - group_loss.unsqueeze(1))**2) / (self.n_groups ** 2)
 
-        self.log_group_weights(group_loss, group_count)
         # compute overall loss
-        loss = per_sample_losses.mean()
+        erm_loss = per_sample_losses.mean()
+        loss = erm_loss
         if self.is_robust:
             loss += self.penalty_weight * rex_penalty
+
+        # log
+        self.log_group_weights(group_loss, group_count, rex_penalty, erm_loss)
+
         return loss
 
     @torch.jit.unused
-    def log_group_weights(self, group_loss, group_count):
+    def log_group_weights(self, group_loss, group_count, rex_penalty, erm_loss):
         if self.logger is not None:
+            self.logger.record(f'group_loss/erm', erm_loss.item())
+            self.logger.record(f'group_loss/vrex', rex_penalty.item())
             self.time_steps += 1
             for idx, g_name in enumerate(self.group_str):
                 self.logger.record(f'group_loss/{g_name}', group_loss[idx].item())
