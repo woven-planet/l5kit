@@ -80,7 +80,7 @@ def eval_model(model: torch.nn.Module, dataset: EgoDataset, logger: Logger, d_se
         # Metrics
         scene_type_ade_fde = compute_scene_type_ade_fde(metric_set, scene_ids_to_scene_types)
         for k, v in scene_type_ade_fde.items():
-            logger.record(f'{k}', v)
+            logger.record(f'{d_set}/{k}', v)
 
         # Validators
         scene_type_results = \
@@ -88,7 +88,7 @@ def eval_model(model: torch.nn.Module, dataset: EgoDataset, logger: Logger, d_se
                                                 scene_ids_to_scene_types,
                                                 list_validator_table_to_publish=[])
         for k, v in scene_type_results.items():
-            logger.record(f'{k}', v)
+            logger.record(f'{d_set}/{k}', v)
 
     # Dump log so the evaluation results are printed with the correct timestep
     logger.record("time/total timesteps", iter_num, exclude="tensorboard")

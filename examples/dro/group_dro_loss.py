@@ -5,7 +5,7 @@ import numpy as np
 
 class LossComputer(nn.Module):
     def __init__(self, n_groups, group_counts, group_str, device, logger=None, alpha=None, gamma=0.1,
-                 adj=None, min_var_weight=0, step_size=0.01, normalize_loss=False, btl=False):
+                 adj=None, min_var_weight=0, step_size=0.005, normalize_loss=False, btl=False):
         super(LossComputer, self).__init__()
         self.is_robust = True
         self.gamma = gamma
@@ -65,16 +65,18 @@ class LossComputer(nn.Module):
         self.adv_probs = self.adv_probs * torch.exp(self.step_size*adjusted_loss.data)
         self.adv_probs = self.adv_probs/(self.adv_probs.sum())
 
-        self.log_group_weights()
+        self.log_group_weights(group_loss, group_count)
         robust_loss = group_loss @ self.adv_probs
         return robust_loss, self.adv_probs
 
     @torch.jit.unused
-    def log_group_weights(self):
+    def log_group_weights(self, group_loss, group_count):
         if self.logger is not None:
             self.time_steps += 1
             for idx, g_name in enumerate(self.group_str):
                 self.logger.record(f'group_weight/{g_name}', self.adv_probs[idx].item())
+                self.logger.record(f'group_loss/{g_name}', group_loss[idx].item())
+                self.logger.record(f'group_count/{g_name}', group_count[idx].item())
                 self.logger.dump(self.time_steps)
 
     def compute_group_avg(self, losses, group_idx):

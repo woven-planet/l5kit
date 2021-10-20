@@ -21,6 +21,7 @@ from tqdm import tqdm
 from drivenet_eval import eval_model
 from dro_utils import append_group_index, append_reward_scaling, get_sample_weights, subset_and_subsample
 from group_dro_loss import LossComputer
+from vrex_loss import VRexLossComputer
 
 
 scene_id_to_type_path = '../../dataset_metadata/validate_turns_metadata.csv'
@@ -49,8 +50,8 @@ perturbation = AckermanPerturbation(
 
 # Train Dataset
 train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
-train_dataset = EgoDataset(cfg, train_zarr, rasterizer, perturbation)
-cumulative_sizes = train_dataset.cumulative_sizes
+train_dataset_original = EgoDataset(cfg, train_zarr, rasterizer, perturbation)
+cumulative_sizes = train_dataset_original.cumulative_sizes
 
 if "SCENE_ID_TO_TYPE" not in os.environ:
     raise KeyError("SCENE_ID_TO_TYPE environment variable not set")
@@ -62,6 +63,11 @@ group_counts = torch.IntTensor([len(v) for k, v in scene_type_to_id_dict.items()
 group_str = [k for k in scene_type_to_id_dict.keys()]
 reward_scale = {"straight": 1.0, "left": 19.5, "right": 16.6}
 
+# Train evaluation Dataset
+train_eval_cfg = cfg["train_data_loader"]
+train_eval_zarr = ChunkedDataset(dm.require(train_eval_cfg["key"])).open()
+train_eval_dataset = EgoDataset(cfg, train_eval_zarr, rasterizer)
+
 # Validation Dataset
 eval_cfg = cfg["val_data_loader"]
 eval_zarr = ChunkedDataset(dm.require(eval_cfg["key"])).open()
@@ -70,7 +76,18 @@ eval_dataset = EgoDataset(cfg, eval_zarr, rasterizer)
 num_scenes_to_unroll = eval_cfg["max_scene_id"]
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
-dro_loss_computer = LossComputer(num_groups, group_counts, group_str, device, logger)
+# Load train data
+train_cfg = cfg["train_data_loader"]
+train_scheme = train_cfg["scheme"]
+# max_scene_id = train_cfg["max_scene_id"]
+num_epochs = train_cfg["epochs"]
+
+dro_loss_computer = None
+if train_scheme == 'group_dro':
+    dro_loss_computer = LossComputer(num_groups, group_counts, group_str, device, logger)
+elif train_scheme == 'vrex':
+    dro_loss_computer = VRexLossComputer(num_groups, group_counts, group_str, device, logger)
+
 # Planning Model
 model = RasterizedPlanningModel(
     model_arch="simple_cnn",
@@ -80,17 +97,12 @@ model = RasterizedPlanningModel(
     criterion=nn.MSELoss(reduction="none"),
     dro_loss_computer=dro_loss_computer)
 
-# Load train data
-train_cfg = cfg["train_data_loader"]
-train_scheme = train_cfg["scheme"]
-# max_scene_id = train_cfg["max_scene_id"]
-num_epochs = train_cfg["epochs"]
 
 # Sub-sample
-train_dataset = subset_and_subsample(train_dataset, ratio=train_cfg['ratio'], step=train_cfg['step'])
+train_dataset = subset_and_subsample(train_dataset_original, ratio=train_cfg['ratio'], step=train_cfg['step'])
 
 sampler = None
-if train_scheme in {'weighted_sampling', 'group_dro'}:
+if train_scheme in {'weighted_sampling', 'group_dro', 'vrex'}:
     sample_weights = get_sample_weights(scene_type_to_id_dict, cumulative_sizes, ratio=train_cfg['ratio'], step=train_cfg['step'])
     sampler = torch.utils.data.WeightedRandomSampler(sample_weights, len(train_dataset))
     train_cfg["shuffle"] = False
@@ -108,11 +120,12 @@ train_dataloader = DataLoader(train_dataset, shuffle=train_cfg["shuffle"], batch
                               generator=g)
 
 model = model.to(device)
-optimizer = optim.SGD(
-    filter(lambda p: p.requires_grad, model.parameters()),
-           lr=5e-4,
-           momentum=0.9,
-           weight_decay=train_cfg["w_decay"])
+# optimizer = optim.SGD(
+#     filter(lambda p: p.requires_grad, model.parameters()),
+#            lr=5e-4,
+#            momentum=0.9,
+#            weight_decay=train_cfg["w_decay"])
+optimizer = optim.Adam(model.parameters(), lr=5e-4)
 
 if train_cfg["scheduler"] == "one_cycle":
     scheduler = torch.optim.lr_scheduler.OneCycleLR(
@@ -143,7 +156,7 @@ for epoch in range(train_cfg['epochs']):
             data = append_reward_scaling(data, reward_scale, scene_id_to_type_list)
 
         # Append Group Index
-        if train_scheme == 'group_dro':
+        if train_scheme in {'group_dro', 'vrex'}:
             data = append_group_index(data, group_str, scene_id_to_type_list)
 
         # Forward pass
@@ -163,7 +176,8 @@ for epoch in range(train_cfg['epochs']):
 
     # Eval
     if (epoch + 1) % cfg["train_params"]["eval_every_n_epochs"] == 0:
-        # eval_model(model, train_dataset.dataset, logger, "train", total_steps, num_scenes_to_unroll)
+        eval_model(model, train_eval_dataset, logger, "train", total_steps, num_scenes_to_unroll,
+                   enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_path)
         eval_model(model, eval_dataset, logger, "eval", total_steps, num_scenes_to_unroll,
                    enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_path)
         model.train()
@@ -178,7 +192,8 @@ for epoch in range(train_cfg['epochs']):
 print("Time: ", time.time() - start)
 
 # Final Eval
-# eval_model(model, train_dataset.dataset, logger, "train", total_steps, num_scenes_to_unroll)
+eval_model(model, train_eval_dataset, logger, "train", total_steps, num_scenes_to_unroll,
+           enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_path)
 eval_model(model, eval_dataset, logger, "eval", total_steps, num_scenes_to_unroll,
            enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_path)
 
