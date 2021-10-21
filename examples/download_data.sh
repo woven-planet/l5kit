@@ -8,7 +8,7 @@ echo "Dataset location: $L5KIT_DATA_FOLDER"
 # Download sample zarr
 echo "... Downloading sample zarr dataset"
 wget https://lyft-l5-datasets-public.s3-us-west-2.amazonaws.com/prediction/v1.1/sample.tar \
-    -q -P $TEMP_DOWNLOAD_DIR
+    -P $TEMP_DOWNLOAD_DIR
 echo "Downloaded sample zarr dataset"
 
 echo "... Extracting sample zarr dataset"
@@ -16,10 +16,30 @@ mkdir -p $L5KIT_DATA_FOLDER/scenes
 tar xf $TEMP_DOWNLOAD_DIR/sample.tar -C $L5KIT_DATA_FOLDER/scenes
 echo "Extracted sample zarr dataset"
 
+# Download train zarr
+echo "... Downloading train zarr dataset"
+wget https://lyft-l5-datasets-public.s3-us-west-2.amazonaws.com/prediction/v1.1/train.tar \
+    -P $TEMP_DOWNLOAD_DIR
+echo "Downloaded train zarr dataset"
+
+echo "... Extracting train zarr dataset"
+tar xf $TEMP_DOWNLOAD_DIR/train.tar -C $L5KIT_DATA_FOLDER/scenes
+echo "Extracted train zarr dataset"
+
+# Download validate zarr
+echo "... Downloading validate zarr dataset"
+wget https://lyft-l5-datasets-public.s3-us-west-2.amazonaws.com/prediction/v1.1/validate.tar \
+    -P $TEMP_DOWNLOAD_DIR
+echo "Downloaded validate zarr dataset"
+
+echo "... Extracting validate zarr dataset"
+tar xf $TEMP_DOWNLOAD_DIR/validate.tar -C $L5KIT_DATA_FOLDER/scenes
+echo "Extracted validate zarr dataset"
+
 # Download semantic map
 echo "... Downloading semantic map"
 wget https://lyft-l5-datasets-public.s3-us-west-2.amazonaws.com/prediction/v1.1/semantic_map.tar \
-    -q -P $TEMP_DOWNLOAD_DIR
+    -P $TEMP_DOWNLOAD_DIR
 echo "Downloaded semantic map"
 
 echo "... Extracting semantic map"
@@ -34,7 +54,7 @@ echo "Copied semantic map meta"
 # Download aerial maps
 echo "... Downloading aerial maps (this can take a while)"
 wget https://lyft-l5-datasets-public.s3-us-west-2.amazonaws.com/prediction/v1.1/aerial_map.tar \
-    -q -P $TEMP_DOWNLOAD_DIR
+    -P $TEMP_DOWNLOAD_DIR
 echo "Downloaded aerial maps"
 
 echo "... Copying aerial maps"

@@ -1,6 +1,11 @@
 import os
 import pathlib
 import random
+import subprocess
+from pathlib import Path
+
+os.environ['OMP_NUM_THREADS'] = '1'
+os.environ['MKL_NUM_THREADS'] = '1'
 
 import numpy as np
 import torch
@@ -23,17 +28,31 @@ from dro_utils import append_group_index, append_reward_scaling, get_sample_weig
 from group_dro_loss import LossComputer
 from vrex_loss import VRexLossComputer
 
+# Dataset is assumed to be on the folder specified
+# in the L5KIT_DATA_FOLDER environment variable
+# Please set the L5KIT_DATA_FOLDER environment variable
+DEFAULT_L5KIT_DATA_FOLDER = '/tmp/datasets/l5kit_data'
+if "L5KIT_DATA_FOLDER" not in os.environ:
+    os.environ["L5KIT_DATA_FOLDER"] = DEFAULT_L5KIT_DATA_FOLDER
+    if not os.path.exists(DEFAULT_L5KIT_DATA_FOLDER):
+        # Download data
+        subprocess.call(str( Path(__file__).parents[1] / 'download_data.sh'))
 
-scene_id_to_type_path = '../../dataset_metadata/validate_turns_metadata.csv'
+path_l5kit = Path(__file__).parents[2]
+path_examples = Path(__file__).parents[1]
+path_dro = Path(__file__).parent
+
+scene_id_to_type_path = str(path_l5kit / "dataset_metadata/validate_turns_metadata.csv")
+
 dm = LocalDataManager(None)
 # get config
-cfg = load_config_data("./drivenet_config.yaml")
+cfg = load_config_data(str(path_dro / "drivenet_config.yaml"))
 
 # Logging and Saving
 output_name = cfg["train_params"]["output_name"]
-save_path = pathlib.Path("./checkpoints/")
+save_path = path_dro / "checkpoints"
 save_path.mkdir(parents=True, exist_ok=True)
-logger = utils.configure_logger(0, "./drivenet_logs/", output_name, True)
+logger = utils.configure_logger(0, str(path_dro / "drivenet_logs"), output_name, True)
 
 seed = cfg['train_params']['seed']
 torch.manual_seed(seed)
@@ -185,20 +204,20 @@ for epoch in range(train_cfg['epochs']):
     # Checkpoint
     if (epoch + 1) % cfg["train_params"]["checkpoint_every_n_epochs"] == 0:
         to_save = torch.jit.script(model.cpu())
-        path_to_save = f"./checkpoints/{output_name}_{total_steps}_steps.pt"
+        path_to_save = str(save_path / f"{output_name}_{total_steps}_steps.pt")
         to_save.save(path_to_save)
         model = model.to(device)
 
 print("Time: ", time.time() - start)
 
 # Final Eval
-eval_model(model, train_eval_dataset, logger, "train", total_steps, num_scenes_to_unroll,
-           enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_path)
-eval_model(model, eval_dataset, logger, "eval", total_steps, num_scenes_to_unroll,
+# eval_model(model, train_eval_dataset, logger, "train", total_steps, num_scenes_to_unroll,
+#            enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_path)
+eval_model(model, eval_dataset, logger, "eval", total_steps, num_scenes_to_unroll=4000,
            enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_path)
 
 # Final Checkpoint
 to_save = torch.jit.script(model.cpu())
-path_to_save = f"./checkpoints/{output_name}_{total_steps}_steps.pt"
+path_to_save = str(save_path / f"{output_name}_{total_steps}_steps.pt")
 to_save.save(path_to_save)
 model = model.to(device)
