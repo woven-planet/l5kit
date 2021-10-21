@@ -50,6 +50,11 @@ class RasterizedPlanningModel(nn.Module):
             )
         self.dro_loss_computer = dro_loss_computer
 
+    @torch.jit.unused
+    def dro_loss(self, loss, group_idx):
+        loss = self.dro_loss_computer.loss(loss, group_idx)
+        return loss
+
     def forward(self, data_batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         # [batch_size, channels, height, width]
         image_batch = data_batch["image"]
@@ -76,7 +81,7 @@ class RasterizedPlanningModel(nn.Module):
 
             # DRO Group Index
             if "group_index" in data_batch:
-                loss = self.dro_loss_computer.loss(loss, data_batch["group_index"])
+                loss = self.dro_loss(loss, data_batch["group_index"])
             else:
                 loss = torch.mean(loss)
             train_dict = {"loss": loss}
