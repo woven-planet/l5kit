@@ -72,9 +72,10 @@ train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
 train_dataset_original = EgoDataset(cfg, train_zarr, rasterizer, perturbation)
 cumulative_sizes = train_dataset_original.cumulative_sizes
 
-if "SCENE_ID_TO_TYPE" not in os.environ:
-    raise KeyError("SCENE_ID_TO_TYPE environment variable not set")
-scene_id_to_type_mapping_file = os.environ["SCENE_ID_TO_TYPE"]
+# if "SCENE_ID_TO_TYPE" not in os.environ:
+#     raise KeyError("SCENE_ID_TO_TYPE environment variable not set")
+# scene_id_to_type_mapping_file = os.environ["SCENE_ID_TO_TYPE"]
+scene_id_to_type_mapping_file = str(path_l5kit / "dataset_metadata/train_turns_metadata.csv")
 scene_type_to_id_dict = get_scene_types_as_dict(scene_id_to_type_mapping_file)
 scene_id_to_type_list = get_scene_types(scene_id_to_type_mapping_file)
 num_groups = len(scene_type_to_id_dict)
