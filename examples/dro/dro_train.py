@@ -50,9 +50,15 @@ cfg = load_config_data(str(path_dro / "drivenet_config.yaml"))
 
 # Logging and Saving
 output_name = cfg["train_params"]["output_name"]
-save_path = path_dro / "checkpoints"
+if cfg["train_params"]["save_relative"]:
+    save_path = path_dro / "checkpoints"
+else:
+    save_path = "/opt/ml/checkpoints/checkpoints/"
 save_path.mkdir(parents=True, exist_ok=True)
-logger = utils.configure_logger(0, str(path_dro / "drivenet_logs"), output_name, True)
+if cfg["train_params"]["log_relative"]:
+    logger = utils.configure_logger(0, str(path_dro / "drivenet_logs"), output_name, True)
+else:
+    logger = utils.configure_logger(0, "/opt/ml/checkpoints/drivenet_logs", output_name, True)
 
 seed = cfg['train_params']['seed']
 torch.manual_seed(seed)
