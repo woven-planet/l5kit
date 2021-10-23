@@ -10,6 +10,7 @@ from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
 from l5kit.rasterization import build_rasterizer
 from stable_baselines3.common import utils
+import torch
 
 dm = LocalDataManager(None)
 # get config
