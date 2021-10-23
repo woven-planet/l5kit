@@ -1,6 +1,8 @@
 # Example Evaluation
+
+from drivenet_eval import eval_model
 # Give model path and make sure config.yaml respects the model
-model_path = "./checkpoints/dn_h0_p05_1999999_steps.pt"
+model_path = "./checkpoints/drivenet_h0_p05_onecycle_schedule_step5_vrex_50epochs_1262400_steps.pt"
 scene_id_to_type_path = '../../dataset_metadata/validate_turns_metadata.csv'
 
 from l5kit.configs import load_config_data
@@ -30,6 +32,6 @@ model = model.eval()
 import time
 st = time.time()
 # eval_model(model, eval_dataset, logger, "eval", 2000000, num_scenes_to_unroll, num_simulation_steps=None)
-eval_model(model, eval_dataset, logger, "eval", 2000000, num_scenes_to_unroll, num_simulation_steps=None,
+eval_model(model, eval_dataset, logger, "eval", 2000000, num_scenes_to_unroll=4000, num_simulation_steps=None,
            enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_path)
 print("Time: ", time.time() - st)
