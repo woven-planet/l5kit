@@ -53,7 +53,7 @@ output_name = cfg["train_params"]["output_name"]
 if cfg["train_params"]["save_relative"]:
     save_path = path_dro / "checkpoints"
 else:
-    save_path = "/opt/ml/checkpoints/checkpoints/"
+    save_path = Path("/opt/ml/checkpoints/checkpoints/")
 save_path.mkdir(parents=True, exist_ok=True)
 if cfg["train_params"]["log_relative"]:
     logger = utils.configure_logger(0, str(path_dro / "drivenet_logs"), output_name, True)
