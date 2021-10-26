@@ -8,28 +8,46 @@ from .model import RasterizedPlanningModel
 
 
 class RasterizedMultiModalPlanningModel(RasterizedPlanningModel):
-    """Raster-based multimodal model for planning.
-    """
+    """Raster-based multimodal planning model."""
+
     def __init__(
         self,
         model_arch: str,
         num_input_channels: int,
         future_num_frames: int,
         num_outputs: int,
+        num_modes: int,
         weights_scaling: List[float],
         criterion: nn.Module,
-        num_modes: int,
         pretrained: bool = True,
-        coef_ce: float = 0.5,
+        coef_alpha: float = 0.5,
     ) -> None:
+        """Initializes the multimodal planning model.
+
+        :param model_arch: model architecture to use
+        :param num_input_channels: number of input channels in raster
+        :param future_num_frames: number of future frames to predict
+        :param num_outputs: number of output dimensions, by default is 3: x, y, heading
+        :param num_modes: number of modes in predicted outputs
+        :param weights_scaling: target weights for loss calculation
+        :param criterion: loss function to use
+        :param pretrained: whether to use pretrained weights
+        :param coef_alpha: hyper-parameter used to trade-off between trajectory distance loss and classification
+        cross-entropy loss
+        """
         num_targets = (future_num_frames * num_outputs + 1) * num_modes
         super().__init__(
-            model_arch, num_input_channels, num_targets, weights_scaling, criterion, pretrained
+            model_arch,
+            num_input_channels,
+            num_targets,
+            weights_scaling,
+            criterion,
+            pretrained,
         )
         self.num_modes = num_modes
         self.num_timestamps = future_num_frames
         self.num_outputs = num_outputs
-        self.coef_ce = coef_ce
+        self.coef_alpha = coef_alpha
 
     def forward(self, data_batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
         # [batch_size, channels, height, width]
@@ -49,7 +67,9 @@ class RasterizedMultiModalPlanningModel(RasterizedPlanningModel):
                 raise NotImplementedError("Loss function is undefined.")
 
             # [batch_size, num_timestamps * num_modes, num_outputs]
-            outputs = outputs.view(batch_size, self.num_timestamps * self.num_modes, self.num_outputs)
+            outputs = outputs.view(
+                batch_size, self.num_timestamps * self.num_modes, self.num_outputs
+            )
 
             # [batch_size, num_timestamps, 2]
             xy = data_batch["target_positions"]
@@ -74,7 +94,7 @@ class RasterizedMultiModalPlanningModel(RasterizedPlanningModel):
             loss_dist = cost_dist[torch.arange(batch_size, device=outputs.device), assignment].mean()
             # [1]
             loss_nll = F.cross_entropy(outputs_nll, assignment)
-            return {"loss": loss_dist + self.coef_ce * loss_nll}
+            return {"loss": loss_dist + self.coef_alpha * loss_nll}
         else:
             outputs = outputs.view(batch_size, self.num_modes, self.num_timestamps, self.num_outputs)
             outputs_selected = outputs[torch.arange(batch_size, device=outputs.device), outputs_nll.argmax(-1)]
