@@ -7,11 +7,14 @@ import torch.nn.functional as F
 from .model import RasterizedPlanningModel
 
 
-class MultiModalPlanningModel(RasterizedPlanningModel):
+class RasterizedMultiModalPlanningModel(RasterizedPlanningModel):
+    """Raster-based multimodal model for planning.
+    """
     def __init__(
         self,
         model_arch: str,
-        num_timestamps: int,
+        num_input_channels: int,
+        future_num_frames: int,
         num_outputs: int,
         weights_scaling: List[float],
         criterion: nn.Module,
@@ -19,12 +22,12 @@ class MultiModalPlanningModel(RasterizedPlanningModel):
         pretrained: bool = True,
         coef_ce: float = 0.5,
     ) -> None:
-        num_targets = (num_timestamps * num_outputs + 1) * num_modes
+        num_targets = (future_num_frames * num_outputs + 1) * num_modes
         super().__init__(
-            model_arch, num_targets, weights_scaling, criterion, pretrained
+            model_arch, num_input_channels, num_targets, weights_scaling, criterion, pretrained
         )
         self.num_modes = num_modes
-        self.num_timestamps = num_timestamps
+        self.num_timestamps = future_num_frames
         self.num_outputs = num_outputs
         self.coef_ce = coef_ce
 
