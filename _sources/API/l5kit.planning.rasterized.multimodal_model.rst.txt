@@ -1,0 +1,7 @@
+l5kit.planning.rasterized.multimodal\_model module
+==================================================
+
+.. automodule:: l5kit.planning.rasterized.multimodal_model
+   :members:
+   :undoc-members:
+   :show-inheritance:

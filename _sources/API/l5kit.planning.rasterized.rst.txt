@@ -13,3 +13,4 @@ Submodules
    :maxdepth: 4
 
    l5kit.planning.rasterized.model
+   l5kit.planning.rasterized.multimodal_model
