@@ -4,10 +4,10 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
-from .model import PlanningModel
+from .model import RasterizedPlanningModel
 
 
-class MultiModalPlanningModel(PlanningModel):
+class MultiModalPlanningModel(RasterizedPlanningModel):
     def __init__(
         self,
         model_arch: str,
