@@ -14,8 +14,6 @@ def get_sample_weights(scene_type_to_id: Dict[str, List[int]], cumulative_sizes:
     :param scene_type_to_id: a dict mapping scene types to their corresponding ids
     :param cumulative_sizes: List of frame demarcations of the dataset
     """
-
-
     # Determine Group Statistics and Weights
     num_groups = len(scene_type_to_id.keys())
     group_count = {k: len(v) for k, v in scene_type_to_id.items()}
@@ -84,3 +82,37 @@ def append_group_index(data_batch: Dict[str, torch.Tensor], group_str: List[str]
     group_index = [group_str.index(scene_id_to_type_list[scene_id][0]) for scene_id in data_batch['scene_index']]
     data_batch["group_index"] = torch.IntTensor(group_index)
     return data_batch
+
+
+def append_group_index_cluster(data_batch: Dict[str, torch.Tensor],
+                               cluster_means: np.ndarray) -> Dict[str, torch.Tensor]:
+    """Determine reward scaling for each sample based on the cluster group the sample belongs to.
+
+    :param data_batch: the current data batch
+    :param cluster_means: the cluster means
+    :return: The updated data_batch with "reward_scaling" key
+    """
+    target_positions = data_batch["target_positions"]
+    batch_size = len(target_positions)
+    num_cluster = len(cluster_means)
+    distance_cluster = target_positions.unsqueeze(1) - cluster_means
+    distance_cluster = distance_cluster.view(batch_size, num_cluster, -1)
+    distance_cluster = torch.norm(distance_cluster, dim=-1)
+    group_index = torch.argmin(distance_cluster, dim=1)
+    data_batch["group_index"] = torch.LongTensor(group_index)
+    return data_batch
+
+
+def get_sample_weights_clusters(cluster_sample_wt: np.ndarray,
+                                ratio: float, step: int) -> List[float]:
+    """This Sampler first uniformly selects a group-type and then randomly samples a
+    frame belonging to that group.
+
+    :param scene_type_to_id: a dict mapping scene types to their corresponding ids
+    :param cumulative_sizes: List of frame demarcations of the dataset
+    """
+
+    # Filter according to ratio and step
+    frames_to_use = range(0, int(ratio * len(cluster_sample_wt)), step)
+    sample_weights_filtered = [cluster_sample_wt[f] for f in frames_to_use]
+    return sample_weights_filtered
