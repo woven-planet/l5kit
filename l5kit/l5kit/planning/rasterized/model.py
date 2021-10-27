@@ -9,18 +9,26 @@ from l5kit.environment import models
 
 
 class RasterizedPlanningModel(nn.Module):
-    """Raster-based model for planning.
-    """
+    """Raster-based planning model."""
 
     def __init__(
-            self,
-            model_arch: str,
-            num_input_channels: int,
-            num_targets: int,
-            weights_scaling: List[float],
-            criterion: nn.Module,
-            pretrained: bool = True,
+        self,
+        model_arch: str,
+        num_input_channels: int,
+        num_targets: int,
+        weights_scaling: List[float],
+        criterion: nn.Module,
+        pretrained: bool = True,
     ) -> None:
+        """Initializes the planning model.
+
+        :param model_arch: model architecture to use
+        :param num_input_channels: number of input channels in raster
+        :param num_targets: number of output targets
+        :param weights_scaling: target weights for loss calculation
+        :param criterion: loss function to use
+        :param pretrained: whether to use pretrained weights
+        """
         super().__init__()
         self.model_arch = model_arch
         self.num_input_channels = num_input_channels
@@ -45,7 +53,12 @@ class RasterizedPlanningModel(nn.Module):
 
         if model_arch in {"resnet18", "resnet50"} and self.num_input_channels != 3:
             self.model.conv1 = nn.Conv2d(
-                self.num_input_channels, 64, kernel_size=(7, 7), stride=(2, 2), padding=(3, 3), bias=False
+                in_channels=self.num_input_channels,
+                out_channels=64,
+                kernel_size=(7, 7),
+                stride=(2, 2),
+                padding=(3, 3),
+                bias=False,
             )
 
     def forward(self, data_batch: Dict[str, torch.Tensor]) -> Dict[str, torch.Tensor]:
