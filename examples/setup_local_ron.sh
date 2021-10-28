@@ -2,7 +2,7 @@
 
 # Make a temporary download folder
 TEMP_DOWNLOAD_DIR=$(mktemp -d)
-DATASET_DIR=~/prediction-dataset
+DATASET_DIR=~/l5kit_data
 
 # Download sample zarr
 echo "Downloading sample zarr dataset..."
