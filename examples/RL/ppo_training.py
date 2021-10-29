@@ -27,6 +27,10 @@ if __name__ == "__main__":
                         help='File name for saving model states')
     parser.add_argument('--load', type=str,
                         help='Path to load model and continue training')
+    parser.add_argument('--simnet', action='store_true',
+                        help='Use simnet to control agents')
+    parser.add_argument('--simnet_model_path', default=None, type=str,
+                        help='Path to simnet model that controls agents')
     parser.add_argument('--tb_log', default=None, type=str,
                         help='Tensorboard log folder')
     parser.add_argument('--save_path', default='./logs/', type=str,
@@ -78,11 +82,16 @@ if __name__ == "__main__":
     parser.add_argument('--seed', default=42, type=int)
     args = parser.parse_args()
 
+    # Simnet model
+    if args.simnet and (args.simnet_model_path is None):
+        raise ValueError("simnet_model_path needs to be provided when using simnet")
+
     # make train env
     train_sim_cfg = SimulationConfigGym()
     train_sim_cfg.num_simulation_steps = args.eps_length + 1
+    train_sim_cfg.use_agents_gt = (not args.simnet)
     env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'train': True,
-                  'sim_cfg': train_sim_cfg}
+                  'sim_cfg': train_sim_cfg, 'simnet_model_path': args.simnet_model_path}
     env = make_vec_env("L5-CLE-v0", env_kwargs=env_kwargs, n_envs=args.n_envs,
                        vec_env_cls=SubprocVecEnv, vec_env_kwargs={"start_method": "fork"})
 
@@ -105,8 +114,9 @@ if __name__ == "__main__":
     # make eval env
     eval_sim_cfg = SimulationConfigGym()
     eval_sim_cfg.num_simulation_steps = None
+    eval_sim_cfg.use_agents_gt = (not args.simnet)
     eval_env_kwargs = {'env_config_path': args.config, 'use_kinematic': args.kinematic, 'return_info': True,
-                       'train': False, 'sim_cfg': eval_sim_cfg}
+                       'train': False, 'sim_cfg': eval_sim_cfg, 'simnet_model_path': args.simnet_model_path}
     eval_env = make_vec_env("L5-CLE-v0", env_kwargs=eval_env_kwargs, n_envs=args.n_eval_envs,
                             vec_env_cls=SubprocVecEnv, vec_env_kwargs={"start_method": "fork"})
 
