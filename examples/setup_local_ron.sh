@@ -26,7 +26,7 @@ wget https://lyft-l5-datasets-public.s3-us-west-2.amazonaws.com/prediction/v1.1/
     -q --show-progress -P $TEMP_DOWNLOAD_DIR
 tar xf $TEMP_DOWNLOAD_DIR/aerial_map.tar -C $DATASET_DIR
 
-# Dowload sample configuration
+# Download sample configuration
 wget https://raw.githubusercontent.com/lyft/l5kit/master/examples/visualisation/visualisation_config.yaml -q
 wget https://raw.githubusercontent.com/lyft/l5kit/master/examples/RL/gym_config.yaml -q
 
