@@ -12,12 +12,11 @@ isort = "*"
 sphinx = "*"
 recommonmark = "*"
 pre-commit = "*"
-importlib-metadata = "*"  # required for python 3.8
+importlib-metadata = "*"
 typing-extensions = "*"
 types-pyyaml = "*"
 
 [packages]
-l5kit = {editable = true, path = "."}
 zarr = "*"
 numpy = "*"
 opencv-contrib-python-headless = "*"
@@ -38,4 +37,12 @@ shapely = "*"
 bokeh = "*"
 sphinx-press-theme = "*"
 types-pyyaml = "*"
-stable-baselines3 = {extras = ["extra"], version = "*"}
+jupyterlab = "*"
+
+[packages.l5kit]
+editable = true
+path = "."
+
+[packages.stable-baselines3]
+extras = [ "extra",]
+version = "*"
