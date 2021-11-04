@@ -272,6 +272,7 @@ class L5Env(gym.Env):
             agents_input = self.sim_dataset.rasterise_agents_frame_batch(frame_index)
             if len(agents_input):  # agents may not be available
                 agents_input_dict = default_collate(list(agents_input.values()))
+                agents_input_dict['image'] = agents_input_dict['image'].index_select(1, torch.tensor([0, 4, 8, 9, 10]))
                 with torch.no_grad():
                     agents_output_dict = self.simulator.model_agents(move_to_device(agents_input_dict, self.device))
 
