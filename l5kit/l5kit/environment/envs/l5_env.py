@@ -25,7 +25,7 @@ from l5kit.simulation.unroll import (ClosedLoopSimulator, ClosedLoopSimulatorMod
 #: Maximum acceleration magnitude for kinematic model
 MAX_ACC = 6
 #: Maximum steer magnitude for kinematic model
-MAX_STEER = math.radians(45)
+MAX_STEER = math.radians(60)
 
 
 @dataclass
