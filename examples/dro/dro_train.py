@@ -43,7 +43,17 @@ path_l5kit = Path(__file__).parents[2]
 path_examples = Path(__file__).parents[1]
 path_dro = Path(__file__).parent
 
-scene_id_to_type_path = str(path_l5kit / "dataset_metadata/validate_turns_metadata.csv")
+dm = LocalDataManager(None)
+# get config
+cfg = load_config_data(str(path_dro / "drivenet_config.yaml"))
+
+# Get Groups
+scene_id_to_type_val_path = str(path_l5kit / "dataset_metadata/validate_turns_metadata.csv")
+if cfg["train_data_loader"]["group_type"] == 'turns':
+    scene_id_to_type_mapping_file = str(path_l5kit / "dataset_metadata/train_turns_metadata.csv")
+elif cfg["train_data_loader"]["group_type"] == 'missions':
+    scene_id_to_type_mapping_file = str(path_l5kit / "dataset_metadata/train_missions.csv")
+
 cluster_mean_path = str(path_l5kit / "dataset_metadata/cluster_means.npy")
 
 # Cluster centers
@@ -51,10 +61,6 @@ with open(cluster_mean_path, 'rb') as f:
     cluster_mean = np.load(f)
     cluster_count = np.load(f)
     cluster_sample_wt = np.load(f)
-
-dm = LocalDataManager(None)
-# get config
-cfg = load_config_data(str(path_dro / "drivenet_config.yaml"))
 
 # Logging and Saving
 output_name = cfg["train_params"]["output_name"]
@@ -86,10 +92,6 @@ train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
 train_dataset_original = EgoDataset(cfg, train_zarr, rasterizer, perturbation)
 cumulative_sizes = train_dataset_original.cumulative_sizes
 
-# if "SCENE_ID_TO_TYPE" not in os.environ:
-#     raise KeyError("SCENE_ID_TO_TYPE environment variable not set")
-# scene_id_to_type_mapping_file = os.environ["SCENE_ID_TO_TYPE"]
-scene_id_to_type_mapping_file = str(path_l5kit / "dataset_metadata/train_turns_metadata.csv")
 scene_type_to_id_dict = get_scene_types_as_dict(scene_id_to_type_mapping_file)
 scene_id_to_type_list = get_scene_types(scene_id_to_type_mapping_file)
 num_groups = len(scene_type_to_id_dict)
@@ -128,7 +130,7 @@ elif train_scheme == 'vrex':
 
 # Planning Model
 model = RasterizedPlanningModel(
-    model_arch="simple_cnn",
+    model_arch=cfg["model_params"]["model_architecture"],
     num_input_channels=rasterizer.num_channels(),
     num_targets=3 * cfg["model_params"]["future_num_frames"],  # X, Y, Yaw * number of future states
     weights_scaling=[1., 1., 1.],
@@ -145,6 +147,8 @@ if train_scheme in {'weighted_sampling', 'group_dro', 'vrex'}:
         sample_weights = get_sample_weights(scene_type_to_id_dict, cumulative_sizes, ratio=train_cfg['ratio'], step=train_cfg['step'])
     elif group_type == 'clusters':
         sample_weights = get_sample_weights_clusters(cluster_sample_wt, ratio=train_cfg['ratio'], step=train_cfg['step'])
+    elif group_type == 'missions':
+        sample_weights = get_sample_weights(scene_type_to_id_dict, cumulative_sizes, ratio=train_cfg['ratio'], step=train_cfg['step'])
     sampler = torch.utils.data.WeightedRandomSampler(sample_weights, len(train_dataset))
     train_cfg["shuffle"] = False
 
@@ -190,14 +194,15 @@ import time
 start = time.time()
 total_steps = 0
 for epoch in range(train_cfg['epochs']):
-    for data in tqdm(train_dataloader):
+    # for data in tqdm(train_dataloader):
+    for data in train_dataloader:
         total_steps += 1
         # Append Reward scaling
         if train_scheme == 'weighted_reward':
             data = append_reward_scaling(data, reward_scale, scene_id_to_type_list)
 
-        # Append Group Index (for turns)
-        if train_scheme in {'group_dro', 'vrex'} and group_type == 'turns':
+        # Append Group Index (for turns & missions)
+        if train_scheme in {'group_dro', 'vrex'} and group_type in {'turns', 'missions'}:
             data = append_group_index(data, group_str, scene_id_to_type_list)
 
         # Append Group Index (for clusters)
@@ -223,9 +228,9 @@ for epoch in range(train_cfg['epochs']):
     if (epoch + 1) % cfg["train_params"]["eval_every_n_epochs"] == 0:
         print("Evaluating............................................")
         # eval_model(model, train_eval_dataset, logger, "train", total_steps, num_scenes_to_unroll,
-        #            enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_path)
+        #            enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_val_path)
         eval_model(model, eval_dataset, logger, "eval", total_steps, num_scenes_to_unroll,
-                   enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_path)
+                   enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_val_path)
         model.train()
 
     # Checkpoint
@@ -240,9 +245,9 @@ print("Time: ", time.time() - start)
 
 # Final Eval
 # eval_model(model, train_eval_dataset, logger, "train", total_steps, num_scenes_to_unroll,
-#            enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_path)
+#            enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_val_path)
 eval_model(model, eval_dataset, logger, "eval", total_steps, num_scenes_to_unroll=4000,
-           enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_path)
+           enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_val_path)
 
 # Final Checkpoint
 to_save = torch.jit.script(model.cpu())

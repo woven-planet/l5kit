@@ -65,7 +65,7 @@ class LossComputer(nn.Module):
         self.adv_probs = self.adv_probs * torch.exp(self.step_size*adjusted_loss.data)
         self.adv_probs = self.adv_probs/(self.adv_probs.sum())
 
-        self.log_group_weights(group_loss, group_count)
+        # self.log_group_weights(group_loss, group_count)
         robust_loss = group_loss @ self.adv_probs
         return robust_loss, self.adv_probs
 

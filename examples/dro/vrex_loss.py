@@ -31,7 +31,7 @@ class VRexLossComputer(nn.Module):
             loss += self.penalty_weight * rex_penalty
 
         # log
-        self.log_group_weights(group_loss, group_count, rex_penalty, erm_loss)
+        # self.log_group_weights(group_loss, group_count, rex_penalty, erm_loss)
 
         return loss
 
