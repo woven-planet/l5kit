@@ -18,8 +18,14 @@ def get_sample_weights(scene_type_to_id: Dict[str, List[int]], cumulative_sizes:
     num_groups = len(scene_type_to_id.keys())
     group_count = {k: len(v) for k, v in scene_type_to_id.items()}
     total_scenes = sum(group_count.values())
+
     group_weight: Dict[str, float] = {}
     group_weight = {k: (total_scenes / v) for k, v in group_count.items() if v > 0}
+    # for k, v in group_count.items():
+    #     if v <= 100:
+    #         group_weight[k] = 0
+    #     else:
+    #         group_weight[k] = total_scenes / v
 
     # Loop over scenes
     total_frames = cumulative_sizes[-1]

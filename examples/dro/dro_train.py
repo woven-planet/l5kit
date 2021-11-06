@@ -236,9 +236,11 @@ for epoch in range(train_cfg['epochs']):
     # Checkpoint
     if (epoch + 1) % cfg["train_params"]["checkpoint_every_n_epochs"] == 0:
         print("Saving............................................")
-        to_save = torch.jit.script(model.cpu())
-        path_to_save = str(save_path / f"{output_name}_{total_steps}_steps.pt")
-        to_save.save(path_to_save)
+        # to_save = torch.jit.script(model.cpu())
+        # path_to_save = str(save_path / f"{output_name}_{total_steps}_steps.pt")
+        # to_save.save(path_to_save)
+        path_to_save = str(save_path / f"{output_name}_{total_steps}_steps.pth")
+        torch.save(model.cpu(), path_to_save)
         model = model.to(device)
 
 print("Time: ", time.time() - start)
@@ -250,7 +252,10 @@ eval_model(model, eval_dataset, logger, "eval", total_steps, num_scenes_to_unrol
            enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_val_path)
 
 # Final Checkpoint
-to_save = torch.jit.script(model.cpu())
-path_to_save = str(save_path / f"{output_name}_{total_steps}_steps.pt")
-to_save.save(path_to_save)
+# to_save = torch.jit.script(model.cpu())
+# path_to_save = str(save_path / f"{output_name}_{total_steps}_steps.pt")
+# to_save.save(path_to_save)
+# model = model.to(device)
+path_to_save = str(save_path / f"{output_name}_{total_steps}_steps.pth")
+torch.save(model.cpu(), path_to_save)
 model = model.to(device)
