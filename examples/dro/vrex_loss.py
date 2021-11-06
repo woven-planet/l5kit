@@ -21,8 +21,10 @@ class VRexLossComputer(nn.Module):
         per_sample_losses = per_sample_losses.mean(dim=1)
         # compute per-group losses
         group_loss, group_count = self.compute_group_avg(per_sample_losses, group_idx)
+        group_loss = group_loss[group_loss.nonzero(as_tuple=True)]
+        n_groups = len(group_loss)
         # Variance
-        rex_penalty = torch.sum((group_loss - group_loss.unsqueeze(1))**2) / (self.n_groups ** 2)
+        rex_penalty = torch.sum((group_loss - group_loss.unsqueeze(1))**2) / (n_groups ** 2)
 
         # compute overall loss
         erm_loss = per_sample_losses.mean()
