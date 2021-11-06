@@ -119,7 +119,7 @@ group_type = train_cfg["group_type"]
 # max_scene_id = train_cfg["max_scene_id"]
 num_epochs = train_cfg["epochs"]
 
-dro_loss_computer = None
+dro_loss_computer = torch.nn.Sequential()
 if train_scheme == 'group_dro':
     dro_loss_computer = LossComputer(num_groups, group_counts, group_str, device, logger,
                                      step_size=train_cfg["dro_step_size"],

@@ -19,9 +19,8 @@ class RasterizedPlanningModel(nn.Module):
             num_targets: int,
             weights_scaling: List[float],
             criterion: nn.Module,
-            pretrained: bool = True,
-            dro_loss_computer = None
-    ) -> None:
+            dro_loss_computer: nn.Module,
+            pretrained: bool = True) -> None:
         super().__init__()
         self.model_arch = model_arch
         self.num_input_channels = num_input_channels

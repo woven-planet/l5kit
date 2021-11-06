@@ -13,7 +13,7 @@ class VRexLossComputer(nn.Module):
         self.group_frac = self.group_counts/self.group_counts.sum()
         self.group_str = group_str
         self.device = device
-        self.logger = logger
+        # self.logger = logger
         self.time_steps = 0
         self.penalty_weight = penalty_weight
 

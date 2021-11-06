@@ -34,7 +34,7 @@ class LossComputer(nn.Module):
         self.exp_avg_initialized = torch.zeros(self.n_groups).byte().to(device)
 
         self.device = device
-        self.logger = logger
+        # self.logger = logger
         self.time_steps = 0
 
     def loss(self, per_sample_losses, group_idx):
