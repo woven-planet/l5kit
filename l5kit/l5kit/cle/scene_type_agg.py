@@ -74,4 +74,8 @@ def compute_scene_type_ade_fde(mset: L5MetricSet,
     for key, value in scene_type_results.items():
         scene_type_agg_results[key] = sum(value) / len(value)
 
+    worst_scene_type = max(scene_type_agg_results, key= lambda x: scene_type_agg_results[x])
+    worst_scene_type = worst_scene_type.split('/')[-1]
+    scene_type_agg_results['fde/worst_group'] = scene_type_agg_results[f'fde/{worst_scene_type}']
+    scene_type_agg_results['ade/worst_group'] = scene_type_agg_results[f'ade/{worst_scene_type}']
     return scene_type_agg_results
