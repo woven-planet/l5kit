@@ -14,6 +14,7 @@ from l5kit.environment.callbacks import L5KitEvalCallback
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
 # Please set the L5KIT_DATA_FOLDER environment variable
+os.environ["L5KIT_DATA_FOLDER"] = open("../dataset_dir.txt", "r").read().strip()
 if "L5KIT_DATA_FOLDER" not in os.environ:
     raise KeyError("L5KIT_DATA_FOLDER environment variable not set")
 
