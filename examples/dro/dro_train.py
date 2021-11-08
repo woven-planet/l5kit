@@ -25,7 +25,7 @@ from tqdm import tqdm
 
 from drivenet_eval import eval_model
 from dro_utils import (append_group_index, append_group_index_cluster, append_reward_scaling,
-                       get_sample_weights, get_sample_weights_clusters, subset_and_subsample)
+                       get_sample_weights, get_sample_weights_clusters, GroupBatchSampler, subset_and_subsample)
 from group_dro_loss import LossComputer
 from vrex_loss import VRexLossComputer
 
@@ -48,7 +48,9 @@ dm = LocalDataManager(None)
 cfg = load_config_data(str(path_dro / "drivenet_config.yaml"))
 
 # Get Groups
-scene_id_to_type_val_path = str(path_l5kit / "dataset_metadata/validate_turns_metadata.csv")
+# scene_id_to_type_val_path = str(path_l5kit / "dataset_metadata/validate_turns_metadata.csv")
+scene_id_to_type_val_path = str(path_l5kit / "dataset_metadata/val_missions.csv")
+
 if cfg["train_data_loader"]["group_type"] == 'turns':
     scene_id_to_type_mapping_file = str(path_l5kit / "dataset_metadata/train_turns_metadata.csv")
 elif cfg["train_data_loader"]["group_type"] == 'missions':
@@ -124,7 +126,7 @@ if train_scheme == 'group_dro':
     dro_loss_computer = LossComputer(num_groups, group_counts, group_str, device, logger,
                                      step_size=train_cfg["dro_step_size"],
                                      normalize_loss=train_cfg["dro_normalize"])
-elif train_scheme == 'vrex':
+elif train_scheme in {'vrex', 'vrex_batch'}:
     dro_loss_computer = VRexLossComputer(num_groups, group_counts, group_str, device, logger,
                                          penalty_weight=train_cfg["vrex_penalty"])
 
@@ -152,6 +154,11 @@ if train_scheme in {'weighted_sampling', 'group_dro', 'vrex'}:
     sampler = torch.utils.data.WeightedRandomSampler(sample_weights, len(train_dataset))
     train_cfg["shuffle"] = False
 
+elif train_scheme in {'vrex_batch'}:
+    sampler = torch.utils.data.RandomSampler(torch.ones(len(scene_type_to_id_dict)), num_samples=len(train_dataset) // 8, replacement=True)
+    group_batch_sampler = GroupBatchSampler(sampler, train_cfg["batch_size"], drop_last=True, scene_type_to_id=scene_type_to_id_dict,
+                                            cumulative_sizes=cumulative_sizes, step=train_cfg['step'])
+
 # Reproducibility of Dataloader
 def seed_worker(worker_id):
     worker_seed = torch.initial_seed() % 2**32
@@ -160,9 +167,15 @@ def seed_worker(worker_id):
 
 g = torch.Generator()
 g.manual_seed(seed)
-train_dataloader = DataLoader(train_dataset, shuffle=train_cfg["shuffle"], batch_size=train_cfg["batch_size"],
-                              num_workers=train_cfg["num_workers"], sampler=sampler, worker_init_fn=seed_worker,
-                              generator=g)
+
+if train_scheme in {'vrex_batch'}:
+    train_dataloader = DataLoader(train_dataset, batch_sampler=group_batch_sampler,
+                                  num_workers=train_cfg["num_workers"], worker_init_fn=seed_worker,
+                                  generator=g)
+else:
+    train_dataloader = DataLoader(train_dataset, shuffle=train_cfg["shuffle"], batch_size=train_cfg["batch_size"],
+                                  num_workers=train_cfg["num_workers"], sampler=sampler, worker_init_fn=seed_worker,
+                                  generator=g)
 
 model = model.to(device)
 # optimizer = optim.SGD(
@@ -202,11 +215,11 @@ for epoch in range(train_cfg['epochs']):
             data = append_reward_scaling(data, reward_scale, scene_id_to_type_list)
 
         # Append Group Index (for turns & missions)
-        if train_scheme in {'group_dro', 'vrex'} and group_type in {'turns', 'missions'}:
+        if train_scheme in {'group_dro', 'vrex', 'vrex_batch'} and group_type in {'turns', 'missions'}:
             data = append_group_index(data, group_str, scene_id_to_type_list)
 
         # Append Group Index (for clusters)
-        if train_scheme in {'group_dro', 'vrex'} and group_type == 'clusters':
+        if train_scheme in {'group_dro', 'vrex', 'vrex_batch'} and group_type == 'clusters':
             data = append_group_index_cluster(data, cluster_mean)
 
         # Forward pass
@@ -248,7 +261,7 @@ print("Time: ", time.time() - start)
 # Final Eval
 # eval_model(model, train_eval_dataset, logger, "train", total_steps, num_scenes_to_unroll,
 #            enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_val_path)
-eval_model(model, eval_dataset, logger, "eval", total_steps, num_scenes_to_unroll=4000,
+eval_model(model, eval_dataset, logger, "eval", total_steps, num_scenes_to_unroll=16200,
            enable_scene_type_aggregation=True, scene_id_to_type_path=scene_id_to_type_val_path)
 
 # Final Checkpoint

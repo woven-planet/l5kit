@@ -1,10 +1,11 @@
-from typing import Dict, List
+from typing import Dict, Iterator, List
 
 import numpy as np
 import torch
 
 from l5kit.dataset import EgoDataset
-from torch.utils.data import Subset
+from torch.utils.data import Subset, BatchSampler, Sampler
+
 
 def get_sample_weights(scene_type_to_id: Dict[str, List[int]], cumulative_sizes: np.array,
                        ratio: float, step: int) -> List[float]:
@@ -122,3 +123,48 @@ def get_sample_weights_clusters(cluster_sample_wt: np.ndarray,
     frames_to_use = range(0, int(ratio * len(cluster_sample_wt)), step)
     sample_weights_filtered = [cluster_sample_wt[f] for f in frames_to_use]
     return sample_weights_filtered
+
+
+class GroupBatchSampler(BatchSampler):
+    def __init__(self, sampler: Sampler[int], batch_size: int, drop_last: bool,
+                 scene_type_to_id: Dict[str, List[int]], cumulative_sizes: np.array,
+                 step: int, group_size: int = 8) -> None:
+            super(GroupBatchSampler, self).__init__(sampler, batch_size, drop_last)
+            self.scene_type_to_id = scene_type_to_id
+            cumulative_sizes = np.insert(cumulative_sizes, 0, 0)
+            self.cumulative_sizes = torch.Tensor(cumulative_sizes).long()
+            self.step = step
+            self.group_size = group_size
+
+    def __iter__(self) -> Iterator[List[int]]:
+        batch = []
+        for idx in self.sampler:
+            list_indices = torch.randint(0, len(self.scene_type_to_id[str(idx)]), (self.group_size,))
+            for list_index in list_indices:
+                scene_index = self.scene_type_to_id[str(idx)][list_index]
+                # Start Frame
+                start_frame_index = self.cumulative_sizes[scene_index].item()
+                start_frame_index = self.step * (start_frame_index // self.step + 1)
+                # End Frame
+                end_frame_index = self.cumulative_sizes[scene_index + 1].item()
+                end_frame_index = self.step * (end_frame_index // self.step)
+                # Get Frame Index
+                frame_index = torch.randint(start_frame_index, end_frame_index, (1,)).item()
+                frame_index = frame_index // self.step
+                batch.append(frame_index)
+            if len(batch) == self.batch_size:
+                yield batch
+                batch = []
+        if len(batch) > 0 and not self.drop_last:
+            yield batch
+
+
+    def __len__(self) -> int:
+        # Can only be called if self.sampler has __len__ implemented
+        # We cannot enforce this condition, so we turn off typechecking for the
+        # implementation below.
+        # Somewhat related: see NOTE [ Lack of Default `__len__` in Python Abstract Base Classes ]
+        if self.drop_last:
+            return 8 * len(self.sampler) // self.batch_size  # type: ignore[arg-type]
+        else:
+            return 8 * (len(self.sampler) + self.batch_size - 1) // self.batch_size
