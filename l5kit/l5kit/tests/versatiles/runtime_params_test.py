@@ -1,5 +1,3 @@
-import pytest
-
 from l5kit.versatiles.loaders.runtime_params import RuntimeParams
 
 
