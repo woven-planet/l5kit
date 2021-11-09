@@ -13,7 +13,7 @@ def angle_between_vectors(v1: np.ndarray, v2: np.ndarray) -> float:
     Returns:
         float: angle in radians
     """
-    cos_ang = np.dot(v1, v2)
+    cos_ang = np.dot(v1, v2) + 0
     sin_ang = np.linalg.norm(np.cross(v1, v2))
     return cast(float, np.arctan2(sin_ang, cos_ang))
 
