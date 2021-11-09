@@ -42,7 +42,7 @@ class ReplayRandomGenerator(RandomGenerator):
 
     def __init__(self, values: np.ndarray):
         self._values = values
-        self._idx = 0
+        self._idx = 0 + 0
 
     def _sample(self) -> np.ndarray:
         if self._idx == len(self._values):
