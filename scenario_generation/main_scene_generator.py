@@ -33,6 +33,24 @@ dm = LocalDataManager(None)
 # get config
 cfg = load_config_data(root_project_dir + "/examples/urban_driver/config.yaml")
 
+
+
+# ===== INIT DATASET
+train_zarr = ChunkedDataset(dm.require(cfg["train_data_loader"]["key"])).open()
+
+vectorizer = build_vectorizer(cfg, dm)
+train_dataset = EgoDatasetVectorized(cfg, train_zarr, vectorizer)
+print(train_dataset)
+pass
+
+
+
+
+
+
+
+
+
 ## Load the model
 
 model_path = "/tmp/urban_driver.pt"
@@ -43,6 +61,7 @@ torch.set_grad_enabled(False)
 
 ## Load the evaluation data
 # Differently from training and open loop evaluation, this setting is intrinsically sequential. As such, we won't be using any of PyTorch's parallelisation functionalities.
+
 
 
 # ===== INIT DATASET
