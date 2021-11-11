@@ -1,8 +1,9 @@
 from collections import defaultdict
-from typing import Any, DefaultDict, Dict, List, Set
+from typing import Any, DefaultDict, Dict, List, Set, Tuple
 
 import bokeh.io
 import bokeh.plotting
+import geckodriver_autoinstaller
 import numpy as np
 from bokeh.layouts import column, LayoutDOM
 from bokeh.models import CustomJS, HoverTool, Slider
@@ -12,11 +13,13 @@ from l5kit.visualization.visualizer.common import (AgentVisualization, CWVisuali
                                                    FrameVisualization, LaneVisualization, TrajectoryVisualization)
 
 
+geckodriver_autoinstaller.install()
+
+
 def _visualization_list_to_dict(visualisation_list: List[Any], null_el: Any) -> Dict[str, Any]:
     """Convert a list of NamedTuple into a dict, where:
     - the NamedTuple fields are the dict keys;
     - the dict value are lists;
-
     :param visualisation_list: a list of NamedTuple
     :param null_el: an element to be used as null if the list is empty (it can crash visualisation)
     :return: a dict with the same information
@@ -35,7 +38,6 @@ def _visualization_list_to_dict(visualisation_list: List[Any], null_el: Any) -> 
 
 def visualize(scene_index: int, frames: List[FrameVisualization]) -> LayoutDOM:
     """Visualise a scene using Bokeh.
-
     :param scene_index: the index of the scene, used only as the title
     :param frames: a list of FrameVisualization objects (one per frame of the scene)
     """
@@ -109,13 +111,10 @@ def visualize(scene_index: int, frames: List[FrameVisualization]) -> LayoutDOM:
             sources["crosswalks"].data = frames[cb_obj.value]["crosswalks"].data;
             sources["agents"].data = frames[cb_obj.value]["agents"].data;
             sources["ego"].data = frames[cb_obj.value]["ego"].data;
-
             var center_x = frames[cb_obj.value]["ego"].data["center_x"][0];
             var center_y = frames[cb_obj.value]["ego"].data["center_y"][0];
-
             figure.x_range.setv({"start": center_x-50, "end": center_x+50})
             figure.y_range.setv({"start": center_y-50, "end": center_y+50})
-
             sources["lanes"].change.emit();
             sources["crosswalks"].change.emit();
             sources["agents"].change.emit();
@@ -141,3 +140,72 @@ def visualize(scene_index: int, frames: List[FrameVisualization]) -> LayoutDOM:
 
     layout = column(f, slider)
     return layout
+
+
+def visualize_gif(scene_index: int, frames: List[FrameVisualization],
+                  halfside: int = 50, resolution: Tuple[int, int] = (1024, 1024)) -> np.ndarray:
+    """Visualise a scene as GIF using Bokeh.
+    :param scene_index: the index of the scene, used only as the title
+    :param frames: a list of FrameVisualization objects (one per frame of the scene)
+    """
+
+    trajectories_labels = np.unique([traj.legend_label for frame in frames for traj in frame.trajectories])
+    frame_images: List[np.ndarray] = []
+
+    for frame_idx, frame in enumerate(frames):
+        # we need to ensure we have something otherwise js crashes
+        ego_dict = _visualization_list_to_dict([frame.ego], EgoVisualization(xs=np.empty(0), ys=np.empty(0),
+                                                                             color="black", center_x=0,
+                                                                             center_y=0))
+
+        agents_dict = _visualization_list_to_dict(frame.agents, AgentVisualization(xs=np.empty(0), ys=np.empty(0),
+                                                                                   color="black", track_id=-2,
+                                                                                   agent_type="", prob=0.))
+
+        lanes_dict = _visualization_list_to_dict(frame.lanes, LaneVisualization(xs=np.empty(0), ys=np.empty(0),
+                                                                                color="black"))
+
+        crosswalk_dict = _visualization_list_to_dict(frame.crosswalks, CWVisualization(xs=np.empty(0), ys=np.empty(0),
+                                                                                       color="black"))
+
+        # for trajectory we extract the labels so that we can show them in the legend
+        trajectory_dict: Dict[str, Dict[str, Any]] = {}
+        for trajectory_label in trajectories_labels:
+            trajectories = [el for el in frame.trajectories if el.legend_label == trajectory_label]
+            trajectory_dict[trajectory_label] = _visualization_list_to_dict(trajectories,
+                                                                            TrajectoryVisualization(xs=np.empty(0),
+                                                                                                    ys=np.empty(0),
+                                                                                                    color="black",
+                                                                                                    legend_label="none",
+                                                                                                    track_id=-2))
+
+        frame_dict = dict(ego=ColumnDataSource(ego_dict), agents=ColumnDataSource(agents_dict),
+                          lanes=ColumnDataSource(lanes_dict),
+                          crosswalks=ColumnDataSource(crosswalk_dict))
+        frame_dict.update({k: ColumnDataSource(v) for k, v in trajectory_dict.items()})
+
+        f = bokeh.plotting.figure(
+            title="Scene {}".format(scene_index),
+            match_aspect=True,
+            x_range=(frame_dict["ego"].data["center_x"][0] - 50, frame_dict["ego"].data["center_x"][0] + 50),
+            y_range=(frame_dict["ego"].data["center_y"][0] - 50, frame_dict["ego"].data["center_y"][0] + 50),
+            toolbar_location=None,
+        )
+
+        f.axis.visible = False
+        f.xgrid.grid_line_color = None
+        f.ygrid.grid_line_color = None
+
+        f.patches(line_width=0, alpha=0.5, color="color", source=frame_dict["lanes"])
+        f.patches(line_width=0, alpha=0.5, color="#B5B50D", source=frame_dict["crosswalks"])
+        f.patches(line_width=2, color="#B53331", source=frame_dict["ego"])
+        f.patches(line_width=2, color="color", name="agents", source=frame_dict["agents"])
+
+        for trajectory_name in trajectories_labels:
+            f.multi_line(alpha=0.8, line_width=3, source=frame_dict[trajectory_name], color="color",
+                         legend_label=trajectory_name)
+
+        img = np.asarray(bokeh.io.export.get_screenshot_as_png(f, height=resolution[0], width=resolution[1]))
+        frame_images.append(img[..., :3])
+
+    return np.stack(frame_images)
