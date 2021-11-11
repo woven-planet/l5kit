@@ -6,7 +6,7 @@ from stable_baselines3.common.callbacks import CheckpointCallback, EvalCallback
 from stable_baselines3.common.env_util import make_vec_env
 from stable_baselines3.common.utils import get_linear_fn
 from stable_baselines3.common.vec_env import SubprocVecEnv
-
+from l5kit.data import get_dataset_path
 from l5kit.environment.envs.l5_env import SimulationConfigGym
 from l5kit.environment.feature_extractor import CustomFeatureExtractor
 from l5kit.environment.callbacks import L5KitEvalCallback
@@ -14,7 +14,7 @@ from l5kit.environment.callbacks import L5KitEvalCallback
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
 # Please set the L5KIT_DATA_FOLDER environment variable
-os.environ["L5KIT_DATA_FOLDER"] = open("../dataset_dir.txt", "r").read().strip()
+os.environ["L5KIT_DATA_FOLDER"], _ = get_dataset_path()
 if "L5KIT_DATA_FOLDER" not in os.environ:
     raise KeyError("L5KIT_DATA_FOLDER environment variable not set")
 
