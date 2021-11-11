@@ -64,14 +64,11 @@ def load_data(dataset_name="train_data_loader"):
     frames = zarr_dataset.frames[get_frames_slice_from_scenes(zarr_dataset.scenes[0])]
     timestep_index = 0
     sampled_data = generate_agent_sample_vectorized(timestep_index, frames, zarr_dataset.agents, zarr_dataset.tl_faces, None,
-                                                    history_num_frames_ego=cfg["model_params"][
-                                                        "history_num_frames_ego"],
-                                                    history_num_frames_agents=cfg["model_params"][
-                                                        "history_num_frames_agents"],
-                                                    future_num_frames=cfg["model_params"]["future_num_frames"],
+                                                    history_num_frames_ego=0,
+                                                    history_num_frames_agents=0,
+                                                    future_num_frames=1,  # we must take at least 1 to compute velocity
                                                     step_time=cfg["model_params"]["step_time"],
-                                                    filter_agents_threshold=cfg["raster_params"][
-                                                        "filter_agents_threshold"],
+                                                    filter_agents_threshold=cfg["raster_params"]["filter_agents_threshold"],
                                                     vectorizer=build_vectorizer(cfg, dm))
     """
     Generates the inputs and targets to train a deep prediction model with vectorized inputs.
@@ -85,6 +82,9 @@ def load_data(dataset_name="train_data_loader"):
         state_index (int): The anchor frame index, i.e. the "current" timestep in the scene
         frames (np.ndarray): The scene frames array, can be numpy array or a zarr array
         agents (np.ndarray): The full agents array, can be numpy array or a zarr array
+        
+        TODO: what are the exact variables and dimensions?
+        
         tl_faces (np.ndarray): The full traffic light faces array, can be numpy array or a zarr array
         selected_track_id (Optional[int]): Either None for AV, or the ID of an agent that you want to
         predict the future of. This agent is centered in the representation and the returned targets are derived from
