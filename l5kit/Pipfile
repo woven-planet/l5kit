@@ -41,3 +41,4 @@ types-pyyaml = "*"
 stable-baselines3 = {extras = ["extra"], version = "*"}
 cython = "*"
 jupyter-contrib-nbextensions = "*"
+jupyter = "*"
