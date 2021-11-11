@@ -7,11 +7,18 @@ from typing import Optional, Union
 L5KIT_DATA_FOLDER_ENV_KEY = "L5KIT_DATA_FOLDER"
 
 
+def get_dataset_path():
+    cur_path = Path.cwd()
+    while not (cur_path / "dataset_dir.txt").is_file():
+        cur_path = cur_path.parent
+    dataset_path = open(cur_path / "dataset_dir.txt", "r").read().strip()
+    project_path = str(cur_path.resolve())
+    return dataset_path, project_path
+
 class DataManager(ABC):
     @abstractmethod
     def require(self, key: str) -> str:
         pass
-
 
 class LocalDataManager(DataManager):
     """LocalDataManager allows you to require data to be present in the subpath of a specific folder.
