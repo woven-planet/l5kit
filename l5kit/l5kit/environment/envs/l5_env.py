@@ -6,9 +6,9 @@ from typing import Any, DefaultDict, Dict, List, NamedTuple, Optional
 import gym
 import numpy as np
 import torch
-from torch.utils.data.dataloader import default_collate
 from gym import spaces
 from gym.utils import seeding
+from torch.utils.data.dataloader import default_collate
 
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
@@ -278,7 +278,8 @@ class L5Env(gym.Env):
                 agents_output_dict = move_to_numpy(agents_output_dict)
 
                 if self.cle:
-                    self.simulator.update_agents(self.sim_dataset, next_frame_index, agents_input_dict, agents_output_dict)
+                    self.simulator.update_agents(self.sim_dataset, next_frame_index,
+                                                 agents_input_dict, agents_output_dict)
 
                 # update input and output buffers
                 agents_frame_in_out = self.simulator.get_agents_in_out(agents_input_dict, agents_output_dict,
