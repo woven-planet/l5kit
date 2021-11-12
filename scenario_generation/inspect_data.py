@@ -79,7 +79,7 @@ def load_data(dataset_name="train_data_loader"):
     ########################################################################
     timestep_index = 0
     sampled_data = generate_agent_sample_vectorized(timestep_index, frames, zarr_dataset.agents, zarr_dataset.tl_faces, None,
-                                                    history_num_frames_ego=1, # includes current time-step?
+                                                    history_num_frames_ego=1,  # what should we use?
                                                     history_num_frames_agents=1,
                                                     future_num_frames=1,  # we must take at least 1 to compute velocity
                                                     step_time=cfg["model_params"]["step_time"],
@@ -149,6 +149,35 @@ def load_data(dataset_name="train_data_loader"):
         history_availability: availability mask of history frames
         future_frames: future frames of the target frame
         future_agents: agents in future_frames
+        
+    ["history_positions"].shape == (max_history_num_frames + 1, 2)
+    ["history_yaws"].shape == (max_history_num_frames + 1, 1)
+    ["history_extents"].shape == (max_history_num_frames + 1, 2)
+    ["history_availabilities"].shape == (max_history_num_frames + 1,)
+
+    ["all_other_agents_history_positions"].shape == (num_agents, max_history_num_frames + 1, 2)
+     # num_other_agents (M) x sequence_length x 2 (two being x, y)
+    ["all_other_agents_history_yaws"].shape == (num_agents, max_history_num_frames + 1, 1) 
+    # num_other_agents (M) x sequence_length x 1
+    ["all_other_agents_history_extents"].shape == (num_agents, max_history_num_frames + 1, 2) 
+     # agent_extent = (EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH)
+    ["all_other_agents_history_availability"].shape == (num_agents, max_history_num_frames + 1,)
+
+    ["target_positions"].shape == (future_num_frames, 2)
+    ["target_yaws"].shape == (future_num_frames, 1)
+    ["target_extents"].shape == (future_num_frames, 2)
+    ["target_availabilities"].shape == (future_num_frames,)
+
+    ["all_other_agents_future_positions"].shape == (num_agents, future_num_frames, 2) 
+    ["all_other_agents_future_yaws"].shape == (num_agents, future_num_frames, 1)
+    ["all_other_agents_future_extents"].shape == (num_agents, future_num_frames, 2)  # agent_extent = (EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH)
+    ["all_other_agents_future_availability"].shape == (num_agents, future_num_frames,)
+    ["all_other_agents_types"].shape == (num_agents,)
+
+    ["agent_trajectory_polyline"].shape == (max_history_num_frames + 1, 3)
+    ["agent_polyline_availability"].shape == (max_history_num_frames + 1,)
+    ["other_agents_polyline"].shape == (num_agents, max_history_num_frames + 1, 3)
+    ["other_agents_polyline_availability"].shape == (num_agents, max_history_num_frames + 1,)
 
     Returns:
         dict: a dict containing the vectorized frame representation
