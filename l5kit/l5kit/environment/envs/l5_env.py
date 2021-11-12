@@ -156,11 +156,11 @@ class L5Env(gym.Env):
         # Simulator Config within Gym
         self.sim_cfg = sim_cfg if sim_cfg is not None else SimulationConfigGym()
         simulation_model = None
+        self.device = torch.device("cpu")
         if not self.sim_cfg.use_agents_gt:
-            self.device = torch.device("cpu")
-            simulation_model = torch.jit.load(simnet_model_path).to(torch.device("cpu"))
+            simulation_model = torch.jit.load(simnet_model_path).to(self.device)
             simulation_model = simulation_model.eval()
-        self.simulator = ClosedLoopSimulator(self.sim_cfg, self.dataset, device=torch.device("cpu"),
+        self.simulator = ClosedLoopSimulator(self.sim_cfg, self.dataset, device=self.device,
                                              mode=ClosedLoopSimulatorModes.GYM,
                                              model_agents=simulation_model)
 
