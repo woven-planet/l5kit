@@ -186,25 +186,24 @@ def load_data(dataset_name="train_data_loader"):
 
     ####################################################################################
 
-    from l5kit.simulation.dataset import SimulationConfig
-    from l5kit.simulation.unroll import ClosedLoopSimulator
 
+
+    ########################################################################
+    ## Unroll the scene using motion prediction model
+    ########################################################################
+    """   
+      VectorizedUnrollModel(VectorizedModel): Vectorized closed-loop planning model.
+    """
     model_path = project_dir + "/urban_driver_dummy_model.pt"
-    device = torch.device("cpu")
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = torch.load(model_path).to(device)
     model = model.eval()
-    torch.set_grad_enabled(False)
 
-    # ==== DEFINE CLOSED-LOOP SIMULATION
-    sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=True, disable_new_agents=True,
-                               distance_th_far=500, distance_th_close=50, num_simulation_steps=1,
-                               start_frame_index=0, show_info=True)
-
-    sim_loop = ClosedLoopSimulator(sim_cfg, dataset_vec, device, model_ego=model, model_agents=None)
-    # ==== UNROLL
-    sim_outs = sim_loop.unroll([0])  # the dataset has only one scene - so scene_index =0
-
-
+    # Get prediction output:
+    # 'positions' : torch.Size([batch_size, future_num_frames, 2]
+    # 'yaws' :  torch.Size([batch_size, future_num_frames, 1]
+    res = model(dataset_vec)
+    pass
 
     ########################################################################
     #  Transform back from vectorized representation
