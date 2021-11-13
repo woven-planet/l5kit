@@ -202,7 +202,7 @@ def load_data(dataset_name="train_data_loader"):
 
     sim_loop = ClosedLoopSimulator(sim_cfg, dataset_vec, device, model_ego=model, model_agents=None)
     # ==== UNROLL
-    sim_outs = sim_loop.unroll([scene_index])
+    sim_outs = sim_loop.unroll([0])  # the dataset has only one scene - so scene_index =0
 
 
 
