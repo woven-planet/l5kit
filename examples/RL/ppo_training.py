@@ -15,9 +15,9 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 from l5kit.environment.envs.l5_env import SimulationConfigGym
 from l5kit.environment.feature_extractor import CustomFeatureExtractor
 from l5kit.environment.callbacks import L5KitEvalCallback
-from l5kit.mutables.loaders import get_runtime_params
+from l5kit.versatiles.loaders.runtime_params import RuntimeParams
+from l5kit.versatiles.loaders.logger import init_logger, get_logger
 
-RUNTIME_PARAMS = get_runtime_params()
 
 # Dataset is assumed to be on the folder specified
 # in the L5KIT_DATA_FOLDER environment variable
@@ -90,8 +90,15 @@ if __name__ == "__main__":
     parser.add_argument('--seed', default=42, type=int)
     args = parser.parse_args()
 
+    rp = RuntimeParams.get()
+
     # Runtime Params
-    print(RUNTIME_PARAMS)
+    print(rp)
+    init_logger(runtime_params=rp, sync_tensorboard = True)
+    logger = get_logger(__name__)
+
+    logger.log("First trial")
+    logger.log_custom("data", data={"sa": 31}, commit=True)
 
 
     # make train env
