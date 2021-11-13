@@ -33,7 +33,8 @@ setup(
         "shapely",
         "typing_extensions",
         "bokeh",
-        "gym"
+        "gym",
+        "catalogue",
     ],
     extras_require={
         "dev": ["pytest", "mypy", "types-PyYAML", "setuptools", "twine", "wheel", "pytest-cov",
