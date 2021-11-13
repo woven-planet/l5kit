@@ -6,7 +6,8 @@ from l5kit.dataset import EgoDatasetVectorized
 from l5kit.vectorization.vectorizer_builder import build_vectorizer
 from l5kit.data import get_dataset_path
 from l5kit.sampling.agent_sampling_vectorized import generate_agent_sample_vectorized
-
+from torch.utils.data.dataloader import default_collate
+from l5kit.dataset.utils import move_to_device, move_to_numpy
 
 ############################################################################################
 def load_data(dataset_name="train_data_loader"):
@@ -199,10 +200,15 @@ def load_data(dataset_name="train_data_loader"):
     model = torch.load(model_path).to(device)
     model = model.eval()
 
+    ego_input = dataset_vec[0]
+    # ego_input = default_collate(list(ego_input.values()))
+    # ego_input = move_to_device(ego_input, device)
+
+
     # Get prediction output:
     # 'positions' : torch.Size([batch_size, future_num_frames, 2]
     # 'yaws' :  torch.Size([batch_size, future_num_frames, 1]
-    res = model(dataset_vec)
+    res = model(ego_input)
     pass
 
     ########################################################################
