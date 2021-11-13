@@ -1,5 +1,5 @@
 import os
-
+import torch
 from l5kit.configs import load_config_data
 from l5kit.data import LocalDataManager, ChunkedDataset, get_frames_slice_from_scenes
 from l5kit.dataset import EgoDatasetVectorized
@@ -49,6 +49,7 @@ def load_data(dataset_name="train_data_loader"):
     """
     scene_index = 3
     zarr_dataset = zarr_dataset.get_scene_dataset(scene_index)
+
 
 
     ########################################################################
@@ -182,7 +183,28 @@ def load_data(dataset_name="train_data_loader"):
     Returns:
         dict: a dict containing the vectorized frame representation
     """
-    sampled_data
+
+    ####################################################################################
+
+    from l5kit.simulation.dataset import SimulationConfig
+    from l5kit.simulation.unroll import ClosedLoopSimulator
+
+    # Get the file from: https://lyft-l5-datasets-public.s3-us-west-2.amazonaws.com/models/urban_driver/BPTT.pt
+    model_path = os.environ["L5KIT_DATA_FOLDER"] + '/saved_models/BPTT.pt'
+    device = torch.device("cpu")
+    model = torch.load(model_path).to(device)
+    model = model.eval()
+    torch.set_grad_enabled(False)
+
+    # ==== DEFINE CLOSED-LOOP SIMULATION
+    sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=True, disable_new_agents=True,
+                               distance_th_far=500, distance_th_close=50, num_simulation_steps=1,
+                               start_frame_index=0, show_info=True)
+
+    sim_loop = ClosedLoopSimulator(sim_cfg, dataset_vec, device, model_ego=model, model_agents=None)
+
+    # %%
+
 
 
     ########################################################################
