@@ -189,8 +189,7 @@ def load_data(dataset_name="train_data_loader"):
     from l5kit.simulation.dataset import SimulationConfig
     from l5kit.simulation.unroll import ClosedLoopSimulator
 
-    # Get the file from: https://lyft-l5-datasets-public.s3-us-west-2.amazonaws.com/models/urban_driver/BPTT.pt
-    model_path = os.environ["L5KIT_DATA_FOLDER"] + '/saved_models/BPTT.pt'
+    model_path = project_dir + "/urban_driver_dummy_model.pt"
     device = torch.device("cpu")
     model = torch.load(model_path).to(device)
     model = model.eval()
@@ -202,8 +201,8 @@ def load_data(dataset_name="train_data_loader"):
                                start_frame_index=0, show_info=True)
 
     sim_loop = ClosedLoopSimulator(sim_cfg, dataset_vec, device, model_ego=model, model_agents=None)
-
-    # %%
+    # ==== UNROLL
+    sim_outs = sim_loop.unroll([scene_index])
 
 
 
