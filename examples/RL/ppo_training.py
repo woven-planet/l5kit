@@ -97,7 +97,7 @@ if __name__ == "__main__":
     init_logger(runtime_params=rp, sync_tensorboard = True)
     logger = get_logger(__name__)
 
-    logger.log("First trial")
+    logger.info("First trial")
     logger.log_custom("data", data={"sa": 31}, commit=True)
 
 
