@@ -106,6 +106,7 @@ def inspection(dataset_name="train_data_loader"):
     torch.set_grad_enabled(False) ########## The unroll gives an error if this is not used-
     # RuntimeError: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.
     # but we can do backprop in time if this is used
+    # we should probably use VectorizedUnrollModel instead (as in urban_driver/train )
 
     simulated_outputs = sim_loop.unroll(scene_indices)
     """
