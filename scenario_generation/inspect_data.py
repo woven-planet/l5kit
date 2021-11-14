@@ -200,9 +200,12 @@ def load_data(dataset_name="train_data_loader"):
     model = torch.load(model_path).to(device)
     model = model.eval()
 
-    ego_input = dataset_vec[0]
-    # ego_input = default_collate(list(ego_input.values()))
-    # ego_input = move_to_device(ego_input, device)
+    ego_input = [dataset_vec[0]]  # list of a batch of states, here we used only one state
+    # a state is a dict[str:tensor] with 38 fields
+
+    ego_input = default_collate(ego_input)  # This concatenates the tensors at each field
+
+    ego_input = move_to_device(ego_input, device)
 
 
     # Get prediction output:
