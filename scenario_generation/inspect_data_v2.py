@@ -72,46 +72,39 @@ def inspection(dataset_name="train_data_loader"):
     :param show_info: whether to show info logging during unroll
     """
 
-    # pick some scene
-    scene_index = 3
 
-    sim_dataset = SimulationDataset.from_dataset_indices(dataset_vec, [scene_index], sim_cfg)
-    """Create a SimulationDataset by picking indices from the provided dataset
-    :param dataset: the EgoDataset
-    :param scene_indices: scenes from the EgoDataset to pick
-    :param sim_cfg: a simulation config
-    :return: the new SimulationDataset
-    """
 
-    ########################################################################
-    ## Get next state using motion prediction model
-    ########################################################################
-    """   
-      VectorizedUnrollModel(VectorizedModel): Vectorized closed-loop planning model.
-    """
+
+
     model_path = project_dir + "/urban_driver_dummy_model.pt"
-    model = torch.load(model_path).to(device)
-    model = model.eval()
+    model_ego = torch.load(model_path).to(device)
+    model_ego = model_ego.eval()
 
-    ego_input = [dataset_vec[0]]  # list of a batch of states, here we used only one state
-    # a state is a dict[str:tensor] with 38 fields
 
-    ego_input = default_collate(ego_input)  # This concatenates the tensors at each field
+    sim_loop = ClosedLoopSimulator(sim_cfg, dataset_ego, device, model_ego=model_ego, model_agents=model_ego)
+    """
+       Create a simulation loop object capable of unrolling ego and agents
+       :param sim_cfg: configuration for unroll
+       :param dataset: EgoDataset used while unrolling
+       :param device: a torch device. Inference will be performed here
+       :param model_ego: the model to be used for ego
+       :param model_agents: the model to be used for agents
+       :param keys_to_exclude: keys to exclude from input/output (e.g. huge blobs)
+       :param mode: the framework that uses the closed loop simulator
+   """
 
-    ego_input = move_to_device(ego_input, device)
+    # scenes from the EgoDataset to pick
+    scene_indices = [3]
 
-    # Get prediction output for ego:
-    # 'positions' : torch.Size([batch_size, future_num_frames, 2]
-    # 'yaws' :  torch.Size([batch_size, future_num_frames, 1]
-    ego_output = model(ego_input)
-    pass
-    print(ego_output)
 
-    agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
+    simulated_outputs = sim_loop.unroll(scene_indices)
+    """
+    Simulate the dataset for the given scene indices
+    :param scene_indices: the scene indices we want to simulate
+    :return: the simulated dataset
+    """
 
-    next_frame_index = 1
-    # ClosedLoopSimulator.update_agents(sim_dataset, next_frame_index, agents_input_dict, agents_output_dict)
-    ClosedLoopSimulator.update_ego(sim_dataset, next_frame_index, (ego_input), (ego_output))
+
     ########################################################################
     #  Transform back from vectorized representation
     ########################################################################
