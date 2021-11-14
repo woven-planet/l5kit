@@ -30,17 +30,17 @@ def inspection(dataset_name="train_data_loader"):
     ########################################################################
     #  Get the  dataset
     ########################################################################
-    zarr_dataset = ChunkedDataset(dm.require(cfg[dataset_name]["key"])).open()
+    # ===== INIT DATASET
+    eval_cfg = cfg["val_data_loader"]
+    eval_zarr = ChunkedDataset(dm.require(eval_cfg["key"])).open()
     """
     ChunkedDataset is a dataset that lives on disk in compressed chunks, it has easy to use data loading and
     writing interfaces that involves making numpy-like slices.
     Currently only .zarr directory stores are supported (i.e. the data will live in a folder on your
     local filesystem called <something>.zarr).
     """
-
-    vectorizer = build_vectorizer(cfg, dm)  # object that supports vectorization around an AV
-
-    dataset_ego = EgoDatasetVectorized(cfg, zarr_dataset, vectorizer)
+    vectorizer = build_vectorizer(cfg, dm)
+    eval_dataset = EgoDatasetVectorized(cfg, eval_zarr, vectorizer)
     """
     Get a PyTorch dataset object that can be used to train DNNs with vectorized input
     Args:
@@ -50,14 +50,22 @@ def inspection(dataset_name="train_data_loader"):
         perturbation (Optional[Perturbation]): an object that takes care of applying trajectory perturbations.
     None if not desired
     """
+    print(eval_dataset)
+
+
 
     ########################################################################
     ## Setup the simulator class to be used to unroll the scene
     ########################################################################
 
     # ==== DEFINE CLOSED-LOOP SIMULATION
-    num_simulation_steps = 20
-    sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=True,
+    num_simulation_steps = 50
+
+    use_agents_gt = True #### DEBUG !!!
+    model_agents = None  #### DEBUG !!!
+
+
+    sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=use_agents_gt, disable_new_agents=True,
                                distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
                                start_frame_index=0, show_info=True)
     """ Defines the parameters used for the simulation of ego and agents around it.
@@ -72,16 +80,17 @@ def inspection(dataset_name="train_data_loader"):
     :param show_info: whether to show info logging during unroll
     """
 
-
-
-
-
     model_path = project_dir + "/urban_driver_dummy_model.pt"
     model_ego = torch.load(model_path).to(device)
     model_ego = model_ego.eval()
 
+    model_path = project_dir + "/urban_driver_dummy_model.pt"
+    model_agents = torch.load(model_path).to(device)
+    model_agents = model_agents.eval()
 
-    sim_loop = ClosedLoopSimulator(sim_cfg, dataset_ego, device, model_ego=model_ego, model_agents=model_ego)
+
+
+    sim_loop = ClosedLoopSimulator(sim_cfg, eval_dataset, device, model_ego=model_ego, model_agents=model_agents)
     """
        Create a simulation loop object capable of unrolling ego and agents
        :param sim_cfg: configuration for unroll
@@ -94,8 +103,11 @@ def inspection(dataset_name="train_data_loader"):
    """
 
     # scenes from the EgoDataset to pick
-    scene_indices = [3]
+    scene_indices = [0]
 
+    torch.set_grad_enabled(False) ########## The unroll gives an error if this is not used-
+    # RuntimeError: Can't call numpy() on Tensor that requires grad. Use tensor.detach().numpy() instead.
+    # but we can do backprop in time if this is used
 
     simulated_outputs = sim_loop.unroll(scene_indices)
     """
@@ -113,11 +125,11 @@ def inspection(dataset_name="train_data_loader"):
     #  Plot initial scene
     ########################################################################
 
-    return zarr_dataset, dataset_vec, dm, cfg
+    return None
 
 
 ############################################################################################
 
 
 if __name__ == "__main__":
-    zarr_dataset, dataset_vec, dm, cfg = inspection(dataset_name="train_data_loader")
+    inspection(dataset_name="train_data_loader")
