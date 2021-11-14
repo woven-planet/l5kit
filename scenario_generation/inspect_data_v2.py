@@ -26,6 +26,7 @@ def inspection(dataset_name="train_data_loader"):
 
     cfg = load_config_data(project_dir + "/examples/urban_driver/config.yaml")
 
+    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     ########################################################################
     #  Get the  dataset
     ########################################################################
@@ -59,8 +60,20 @@ def inspection(dataset_name="train_data_loader"):
     sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=True,
                                distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
                                start_frame_index=0, show_info=True)
+    """ Defines the parameters used for the simulation of ego and agents around it.
 
-    scene_index = 3  # pick some scene
+    :param use_ego_gt: whether to use GT annotations for ego instead of model's outputs
+    :param use_agents_gt: whether to use GT annotations for agents instead of model's outputs
+    :param disable_new_agents: whether to disable agents that are not returned at start_frame_index
+    :param distance_th_far: if a tracked agent is closed than this value to ego, it will be controlled
+    :param distance_th_close: if a new agent is closer than this value to ego, it will be controlled
+    :param start_frame_index: the start index of the simulation
+    :param num_simulation_steps: the number of step to simulate
+    :param show_info: whether to show info logging during unroll
+    """
+
+    # pick some scene
+    scene_index = 3
 
     sim_dataset = SimulationDataset.from_dataset_indices(dataset_vec, [scene_index], sim_cfg)
     """Create a SimulationDataset by picking indices from the provided dataset
@@ -77,7 +90,6 @@ def inspection(dataset_name="train_data_loader"):
       VectorizedUnrollModel(VectorizedModel): Vectorized closed-loop planning model.
     """
     model_path = project_dir + "/urban_driver_dummy_model.pt"
-    device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     model = torch.load(model_path).to(device)
     model = model.eval()
 
