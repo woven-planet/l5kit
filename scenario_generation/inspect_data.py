@@ -189,7 +189,18 @@ def inspection(dataset_name="train_data_loader"):
 
     ####################################################################################
 
+    ########################################################################
+    ## Setup the simulator class to be used to unroll the scene
+    ########################################################################
+    scene_indices = [0]
 
+    # ==== DEFINE CLOSED-LOOP SIMULATION
+    num_simulation_steps = 1
+    sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=True, disable_new_agents=True,
+                               distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
+                               start_frame_index=0, show_info=True)
+
+    sim_dataset = SimulationDataset.from_dataset_indices(dataset_vec, scene_indices, sim_cfg)
 
     ########################################################################
     ## Get next state using motion prediction model
@@ -210,28 +221,18 @@ def inspection(dataset_name="train_data_loader"):
     ego_input = move_to_device(ego_input, device)
 
 
-    # Get prediction output:
+    # Get prediction output for ego:
     # 'positions' : torch.Size([batch_size, future_num_frames, 2]
     # 'yaws' :  torch.Size([batch_size, future_num_frames, 1]
     ego_output = model(ego_input)
     pass
     print(ego_output)
-    ########################################################################
-    ## Unroll the scene
-    ########################################################################
-    scene_indices = [0]
 
-    # ==== DEFINE CLOSED-LOOP SIMULATION
-    num_simulation_steps = 1
-    sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=True, disable_new_agents=True,
-                               distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
-                               start_frame_index=0, show_info=True)
-
-    sim_dataset = SimulationDataset.from_dataset_indices(dataset_vec, scene_indices, sim_cfg)
+    agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
 
     next_frame_index = 1
     # ClosedLoopSimulator.update_agents(sim_dataset, next_frame_index, agents_input_dict, agents_output_dict)
-    ClosedLoopSimulator.update_ego(sim_dataset, next_frame_index, move_to_numpy(ego_input), ego_output)
+    ClosedLoopSimulator.update_ego(sim_dataset, next_frame_index, (ego_input), (ego_output))
     ########################################################################
     #  Transform back from vectorized representation
     ########################################################################
