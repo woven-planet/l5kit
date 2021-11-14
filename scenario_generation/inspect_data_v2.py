@@ -61,9 +61,7 @@ def inspection(dataset_name="train_data_loader"):
     # ==== DEFINE CLOSED-LOOP SIMULATION
     num_simulation_steps = 50
 
-    use_agents_gt = True #### DEBUG !!!
-    model_agents = None  #### DEBUG !!!
-
+    use_agents_gt = False
 
     sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=use_agents_gt, disable_new_agents=True,
                                distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
