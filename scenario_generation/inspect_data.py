@@ -213,6 +213,7 @@ def load_data(dataset_name="train_data_loader"):
     # 'yaws' :  torch.Size([batch_size, future_num_frames, 1]
     res = model(ego_input)
     pass
+    print(res)
 
     ########################################################################
     #  Transform back from vectorized representation
