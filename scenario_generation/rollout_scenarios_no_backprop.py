@@ -1,4 +1,6 @@
 import os
+
+import numpy as np
 import torch
 from l5kit.configs import load_config_data
 from l5kit.data import LocalDataManager, ChunkedDataset, get_frames_slice_from_scenes
@@ -52,30 +54,44 @@ def inspection(dataset_name="train_data_loader"):
     """
     print(eval_dataset)
 
+    ########################################################################
+    ## Take a look at the data structure
+    ########################################################################
+    scene_index = 3
+    frames = np.ndarray([scene_index])
+    time_index = 0
+
+    sampled_data = generate_agent_sample_vectorized(time_index, frames, eval_zarr.agents, eval_zarr.tl_faces,
+                                                    None,
+                                                    history_num_frames_ego=1,  # what should we use?
+                                                    history_num_frames_agents=1,
+                                                    future_num_frames=1,  # we must take at least 1 to compute velocity
+                                                    step_time=cfg["model_params"]["step_time"],
+                                                    filter_agents_threshold=cfg["raster_params"][
+                                                        "filter_agents_threshold"],
+                                                    vectorizer=build_vectorizer(cfg, dm))
 
 
     ########################################################################
     ## Setup the simulator class to be used to unroll the scene
     ########################################################################
-
     # ==== DEFINE CLOSED-LOOP SIMULATION
     num_simulation_steps = 50
-
     use_agents_gt = False
-
     sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=use_agents_gt, disable_new_agents=True,
-                               distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
-                               start_frame_index=0, show_info=True)
-    """ Defines the parameters used for the simulation of ego and agents around it.
-
-    :param use_ego_gt: whether to use GT annotations for ego instead of model's outputs
-    :param use_agents_gt: whether to use GT annotations for agents instead of model's outputs
-    :param disable_new_agents: whether to disable agents that are not returned at start_frame_index
-    :param distance_th_far: if a tracked agent is closed than this value to ego, it will be controlled
-    :param distance_th_close: if a new agent is closer than this value to ego, it will be controlled
-    :param start_frame_index: the start index of the simulation
-    :param num_simulation_steps: the number of step to simulate
-    :param show_info: whether to show info logging during unroll
+                             distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
+                             start_frame_index=0, show_info=True)
+    """                           
+    Defines the parameters used for the simulation of ego and agents around it.
+    
+        :param use_ego_gt: whether to use GT annotations for ego instead of model's outputs
+        :param use_agents_gt: whether to use GT annotations for agents instead of model's outputs
+        :param disable_new_agents: whether to disable agents that are not returned at start_frame_index
+        :param distance_th_far: if a tracked agent is closed than this value to ego, it will be controlled
+        :param distance_th_close: if a new agent is closer than this value to ego, it will be controlled
+        :param start_frame_index: the start index of the simulation
+        :param num_simulation_steps: the number of step to simulate
+        :param show_info: whether to show info logging during unroll
     """
 
     model_path = project_dir + "/urban_driver_dummy_model.pt"
