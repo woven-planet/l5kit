@@ -8,9 +8,11 @@ from l5kit.data import get_dataset_path
 from l5kit.sampling.agent_sampling_vectorized import generate_agent_sample_vectorized
 from torch.utils.data.dataloader import default_collate
 from l5kit.dataset.utils import move_to_device, move_to_numpy
+from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
+from l5kit.simulation.unroll import ClosedLoopSimulator
 
 ############################################################################################
-def load_data(dataset_name="train_data_loader"):
+def inspection(dataset_name="train_data_loader"):
     ########################################################################
     # Load data and configurations
     ########################################################################
@@ -190,7 +192,7 @@ def load_data(dataset_name="train_data_loader"):
 
 
     ########################################################################
-    ## Unroll the scene using motion prediction model
+    ## Get next state using motion prediction model
     ########################################################################
     """   
       VectorizedUnrollModel(VectorizedModel): Vectorized closed-loop planning model.
@@ -211,10 +213,25 @@ def load_data(dataset_name="train_data_loader"):
     # Get prediction output:
     # 'positions' : torch.Size([batch_size, future_num_frames, 2]
     # 'yaws' :  torch.Size([batch_size, future_num_frames, 1]
-    res = model(ego_input)
+    ego_output = model(ego_input)
     pass
-    print(res)
+    print(ego_output)
+    ########################################################################
+    ## Unroll the scene
+    ########################################################################
+    scene_indices = [0]
 
+    # ==== DEFINE CLOSED-LOOP SIMULATION
+    num_simulation_steps = 1
+    sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=True, disable_new_agents=True,
+                               distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
+                               start_frame_index=0, show_info=True)
+
+    sim_dataset = SimulationDataset.from_dataset_indices(dataset_vec, scene_indices, sim_cfg)
+
+    next_frame_index = 1
+    # ClosedLoopSimulator.update_agents(sim_dataset, next_frame_index, agents_input_dict, agents_output_dict)
+    ClosedLoopSimulator.update_ego(sim_dataset, next_frame_index, move_to_numpy(ego_input), ego_output)
     ########################################################################
     #  Transform back from vectorized representation
     ########################################################################
@@ -233,4 +250,4 @@ def load_data(dataset_name="train_data_loader"):
 
 
 if __name__ == "__main__":
-    zarr_dataset, dataset_vec, dm, cfg = load_data(dataset_name="train_data_loader")
+    zarr_dataset, dataset_vec, dm, cfg = inspection(dataset_name="train_data_loader")
