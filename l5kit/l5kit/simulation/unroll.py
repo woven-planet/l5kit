@@ -12,6 +12,7 @@ from l5kit.dataset import EgoDataset
 from l5kit.dataset.utils import move_to_device, move_to_numpy
 from l5kit.geometry import rotation33_as_yaw, transform_points
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
+from scenario_generation.utils import table_to_features
 
 
 class TrajectoryStateIndices(IntEnum):
@@ -173,7 +174,7 @@ class ClosedLoopSimulator:
 
         self.keys_to_exclude = set(keys_to_exclude)
 
-    def unroll(self, scene_indices: List[int]) -> List[SimulationOutput]:
+    def unroll(self, scene_indices: List[int], config: Optional[Dict] = None) -> List[SimulationOutput]:
         """
         Simulate the dataset for the given scene indices
         :param scene_indices: the scene indices we want to simulate
@@ -192,7 +193,10 @@ class ClosedLoopSimulator:
             if not self.sim_cfg.use_agents_gt:
                 agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
                 if len(agents_input):  # agents may not be available
-                    agents_input_dict = default_collate(list(agents_input.values()))
+                    collated_agents_input = default_collate(list(agents_input.values()))
+                    feats = table_to_features(collated_agents_input, config)
+
+                    agents_input_dict = collated_agents_input
                     agents_output_dict = self.model_agents(move_to_device(agents_input_dict, self.device))
 
                     # for update we need everything as numpy

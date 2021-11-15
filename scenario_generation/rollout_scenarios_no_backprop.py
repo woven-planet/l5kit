@@ -10,14 +10,18 @@ from l5kit.data import get_dataset_path
 from l5kit.sampling.agent_sampling_vectorized import generate_agent_sample_vectorized
 from torch.utils.data.dataloader import default_collate
 from l5kit.dataset.utils import move_to_device, move_to_numpy
+from l5kit.visualization.visualizer.zarr_utils import simulation_out_to_visualizer_scene
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.simulation.unroll import ClosedLoopSimulator
+from bokeh.io import output_notebook, show
+from l5kit.data import MapAPI
+from l5kit.visualization.visualizer.visualizer import visualize
 from l5kit.dataset import EgoDataset
 from l5kit.rasterization import build_rasterizer
 
 
 ############################################################################################
-def inspection(dataset_name="train_data_loader"):
+def inspection(dataset_name="train_data_loader", sample_config="/examples/urban_driver/config.yaml"):
     ########################################################################
     # Load data and configurations
     ########################################################################
@@ -26,7 +30,7 @@ def inspection(dataset_name="train_data_loader"):
 
     dm = LocalDataManager(None)
 
-    cfg = load_config_data(project_dir + "/examples/urban_driver/config.yaml")
+    cfg = load_config_data(project_dir + sample_config)
 
     device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
     ########################################################################
@@ -125,7 +129,13 @@ def inspection(dataset_name="train_data_loader"):
     # but we can do backprop in time if this is used
     # we should probably use VectorizedUnrollModel instead (as in urban_driver/train )
 
-    simulated_outputs = sim_loop.unroll(scene_indices)
+    simulated_outputs = sim_loop.unroll(scene_indices, config=cfg)
+
+    output_notebook()
+    mapAPI = MapAPI.from_cfg(dm, cfg)
+    for sim_out in simulated_outputs:  # for each scene
+        vis_in = simulation_out_to_visualizer_scene(sim_out, mapAPI)
+        show(visualize(sim_out.scene_id, vis_in))
     """
     Simulate the dataset for the given scene indices
     :param scene_indices: the scene indices we want to simulate
@@ -148,4 +158,4 @@ def inspection(dataset_name="train_data_loader"):
 
 
 if __name__ == "__main__":
-    inspection(dataset_name="train_data_loader")
+    inspection(dataset_name="train_data_loader", sample_config="/scenario_generation/config_sample.yaml")
