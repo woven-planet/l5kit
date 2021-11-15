@@ -61,15 +61,16 @@ def inspection(dataset_name="train_data_loader"):
     frames = np.ndarray([scene_index])
     time_index = 0
 
-    sampled_data = generate_agent_sample_vectorized(time_index, frames, eval_zarr.agents, eval_zarr.tl_faces,
-                                                    None,
-                                                    history_num_frames_ego=1,  # what should we use?
-                                                    history_num_frames_agents=1,
-                                                    future_num_frames=1,  # we must take at least 1 to compute velocity
-                                                    step_time=cfg["model_params"]["step_time"],
-                                                    filter_agents_threshold=cfg["raster_params"][
-                                                        "filter_agents_threshold"],
-                                                    vectorizer=build_vectorizer(cfg, dm))
+
+    # sampled_data = generate_agent_sample_vectorized(time_index, frames, eval_zarr.agents, eval_zarr.tl_faces,
+    #                                                 None,
+    #                                                 history_num_frames_ego=1,  # what should we use?
+    #                                                 history_num_frames_agents=1,
+    #                                                 future_num_frames=1,  # we must take at least 1 to compute velocity
+    #                                                 step_time=cfg["model_params"]["step_time"],
+    #                                                 filter_agents_threshold=cfg["raster_params"][
+    #                                                     "filter_agents_threshold"],
+    #                                                 vectorizer=build_vectorizer(cfg, dm))
 
 
     ########################################################################
