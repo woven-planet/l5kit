@@ -8,10 +8,12 @@ import numpy as np
 import torch
 from gym import spaces
 from gym.utils import seeding
+from torch.utils.data.dataloader import default_collate
 
 from l5kit.configs import load_config_data
 from l5kit.data import ChunkedDataset, LocalDataManager
 from l5kit.dataset import EgoDataset
+from l5kit.dataset.utils import move_to_device, move_to_numpy
 from l5kit.environment.kinematic_model import KinematicModel, UnicycleModel
 from l5kit.environment.reward import L2DisplacementYawReward, Reward
 from l5kit.environment.utils import (calculate_non_kinematic_rescale_params, KinematicActionRescaleParams,
@@ -105,6 +107,7 @@ class L5Env(gym.Env):
     :param kin_model: the kinematic model
     :param return_info: flag to return info when a episode ends
     :param randomize_start: flag to randomize the start frame of episode
+    :param simnet_model_path: path to simnet model that controls agents
     """
 
     def __init__(self, env_config_path: Optional[str] = None, dmg: Optional[LocalDataManager] = None,
@@ -112,7 +115,7 @@ class L5Env(gym.Env):
                  reward: Optional[Reward] = None, cle: bool = True, rescale_action: bool = True,
                  use_kinematic: bool = False, kin_model: Optional[KinematicModel] = None,
                  reset_scene_id: Optional[int] = None, return_info: bool = False,
-                 randomize_start: bool = True) -> None:
+                 randomize_start: bool = True, simnet_model_path: Optional[str] = None) -> None:
         """Constructor method
         """
         super(L5Env, self).__init__()
@@ -152,8 +155,14 @@ class L5Env(gym.Env):
 
         # Simulator Config within Gym
         self.sim_cfg = sim_cfg if sim_cfg is not None else SimulationConfigGym()
-        self.simulator = ClosedLoopSimulator(self.sim_cfg, self.dataset, device=torch.device("cpu"),
-                                             mode=ClosedLoopSimulatorModes.GYM)
+        simulation_model = None
+        self.device = torch.device("cpu")
+        if not self.sim_cfg.use_agents_gt:
+            simulation_model = torch.jit.load(simnet_model_path).to(self.device)
+            simulation_model = simulation_model.eval()
+        self.simulator = ClosedLoopSimulator(self.sim_cfg, self.dataset, device=self.device,
+                                             mode=ClosedLoopSimulatorModes.GYM,
+                                             model_agents=simulation_model)
 
         self.reward = reward if reward is not None else L2DisplacementYawReward()
 
@@ -255,6 +264,27 @@ class L5Env(gym.Env):
         frame_index = self.frame_index
         next_frame_index = frame_index + 1
         episode_over = next_frame_index == (len(self.sim_dataset) - 1)
+
+        # AGENTS
+        if not self.sim_cfg.use_agents_gt:
+            agents_input = self.sim_dataset.rasterise_agents_frame_batch(frame_index)
+            if len(agents_input):  # agents may not be available
+                agents_input_dict = default_collate(list(agents_input.values()))
+                with torch.no_grad():
+                    agents_output_dict = self.simulator.model_agents(move_to_device(agents_input_dict, self.device))
+
+                # for update we need everything as numpy
+                agents_input_dict = move_to_numpy(agents_input_dict)
+                agents_output_dict = move_to_numpy(agents_output_dict)
+
+                if self.cle:
+                    self.simulator.update_agents(self.sim_dataset, next_frame_index,
+                                                 agents_input_dict, agents_output_dict)
+
+                # update input and output buffers
+                agents_frame_in_out = self.simulator.get_agents_in_out(agents_input_dict, agents_output_dict,
+                                                                       self.simulator.keys_to_exclude)
+                self.agents_ins_outs[self.scene_index].append(agents_frame_in_out.get(self.scene_index, []))
 
         # EGO
         if not self.sim_cfg.use_ego_gt:
