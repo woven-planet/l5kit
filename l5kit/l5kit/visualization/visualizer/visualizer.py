@@ -1,12 +1,13 @@
 from collections import defaultdict
-from typing import Any, DefaultDict, Dict, List, Set
+from typing import Any, DefaultDict, Dict, List, Set, Tuple
 
 import bokeh.io
 import bokeh.plotting
 import numpy as np
 from bokeh.layouts import column, LayoutDOM
-from bokeh.models import CustomJS, HoverTool, Slider
+from bokeh.models import CustomJS, HoverTool, Slider, Column
 from bokeh.plotting import ColumnDataSource
+from bokeh.plotting import Figure
 
 from l5kit.visualization.visualizer.common import (AgentVisualization, CWVisualization, EgoVisualization,
                                                    FrameVisualization, LaneVisualization, TrajectoryVisualization)
@@ -33,7 +34,7 @@ def _visualization_list_to_dict(visualisation_list: List[Any], null_el: Any) -> 
     return dict(visualisation_dict)
 
 
-def visualize(scene_index: int, frames: List[FrameVisualization]) -> LayoutDOM:
+def visualize(scene_index: int, frames: List[FrameVisualization]) -> Tuple[Column, Figure]:
     """Visualise a scene using Bokeh.
 
     :param scene_index: the index of the scene, used only as the title
@@ -140,4 +141,4 @@ def visualize(scene_index: int, frames: List[FrameVisualization]) -> LayoutDOM:
     f.legend.click_policy = "hide"
 
     layout = column(f, slider)
-    return layout
+    return layout, f
