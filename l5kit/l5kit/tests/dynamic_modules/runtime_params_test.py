@@ -1,4 +1,4 @@
-from l5kit.versatiles.loaders.runtime_params import RuntimeParams
+from l5kit.dynamic_modules.loaders.runtime_params import RuntimeParams
 
 
 def test_default_runtime_params() -> None:
