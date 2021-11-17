@@ -7,7 +7,7 @@ def init_logger(**kwargs: Any) -> None:
     logging.basicConfig(level=kwargs.get("level", kwargs.get("runtime_params", {}).get("level", "INFO")))
 
 
-def get_logger(name: str) -> logging.LoggerAdapter:
+def get_logger(name: str) -> 'L5KitLogAdapter':
     return L5KitLogAdapter(logging.getLogger(name))
 
 
