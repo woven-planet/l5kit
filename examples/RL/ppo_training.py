@@ -15,8 +15,8 @@ from stable_baselines3.common.vec_env import SubprocVecEnv
 from l5kit.environment.envs.l5_env import SimulationConfigGym
 from l5kit.environment.feature_extractor import CustomFeatureExtractor
 from l5kit.environment.callbacks import L5KitEvalCallback
-from l5kit.versatiles.loaders.runtime_params import RuntimeParams
-from l5kit.versatiles.loaders.logger import init_logger, get_logger
+from l5kit.dynamic_modules.loaders.runtime_params import RuntimeParams
+from l5kit.dynamic_modules.loaders.logger import init_logger, get_logger
 
 
 # Dataset is assumed to be on the folder specified
