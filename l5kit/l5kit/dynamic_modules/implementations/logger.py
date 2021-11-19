@@ -19,7 +19,7 @@ class L5KitLogAdapter(logging.LoggerAdapter):
     def log(self, level: int, msg: str, *args: Any, **kwargs: Any) -> None:
         super().log(level, msg, *args, **kwargs)
 
-    def log_custom(self, type: str, **kwargs: Any) -> None:
+    def log_custom(self, type: str, *args: Any, **kwargs: Any) -> None:
         if type not in self._custom_loggers:
             return
-        self._custom_loggers[type](**kwargs)
+        self._custom_loggers[type](*args, **kwargs)
