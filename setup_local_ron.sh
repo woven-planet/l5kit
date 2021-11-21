@@ -1,8 +1,19 @@
 #!/bin/bash
 
+
+
+# Install L5Kit
+echo "Installing L5kit..."
+pip install --progress-bar off --quiet -U l5kit pyyaml
+
+# Set dataset dir path
+DATASET_DIR=${HOME}"/l5kit_data"
+echo "${DATASET_DIR}" > "dataset_dir.txt"
+
+#######################################################################################################################
+
 # Make a temporary download folder
 TEMP_DOWNLOAD_DIR=$(mktemp -d)
-DATASET_DIR=${HOME}"/l5kit_data"
 
 echo "DATASET_DIR = ""${DATASET_DIR}"
 # Download sample zarr
@@ -31,9 +42,5 @@ tar xf "${TEMP_DOWNLOAD_DIR}"/aerial_map.tar -C "${DATASET_DIR}"
 wget https://raw.githubusercontent.com/lyft/l5kit/master/examples/visualisation/visualisation_config.yaml -q
 wget https://raw.githubusercontent.com/lyft/l5kit/master/examples/RL/gym_config.yaml -q
 
-# Install L5Kit
-echo "Installing L5kit..."
-pip install --progress-bar off --quiet -U l5kit pyyaml
 
-echo "Dataset and L5kit are ready !"
-echo "${DATASET_DIR}" > "dataset_dir.txt"
+echo "Datasets downloaded!"

@@ -7,18 +7,7 @@ from l5kit.data import LocalDataManager, ChunkedDataset, get_frames_slice_from_s
 from l5kit.dataset import EgoDatasetVectorized
 from l5kit.vectorization.vectorizer_builder import build_vectorizer
 from l5kit.data import get_dataset_path
-from l5kit.sampling.agent_sampling_vectorized import generate_agent_sample_vectorized
-from torch.utils.data.dataloader import default_collate
-from l5kit.dataset.utils import move_to_device, move_to_numpy
-from l5kit.visualization.visualizer.zarr_utils import simulation_out_to_visualizer_scene
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
-from l5kit.simulation.unroll import ClosedLoopSimulator
-from bokeh.io import output_notebook, show
-from l5kit.data import MapAPI
-from l5kit.visualization.visualizer.visualizer import visualize
-from l5kit.dataset import EgoDataset
-from l5kit.rasterization import build_rasterizer
-from bokeh import plotting
 
 
 source_dataset_name = "val_data_loader"
@@ -36,6 +25,8 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 ########################################################################
 dataset_cfg = cfg[source_dataset_name]
 dataset_zarr = ChunkedDataset(dm.require(dataset_cfg["key"])).open()
+n_scenes = len(dataset_zarr.scenes)
+print(f'Dataset source: {cfg[source_dataset_name]["key"]}, number of scenes: {n_scenes}')
 vectorizer = build_vectorizer(cfg, dm)
 dataset = EgoDatasetVectorized(cfg, dataset_zarr, vectorizer)
 
@@ -52,3 +43,4 @@ scene_index_in_list = 0
 ego_input = sim_dataset.rasterise_frame_batch(frame_index)[scene_index_in_list]
 
 print(ego_input.keys())
+

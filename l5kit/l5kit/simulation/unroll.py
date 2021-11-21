@@ -191,7 +191,6 @@ class ClosedLoopSimulator:
                 agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
                 if len(agents_input):  # agents may not be available
                     collated_agents_input = default_collate(list(agents_input.values()))
-                    # feats = table_to_features(collated_agents_input, config)
 
                     agents_input_dict = collated_agents_input
                     agents_output_dict = self.model_agents(move_to_device(agents_input_dict, self.device))
