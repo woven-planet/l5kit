@@ -18,6 +18,8 @@ from bokeh import plotting
 source_dataset_name = "val_data_loader"
 sample_config = "/examples/urban_driver/config.yaml"
 num_scenes_limit = 100  # for debug
+
+example_scene_idx = 31
 ########################################################################
 # Load data and configurations
 ########################################################################
@@ -26,7 +28,7 @@ os.environ["L5KIT_DATA_FOLDER"], project_dir = get_dataset_path()
 dm = LocalDataManager(None)
 cfg = load_config_data(project_dir + sample_config)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-########################################################################
+
 dataset_cfg = cfg[source_dataset_name]
 dataset_zarr = ChunkedDataset(dm.require(dataset_cfg["key"])).open()
 n_scenes = len(dataset_zarr.scenes)
@@ -50,26 +52,36 @@ frame_index = 0  # t==0
 
 ego_input_per_scene = sim_dataset.rasterise_frame_batch(frame_index)
 
-scene_index = 0
-print(ego_input_per_scene[scene_index].keys())
 
-# create a new plot with a specific size
+print(ego_input_per_scene[example_scene_idx].keys())
 
+####################################################################################
+# plot
+####################################################################################
 figure_path = Path('custom_filename' + '.html')
 plotting.output_file(figure_path, title="Static HTML file")
 fig = plotting.figure(sizing_mode="stretch_width", max_width=500, height=250)
 output_notebook()
 mapAPI = MapAPI.from_cfg(dm, cfg)
-scene_idx = 0
-scene_dataset = dataset_zarr.get_scene_dataset(scene_idx)
+
+scene_dataset = dataset_zarr.get_scene_dataset(example_scene_idx)
 vis_in = zarr_to_visualizer_scene(scene_dataset, mapAPI, with_trajectories=True)
-vis_out = visualize(scene_idx, vis_in)
+vis_out = visualize(example_scene_idx, vis_in)
 layout, fig = vis_out[0], vis_out[1]
 show(layout)
 plotting.save(fig)
 print('Figure saved at ', figure_path)
+####################################################################################
+# prepare scene_save_dict
 
+####################################################################################
+ego_input = ego_input_per_scene[example_scene_idx]
+# Data format documentation: https://github.com/ramitnv/l5kit/blob/master/docs/data_format.rst
 
-agents_feat = None
-map_feat = None
-scene_save_dict = {'zarr_data': scene_dataset, 'agents_feat': agents_feat,  'map_feat': map_feat}
+agents_feat = dict()
+# The coordinates (in agent reference system) of the AV in the future. Unit is meters
+agents_feat['positions'] = ego_input['target_positions']
+
+map_feat = dict()
+
+scene_save_dict = {'zarr_data': scene_dataset, 'agents_feat': agents_feat, 'map_feat': map_feat}
