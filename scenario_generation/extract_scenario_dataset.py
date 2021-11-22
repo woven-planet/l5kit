@@ -51,7 +51,7 @@ sim_dataset = SimulationDataset.from_dataset_indices(dataset, scene_indices, sim
 frame_index = 0  # t==0
 
 ego_input_per_scene = sim_dataset.rasterise_frame_batch(frame_index)
-
+agents_input_per_scene = sim_dataset.rasterise_agents_frame_batch(frame_index)
 
 print(ego_input_per_scene[example_scene_idx].keys())
 
@@ -76,6 +76,9 @@ print('Figure saved at ', figure_path)
 
 ####################################################################################
 ego_input = ego_input_per_scene[example_scene_idx]
+other_agents_ids = [i for i in ego_input['host_id'] if i != 0]
+n_agents = len(ego_input['host_id']) + 1 #
+agents_input = agents_input_per_scene[example_scene_idx]
 # Data format documentation: https://github.com/ramitnv/l5kit/blob/master/docs/data_format.rst
 
 agents_feat = dict()
@@ -83,5 +86,7 @@ agents_feat = dict()
 agents_feat['positions'] = ego_input['target_positions']
 
 map_feat = dict()
+map_image = ego_input['image']
+# TODO: extract binary map?
 
 scene_save_dict = {'zarr_data': scene_dataset, 'agents_feat': agents_feat, 'map_feat': map_feat}
