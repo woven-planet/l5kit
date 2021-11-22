@@ -49,7 +49,7 @@ sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_ag
 ####################################################################################
 num_scenes_limit = 100  # for debug
 
-scene_idx = 40
+scene_idx = 33
 # for scene_idx...........
 
 # we inspect one scene at aa time (otherwise the program run may stuck)
