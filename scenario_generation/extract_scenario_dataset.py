@@ -17,9 +17,7 @@ from bokeh import plotting
 
 source_dataset_name = "val_data_loader"
 sample_config = "/examples/urban_driver/config.yaml"
-num_scenes_limit = 100  # for debug
 
-scene_idx = 31
 ########################################################################
 # Load data and configurations
 ########################################################################
@@ -32,28 +30,70 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 dataset_cfg = cfg[source_dataset_name]
 dataset_zarr = ChunkedDataset(dm.require(dataset_cfg["key"])).open()
 n_scenes = len(dataset_zarr.scenes)
-n_scenes_used = min(n_scenes, num_scenes_limit)
-scene_indices = list(range(n_scenes_used))
+
+
 
 vectorizer = build_vectorizer(cfg, dm)
 dataset = EgoDatasetVectorized(cfg, dataset_zarr, vectorizer)
 
 print(dataset)
-print(f'Dataset source: {cfg[source_dataset_name]["key"]}, number of scenes total: {n_scenes},'
-      f' num scenes used: {n_scenes_used}')
+print(f'Dataset source: {cfg[source_dataset_name]["key"]}, number of scenes total: {n_scenes}')
 
 num_simulation_steps = 1
 sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=True,
                            distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
                            start_frame_index=0, show_info=True)
 
+####################################################################################
+# Data format documentation: https://github.com/ramitnv/l5kit/blob/master/docs/data_format.rst
+####################################################################################
+
+####################################################################################
+num_scenes_limit = 20  # for debug
+
+scene_idx = 13
+# for scene_idx...........
+
+# we inspect one scene at aa time (otherwise the program run may stuck)
+scene_indices = [scene_idx]
+
 sim_dataset = SimulationDataset.from_dataset_indices(dataset, scene_indices, sim_cfg)
-frame_index = 0  # t==0
+frame_index = 0  # we need only t==0
 
-ego_input_per_scene = sim_dataset.rasterise_frame_batch(frame_index)
-agents_input_per_scene = sim_dataset.rasterise_agents_frame_batch(frame_index)
+ego_input = sim_dataset.rasterise_frame_batch(frame_index)[0]
+agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
 
-print(ego_input_per_scene[scene_idx].keys())
+other_agents_ids = [i for i in ego_input['host_id'] if i != 0]
+
+n_other_agents = len(ego_input['host_id'])
+print('n agents the ego sees = ', n_other_agents)
+i_agent = 1
+agents_input_lst = []
+agents_ids_scene = [ky[1] for ky in agents_input.keys()]
+agents_track_ids = []
+print('agents_ids_scene = ', agents_ids_scene)
+while i_agent in agents_ids_scene:
+    cur_agent_input = agents_input[(scene_idx, i_agent)]
+    agents_input_lst.append(cur_agent_input)
+    agents_track_ids.append(cur_agent_input['track_id'])
+print('n agent in scene = ', len(agents_input))
+
+pass
+
+
+
+# agents_feat = dict()
+# # The coordinates (in agent reference system) of the AV in the future. Unit is meters
+# agents_feat['positions'] = ego_input['target_positions']
+#
+# map_feat = dict()
+# map_image = ego_input['image']
+# # TODO: extract binary map?
+#
+# scene_save_dict = {'zarr_data': scene_dataset, 'agents_feat': agents_feat, 'map_feat': map_feat}
+
+
+
 
 ####################################################################################
 # plot
@@ -71,25 +111,3 @@ layout, fig = vis_out[0], vis_out[1]
 show(layout)
 plotting.save(fig)
 print('Figure saved at ', figure_path)
-####################################################################################
-# prepare scene_save_dict
-
-####################################################################################
-ego_input = ego_input_per_scene[scene_idx]
-other_agents_ids = [i for i in ego_input['host_id'] if i != 0]
-n_agents = len(ego_input['host_id']) + 1
-for i_agent in range(n_agents):
-    agent_id = other_agents_ids[i_agent]
-    agents_input = agents_input_per_scene[(scene_idx, i_agent + 1)]
-    pass
-# Data format documentation: https://github.com/ramitnv/l5kit/blob/master/docs/data_format.rst
-
-agents_feat = dict()
-# The coordinates (in agent reference system) of the AV in the future. Unit is meters
-agents_feat['positions'] = ego_input['target_positions']
-
-map_feat = dict()
-map_image = ego_input['image']
-# TODO: extract binary map?
-
-scene_save_dict = {'zarr_data': scene_dataset, 'agents_feat': agents_feat, 'map_feat': map_feat}
