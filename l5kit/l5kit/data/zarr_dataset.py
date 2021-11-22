@@ -8,7 +8,6 @@ from prettytable import PrettyTable
 from .filter import get_agents_slice_from_frames, get_frames_slice_from_scenes, get_tl_faces_slice_from_frames
 from .labels import PERCEPTION_LABELS, TL_FACE_LABELS
 
-
 # When changing the schema bump this number
 FORMAT_VERSION = 2
 

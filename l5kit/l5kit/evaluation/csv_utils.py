@@ -4,7 +4,6 @@ from typing import Iterator, List, Optional
 
 import numpy as np
 
-
 MAX_MODES = 3
 
 """

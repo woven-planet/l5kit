@@ -6,12 +6,11 @@ from typing import Optional
 import numpy as np
 from zarr import convenience
 
+from .ego import EgoDataset
+from .select_agents import select_agents, TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE
 from ..data import ChunkedDataset, get_agents_slice_from_frames, get_frames_slice_from_scenes
 from ..kinematic import Perturbation
 from ..rasterization import Rasterizer
-from .ego import EgoDataset
-from .select_agents import select_agents, TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE
-
 
 # WARNING: changing these values impact the number of instances selected for both train and inference!
 MIN_FRAME_HISTORY = 10  # minimum number of frames an agents must have in the past to be picked

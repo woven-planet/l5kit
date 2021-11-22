@@ -3,7 +3,6 @@ from typing import Optional
 import numpy as np
 
 from l5kit.vectorization.vectorizer import Vectorizer
-
 from ..data import filter_agents_by_labels, PERCEPTION_LABEL_TO_INDEX
 from ..data.filter import filter_agents_by_track_id
 from ..geometry import compute_agent_pose, rotation33_as_yaw

@@ -40,3 +40,4 @@ sphinx-press-theme = "*"
 types-pyyaml = "*"
 stable-baselines3 = {extras = ["extra"], version = "*"}
 jupyter = "*"
+opencv-python = "*"

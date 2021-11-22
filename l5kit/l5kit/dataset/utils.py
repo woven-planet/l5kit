@@ -3,7 +3,6 @@ from typing import Dict
 import numpy as np
 import torch
 
-
 kMaxStrLength = 70  # Max string length for fixed length byte encoding.
 
 

@@ -21,7 +21,6 @@ from l5kit.data import ChunkedDataset
 from l5kit.data.filter import _get_label_filter  # TODO expose this without digging
 from l5kit.geometry import angular_distance
 
-
 if sys.platform == "darwin":
     multiprocessing.set_start_method("fork", force=True)  # this fixes loop in python 3.8 on MacOS
 

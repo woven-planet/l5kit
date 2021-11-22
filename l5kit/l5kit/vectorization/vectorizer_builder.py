@@ -3,7 +3,6 @@ import numpy as np
 from l5kit.configs.config import load_metadata
 from l5kit.data.map_api import MapAPI
 from l5kit.vectorization.vectorizer import Vectorizer
-
 from ..data import DataManager
 
 

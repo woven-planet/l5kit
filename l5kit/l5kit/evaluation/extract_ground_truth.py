@@ -7,7 +7,6 @@ from l5kit.data import ChunkedDataset
 from l5kit.dataset import AgentDataset
 from l5kit.geometry import transform_points
 from l5kit.rasterization import RenderContext, StubRasterizer
-
 from .csv_utils import write_gt_csv
 
 

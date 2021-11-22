@@ -1,6 +1,8 @@
 from typing import Optional
 
 import torch
+from stable_baselines3.common.logger import Logger
+
 from l5kit.cle.composite_metrics import CompositeMetricAggregator
 from l5kit.cle.scene_type_agg import compute_cle_scene_type_aggregations
 from l5kit.cle.validators import ValidationCountingAggregator
@@ -9,7 +11,6 @@ from l5kit.environment.callbacks import L5KitEvalCallback
 from l5kit.environment.gym_metric_set import CLEMetricSet
 from l5kit.simulation.dataset import SimulationConfig
 from l5kit.simulation.unroll import ClosedLoopSimulator
-from stable_baselines3.common.logger import Logger
 
 
 def eval_model(model: torch.nn.Module, dataset: EgoDataset, logger: Logger, d_set: str, iter_num: int,

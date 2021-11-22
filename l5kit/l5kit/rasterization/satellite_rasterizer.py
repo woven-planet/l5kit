@@ -3,10 +3,10 @@ from typing import List, Optional
 import cv2
 import numpy as np
 
-from ..geometry import rotation33_as_yaw, transform_point
 from .rasterizer import Rasterizer
 from .render_context import RenderContext
 from .satellite_image import get_sat_image_crop_scaled
+from ..geometry import rotation33_as_yaw, transform_point
 
 
 class SatelliteRasterizer(Rasterizer):

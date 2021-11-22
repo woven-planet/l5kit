@@ -6,7 +6,6 @@ from l5kit.configs import load_config_data
 from l5kit.planning.vectorized.closed_loop_model import VectorizedUnrollModel
 from l5kit.tests.planning.common_test import mock_vectorizer_data
 
-
 batch_size = 15  # TODO (@lberg): don't use global
 
 

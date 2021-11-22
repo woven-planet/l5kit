@@ -7,7 +7,6 @@ import pytest
 from l5kit.data import ChunkedDataset
 from l5kit.dataset.select_agents import get_valid_agents, TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE
 
-
 SCENE_LENGTH = 50
 
 get_valid_agents_p = partial(

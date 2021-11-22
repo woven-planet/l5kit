@@ -2,8 +2,6 @@ import cv2
 import numpy as np
 
 from l5kit.configs.config import load_metadata
-
-from ..data import DataManager
 from .box_rasterizer import BoxRasterizer
 from .rasterizer import Rasterizer
 from .render_context import RenderContext
@@ -12,6 +10,7 @@ from .satellite_rasterizer import SatelliteRasterizer
 from .sem_box_rasterizer import SemBoxRasterizer
 from .semantic_rasterizer import SemanticRasterizer
 from .stub_rasterizer import StubRasterizer
+from ..data import DataManager
 
 
 def _load_satellite_map(image_key: str, data_manager: DataManager) -> np.ndarray:

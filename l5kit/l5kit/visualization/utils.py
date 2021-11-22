@@ -5,7 +5,6 @@ import numpy as np
 
 from l5kit.geometry import transform_point, transform_points
 
-
 PREDICTED_POINTS_COLOR = (0, 255, 255)
 TARGET_POINTS_COLOR = (255, 0, 255)
 REFERENCE_TRAJ_COLOR = (255, 255, 0)

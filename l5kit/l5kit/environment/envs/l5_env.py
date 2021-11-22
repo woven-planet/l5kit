@@ -23,7 +23,6 @@ from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.simulation.unroll import (ClosedLoopSimulator, ClosedLoopSimulatorModes, SimulationOutputCLE,
                                      UnrollInputOutput)
 
-
 #: Maximum acceleration magnitude for kinematic model
 MAX_ACC = 6
 #: Maximum steer magnitude for kinematic model

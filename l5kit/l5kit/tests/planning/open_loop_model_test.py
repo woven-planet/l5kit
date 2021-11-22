@@ -6,7 +6,6 @@ from l5kit.configs import load_config_data
 from l5kit.planning.vectorized.open_loop_model import VectorizedModel
 from l5kit.tests.planning.common_test import mock_vectorizer_data
 
-
 batch_size = 15
 
 

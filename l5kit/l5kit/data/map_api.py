@@ -7,10 +7,8 @@ import pymap3d as pm
 
 from l5kit.configs.config import load_metadata
 from l5kit.data import DataManager
-
-from ..geometry import transform_points
 from .proto.road_network_pb2 import GeoFrame, GlobalId, MapElement, MapFragment
-
+from ..geometry import transform_points
 
 CACHE_SIZE = int(1e5)
 ENCODING = "utf-8"

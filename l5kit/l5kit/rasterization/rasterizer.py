@@ -3,7 +3,6 @@ from typing import List, Optional
 
 import numpy as np
 
-
 # Ford Fusion dimensions TODO move somewhere else
 EGO_EXTENT_WIDTH = 1.85
 EGO_EXTENT_LENGTH = 4.87

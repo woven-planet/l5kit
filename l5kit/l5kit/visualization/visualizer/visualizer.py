@@ -4,7 +4,7 @@ from typing import Any, DefaultDict, Dict, List, Set, Tuple
 import bokeh.io
 import bokeh.plotting
 import numpy as np
-from bokeh.layouts import column, LayoutDOM
+from bokeh.layouts import column
 from bokeh.models import CustomJS, HoverTool, Slider, Column
 from bokeh.plotting import ColumnDataSource
 from bokeh.plotting import Figure

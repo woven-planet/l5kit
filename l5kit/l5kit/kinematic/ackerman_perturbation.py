@@ -3,10 +3,10 @@ from typing import Tuple
 
 import numpy as np
 
-from ..geometry import rotation33_as_yaw, yaw_as_rotation33
-from ..random import RandomGenerator
 from .ackerman_steering_model import fit_ackerman_model_exact
 from .perturbation import Perturbation
+from ..geometry import rotation33_as_yaw, yaw_as_rotation33
+from ..random import RandomGenerator
 
 
 def _get_trajectory(past_frames: np.ndarray, future_frames: np.ndarray) -> np.ndarray:

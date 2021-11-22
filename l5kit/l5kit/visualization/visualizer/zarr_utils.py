@@ -16,7 +16,6 @@ from l5kit.simulation.unroll import SimulationOutput, UnrollInputOutput
 from l5kit.visualization.visualizer.common import (AgentVisualization, CWVisualization, EgoVisualization,
                                                    FrameVisualization, LaneVisualization, TrajectoryVisualization)
 
-
 # TODO: this should not be here (maybe a config?)
 COLORS = {
     TLFacesColors.GREEN.name: "#33CC33",

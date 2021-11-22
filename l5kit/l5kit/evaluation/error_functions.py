@@ -3,7 +3,6 @@ from typing import Callable
 
 import torch
 
-
 # Error function type
 ErrorFunction = Callable[[torch.Tensor, torch.Tensor], torch.Tensor]
 

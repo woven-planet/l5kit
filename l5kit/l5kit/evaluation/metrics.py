@@ -6,7 +6,6 @@ import torch
 
 from l5kit.planning import utils
 
-
 metric_signature = Callable[[np.ndarray, np.ndarray, np.ndarray, np.ndarray], np.ndarray]
 
 

@@ -1,17 +1,14 @@
 import os
+
 import torch
+
 from l5kit.configs import load_config_data
-from l5kit.data import LocalDataManager, ChunkedDataset, get_frames_slice_from_scenes
-from l5kit.dataset import EgoDatasetVectorized
-from l5kit.vectorization.vectorizer_builder import build_vectorizer
+from l5kit.data import LocalDataManager, ChunkedDataset
 from l5kit.data import get_dataset_path
-from l5kit.sampling.agent_sampling_vectorized import generate_agent_sample_vectorized
-from torch.utils.data.dataloader import default_collate
-from l5kit.dataset.utils import move_to_device, move_to_numpy
-from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
+from l5kit.dataset import EgoDatasetVectorized
+from l5kit.simulation.dataset import SimulationConfig
 from l5kit.simulation.unroll import ClosedLoopSimulator
-from l5kit.dataset import EgoDataset
-from l5kit.rasterization import build_rasterizer
+from l5kit.vectorization.vectorizer_builder import build_vectorizer
 
 
 ############################################################################################

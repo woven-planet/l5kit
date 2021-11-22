@@ -3,7 +3,6 @@ from setuptools import find_packages, setup
 
 from l5kit import __version__
 
-
 setup(
     name="l5kit",
     version=__version__,

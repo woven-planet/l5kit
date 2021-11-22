@@ -5,12 +5,11 @@ from typing import Dict, List, Optional
 import cv2
 import numpy as np
 
+from .rasterizer import Rasterizer
+from .render_context import RenderContext
 from ..data.filter import filter_tl_faces_by_status
 from ..data.map_api import InterpolationMethod, MapAPI, TLFacesColors
 from ..geometry import rotation33_as_yaw, transform_point, transform_points
-from .rasterizer import Rasterizer
-from .render_context import RenderContext
-
 
 # sub-pixel drawing precision constants
 CV2_SUB_VALUES = {"shift": 9, "lineType": cv2.LINE_AA}

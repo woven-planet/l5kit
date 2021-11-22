@@ -2,13 +2,6 @@ import pathlib
 
 import numpy as np
 import torch
-from l5kit.configs import load_config_data
-from l5kit.data import ChunkedDataset, LocalDataManager
-from l5kit.dataset import EgoDataset
-from l5kit.kinematic import AckermanPerturbation
-from l5kit.planning.rasterized.model import RasterizedPlanningModel
-from l5kit.random import GaussianRandomGenerator
-from l5kit.rasterization import build_rasterizer
 from stable_baselines3.common import utils
 from torch import nn, optim
 from torch.utils.data import DataLoader
@@ -16,6 +9,13 @@ from torch.utils.data.sampler import SubsetRandomSampler
 from tqdm import tqdm
 
 from drivenet_eval import eval_model
+from l5kit.configs import load_config_data
+from l5kit.data import ChunkedDataset, LocalDataManager
+from l5kit.dataset import EgoDataset
+from l5kit.kinematic import AckermanPerturbation
+from l5kit.planning.rasterized.model import RasterizedPlanningModel
+from l5kit.random import GaussianRandomGenerator
+from l5kit.rasterization import build_rasterizer
 
 dm = LocalDataManager(None)
 # get config

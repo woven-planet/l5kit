@@ -2,13 +2,13 @@ from typing import List, Optional, Tuple
 
 import numpy as np
 
+from .slicing import get_future_slice, get_history_slice
 from ..data import (filter_agents_by_labels, filter_tl_faces_by_frames, get_agents_slice_from_frames,
                     get_tl_faces_slice_from_frames)
 from ..data.filter import filter_agents_by_frames, filter_agents_by_track_id
 from ..geometry import angular_distance, compute_agent_pose, rotation33_as_yaw, transform_points
 from ..kinematic import Perturbation
 from ..rasterization import EGO_EXTENT_HEIGHT, EGO_EXTENT_LENGTH, EGO_EXTENT_WIDTH, Rasterizer, RenderContext
-from .slicing import get_future_slice, get_history_slice
 
 
 def get_agent_context(
