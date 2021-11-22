@@ -1,6 +1,6 @@
 import os
 from pathlib import Path
-
+import numpy as np
 import torch
 from bokeh import plotting
 from bokeh.io import output_notebook, show
@@ -31,16 +31,13 @@ device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 dataset_cfg = cfg[source_dataset_name]
 dataset_zarr = ChunkedDataset(dm.require(dataset_cfg["key"])).open()
 n_scenes = len(dataset_zarr.scenes)
-
-
-
 vectorizer = build_vectorizer(cfg, dm)
 dataset = EgoDatasetVectorized(cfg, dataset_zarr, vectorizer)
 
 print(dataset)
 print(f'Dataset source: {cfg[source_dataset_name]["key"]}, number of scenes total: {n_scenes}')
 
-num_simulation_steps = 1
+num_simulation_steps = 5
 sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=True,
                            distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
                            start_frame_index=0, show_info=True)
@@ -50,16 +47,16 @@ sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_ag
 ####################################################################################
 
 ####################################################################################
-num_scenes_limit = 20  # for debug
+num_scenes_limit = 100  # for debug
 
-scene_idx = 13
+scene_idx = 40
 # for scene_idx...........
 
 # we inspect one scene at aa time (otherwise the program run may stuck)
 scene_indices = [scene_idx]
 
 sim_dataset = SimulationDataset.from_dataset_indices(dataset, scene_indices, sim_cfg)
-frame_index = 0  # we need only t==0
+frame_index = 2  # we need only the initial t, but to get the speed we need to start at frame_index = 2
 
 ego_input = sim_dataset.rasterise_frame_batch(frame_index)[0]
 agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
@@ -89,6 +86,10 @@ ego_speed = ego_input['speed']
 ego_extent = ego_input['extent']
 
 agents_feat = []
+# add the ego car (in ego coord system):
+agents_feat.append({'track_id': ego_input['track_id'], 'agent_type': ego_input['type'], 'yaw': 0.,
+                    'centroid': np.array([0, 0]), 'speed':  ego_input['speed'], 'extent': ego_input['extent']})
+
 map_feat = []
 for i_agent in agents_ids_scene:
     cur_agent_in = agents_input[(scene_idx, i_agent)]
@@ -105,8 +106,10 @@ for i_agent in agents_ids_scene:
                         'centroid': centroid, 'speed': speed, 'extent': extent})
 # TODO: add ego to agents_feat
     pass
+
 print('agents centroids: ', [af['centroid'] for af in agents_feat])
 print('agents yaws: ', [af['yaw'] for af in agents_feat])
+print('agents speed: ', [af['speed'] for af in agents_feat])
 # print('agents_feat: ', agents_feat)
 # print('map_feat: ', map_feat)
 
@@ -144,3 +147,19 @@ layout, fig = vis_out[0], vis_out[1]
 show(layout)
 plotting.save(fig)
 print('Figure saved at ', figure_path)
+
+
+####################################################################################
+# Debug plot
+####################################################################################
+import matplotlib.pyplot as plt
+
+X = [af['centroid'][0] for af in agents_feat]
+Y = [af['centroid'][1] for af in agents_feat]
+U = [af['speed'] * np.cos(af['yaw']) for af in agents_feat]
+V = [af['speed'] * np.sin(af['yaw']) for af in agents_feat]
+plt.figure()
+plt.quiver(X, Y, U, V, units='xy', color='b')
+plt.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r')  # draw ego
+plt.grid()
+plt.show()
