@@ -72,7 +72,7 @@ agents_input_lst = []
 agents_ids_scene = [ky[1] for ky in agents_input.keys()]
 agents_track_ids = []
 print('agents_ids_scene = ', agents_ids_scene)
-while i_agent in agents_ids_scene:
+for i_agent in agents_ids_scene:
     cur_agent_input = agents_input[(scene_idx, i_agent)]
     agents_input_lst.append(cur_agent_input)
     agents_track_ids.append(cur_agent_input['track_id'])
