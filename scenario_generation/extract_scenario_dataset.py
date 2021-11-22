@@ -19,7 +19,7 @@ source_dataset_name = "val_data_loader"
 sample_config = "/examples/urban_driver/config.yaml"
 num_scenes_limit = 100  # for debug
 
-example_scene_idx = 31
+scene_idx = 31
 ########################################################################
 # Load data and configurations
 ########################################################################
@@ -53,7 +53,7 @@ frame_index = 0  # t==0
 ego_input_per_scene = sim_dataset.rasterise_frame_batch(frame_index)
 agents_input_per_scene = sim_dataset.rasterise_agents_frame_batch(frame_index)
 
-print(ego_input_per_scene[example_scene_idx].keys())
+print(ego_input_per_scene[scene_idx].keys())
 
 ####################################################################################
 # plot
@@ -64,9 +64,9 @@ fig = plotting.figure(sizing_mode="stretch_width", max_width=500, height=250)
 output_notebook()
 mapAPI = MapAPI.from_cfg(dm, cfg)
 
-scene_dataset = dataset_zarr.get_scene_dataset(example_scene_idx)
+scene_dataset = dataset_zarr.get_scene_dataset(scene_idx)
 vis_in = zarr_to_visualizer_scene(scene_dataset, mapAPI, with_trajectories=True)
-vis_out = visualize(example_scene_idx, vis_in)
+vis_out = visualize(scene_idx, vis_in)
 layout, fig = vis_out[0], vis_out[1]
 show(layout)
 plotting.save(fig)
@@ -75,10 +75,13 @@ print('Figure saved at ', figure_path)
 # prepare scene_save_dict
 
 ####################################################################################
-ego_input = ego_input_per_scene[example_scene_idx]
+ego_input = ego_input_per_scene[scene_idx]
 other_agents_ids = [i for i in ego_input['host_id'] if i != 0]
-n_agents = len(ego_input['host_id']) + 1 #
-agents_input = agents_input_per_scene[example_scene_idx]
+n_agents = len(ego_input['host_id']) + 1
+for i_agent in range(n_agents):
+    agent_id = other_agents_ids[i_agent]
+    agents_input = agents_input_per_scene[(scene_idx, i_agent + 1)]
+    pass
 # Data format documentation: https://github.com/ramitnv/l5kit/blob/master/docs/data_format.rst
 
 agents_feat = dict()
