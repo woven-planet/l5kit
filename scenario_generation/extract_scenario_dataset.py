@@ -85,6 +85,8 @@ agents_feat:
 ego_from_world_rot_mat = ego_input['agent_from_world']
 ego_centroid = ego_input['centroid']
 ego_yaw = ego_input['yaw']
+ego_speed = ego_input['speed']
+ego_extent = ego_input['extent']
 
 agents_feat = []
 map_feat = []
@@ -95,13 +97,13 @@ for i_agent in agents_ids_scene:
     agent_type = cur_agent_in['type']
     centroid_in_world = cur_agent_in['centroid']
     centroid = transform_point(centroid_in_world, ego_from_world_rot_mat)  # translation and rotation to ego system
-    yaw_in_world = cur_agent_in['yaw'] # translation and rotation to ego system
+    yaw_in_world = cur_agent_in['yaw']  # translation and rotation to ego system
     yaw = yaw_in_world - ego_yaw
     speed = cur_agent_in['speed']
     extent = cur_agent_in['extent']
     agents_feat.append({'track_id': track_id, 'agent_type': agent_type, 'yaw': yaw,
                         'centroid': centroid, 'speed': speed, 'extent': extent})
-    # TODO: transform to ego coords + add ego to list
+# TODO: add ego to agents_feat
     pass
 print('agents centroids: ', [af['centroid'] for af in agents_feat])
 print('agents yaws: ', [af['yaw'] for af in agents_feat])
