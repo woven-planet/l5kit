@@ -4,6 +4,8 @@ import numpy as np
 import torch
 from bokeh import plotting
 from bokeh.io import output_notebook, show
+import matplotlib.pyplot as plt
+import numpy as np
 
 from l5kit.configs import load_config_data
 from l5kit.data import LocalDataManager, ChunkedDataset
@@ -76,8 +78,7 @@ ego_extent = ego_input['extent']
 agents_feat = []
 # add the ego car (in ego coord system):
 agents_feat.append({'track_id': ego_input['track_id'], 'agent_type': ego_input['type'], 'yaw': 0.,
-                    'centroid': np.array([0, 0]), 'speed':  ego_input['speed'], 'extent': ego_input['extent']})
-
+                    'centroid': np.array([0, 0]), 'speed': ego_input['speed'], 'extent': ego_input['extent']})
 
 for i_agent in agents_ids_scene:
     cur_agent_in = agents_input[(scene_idx, i_agent)]
@@ -93,48 +94,47 @@ for i_agent in agents_ids_scene:
     agents_feat.append({'track_id': track_id,
                         'agent_type': agent_type,
                         'yaw': yaw,  # yaw angle in the agent in ego coord system [rad]
-                        'centroid': centroid,   # x,y position of the agent in ego coord system [m]
+                        'centroid': centroid,  # x,y position of the agent in ego coord system [m]
                         'speed': speed,  # speed [m/s ?]
                         'extent': extent})  # [length?, width?]  [m]
-
 
 print('agents centroids: ', [af['centroid'] for af in agents_feat])
 print('agents yaws: ', [af['yaw'] for af in agents_feat])
 print('agents speed: ', [af['speed'] for af in agents_feat])
 print('agents types: ', [af['agent_type'] for af in agents_feat])
 
-# Get map features in ego coords
+###################################################################
+# Debug
+# plt.subplot(311)
+# plt.imshow(ego_input['lanes_availabilities'])
+# plt.subplot(312)
+# plt.imshow(ego_input['lanes'][:, :, 0] != 0.0)
+# plt.subplot(313)
+# plt.imshow(ego_input['lanes'][:, :, 1] != 0.0)
+# plt.show()
+################################################################33
+lane_x = []
+lane_y = []
+lane_left_x = []
+lane_left_y = []
+lane_right_x = []
+lane_right_y = []
+i_elem = 0
+i_point = 0
+for i_elem in range(ego_input['lanes'].shape[0]):
+    lane_x.append([])
+    lane_y.append([])
+    for i_point in range(ego_input['lanes'].shape[1]):
+        if not ego_input['lanes_availabilities'][i_elem, i_point]:
+            continue
+        lane_x[-1].append(ego_input['lanes'][i_elem, i_point, 0])
+        lane_y[-1].append(ego_input['lanes'][i_elem, i_point, 1])
+lane_x = [lst for lst in lane_x if lst != []]
+lane_y = [lst for lst in lane_y if lst != []]
 
-n_elements = ego_input['lanes'].shape[1]
-map_feat = dict()
+# transform_points(agents_input[(0, 1)]['lanes_mid'][:, :, :2], agents_input[(0, 1)]["world_from_agent"])[:2, :, :]transform_points(agents_input[(0, 1)]['lanes_mid'][:, :, :2], agents_input[(0, 1)]["world_from_agent"])[:2, :, :]
 
-fields = ['lane_left_x', 'lane_left_y', 'lane_right_x', 'lane_right_y']
-for fld in fields:
-    map_feat[fld] = []
-for i_elem in  range(n_elements):
-    n_points = ego_input['lanes_availabilities'][:, i_elem].sum()
-    if n_points == 0:
-        break
-    for fld in fields:
-        map_feat[fld].append([])
-    for i_point in range(0, n_points, 2):
-        map_feat['lane_left_x'][i_elem].append(ego_input['lanes'][i_point, i_elem, 0])
-        map_feat['lane_left_y'][i_elem].append(ego_input['lanes'][i_point, i_elem, 1])
-        map_feat['lane_right_x'][i_elem].append(ego_input['lanes'][i_point + 1, i_elem, 0])
-        map_feat['lane_right_y'][i_elem].append(ego_input['lanes'][i_point + 1, i_elem, 1])
-map_feat['n_lane_elem'] = len(map_feat['lane_left_x'])
-
-pass
-# agents_feat = dict()
-# # The coordinates (in agent reference system) of the AV in the future. Unit is meters
-# agents_feat['positions'] = ego_input['target_positions']
-#
-# map_feat = dict()
-# map_image = ego_input['image']
-# # TODO: extract binary map?
-#
-# scene_save_dict = {'zarr_data': scene_dataset, 'agents_feat': agents_feat, 'map_feat': map_feat}
-
+map_feat = {'lane_x': lane_x, 'lane_y': lane_y}
 
 ####################################################################################
 # plot
@@ -154,8 +154,7 @@ plotting.save(fig)
 print('Figure saved at ', figure_path)
 
 ####################################################################################
-# Debug plot
-####################################################################################
+
 import matplotlib.pyplot as plt
 
 X = [af['centroid'][0] for af in agents_feat]
@@ -166,14 +165,68 @@ fig, ax = plt.subplots()
 ax.quiver(X, Y, U, V, units='xy', color='b')
 ax.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r')  # draw ego
 
-for i_elem in range(map_feat['n_lane_elem']):
-    left_x = map_feat['lane_left_x'][i_elem]
-    left_y = map_feat['lane_left_y'][i_elem]
-    right_x = map_feat['lane_right_x'][i_elem]
-    right_y = map_feat['lane_right_y'][i_elem]
-    x = np.concatenate((left_x, right_x))
-    y = np.concatenate((left_y, right_y))
+for i_elem in range(len(map_feat['lane_x'])):
+    x = map_feat['lane_x'][i_elem]
+    y = map_feat['lane_y'][i_elem]
     ax.fill(x, y, facecolor='0.4', alpha=0.2)
+
 ax.grid()
 plt.show()
 pass
+##############################################################################################3
+
+# for i_elem in range(map_feat['n_lane_elem']):
+#     left_x = map_feat['lane_left_x'][i_elem]
+#     left_y = map_feat['lane_left_y'][i_elem]
+#     right_x = map_feat['lane_right_x'][i_elem]
+#     right_y = map_feat['lane_right_y'][i_elem]
+#     x = np.concatenate((left_x, right_x))
+#     y = np.concatenate((left_y, right_y))
+#     ax.fill(x, y, facecolor='0.4', alpha=0.2)
+# for i_elem in range(map_feat['n_lane_elem']):
+#     x = map_feat['lane_x'][i_elem]
+#     y = map_feat['lane_y'][i_elem]
+
+
+# agents_feat = dict()
+# # The coordinates (in agent reference system) of the AV in the future. Unit is meters
+# agents_feat['positions'] = ego_input['target_positions']
+#
+# map_feat = dict()
+# map_image = ego_input['image']
+# # extract binary map?
+#
+# scene_save_dict = {'zarr_data': scene_dataset, 'agents_feat': agents_feat, 'map_feat': map_feat}
+
+
+# Get map features in ego coords
+
+# n_elements = ego_input['lanes'].shape[0]
+
+# lane_x = ego_input['lanes'][0, :, 0]
+# lane_y = ego_input['lanes'][0, :, 0]
+#
+# map_feat = {'lane_x': lane_x, 'lane_y': lane_y}
+
+# # fields = ['lane_left_x', 'lane_left_y', 'lane_right_x', 'lane_right_y', 'lane_x', 'lane_y']
+# fields = ['lane_x', 'lane_y']
+#
+# for fld in fields:
+#     map_feat[fld] = []
+# for i_elem in range(n_elements):
+#     n_points = ego_input['lanes_availabilities'][i_elem, :].sum()
+#     if n_points == 0:
+#         continue
+#     for fld in fields:
+#         map_feat[fld].append([])
+#     # for i_point in range(0, n_points, 2):
+#     #     map_feat['lane_left_x'][i_elem].append(ego_input['lanes'][i_elem, i_point, 0])
+#     #     map_feat['lane_left_y'][i_elem].append(ego_input['lanes'][i_point, i_elem, 1])
+#     #     map_feat['lane_right_x'][i_elem].append(ego_input['lanes'][i_point + 1, i_elem, 0])
+#     #     map_feat['lane_right_y'][i_elem].append(ego_input['lanes'][i_point + 1, i_elem, 1])
+#     for i_point in range(n_points):
+#         if ego_input['lanes_availabilities'][i_elem, i_point].sum():
+#             map_feat['lane_x'][i_elem].append(ego_input['lanes'][i_elem, i_point, 0])
+#             map_feat['lane_y'][i_elem].append(ego_input['lanes'][i_elem, i_point, 1])
+#
+# map_feat['n_lane_elem'] = len(map_feat['lane_left_x'])
