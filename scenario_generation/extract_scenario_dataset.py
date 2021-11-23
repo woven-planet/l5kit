@@ -51,7 +51,7 @@ sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_ag
 ####################################################################################
 num_scenes_limit = 100  # for debug
 
-scene_idx = 33
+scene_idx = 34
 # for scene_idx...........
 
 # we inspect one scene at aa time (otherwise the program run may stuck)
@@ -168,7 +168,7 @@ ax.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r')  # draw ego
 for i_elem in range(len(map_feat['lane_x'])):
     x = map_feat['lane_x'][i_elem]
     y = map_feat['lane_y'][i_elem]
-    ax.fill(x, y, facecolor='0.4', alpha=0.2)
+    ax.fill(x, y, facecolor='0.4', alpha=0.3, edgecolor='black', linewidth=1)
 
 ax.grid()
 plt.show()
