@@ -132,8 +132,6 @@ for i_elem in range(ego_input['lanes'].shape[0]):
 lane_x = [lst for lst in lane_x if lst != []]
 lane_y = [lst for lst in lane_y if lst != []]
 
-# transform_points(agents_input[(0, 1)]['lanes_mid'][:, :, :2], agents_input[(0, 1)]["world_from_agent"])[:2, :, :]transform_points(agents_input[(0, 1)]['lanes_mid'][:, :, :2], agents_input[(0, 1)]["world_from_agent"])[:2, :, :]
-
 map_feat = {'lane_x': lane_x, 'lane_y': lane_y}
 
 ####################################################################################
@@ -166,9 +164,13 @@ ax.quiver(X, Y, U, V, units='xy', color='b')
 ax.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r')  # draw ego
 
 for i_elem in range(len(map_feat['lane_x'])):
+    if i_elem % 2:
+        edgecolor = 'black'
+    else:
+        edgecolor = 'brown'
     x = map_feat['lane_x'][i_elem]
     y = map_feat['lane_y'][i_elem]
-    ax.fill(x, y, facecolor='0.4', alpha=0.3, edgecolor='black', linewidth=1)
+    ax.fill(x, y, facecolor='0.4', alpha=0.3, edgecolor=edgecolor, linewidth=1)
 
 ax.grid()
 plt.show()
