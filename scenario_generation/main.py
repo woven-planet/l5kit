@@ -42,12 +42,13 @@ sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_ag
                            distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
                            start_frame_index=0, show_info=True)
 
-# scene_indices = [22, 23]
+# scene_indices = [48, 49]
 scene_indices = list(range(n_scenes))
 
-agents_feat, map_feat = get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0)
+agents_feat, map_feat = get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=1)
 
 
 save_file_path = 'scene_data_sample.pkl'
 with open(save_file_path, 'wb') as fid:
     pickle.dump([agents_feat, map_feat], fid)
+print('Saved data at ', save_file_path)

@@ -1,20 +1,12 @@
-import os
+
 from pathlib import Path
 import numpy as np
-import torch
 from bokeh import plotting
 from bokeh.io import output_notebook, show
 import matplotlib.pyplot as plt
-
-
-from l5kit.configs import load_config_data
-from l5kit.data import LocalDataManager, ChunkedDataset
 from l5kit.data import MapAPI
-from l5kit.data import get_dataset_path
-from l5kit.dataset import EgoDatasetVectorized
 from l5kit.geometry.transform import transform_point
-from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
-from l5kit.vectorization.vectorizer_builder import build_vectorizer
+from l5kit.simulation.dataset import  SimulationDataset
 from l5kit.visualization.visualizer.visualizer import visualize
 from l5kit.visualization.visualizer.zarr_utils import zarr_to_visualizer_scene
 
@@ -30,20 +22,21 @@ def get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, ver
     sim_dataset = SimulationDataset.from_dataset_indices(dataset, scene_indices, sim_cfg)
     frame_index = 2  # we need only the initial t, but to get the speed we need to start at frame_index = 2
 
+    ego_input_all = sim_dataset.rasterise_frame_batch(frame_index)
+    agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
+
+    agent_ids_per_scene = {}
+    for (scene_idx, agent_id) in agents_input.keys():
+        if scene_idx not in agent_ids_per_scene:
+            agent_ids_per_scene[scene_idx] = [agent_id]
+        else:
+            agent_ids_per_scene[scene_idx].append(agent_id)
+
     map_feat = []  # agents features per scene
     agents_feat = []  # map features per scene
 
     for i_scene, scene_idx in enumerate(scene_indices):
-        print(f'Scene #{i_scene+1} of  {len(scene_indices)}')
-        ego_input = sim_dataset.rasterise_frame_batch(frame_index)[i_scene]
-        agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
-
-        agent_ids_per_scene = {}
-        for (scene_id, agent_id) in agents_input.keys():
-            if scene_id not in agent_ids_per_scene:
-                agent_ids_per_scene[scene_id] = [agent_id]
-            else:
-                agent_ids_per_scene[scene_id].append(agent_id)
+        print(f'Extracting scene #{i_scene + 1} out of {len(scene_indices)}')
 
         agents_input_lst = []
         agents_ids_scene = [ky[1] for ky in agents_input.keys()]
@@ -52,6 +45,7 @@ def get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, ver
             print('agents_ids_scene = ', agents_ids_scene)
             print('n agent in scene = ', len(agents_input))
 
+        ego_input = ego_input_all[i_scene]
         ego_from_world = ego_input['agent_from_world']
         ego_yaw = ego_input['yaw']
         ego_speed = ego_input['speed']
@@ -60,25 +54,26 @@ def get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, ver
         agents_feat.append([])
         # add the ego car (in ego coord system):
         agents_feat[-1].append({'track_id': ego_input['track_id'], 'agent_type': ego_input['type'], 'yaw': 0.,
-                            'centroid': np.array([0, 0]), 'speed': ego_speed, 'extent': ego_extent})
+                                'centroid': np.array([0, 0]), 'speed': ego_speed, 'extent': ego_extent})
 
-        for agent_id in agent_ids_per_scene[scene_idx]:
-            cur_agent_in = agents_input[(scene_idx, agent_id)]
-            agents_input_lst.append(cur_agent_in)
-            track_id = cur_agent_in['track_id']
-            agent_type = cur_agent_in['type']
-            centroid_in_world = cur_agent_in['centroid']
-            centroid = transform_point(centroid_in_world, ego_from_world)  # translation and rotation to ego system
-            yaw_in_world = cur_agent_in['yaw']  # translation and rotation to ego system
-            yaw = yaw_in_world - ego_yaw
-            speed = cur_agent_in['speed']
-            extent = cur_agent_in['extent']
-            agents_feat[-1].append({'track_id': track_id,
-                                'agent_type': agent_type,
-                                'yaw': yaw,  # yaw angle in the agent in ego coord system [rad]
-                                'centroid': centroid,  # x,y position of the agent in ego coord system [m]
-                                'speed': speed,  # speed [m/s ?]
-                                'extent': extent})  # [length?, width?]  [m]
+        if scene_idx in agent_ids_per_scene:  # if there are other agents besides the ego
+            for agent_id in agent_ids_per_scene[scene_idx]:
+                cur_agent_in = agents_input[(scene_idx, agent_id)]
+                agents_input_lst.append(cur_agent_in)
+                track_id = cur_agent_in['track_id']
+                agent_type = cur_agent_in['type']
+                centroid_in_world = cur_agent_in['centroid']
+                centroid = transform_point(centroid_in_world, ego_from_world)  # translation and rotation to ego system
+                yaw_in_world = cur_agent_in['yaw']  # translation and rotation to ego system
+                yaw = yaw_in_world - ego_yaw
+                speed = cur_agent_in['speed']
+                extent = cur_agent_in['extent']
+                agents_feat[-1].append({'track_id': track_id,
+                                        'agent_type': agent_type,
+                                        'yaw': yaw,  # yaw angle in the agent in ego coord system [rad]
+                                        'centroid': centroid,  # x,y position of the agent in ego coord system [m]
+                                        'speed': speed,  # speed [m/s ?]
+                                        'extent': extent})  # [length?, width?]  [m]
         # Get Lanes
         lane_x = []
         lane_y = []
@@ -93,13 +88,15 @@ def get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, ver
         lane_x = [lst for lst in lane_x if lst != []]
         lane_y = [lst for lst in lane_y if lst != []]
         map_feat.append({'lane_x': lane_x, 'lane_y': lane_y, 'lanes_mat': ego_input['lanes'],
-                         'lanes_availabilities_mat' : ego_input['lanes_availabilities']})
+                         'lanes_availabilities_mat': ego_input['lanes_availabilities']})
 
         if verbose and i_scene == 0:
             visualize_scene(dataset_zarr, cfg, dm, scene_idx)
             visualize_scene_feat(agents_feat[-1], map_feat[-1])
 
     return agents_feat, map_feat
+
+
 ####################################################################################
 
 def visualize_scene(dataset_zarr, cfg, dm, scene_idx):
@@ -116,6 +113,7 @@ def visualize_scene(dataset_zarr, cfg, dm, scene_idx):
     show(layout)
     plotting.save(fig)
     print('Figure saved at ', figure_path)
+
 
 ####################################################################################
 
@@ -146,11 +144,11 @@ def visualize_scene_feat(agents_feat, map_feat):
     plt.show()
 ##############################################################################################3
 
-    # Debug
-    # plt.subplot(311)
-    # plt.imshow(ego_input['lanes_availabilities'])
-    # plt.subplot(312)
-    # plt.imshow(ego_input['lanes'][:, :, 0] != 0.0)
-    # plt.subplot(313)
-    # plt.imshow(ego_input['lanes'][:, :, 1] != 0.0)
-    # plt.show()
+# Debug
+# plt.subplot(311)
+# plt.imshow(ego_input['lanes_availabilities'])
+# plt.subplot(312)
+# plt.imshow(ego_input['lanes'][:, :, 0] != 0.0)
+# plt.subplot(313)
+# plt.imshow(ego_input['lanes'][:, :, 1] != 0.0)
+# plt.show()
