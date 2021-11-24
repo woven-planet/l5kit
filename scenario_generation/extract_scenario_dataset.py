@@ -18,8 +18,11 @@ from l5kit.vectorization.vectorizer_builder import build_vectorizer
 from l5kit.visualization.visualizer.visualizer import visualize
 from l5kit.visualization.visualizer.zarr_utils import zarr_to_visualizer_scene
 
-source_dataset_name = "val_data_loader"
-sample_config = "/examples/urban_driver/config.yaml"
+source_dataset_name = "train_data_loader"
+sample_config = "/scenario_generation/config_sample.yaml"
+# Our changes:
+# max_retrieval_distance_m: 60
+# train_data_loader:  key: "scenes/sample.zarr"
 
 ########################################################################
 # Load data and configurations
@@ -49,9 +52,7 @@ sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_ag
 ####################################################################################
 
 ####################################################################################
-num_scenes_limit = 100  # for debug
-
-scene_idx = 34
+scene_idx = 22
 # for scene_idx...........
 
 # we inspect one scene at aa time (otherwise the program run may stuck)
@@ -176,59 +177,3 @@ ax.grid()
 plt.show()
 pass
 ##############################################################################################3
-
-# for i_elem in range(map_feat['n_lane_elem']):
-#     left_x = map_feat['lane_left_x'][i_elem]
-#     left_y = map_feat['lane_left_y'][i_elem]
-#     right_x = map_feat['lane_right_x'][i_elem]
-#     right_y = map_feat['lane_right_y'][i_elem]
-#     x = np.concatenate((left_x, right_x))
-#     y = np.concatenate((left_y, right_y))
-#     ax.fill(x, y, facecolor='0.4', alpha=0.2)
-# for i_elem in range(map_feat['n_lane_elem']):
-#     x = map_feat['lane_x'][i_elem]
-#     y = map_feat['lane_y'][i_elem]
-
-
-# agents_feat = dict()
-# # The coordinates (in agent reference system) of the AV in the future. Unit is meters
-# agents_feat['positions'] = ego_input['target_positions']
-#
-# map_feat = dict()
-# map_image = ego_input['image']
-# # extract binary map?
-#
-# scene_save_dict = {'zarr_data': scene_dataset, 'agents_feat': agents_feat, 'map_feat': map_feat}
-
-
-# Get map features in ego coords
-
-# n_elements = ego_input['lanes'].shape[0]
-
-# lane_x = ego_input['lanes'][0, :, 0]
-# lane_y = ego_input['lanes'][0, :, 0]
-#
-# map_feat = {'lane_x': lane_x, 'lane_y': lane_y}
-
-# # fields = ['lane_left_x', 'lane_left_y', 'lane_right_x', 'lane_right_y', 'lane_x', 'lane_y']
-# fields = ['lane_x', 'lane_y']
-#
-# for fld in fields:
-#     map_feat[fld] = []
-# for i_elem in range(n_elements):
-#     n_points = ego_input['lanes_availabilities'][i_elem, :].sum()
-#     if n_points == 0:
-#         continue
-#     for fld in fields:
-#         map_feat[fld].append([])
-#     # for i_point in range(0, n_points, 2):
-#     #     map_feat['lane_left_x'][i_elem].append(ego_input['lanes'][i_elem, i_point, 0])
-#     #     map_feat['lane_left_y'][i_elem].append(ego_input['lanes'][i_point, i_elem, 1])
-#     #     map_feat['lane_right_x'][i_elem].append(ego_input['lanes'][i_point + 1, i_elem, 0])
-#     #     map_feat['lane_right_y'][i_elem].append(ego_input['lanes'][i_point + 1, i_elem, 1])
-#     for i_point in range(n_points):
-#         if ego_input['lanes_availabilities'][i_elem, i_point].sum():
-#             map_feat['lane_x'][i_elem].append(ego_input['lanes'][i_elem, i_point, 0])
-#             map_feat['lane_y'][i_elem].append(ego_input['lanes'][i_elem, i_point, 1])
-#
-# map_feat['n_lane_elem'] = len(map_feat['lane_left_x'])
