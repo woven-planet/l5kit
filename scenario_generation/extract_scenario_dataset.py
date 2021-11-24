@@ -34,6 +34,7 @@ def get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, ver
     agents_feat = []  # map features per scene
 
     for i_scene, scene_idx in enumerate(scene_indices):
+        print(f'Scene #{i_scene+1} of  {len(scene_indices)}')
         ego_input = sim_dataset.rasterise_frame_batch(frame_index)[i_scene]
         agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
 
@@ -47,8 +48,9 @@ def get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, ver
         agents_input_lst = []
         agents_ids_scene = [ky[1] for ky in agents_input.keys()]
 
-        print('agents_ids_scene = ', agents_ids_scene)
-        print('n agent in scene = ', len(agents_input))
+        if verbose:
+            print('agents_ids_scene = ', agents_ids_scene)
+            print('n agent in scene = ', len(agents_input))
 
         ego_from_world = ego_input['agent_from_world']
         ego_yaw = ego_input['yaw']
