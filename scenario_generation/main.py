@@ -17,7 +17,7 @@ source_dataset_name = "train_data_loader"
 sample_config = "/scenario_generation/config_sample.yaml"
 # Our changes:
 # max_retrieval_distance_m: 60
-# train_data_loader:  key: "scenes/sample.zarr"
+# train_data_loader:  key: "scenes/train.zarr"
 
 ########################################################################
 # Load data and configurations
@@ -45,10 +45,10 @@ sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_ag
 # scene_indices = [48, 49]
 scene_indices = list(range(n_scenes))
 
-agents_feat, map_feat = get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=1)
+agents_feat, map_feat = get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0)
 
 
-save_file_path = 'scene_data_sample.pkl'
+save_file_path = f'data_of_{len(scene_indices)}_scenes.pkl'
 with open(save_file_path, 'wb') as fid:
     pickle.dump([agents_feat, map_feat], fid)
-print('Saved data at ', save_file_path)
+print(f'Saved data of {len(scene_indices)} scenes at ', save_file_path)
