@@ -75,20 +75,26 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
                                         'speed': speed,  # speed [m/s ?]
                                         'extent': extent})  # [length?, width?]  [m]
         # Get Lanes
-        lane_x = []
-        lane_y = []
+        lane_x_lst = []
+        lanes_y_lst = []
         for i_elem in range(ego_input['lanes'].shape[0]):
-            lane_x.append([])
-            lane_y.append([])
+            lane_x_lst.append([])
+            lanes_y_lst.append([])
             for i_point in range(ego_input['lanes'].shape[1]):
                 if not ego_input['lanes_availabilities'][i_elem, i_point]:
                     continue
-                lane_x[-1].append(ego_input['lanes'][i_elem, i_point, 0])
-                lane_y[-1].append(ego_input['lanes'][i_elem, i_point, 1])
-        lane_x = [lst for lst in lane_x if lst != []]
-        lane_y = [lst for lst in lane_y if lst != []]
-        map_feat.append({'lane_x': lane_x, 'lane_y': lane_y, 'lanes_mat': ego_input['lanes'],
-                         'lanes_availabilities_mat': ego_input['lanes_availabilities']})
+                lane_x_lst[-1].append(ego_input['lanes'][i_elem, i_point, 0])
+                lanes_y_lst[-1].append(ego_input['lanes'][i_elem, i_point, 1])
+        lane_x_lst = [lst for lst in lane_x_lst if lst != []]
+        lanes_y_lst = [lst for lst in lanes_y_lst if lst != []]
+        map_feat.append({'lane_x_lst': lane_x_lst,
+                         'lanes_y_lst': lanes_y_lst,
+                         'lanes': ego_input['lanes'],
+                         'lanes_availabilities': ego_input['lanes_availabilities'],
+                         'lanes_mid': ego_input['lanes_mid'],
+                         'lanes_mid_availabilities': ego_input['lanes_mid_availabilities'],
+                         'crosswalks_availabilities': ego_input['crosswalks_availabilities'],
+                         })
 
         if verbose and i_scene == 0:
             visualize_scene(dataset_zarr, cfg, dm, scene_idx)
@@ -131,13 +137,13 @@ def visualize_scene_feat(agents_feat, map_feat):
     ax.quiver(X, Y, U, V, units='xy', color='b')
     ax.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r')  # draw ego
 
-    for i_elem in range(len(map_feat['lane_x'])):
+    for i_elem in range(len(map_feat['lane_x_lst'])):
         if i_elem % 2:
             edgecolor = 'black'
         else:
             edgecolor = 'brown'
-        x = map_feat['lane_x'][i_elem]
-        y = map_feat['lane_y'][i_elem]
+        x = map_feat['lane_x_lst'][i_elem]
+        y = map_feat['lane_y_lst'][i_elem]
         ax.fill(x, y, facecolor='0.4', alpha=0.3, edgecolor=edgecolor, linewidth=1)
 
     ax.grid()
