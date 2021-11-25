@@ -14,7 +14,7 @@ from extract_scenario_dataset import get_scenes_batch
 
 ########################################################################
 source_dataset_name = "train_data_loader"
-sample_config = "/scenario_generation/configs/config_sample.yaml"
+sample_config = "/scenario_generation/configs/config_train.yaml"
 # Our changes:
 # max_retrieval_distance_m: 60
 # train_data_loader:  key: "scenes/train.zarr"
@@ -37,18 +37,18 @@ dataset = EgoDatasetVectorized(cfg, dataset_zarr, vectorizer)
 print(dataset)
 print(f'Dataset source: {cfg[source_dataset_name]["key"]}, number of scenes total: {n_scenes}')
 
-num_simulation_steps = 50
+num_simulation_steps = 10
 sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=True,
                            distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
                            start_frame_index=0, show_info=True)
 
-scene_indices = [48, 49]
-# scene_indices = list(range(n_scenes))
+# scene_indices = [48, 49]
+scene_indices = list(range(n_scenes))
 
 agents_feat, map_feat = get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0)
 
 
-save_file_path = f'saves/data_of_{len(scene_indices)}_scenes.pkl'
+save_file_path = f'data_of_{len(scene_indices)}_scenes.pkl'
 with open(save_file_path, 'wb') as fid:
     pickle.dump([agents_feat, map_feat], fid)
 print(f'Saved data of {len(scene_indices)} scenes at ', save_file_path)
