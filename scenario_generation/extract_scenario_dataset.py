@@ -14,29 +14,29 @@ from l5kit.visualization.visualizer.zarr_utils import zarr_to_visualizer_scene
 ####################################################################################
 #
 ####################################################################################
-def get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0):
+def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0):
     """
     Data format documentation: https://github.com/ramitnv/l5kit/blob/master/docs/data_format.rst
     """
+    for i_scene, scene_idx in enumerate(scene_indices_all):
 
-    sim_dataset = SimulationDataset.from_dataset_indices(dataset, scene_indices, sim_cfg)
-    frame_index = 2  # we need only the initial t, but to get the speed we need to start at frame_index = 2
+        scene_indices = [scene_idx]
+        print(f'Extracting scene #{i_scene + 1} out of {len(scene_indices_all)}')
+        sim_dataset = SimulationDataset.from_dataset_indices(dataset, scene_indices, sim_cfg)
+        frame_index = 2  # we need only the initial t, but to get the speed we need to start at frame_index = 2
 
-    ego_input_all = sim_dataset.rasterise_frame_batch(frame_index)
-    agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
+        ego_input_all = sim_dataset.rasterise_frame_batch(frame_index)
+        agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
 
-    agent_ids_per_scene = {}
-    for (scene_idx, agent_id) in agents_input.keys():
-        if scene_idx not in agent_ids_per_scene:
-            agent_ids_per_scene[scene_idx] = [agent_id]
-        else:
-            agent_ids_per_scene[scene_idx].append(agent_id)
+        agent_ids_per_scene = {}
+        for (scene_idx, agent_id) in agents_input.keys():
+            if scene_idx not in agent_ids_per_scene:
+                agent_ids_per_scene[scene_idx] = [agent_id]
+            else:
+                agent_ids_per_scene[scene_idx].append(agent_id)
 
-    map_feat = []  # agents features per scene
-    agents_feat = []  # map features per scene
-
-    for i_scene, scene_idx in enumerate(scene_indices):
-        print(f'Extracting scene #{i_scene + 1} out of {len(scene_indices)}')
+        map_feat = []  # agents features per scene
+        agents_feat = []  # map features per scene
 
         agents_input_lst = []
         agents_ids_scene = [ky[1] for ky in agents_input.keys()]
@@ -45,7 +45,7 @@ def get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, ver
             print('agents_ids_scene = ', agents_ids_scene)
             print('n agent in scene = ', len(agents_input))
 
-        ego_input = ego_input_all[i_scene]
+        ego_input = ego_input_all[0]
         ego_from_world = ego_input['agent_from_world']
         ego_yaw = ego_input['yaw']
         ego_speed = ego_input['speed']
