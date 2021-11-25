@@ -14,7 +14,7 @@ from extract_scenario_dataset import get_scenes_batch
 
 ########################################################################
 source_dataset_name = "train_data_loader"
-sample_config = "/scenario_generation/configs/config_train_full.yaml"
+sample_config = "/scenario_generation/configs/config_train.yaml"   # config_train_full.yaml"
 # Our changes:
 # max_retrieval_distance_m: 60
 # train_data_loader:  key: "scenes/train.zarr"

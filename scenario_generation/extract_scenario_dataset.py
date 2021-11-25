@@ -106,7 +106,7 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
 ####################################################################################
 
 def visualize_scene(dataset_zarr, cfg, dm, scene_idx):
-    figure_path = Path('saves/loaded_scene' + '.html')
+    figure_path = Path('loaded_scene' + '.html')
     plotting.output_file(figure_path, title="Static HTML file")
     fig = plotting.figure(sizing_mode="stretch_width", max_width=500, height=250)
     output_notebook()
