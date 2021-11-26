@@ -15,6 +15,7 @@ from extract_scenario_dataset import get_scenes_batch
 ########################################################################
 source_dataset_name = "train_data_loader"
 sample_config = "/scenario_generation/configs/config_train_full.yaml"   # config_train_full.yaml"
+saved_file_name = 'l5kit_train_full'
 # Our changes:
 # max_retrieval_distance_m: 60
 # train_data_loader:  key: "scenes/train.zarr"
@@ -48,7 +49,7 @@ scene_indices = list(range(n_scenes))
 agents_feat, map_feat = get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0)
 
 
-save_file_path = f'data_of_{len(scene_indices)}_scenes.pkl'
+save_file_path = saved_file_name + '.pkl'
 with open(save_file_path, 'wb') as fid:
     pickle.dump([agents_feat, map_feat], fid)
 print(f'Saved data of {len(scene_indices)} scenes at ', save_file_path)
