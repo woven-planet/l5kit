@@ -18,25 +18,18 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
     """
     Data format documentation: https://github.com/ramitnv/l5kit/blob/master/docs/data_format.rst
     """
+
+    map_feat = []  # agents features per scene
+    agents_feat = []  # map features per scene
+
     for i_scene, scene_idx in enumerate(scene_indices_all):
 
-        scene_indices = [scene_idx]
         print(f'Extracting scene #{i_scene + 1} out of {len(scene_indices_all)}')
-        sim_dataset = SimulationDataset.from_dataset_indices(dataset, scene_indices, sim_cfg)
+        sim_dataset = SimulationDataset.from_dataset_indices(dataset, [scene_idx], sim_cfg)
         frame_index = 2  # we need only the initial t, but to get the speed we need to start at frame_index = 2
 
-        ego_input_all = sim_dataset.rasterise_frame_batch(frame_index)
+        ego_input = sim_dataset.rasterise_frame_batch(frame_index)[0]
         agents_input = sim_dataset.rasterise_agents_frame_batch(frame_index)
-
-        agent_ids_per_scene = {}
-        for (scene_idx, agent_id) in agents_input.keys():
-            if scene_idx not in agent_ids_per_scene:
-                agent_ids_per_scene[scene_idx] = [agent_id]
-            else:
-                agent_ids_per_scene[scene_idx].append(agent_id)
-
-        map_feat = []  # agents features per scene
-        agents_feat = []  # map features per scene
 
         agents_input_lst = []
         agents_ids_scene = [ky[1] for ky in agents_input.keys()]
@@ -45,7 +38,6 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
             print('agents_ids_scene = ', agents_ids_scene)
             print('n agent in scene = ', len(agents_input))
 
-        ego_input = ego_input_all[0]
         ego_from_world = ego_input['agent_from_world']
         ego_yaw = ego_input['yaw']
         ego_speed = ego_input['speed']
@@ -56,25 +48,25 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
         agents_feat[-1].append({'track_id': ego_input['track_id'], 'agent_type': ego_input['type'], 'yaw': 0.,
                                 'centroid': np.array([0, 0]), 'speed': ego_speed, 'extent': ego_extent})
 
-        if scene_idx in agent_ids_per_scene:  # if there are other agents besides the ego
-            for agent_id in agent_ids_per_scene[scene_idx]:
-                cur_agent_in = agents_input[(scene_idx, agent_id)]
-                agents_input_lst.append(cur_agent_in)
-                track_id = cur_agent_in['track_id']
-                agent_type = cur_agent_in['type']
-                centroid_in_world = cur_agent_in['centroid']
-                centroid = transform_point(centroid_in_world, ego_from_world)  # translation and rotation to ego system
-                yaw_in_world = cur_agent_in['yaw']  # translation and rotation to ego system
-                yaw = yaw_in_world - ego_yaw
-                speed = cur_agent_in['speed']
-                extent = cur_agent_in['extent']
-                agents_feat[-1].append({'track_id': track_id,
-                                        'agent_type': agent_type,
-                                        'yaw': yaw,  # yaw angle in the agent in ego coord system [rad]
-                                        'centroid': centroid,  # x,y position of the agent in ego coord system [m]
-                                        'speed': speed,  # speed [m/s ?]
-                                        'extent': extent})  # [length?, width?]  [m]
-        # Get Lanes
+        for (scene_id, agent_id) in agents_input.keys():  # if there are other agents besides the ego
+            assert scene_id == scene_idx
+            cur_agent_in = agents_input[(scene_id, agent_id)]
+            agents_input_lst.append(cur_agent_in)
+            track_id = cur_agent_in['track_id']
+            agent_type = cur_agent_in['type']
+            centroid_in_world = cur_agent_in['centroid']
+            centroid = transform_point(centroid_in_world, ego_from_world)  # translation and rotation to ego system
+            yaw_in_world = cur_agent_in['yaw']  # translation and rotation to ego system
+            yaw = yaw_in_world - ego_yaw
+            speed = cur_agent_in['speed']
+            extent = cur_agent_in['extent']
+            agents_feat[-1].append({'track_id': track_id,
+                                    'agent_type': agent_type,
+                                    'yaw': yaw,  # yaw angle in the agent in ego coord system [rad]
+                                    'centroid': centroid,  # x,y position of the agent in ego coord system [m]
+                                    'speed': speed,  # speed [m/s ?]
+                                    'extent': extent})  # [length?, width?]  [m]
+    # Get Lanes
         lane_x_lst = []
         lanes_y_lst = []
         for i_elem in range(ego_input['lanes'].shape[0]):
