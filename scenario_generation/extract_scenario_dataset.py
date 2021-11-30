@@ -12,7 +12,18 @@ from l5kit.visualization.visualizer.zarr_utils import zarr_to_visualizer_scene
 
 
 ####################################################################################
-#
+
+def mat_to_list_of_lists(mat, mat_valid):
+    lstlst = []
+    for i in range(mat.shape[0]):
+        lstlst.append([])
+        for j in range(mat.shape[1]):
+            if not mat_valid[i, j]:
+                continue
+            lstlst[-1].append(mat[i, j])
+    lstlst = [lst for lst in lstlst if lst != []]
+    return lstlst
+
 ####################################################################################
 def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0):
     """
@@ -66,26 +77,16 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
                                     'centroid': centroid,  # x,y position of the agent in ego coord system [m]
                                     'speed': speed,  # speed [m/s ?]
                                     'extent': extent})  # [length?, width?]  [m]
-    # Get Lanes
-        lane_x_lst = []
-        lanes_y_lst = []
-        for i_elem in range(ego_input['lanes'].shape[0]):
-            lane_x_lst.append([])
-            lanes_y_lst.append([])
-            for i_point in range(ego_input['lanes'].shape[1]):
-                if not ego_input['lanes_availabilities'][i_elem, i_point]:
-                    continue
-                lane_x_lst[-1].append(ego_input['lanes'][i_elem, i_point, 0])
-                lanes_y_lst[-1].append(ego_input['lanes'][i_elem, i_point, 1])
-        lane_x_lst = [lst for lst in lane_x_lst if lst != []]
-        lanes_y_lst = [lst for lst in lanes_y_lst if lst != []]
-        map_feat.append({'lane_x_lst': lane_x_lst,
-                         'lanes_y_lst': lanes_y_lst,
-                         'lanes': ego_input['lanes'],
-                         'lanes_availabilities': ego_input['lanes_availabilities'],
-                         'lanes_mid': ego_input['lanes_mid'],
-                         'lanes_mid_availabilities': ego_input['lanes_mid_availabilities'],
-                         'crosswalks_availabilities': ego_input['crosswalks_availabilities'],
+        # Get Lanes
+        lanes_mid = mat_to_list_of_lists(ego_input['lanes_mid'], ego_input['lanes_mid_availabilities'])
+        lanes_left = mat_to_list_of_lists(ego_input['lanes'][::2], ego_input['lanes_availabilities'][::2])
+        lanes_right = mat_to_list_of_lists(ego_input['lanes'][1::2], ego_input['lanes_availabilities'][1::2])
+        crosswalks = mat_to_list_of_lists(ego_input['crosswalks'], ego_input['crosswalks_availabilities'])
+
+        map_feat.append({'lanes_mid': lanes_mid,
+                         'lanes_left': lanes_left,
+                         'lanes_right': lanes_right,
+                         'crosswalks': crosswalks,
                          })
 
         if verbose and i_scene == 0:
@@ -111,9 +112,14 @@ def visualize_scene(dataset_zarr, cfg, dm, scene_idx):
     show(layout)
     plotting.save(fig)
     print('Figure saved at ', figure_path)
-
-
 ####################################################################################
+
+
+def plot_poly(ax, poly, facecolor='0.4', alpha=0.3, edgecolor='black'):
+    for elem in poly:
+        x = [p[0] for p in elem]
+        y = [p[1] for p in elem]
+        ax.fill(x, y, facecolor=facecolor, alpha=alpha, edgecolor=edgecolor, linewidth=1)
 
 
 def visualize_scene_feat(agents_feat, map_feat):
@@ -129,14 +135,10 @@ def visualize_scene_feat(agents_feat, map_feat):
     ax.quiver(X, Y, U, V, units='xy', color='b')
     ax.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r')  # draw ego
 
-    for i_elem in range(len(map_feat['lane_x_lst'])):
-        if i_elem % 2:
-            edgecolor = 'black'
-        else:
-            edgecolor = 'brown'
-        x = map_feat['lane_x_lst'][i_elem]
-        y = map_feat['lane_y_lst'][i_elem]
-        ax.fill(x, y, facecolor='0.4', alpha=0.3, edgecolor=edgecolor, linewidth=1)
+    plot_poly(ax, map_feat['lanes_left'], facecolor='0.4', alpha=0.3, edgecolor='black')
+    plot_poly(ax, map_feat['lanes_right'], facecolor='0.4', alpha=0.3, edgecolor='brown')
+    plot_poly(ax, map_feat['lanes_mid'], facecolor='purple', alpha=0.3, edgecolor='purple')
+    plot_poly(ax, map_feat['crosswalks'], facecolor='yellow', alpha=0.3, edgecolor='yellow')
 
     ax.grid()
     plt.show()
@@ -149,4 +151,6 @@ def visualize_scene_feat(agents_feat, map_feat):
 # plt.imshow(ego_input['lanes'][:, :, 0] != 0.0)
 # plt.subplot(313)
 # plt.imshow(ego_input['lanes'][:, :, 1] != 0.0)
-# plt.show()
+# # plt.show()
+#
+#

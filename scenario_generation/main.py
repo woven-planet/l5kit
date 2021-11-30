@@ -13,14 +13,14 @@ from extract_scenario_dataset import get_scenes_batch
 
 
 ########################################################################
-dataset_name = 'sample'  # 'sample' | 'train' | 'train_full'
+dataset_name = 'train_full'  # 'sample' | 'train' | 'train_full'
 source_name = "train_data_loader"
 sample_config = f"/scenario_generation/configs/config_{dataset_name}.yaml"
 saved_file_name = 'l5kit_' + dataset_name
 # Our changes:
-# max_retrieval_distance_m: 60
-# train_data_loader:  key:
-
+# max_retrieval_distance_m: 40  # maximum radius around the AoI for which we retrieve
+# max_agents_distance: 40 # maximum distance from AoI for another agent to be picked
+# train_data_loader key
 ########################################################################
 # Load data and configurations
 ########################################################################
@@ -44,11 +44,10 @@ sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_ag
                            distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
                            start_frame_index=0, show_info=True)
 
-# scene_indices = [48, 49]
+# scene_indices = [33]
 scene_indices = list(range(n_scenes))
 
 agents_feat, map_feat = get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0)
-
 
 save_file_path = saved_file_name + '.pkl'
 with open(save_file_path, 'wb') as fid:
