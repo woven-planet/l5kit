@@ -471,12 +471,33 @@
             
   <section id="reinforcement-learning">
 <span id="reinforcement"></span><h1>Reinforcement Learning<a class="headerlink" href="#reinforcement-learning" title="Permalink to this headline">¶</a></h1>
+<p>Our paper <a class="reference external" href="https://arxiv.org/abs/2111.06889">DriverGym: Democratising Reinforcement Learning for Autonomous Driving</a>
+has been accepted at <a class="reference external" href="https://ml4ad.github.io/">ML4AD Workshop, NeurIPS 2021</a>.</p>
+<p>In this series of notebooks you will train and evaluate reinforcement learning policies in DriverGym.</p>
+<p><strong>Before starting, please download the Lyft L5 Prediction Dataset 2020 and follow the instructions to correctly organise it.</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://self-driving.lyft.com/level5/prediction/">Lyft L5 Prediction Dataset 2020</a></p></li>
+<li><p><a class="reference external" href="https://github.com/lyft/l5kit#download-the-datasets">Instructions</a></p></li>
+</ul>
+<section id="drivergym-environment">
+<h2>DriverGym Environment<a class="headerlink" href="#drivergym-environment" title="Permalink to this headline">¶</a></h2>
+<p>From the paper:</p>
+<p><code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">DriverGym</span> <span class="pre">is</span> <span class="pre">an</span> <span class="pre">open-source</span> <span class="pre">gym</span> <span class="pre">environment</span> <span class="pre">that</span> <span class="pre">enables</span> <span class="pre">training</span> <span class="pre">RL</span> <span class="pre">driving</span> <span class="pre">policies</span> <span class="pre">on</span>
+<span class="pre">real-world</span> <span class="pre">data.</span> <span class="pre">The</span> <span class="pre">RL</span> <span class="pre">policy</span> <span class="pre">can</span> <span class="pre">access</span> <span class="pre">rich</span> <span class="pre">semantic</span> <span class="pre">maps</span> <span class="pre">to</span> <span class="pre">control</span> <span class="pre">the</span> <span class="pre">ego.</span> <span class="pre">Other</span> <span class="pre">agents</span>
+<span class="pre">can</span> <span class="pre">either</span> <span class="pre">be</span> <span class="pre">simulated</span> <span class="pre">from</span> <span class="pre">the</span> <span class="pre">data</span> <span class="pre">logs</span> <span class="pre">or</span> <span class="pre">controlled</span> <span class="pre">using</span> <span class="pre">a</span> <span class="pre">dedicated</span> <span class="pre">policy</span> <span class="pre">pre-trained</span>
+<span class="pre">on</span> <span class="pre">real-world</span> <span class="pre">data.</span> <span class="pre">We</span> <span class="pre">provide</span> <span class="pre">an</span> <span class="pre">extensible</span> <span class="pre">evaluation</span> <span class="pre">system</span> <span class="pre">with</span> <span class="pre">easily</span> <span class="pre">configurable</span>
+<span class="pre">metrics</span> <span class="pre">to</span> <span class="pre">evaluate</span> <span class="pre">the</span> <span class="pre">idiosyncrasies</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">trained</span> <span class="pre">policies.</span>
+<span class="pre">`</span></code></p>
+<a class="reference internal image-reference" href="_images/drivergym.png"><img alt="gym_environment" src="_images/drivergym.png" style="width: 800px;" /></a>
+</section>
 <section id="notebook-tutorial">
 <h2>Notebook Tutorial<a class="headerlink" href="#notebook-tutorial" title="Permalink to this headline">¶</a></h2>
-<p>We provide a notebook introducing our L5Kit gym-compatible closed-loop environment to test various reinforcement learning policies.</p>
-<p>You can test your RL policy on real world data using our <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/examples/RL/gym_environment.ipynb">gym notebook</a> </p>
-<a class="reference external image-reference" href="https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/RL/gym_environment.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
-<p>Another notebook for training RL policies will be released soon.</p>
+<p>We provide two notebooks introducing our DriverGym environment.</p>
+<p>You can test your RL policy in DriverGym using our <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/examples/RL/notebooks/gym_environment.ipynb">gym notebook</a> </p>
+<a class="reference external image-reference" href="https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/RL/notebooks/gym_environment.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+<p>You can also train and test a PPO policy in DriverGym using our <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/examples/RL/notebooks/ppo_policy_training.ipynb">PPO notebook</a> </p>
+<a class="reference external image-reference" href="https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/RL/notebooks/ppo_policy_training.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
 </section>
 </section>
 
