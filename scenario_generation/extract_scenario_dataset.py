@@ -1,6 +1,7 @@
 
 from pathlib import Path
 import numpy as np
+import torch
 from bokeh import plotting
 from bokeh.io import output_notebook, show
 import matplotlib.pyplot as plt
@@ -13,16 +14,21 @@ from l5kit.visualization.visualizer.zarr_utils import zarr_to_visualizer_scene
 
 ####################################################################################
 
-def mat_to_list_of_lists(mat, mat_valid):
-    lstlst = []
+def mat_to_list_of_tensors(mat, mat_valid, coord_dim=2):
+    list_tnsr = []
     for i in range(mat.shape[0]):
-        lstlst.append([])
+        lst = []
         for j in range(mat.shape[1]):
             if not mat_valid[i, j]:
                 continue
-            lstlst[-1].append(mat[i, j])
-    lstlst = [lst for lst in lstlst if lst != []]
-    return lstlst
+            lst.append(mat[i, j])
+        if not lst:
+            continue
+        lst = [torch.Tensor(elem[:coord_dim]) for elem in lst]
+        tnsr = torch.stack(lst)
+        list_tnsr.append(tnsr)
+
+    return list_tnsr
 
 ####################################################################################
 def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0):
@@ -78,10 +84,10 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
                                     'speed': speed,  # speed [m/s ?]
                                     'extent': extent})  # [length?, width?]  [m]
         # Get Lanes
-        lanes_mid = mat_to_list_of_lists(ego_input['lanes_mid'], ego_input['lanes_mid_availabilities'])
-        lanes_left = mat_to_list_of_lists(ego_input['lanes'][::2], ego_input['lanes_availabilities'][::2])
-        lanes_right = mat_to_list_of_lists(ego_input['lanes'][1::2], ego_input['lanes_availabilities'][1::2])
-        crosswalks = mat_to_list_of_lists(ego_input['crosswalks'], ego_input['crosswalks_availabilities'])
+        lanes_mid = mat_to_list_of_tensors(ego_input['lanes_mid'], ego_input['lanes_mid_availabilities'])
+        lanes_left = mat_to_list_of_tensors(ego_input['lanes'][::2], ego_input['lanes_availabilities'][::2])
+        lanes_right = mat_to_list_of_tensors(ego_input['lanes'][1::2], ego_input['lanes_availabilities'][1::2])
+        crosswalks = mat_to_list_of_tensors(ego_input['crosswalks'], ego_input['crosswalks_availabilities'])
 
         map_feat.append({'lanes_mid': lanes_mid,
                          'lanes_left': lanes_left,

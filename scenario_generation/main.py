@@ -13,7 +13,8 @@ from extract_scenario_dataset import get_scenes_batch
 
 
 ########################################################################
-dataset_name = 'train_full'  # 'sample' | 'train' | 'train_full'
+verbose = 0  # 0 | 1
+dataset_name = 'sample'  # 'sample' | 'train' | 'train_full'
 source_name = "train_data_loader"
 sample_config = f"/scenario_generation/configs/config_{dataset_name}.yaml"
 saved_file_name = 'l5kit_' + dataset_name
@@ -47,7 +48,7 @@ sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_ag
 # scene_indices = [33]
 scene_indices = list(range(n_scenes))
 
-agents_feat, map_feat = get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0)
+agents_feat, map_feat = get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=verbose)
 
 save_file_path = saved_file_name + '.pkl'
 with open(save_file_path, 'wb') as fid:
