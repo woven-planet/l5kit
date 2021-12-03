@@ -14,10 +14,10 @@ from extract_scenario_dataset import get_scenes_batch
 
 ########################################################################
 verbose = 0  # 0 | 1
-dataset_name = 'train_full'  # 'sample' | 'train' | 'train_full'
-source_name = "train_data_loader"
-sample_config = f"/scenario_generation/configs/config_{dataset_name}.yaml"
-saved_file_name = 'l5kit_' + dataset_name
+config_file_name = 'train_full'  # 'sample' | 'train' | 'train_full'
+source_name = "val_data_loader"  # "train_data_loader | "val_data_loader"
+saved_file_name = 'l5kit_' + config_file_name + source_name
+sample_config = f"/scenario_generation/configs/config_{config_file_name}.yaml"
 # Our changes:
 # max_retrieval_distance_m: 40  # maximum radius around the AoI for which we retrieve
 # max_agents_distance: 40 # maximum distance from AoI for another agent to be picked
