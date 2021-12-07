@@ -39,8 +39,11 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
     map_feat = []  # agents features per scene
     agents_feat = []  # map features per scene
 
-    labels_hist_pre_filter = np.zeros(17)
-    labels_hist = np.zeros(3)
+    agent_types_labels = ['CAR', 'CYCLIST', 'PEDESTRIAN']
+    type_id_to_label = {3: 'CAR', 12: 'CYCLIST', 14: 'PEDESTRIAN'}   # based on the labels ids in l5kit/build/lib/l5kit/data/labels.py
+
+    labels_hist_pre_filter = np.zeros(17, dtype=int)
+    labels_hist = np.zeros(3, dtype=int)
 
     for i_scene, scene_idx in enumerate(scene_indices_all):
 
@@ -66,7 +69,7 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
         agents_feat.append([])
         # add the ego car (in ego coord system):
         agents_feat[-1].append({
-                                'agent_label': 'CAR',  # The ego car has the same label "car"
+                                'agent_label_id': agent_types_labels.index('CAR'),  # The ego car has the same label "car"
                                 'yaw': 0.,  # yaw angle in the agent in ego coord system [rad]
                                 'centroid': np.array([0, 0]),    # x,y position of the agent in ego coord system [m]
                                 'speed': ego_speed,  # speed [m/s ?]
@@ -76,14 +79,11 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
             assert scene_id == scene_idx
             cur_agent_in = agents_input[(scene_id, agent_id)]
             agents_input_lst.append(cur_agent_in)
-            agent_type = cur_agent_in['type']
+            agent_type = int(cur_agent_in['type'])
             labels_hist_pre_filter[agent_type] += 1
-            if agent_type == 3:  # based on the labels ids in l5kit/build/lib/l5kit/data/labels.py
-                agent_label = 'CAR'
-            elif agent_type == 12:
-                agent_label = 'CYCLIST'
-            elif agent_type == 14:
-                agent_label = 'PEDESTRIAN'
+            if agent_type in type_id_to_label.keys():
+                agent_label = type_id_to_label[agent_type]
+                agent_label_id = agent_types_labels.index(agent_label)
             else:
                 continue  # skip other agents types
             centroid_in_world = cur_agent_in['centroid']
@@ -93,7 +93,7 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
             speed = cur_agent_in['speed']
             extent = cur_agent_in['extent']
             agents_feat[-1].append({
-                                    'agent_label': agent_label,
+                                    'agent_label_id': agent_label_id,  # index of label in agent_types_labels
                                     'yaw': yaw,  # yaw angle in the agent in ego coord system [rad]
                                     'centroid': centroid,  # x,y position of the agent in ego coord system [m]
                                     'speed': speed,  # speed [m/s ?]
@@ -117,7 +117,7 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
 
     print('labels_hist before filtering: ', {i: c for i, c in enumerate(labels_hist_pre_filter) if c > 0})
     print('labels_hist: ',  {i: c for i, c in enumerate(labels_hist) if c > 0})
-    return agents_feat, map_feat, labels_hist
+    return agents_feat, map_feat, agent_types_labels, labels_hist
 
 
 ####################################################################################

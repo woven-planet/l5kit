@@ -12,7 +12,6 @@ from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.vectorization.vectorizer_builder import build_vectorizer
 from extract_scenario_dataset import get_scenes_batch
 
-
 ########################################################################
 verbose = 0  # 0 | 1
 config_file_name = 'sample'  # 'sample' | 'train' | 'train_full'
@@ -49,13 +48,14 @@ sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_ag
 # scene_indices = [33]
 scene_indices = list(range(n_scenes))
 
-agents_feat, map_feat, labels_hist = get_scenes_batch(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg,
-                                                      verbose=verbose)
+agents_feat, map_feat, agent_types_labels, labels_hist = get_scenes_batch(scene_indices, dataset, dataset_zarr,
+                                                                          dm, sim_cfg, cfg,
+                                                                          verbose=verbose)
 
 git_version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
 
 save_file_path = saved_file_name + '.pkl'
 with open(save_file_path, 'wb') as fid:
-    pickle.dump({'agents_feat': agents_feat, 'map_feat': map_feat,
+    pickle.dump({'agents_feat': agents_feat, 'map_feat': map_feat, 'agent_types_labels': agent_types_labels,
                  'git_version': git_version, 'labels_hist': labels_hist}, fid)
 print(f'Saved data of {len(scene_indices)} scenes at ', save_file_path)
