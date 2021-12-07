@@ -74,7 +74,7 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
                                 'centroid': np.array([0, 0]),    # x,y position of the agent in ego coord system [m]
                                 'speed': ego_speed,  # speed [m/s ?]
                                 'extent': ego_extent[:2]})  # [length, width]  [m]
-
+        # loop over agents in current scene:
         for (scene_id, agent_id) in agents_input.keys():  # if there are other agents besides the ego
             assert scene_id == scene_idx
             cur_agent_in = agents_input[(scene_id, agent_id)]
@@ -97,9 +97,9 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
                                     'yaw': yaw,  # yaw angle in the agent in ego coord system [rad]
                                     'centroid': centroid,  # x,y position of the agent in ego coord system [m]
                                     'speed': speed,  # speed [m/s ?]
-                                    'extent': (extent[:2])  # [length, width]  [m]
+                                    'extent': extent[:2]  # [length, width]  [m]
                                     })
-        # Get Lanes
+        # Get map features:
         lanes_mid = mat_to_list_of_tensors(ego_input['lanes_mid'], ego_input['lanes_mid_availabilities'])
         lanes_left = mat_to_list_of_tensors(ego_input['lanes'][::2], ego_input['lanes_availabilities'][::2])
         lanes_right = mat_to_list_of_tensors(ego_input['lanes'][1::2], ego_input['lanes_availabilities'][1::2])
