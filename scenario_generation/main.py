@@ -14,7 +14,7 @@ from extract_scenario_dataset import get_scenes_batch
 
 ########################################################################
 verbose = 1  # 0 | 1
-show_html_plot = True
+show_html_plot = False
 config_file_name = 'train_full'  # 'sample' | 'train' | 'train_full'
 source_name = "train_data_loader"  # "train_data_loader | "val_data_loader"
 saved_file_name = 'l5kit_' + config_file_name + '_' + source_name
@@ -46,7 +46,7 @@ sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_ag
                            distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
                            start_frame_index=0, show_info=True)
 
-scene_indices = [33]
+scene_indices = [39]
 # scene_indices = list(range(n_scenes))
 
 agents_feat, map_feat, agent_types_labels, labels_hist = get_scenes_batch(scene_indices, dataset, dataset_zarr,

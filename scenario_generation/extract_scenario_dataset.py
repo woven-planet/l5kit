@@ -10,7 +10,7 @@ from l5kit.simulation.dataset import SimulationDataset
 from l5kit.visualization.visualizer.visualizer import visualize
 from l5kit.visualization.visualizer.zarr_utils import zarr_to_visualizer_scene
 
-
+from visualization_utils import visualize_scene_feat
 ####################################################################################
 
 def mat_to_list_of_tensors(mat, mat_valid, coord_dim=2):
@@ -139,68 +139,6 @@ def visualize_scene(dataset_zarr, cfg, dm, scene_idx):
     plotting.save(fig)
     print('Figure saved at ', figure_path)
 
-
-####################################################################################
-
-
-def plot_poly_elems(ax, poly, facecolor='0.4', alpha=0.3, edgecolor='black', label='', is_closed=False, linewidth=1):
-    first_plt = True
-    for elem in poly:
-        x = [p[0] for p in elem]
-        y = [p[1] for p in elem]
-        if first_plt:
-            first_plt = False
-        else:
-            label = None
-        if is_closed:
-            ax.fill(x, y, facecolor=facecolor, alpha=alpha, edgecolor=edgecolor, linewidth=linewidth, label=label)
-        else:
-            ax.plot(x, y, alpha=alpha, color=edgecolor, linewidth=linewidth, label=label)
-
-
-def plot_lanes(ax, left_lanes, right_lanes, facecolor='0.4', alpha=0.3, edgecolor='black', label='', linewidth=1):
-    assert len(left_lanes) == len(right_lanes)
-    n_elems = len(left_lanes)
-    first_plt = True
-    for i in range(n_elems):
-        x_left = [p[0] for p in left_lanes[i]]
-        y_left = [p[1] for p in left_lanes[i]]
-        x_right = [p[0] for p in right_lanes[i]]
-        y_right = [p[1] for p in right_lanes[i]]
-        x = np.concatenate((x_left, x_right[::-1]))
-        y = np.concatenate((y_left, y_right[::-1]))
-        if first_plt:
-            first_plt = False
-        else:
-            label = None
-        ax.fill(x, y, facecolor=facecolor, alpha=alpha, edgecolor=edgecolor, linewidth=linewidth, label=label)
-
-
-def visualize_scene_feat(agents_feat, map_feat):
-    print('agents centroids: ', [af['centroid'] for af in agents_feat])
-    print('agents yaws: ', [af['yaw'] for af in agents_feat])
-    print('agents speed: ', [af['speed'] for af in agents_feat])
-    print('agents types: ', [af['agent_label_id'] for af in agents_feat])
-    X = [af['centroid'][0] for af in agents_feat]
-    Y = [af['centroid'][1] for af in agents_feat]
-    U = [af['speed'] * np.cos(af['yaw']) for af in agents_feat]
-    V = [af['speed'] * np.sin(af['yaw']) for af in agents_feat]
-    fig, ax = plt.subplots()
-
-    plot_lanes(ax, map_feat['lanes_left'], map_feat['lanes_right'], facecolor='grey', alpha=0.3, edgecolor='black',
-               label='Lanes')
-    plot_poly_elems(ax, map_feat['lanes_mid'], facecolor='lime', alpha=0.4, edgecolor='lime', label='Lanes mid',
-                    is_closed=False, linewidth=1)
-    plot_poly_elems(ax, map_feat['crosswalks'], facecolor='orange', alpha=0.6, edgecolor='orange', label='Crosswalks',
-                    is_closed=True)
-
-    ax.quiver(X[1:], Y[1:], U[1:], V[1:], units='xy', color='b', label='Non-ego')
-    ax.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r', label='Ego')
-
-    ax.grid()
-    plt.legend()
-    plt.show()
-##############################################################################################
 
 # Debug
 # plt.subplot(311)
