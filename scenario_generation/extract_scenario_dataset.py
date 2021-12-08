@@ -139,11 +139,20 @@ def visualize_scene(dataset_zarr, cfg, dm, scene_idx):
 ####################################################################################
 
 
-def plot_poly(ax, poly, facecolor='0.4', alpha=0.3, edgecolor='black'):
+def plot_poly(ax, poly, facecolor='0.4', alpha=0.3, edgecolor='black', label='', is_closed=False):
+    first_plt = True
     for elem in poly:
         x = [p[0] for p in elem]
         y = [p[1] for p in elem]
-        ax.fill(x, y, facecolor=facecolor, alpha=alpha, edgecolor=edgecolor, linewidth=1)
+        if first_plt:
+            first_plt = False
+        else:
+            label = None
+        if is_closed:
+            ax.fill(x, y, facecolor=facecolor, alpha=alpha, edgecolor=edgecolor, linewidth=1, label=label)
+        else:
+            ax.plot(x, y, alpha=alpha, color=edgecolor, linewidth=2, label=label)
+
 
 
 def visualize_scene_feat(agents_feat, map_feat):
@@ -156,17 +165,18 @@ def visualize_scene_feat(agents_feat, map_feat):
     U = [af['speed'] * np.cos(af['yaw']) for af in agents_feat]
     V = [af['speed'] * np.sin(af['yaw']) for af in agents_feat]
     fig, ax = plt.subplots()
-    ax.quiver(X, Y, U, V, units='xy', color='b')
-    ax.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r')  # draw ego
+    ax.quiver(X, Y, U, V, units='xy', color='b', label='Non-ego')
+    ax.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r', label='Ego')  # draw ego
 
-    plot_poly(ax, map_feat['lanes_left'], facecolor='0.4', alpha=0.3, edgecolor='black')
-    plot_poly(ax, map_feat['lanes_right'], facecolor='0.4', alpha=0.3, edgecolor='brown')
-    plot_poly(ax, map_feat['lanes_mid'], facecolor='purple', alpha=0.3, edgecolor='purple')
-    plot_poly(ax, map_feat['crosswalks'], facecolor='yellow', alpha=0.3, edgecolor='yellow')
+    plot_poly(ax, map_feat['lanes_left'], facecolor='green', alpha=0.3, edgecolor='green', label='lanes_left', is_closed=False)
+    plot_poly(ax, map_feat['lanes_right'], facecolor='brown', alpha=0.3, edgecolor='brown', label='lanes_right', is_closed=False)
+    plot_poly(ax, map_feat['lanes_mid'], facecolor='purple', alpha=0.3, edgecolor='purple', label='lanes_mid', is_closed=False)
+    plot_poly(ax, map_feat['crosswalks'], facecolor='orange', alpha=0.3, edgecolor='orange', label='crosswalks', is_closed=True)
 
     ax.grid()
+    plt.legend()
     plt.show()
-##############################################################################################3
+##############################################################################################
 
 # Debug
 # plt.subplot(311)
