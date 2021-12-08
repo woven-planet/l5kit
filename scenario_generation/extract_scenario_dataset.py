@@ -168,10 +168,11 @@ def visualize_scene_feat(agents_feat, map_feat):
     ax.quiver(X, Y, U, V, units='xy', color='b', label='Non-ego')
     ax.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r', label='Ego')  # draw ego
 
+
     plot_poly(ax, map_feat['lanes_left'], facecolor='green', alpha=0.3, edgecolor='green', label='lanes_left', is_closed=False)
     plot_poly(ax, map_feat['lanes_right'], facecolor='brown', alpha=0.3, edgecolor='brown', label='lanes_right', is_closed=False)
-    plot_poly(ax, map_feat['lanes_mid'], facecolor='purple', alpha=0.3, edgecolor='purple', label='lanes_mid', is_closed=False)
-    plot_poly(ax, map_feat['crosswalks'], facecolor='orange', alpha=0.3, edgecolor='orange', label='crosswalks', is_closed=True)
+    plot_poly(ax, map_feat['lanes_mid'], facecolor='purple', alpha=0.6, edgecolor='white', label='lanes_mid', is_closed=False)
+    plot_poly(ax, map_feat['crosswalks'], facecolor='orange', alpha=0.6, edgecolor='orange', label='crosswalks', is_closed=True)
 
     ax.grid()
     plt.legend()
