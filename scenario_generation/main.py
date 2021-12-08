@@ -13,7 +13,7 @@ from l5kit.vectorization.vectorizer_builder import build_vectorizer
 from extract_scenario_dataset import get_scenes_batch
 
 ########################################################################
-verbose = 0  # 0 | 1
+verbose = 1  # 0 | 1
 config_file_name = 'sample'  # 'sample' | 'train' | 'train_full'
 source_name = "train_data_loader"  # "train_data_loader | "val_data_loader"
 saved_file_name = 'l5kit_' + config_file_name + '_' + source_name

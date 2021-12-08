@@ -150,7 +150,7 @@ def visualize_scene_feat(agents_feat, map_feat):
     print('agents centroids: ', [af['centroid'] for af in agents_feat])
     print('agents yaws: ', [af['yaw'] for af in agents_feat])
     print('agents speed: ', [af['speed'] for af in agents_feat])
-    print('agents types: ', [af['agent_type'] for af in agents_feat])
+    print('agents types: ', [af['agent_label_id'] for af in agents_feat])
     X = [af['centroid'][0] for af in agents_feat]
     Y = [af['centroid'][1] for af in agents_feat]
     U = [af['speed'] * np.cos(af['yaw']) for af in agents_feat]
