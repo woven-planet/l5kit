@@ -14,7 +14,8 @@ from extract_scenario_dataset import get_scenes_batch
 
 ########################################################################
 verbose = 1  # 0 | 1
-config_file_name = 'sample'  # 'sample' | 'train' | 'train_full'
+show_html_plot = True
+config_file_name = 'train_full'  # 'sample' | 'train' | 'train_full'
 source_name = "train_data_loader"  # "train_data_loader | "val_data_loader"
 saved_file_name = 'l5kit_' + config_file_name + '_' + source_name
 sample_config = f"/scenario_generation/configs/config_{config_file_name}.yaml"
@@ -50,7 +51,7 @@ scene_indices = [33]
 
 agents_feat, map_feat, agent_types_labels, labels_hist = get_scenes_batch(scene_indices, dataset, dataset_zarr,
                                                                           dm, sim_cfg, cfg,
-                                                                          verbose=verbose)
+                                                                          verbose=verbose, show_html_plot=show_html_plot)
 
 git_version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
 

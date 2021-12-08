@@ -1,4 +1,3 @@
-
 from pathlib import Path
 import numpy as np
 import torch
@@ -30,8 +29,9 @@ def mat_to_list_of_tensors(mat, mat_valid, coord_dim=2):
 
     return list_tnsr
 
+
 ####################################################################################
-def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0):
+def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0, show_html_plot=False):
     """
     Data format documentation: https://github.com/ramitnv/l5kit/blob/master/docs/data_format.rst
     """
@@ -40,7 +40,8 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
     agents_feat = []  # map features per scene
 
     agent_types_labels = ['CAR', 'CYCLIST', 'PEDESTRIAN']
-    type_id_to_label = {3: 'CAR', 12: 'CYCLIST', 14: 'PEDESTRIAN'}   # based on the labels ids in l5kit/build/lib/l5kit/data/labels.py
+    type_id_to_label = {3: 'CAR', 12: 'CYCLIST',
+                        14: 'PEDESTRIAN'}  # based on the labels ids in l5kit/build/lib/l5kit/data/labels.py
 
     labels_hist_pre_filter = np.zeros(17, dtype=int)
     labels_hist = np.zeros(3, dtype=int)
@@ -62,18 +63,18 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
             print('n agent in scene = ', len(agents_input))
 
         ego_from_world = ego_input['agent_from_world']
-        ego_yaw = ego_input['yaw'] # yaw angle in the agent in ego coord system [rad]
+        ego_yaw = ego_input['yaw']  # yaw angle in the agent in ego coord system [rad]
         ego_speed = ego_input['speed']
         ego_extent = ego_input['extent']
 
         agents_feat.append([])
         # add the ego car (in ego coord system):
         agents_feat[-1].append({
-                                'agent_label_id': agent_types_labels.index('CAR'),  # The ego car has the same label "car"
-                                'yaw': 0.,  # yaw angle in the agent in ego coord system [rad]
-                                'centroid': np.array([0, 0]),    # x,y position of the agent in ego coord system [m]
-                                'speed': ego_speed,  # speed [m/s ?]
-                                'extent': ego_extent[:2]})  # [length, width]  [m]
+            'agent_label_id': agent_types_labels.index('CAR'),  # The ego car has the same label "car"
+            'yaw': 0.,  # yaw angle in the agent in ego coord system [rad]
+            'centroid': np.array([0, 0]),  # x,y position of the agent in ego coord system [m]
+            'speed': ego_speed,  # speed [m/s ?]
+            'extent': ego_extent[:2]})  # [length, width]  [m]
         # loop over agents in current scene:
         for (scene_id, agent_id) in agents_input.keys():  # if there are other agents besides the ego
             assert scene_id == scene_idx
@@ -93,12 +94,12 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
             speed = cur_agent_in['speed']
             extent = cur_agent_in['extent']
             agents_feat[-1].append({
-                                    'agent_label_id': agent_label_id,  # index of label in agent_types_labels
-                                    'yaw': yaw,  # yaw angle in the agent in ego coord system [rad]
-                                    'centroid': centroid,  # x,y position of the agent in ego coord system [m]
-                                    'speed': speed,  # speed [m/s ?]
-                                    'extent': extent[:2]  # [length, width]  [m]
-                                    })
+                'agent_label_id': agent_label_id,  # index of label in agent_types_labels
+                'yaw': yaw,  # yaw angle in the agent in ego coord system [rad]
+                'centroid': centroid,  # x,y position of the agent in ego coord system [m]
+                'speed': speed,  # speed [m/s ?]
+                'extent': extent[:2]  # [length, width]  [m]
+            })
         # Get map features:
         lanes_mid = mat_to_list_of_tensors(ego_input['lanes_mid'], ego_input['lanes_mid_availabilities'])
         lanes_left = mat_to_list_of_tensors(ego_input['lanes'][::2], ego_input['lanes_availabilities'][::2])
@@ -112,11 +113,12 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
                          })
 
         if verbose and i_scene == 0:
-            visualize_scene(dataset_zarr, cfg, dm, scene_idx)
+            if show_html_plot:
+                visualize_scene(dataset_zarr, cfg, dm, scene_idx)
             visualize_scene_feat(agents_feat[-1], map_feat[-1])
 
     print('labels_hist before filtering: ', {i: c for i, c in enumerate(labels_hist_pre_filter) if c > 0})
-    print('labels_hist: ',  {i: c for i, c in enumerate(labels_hist) if c > 0})
+    print('labels_hist: ', {i: c for i, c in enumerate(labels_hist) if c > 0})
     return agents_feat, map_feat, agent_types_labels, labels_hist
 
 
@@ -136,10 +138,12 @@ def visualize_scene(dataset_zarr, cfg, dm, scene_idx):
     show(layout)
     plotting.save(fig)
     print('Figure saved at ', figure_path)
+
+
 ####################################################################################
 
 
-def plot_poly(ax, poly, facecolor='0.4', alpha=0.3, edgecolor='black', label='', is_closed=False):
+def plot_poly_elems(ax, poly, facecolor='0.4', alpha=0.3, edgecolor='black', label='', is_closed=False, linewidth=1):
     first_plt = True
     for elem in poly:
         x = [p[0] for p in elem]
@@ -149,10 +153,27 @@ def plot_poly(ax, poly, facecolor='0.4', alpha=0.3, edgecolor='black', label='',
         else:
             label = None
         if is_closed:
-            ax.fill(x, y, facecolor=facecolor, alpha=alpha, edgecolor=edgecolor, linewidth=1, label=label)
+            ax.fill(x, y, facecolor=facecolor, alpha=alpha, edgecolor=edgecolor, linewidth=linewidth, label=label)
         else:
-            ax.plot(x, y, alpha=alpha, color=edgecolor, linewidth=2, label=label)
+            ax.plot(x, y, alpha=alpha, color=edgecolor, linewidth=linewidth, label=label)
 
+
+def plot_lanes(ax, left_lanes, right_lanes, facecolor='0.4', alpha=0.3, edgecolor='black', label='', linewidth=1):
+    assert len(left_lanes) == len(right_lanes)
+    n_elems = len(left_lanes)
+    first_plt = True
+    for i in range(n_elems):
+        x_left = [p[0] for p in left_lanes[i]]
+        y_left = [p[1] for p in left_lanes[i]]
+        x_right = [p[0] for p in right_lanes[i]]
+        y_right = [p[1] for p in right_lanes[i]]
+        x = np.concatenate((x_left, x_right[::-1]))
+        y = np.concatenate((y_left, y_right[::-1]))
+        if first_plt:
+            first_plt = False
+        else:
+            label = None
+        ax.fill(x, y, facecolor=facecolor, alpha=alpha, edgecolor=edgecolor, linewidth=linewidth, label=label)
 
 
 def visualize_scene_feat(agents_feat, map_feat):
@@ -165,14 +186,16 @@ def visualize_scene_feat(agents_feat, map_feat):
     U = [af['speed'] * np.cos(af['yaw']) for af in agents_feat]
     V = [af['speed'] * np.sin(af['yaw']) for af in agents_feat]
     fig, ax = plt.subplots()
-    ax.quiver(X, Y, U, V, units='xy', color='b', label='Non-ego')
-    ax.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r', label='Ego')  # draw ego
 
+    plot_lanes(ax, map_feat['lanes_left'], map_feat['lanes_right'], facecolor='grey', alpha=0.3, edgecolor='black',
+               label='Lanes')
+    plot_poly_elems(ax, map_feat['lanes_mid'], facecolor='lime', alpha=0.4, edgecolor='lime', label='Lanes mid',
+                    is_closed=False, linewidth=1)
+    plot_poly_elems(ax, map_feat['crosswalks'], facecolor='orange', alpha=0.6, edgecolor='orange', label='Crosswalks',
+                    is_closed=True)
 
-    plot_poly(ax, map_feat['lanes_left'], facecolor='green', alpha=0.3, edgecolor='green', label='lanes_left', is_closed=False)
-    plot_poly(ax, map_feat['lanes_right'], facecolor='brown', alpha=0.3, edgecolor='brown', label='lanes_right', is_closed=False)
-    plot_poly(ax, map_feat['lanes_mid'], facecolor='purple', alpha=0.6, edgecolor='white', label='lanes_mid', is_closed=False)
-    plot_poly(ax, map_feat['crosswalks'], facecolor='orange', alpha=0.6, edgecolor='orange', label='crosswalks', is_closed=True)
+    ax.quiver(X[1:], Y[1:], U[1:], V[1:], units='xy', color='b', label='Non-ego')
+    ax.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r', label='Ego')
 
     ax.grid()
     plt.legend()
