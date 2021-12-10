@@ -58,7 +58,7 @@ def plot_rectangles(ax, centroids, extents, yaws, label='car', facecolor='skyblu
         height = extents[i][0]
         width = extents[i][1]
         angle = yaws[i]
-        angle_deg = np.degrees(angle)
+        angle_deg = float(np.degrees(angle))
         xy = centroids[i] \
              - 0.5 * height * np.array([np.cos(angle), np.sin(angle)]) \
              - 0.5 * width * np.array([-np.sin(angle), np.cos(angle)])
@@ -88,7 +88,7 @@ def visualize_scene_feat(agents_feat, map_feat):
                label='Lanes')
     plot_poly_elems(ax, map_feat['lanes_mid'], facecolor='lime', alpha=0.4, edgecolor='lime', label='Lanes mid',
                     is_closed=False, linewidth=1)
-    plot_poly_elems(ax, map_feat['crosswalks'], facecolor='orange', alpha=0.6, edgecolor='orange', label='Crosswalks',
+    plot_poly_elems(ax, map_feat['crosswalks'], facecolor='orange', alpha=0.3, edgecolor='orange', label='Crosswalks',
                     is_closed=True)
 
     extents = [af['extent'] for af in agents_feat]
