@@ -49,7 +49,7 @@ yielding the loss
 .. image:: https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20%3D%20-%20%5Clog%20%5Csum_k%20e%5E%7B%5Clog%28c%5Ek%29%20-%5Cfrac%7B1%7D%7B2%7D%20%5Csum_t%20%28%5Cbar%7Bx%7D_t%5Ek%20-%20x_t%29%5E2%20&plus;%20%28%5Cbar%7By%7D_t%5Ek%20-%20y_t%29%5E2%7D
    :alt: Equation
 
-You can find our implementation `here <https://github.com/lyft/l5kit/blob/20ab033c01610d711c3d36e1963ecec86e8b85b6/l5kit/l5kit/evaluation/metrics.py#L4>`_, which uses *error* as placeholder for the exponent
+You can find our implementation `here <https://github.com/woven-planet/l5kit/blob/20ab033c01610d711c3d36e1963ecec86e8b85b6/l5kit/l5kit/evaluation/metrics.py#L4>`_, which uses *error* as placeholder for the exponent
 
 .. image:: https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20L%20%3D%20-%5Clog%20%5Csum_k%20e%5E%7B%5Ctexttt%7Berror%7D%7D)
    :alt: Equation
@@ -73,7 +73,7 @@ Please refer to :ref:`this doc <coordinate>` for a full description of the diffe
 The ground truth coordinates for the competition are stored as positional displacements in the :ref:`world coordinate system <world_coordinate>`.
 However, you will likely predict relative displacements for the agent of interest either in the :ref:`agent coordinate system <agent_coordinate>`
 or in the :ref:`image coordinate system <image_coordinate>`.
-Before using `our utils <https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/evaluation/csv_utils.py>`_ to write a CSV file for you predictions convert them
+Before using `our utils <https://github.com/woven-planet/l5kit/blob/master/l5kit/l5kit/evaluation/csv_utils.py>`_ to write a CSV file for you predictions convert them
 into the world coordinate system using the appropriate transformation matrix available as part of :ref:`the input data <data_abstraction>` and subtract the centroid.
 
 Yaw is not required/used for this competition.
@@ -87,5 +87,5 @@ Examples of such other metrics, commonly used in literature, are *Average Displa
 `our dataset paper <https://arxiv.org/pdf/2006.14480.pdf>`_ or `SophieGAN <https://arxiv.org/pdf/1806.01482.pdf>`_):
 ADE is the average displacement error (L2 distance between prediction and ground truth averaged over all timesteps), while FDE 
 reports the final displacement error (L2 distance between prediction and ground truth, evaluated only at the last timestep).
-As we consider multiple predictions, we offer `implementations for both these metrics <https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/evaluation/metrics.py>`_ either averaging over all hypotheses
+As we consider multiple predictions, we offer `implementations for both these metrics <https://github.com/woven-planet/l5kit/blob/master/l5kit/l5kit/evaluation/metrics.py>`_ either averaging over all hypotheses
 or using the best hypothesis (oracle variant) - ignoring generated confidence scores in both cases.

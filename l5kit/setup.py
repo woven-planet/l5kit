@@ -10,7 +10,7 @@ setup(
     description="Level-5 Autonomous Vehicle Research library",
     author="Level 5",
     author_email="l5kit@lyft.com",
-    url="https://github.com/lyft/l5kit",
+    url="https://github.com/woven-planet/l5kit",
     license="apache2",
     install_requires=[
         "imageio",

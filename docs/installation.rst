@@ -24,7 +24,7 @@ You should now be able to import from L5Kit (e.g. :code:`from l5kit.data import 
 ++++++++++++++
 
 Examples are not shipped with the package, but you can download the zip release from:
-`L5Kit Releases <https://github.com/lyft/l5kit/releases>`_
+`L5Kit Releases <https://github.com/woven-planet/l5kit/releases>`_
 
 Please download the zip matching your installed version (you can run :code:`pip freeze | grep l5kit` to get the right version)
 Unzip the files and grab the example folder in the root of the project.
@@ -48,7 +48,7 @@ Follow this workflow if:
 
 .. code-block:: console
 
-    git clone https://github.com/lyft/l5kit.git
+    git clone https://github.com/woven-planet/l5kit.git
     cd l5kit/l5kit
 
 
@@ -84,7 +84,7 @@ you can install directly from the :code:`setup.py` by running:
 
 If you run into trouble installing L5Kit on Windows, you may need to
 
-* install Pytorch and torchvision manually first (select the correct version required by your system, i.e. GPU or CPU-only), then run L5Kit install (remove the packages `torch <https://github.com/lyft/l5kit/blob/59f36f348682aac5fc488c6d39dd58f8c27b1ec6/l5kit/setup.py#L23>`_ and `torchvision <https://github.com/lyft/l5kit/blob/59f36f348682aac5fc488c6d39dd58f8c27b1ec6/l5kit/setup.py#L24>`_ from :code:`setup.py`)
+* install Pytorch and torchvision manually first (select the correct version required by your system, i.e. GPU or CPU-only), then run L5Kit install (remove the packages `torch <https://github.com/woven-planet/l5kit/blob/59f36f348682aac5fc488c6d39dd58f8c27b1ec6/l5kit/setup.py#L23>`_ and `torchvision <https://github.com/woven-planet/l5kit/blob/59f36f348682aac5fc488c6d39dd58f8c27b1ec6/l5kit/setup.py#L24>`_ from :code:`setup.py`)
 * install `Microsoft C++ Build Tools <https://visualstudio.microsoft.com/visual-cpp-build-tools/>`_.
 
 3. Generate L5Kit code html documentation (optional)
