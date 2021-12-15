@@ -11,7 +11,7 @@ In this series of notebooks you will train and evaluate reinforcement learning p
 **Before starting, please download the Lyft L5 Prediction Dataset 2020 and follow the instructions to correctly organise it.**
 
 * `Lyft L5 Prediction Dataset 2020 <https://self-driving.lyft.com/level5/prediction/>`_
-* `Instructions <https://github.com/lyft/l5kit#download-the-datasets>`_
+* `Instructions <https://github.com/woven-planet/l5kit#download-the-datasets>`_
 
 DriverGym Environment
 ---------------------
@@ -36,14 +36,14 @@ Notebook Tutorial
 
 We provide two notebooks introducing our DriverGym environment.
 
-You can test your RL policy in DriverGym using our `gym notebook <https://github.com/lyft/l5kit/blob/master/examples/RL/notebooks/gym_environment.ipynb>`_ \
+You can test your RL policy in DriverGym using our `gym notebook <https://github.com/woven-planet/l5kit/blob/master/examples/RL/notebooks/gym_environment.ipynb>`_ \
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/RL/notebooks/gym_environment.ipynb
    :alt: Open In Colab
 
 
-You can also train and test a PPO policy in DriverGym using our `PPO notebook <https://github.com/lyft/l5kit/blob/master/examples/RL/notebooks/ppo_policy_training.ipynb>`_ \
+You can also train and test a PPO policy in DriverGym using our `PPO notebook <https://github.com/woven-planet/l5kit/blob/master/examples/RL/notebooks/ppo_policy_training.ipynb>`_ \
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/RL/notebooks/ppo_policy_training.ipynb

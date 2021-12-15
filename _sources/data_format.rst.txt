@@ -140,7 +140,7 @@ Agents
 An agent is an observation by the AV of some other detected object. 
 Each entry describes the object in terms of its attributes such as position and velocity, gives the agent a tracking number to track it over multiple frames (but only within the same scene!) and its most probable label. 
 The label is described as an array of probabilities over each defined class associated with them, 
-the possible labels are defined `here <https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/data/labels.py>`_ ::
+the possible labels are defined `here <https://github.com/woven-planet/l5kit/blob/master/l5kit/l5kit/data/labels.py>`_ ::
 
     AGENT_DTYPE = [
         ("centroid", np.float64, (2,)),
@@ -155,7 +155,7 @@ Traffic Light Faces
 +++++++++++++++++++
 
 Note: we refer to traffic light bulbs (e.g. the red light bulb of a specific traffic light) as :code:`faces` in L5Kit.
-For the full list of available types for a bulb please consult our `protobuf map definition <https://github.com/lyft/l5kit/blob/20ab033c01610d711c3d36e1963ecec86e8b85b6/l5kit/l5kit/data/proto/road_network.proto#L615>`_.
+For the full list of available types for a bulb please consult our `protobuf map definition <https://github.com/woven-planet/l5kit/blob/20ab033c01610d711c3d36e1963ecec86e8b85b6/l5kit/l5kit/data/proto/road_network.proto#L615>`_.
 
 Our semantic map holds static information about the world only. This means it has a list of all traffic lights, but no information about how their status changes over time.
 This dynamic information is instead stored in this array.

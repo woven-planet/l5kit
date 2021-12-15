@@ -5,7 +5,7 @@ Prediction
 Notebook Tutorial
 -----------------
 
-Related to our 2020 competition, we provide a `notebook to train and test <https://github.com/lyft/l5kit/blob/master/examples/agent_motion_prediction/agent_motion_prediction.ipynb>`_
+Related to our 2020 competition, we provide a `notebook to train and test <https://github.com/woven-planet/l5kit/blob/master/examples/agent_motion_prediction/agent_motion_prediction.ipynb>`_
 future agents trajectories.
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg

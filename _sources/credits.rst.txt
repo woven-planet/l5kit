@@ -6,7 +6,7 @@ Credits
 .. toctree::
    :maxdepth: 1
 
-The framework was developed at Level 5 and the contributors with their contributions can be viewed `here <https://github.com/lyft/l5kit/graphs/contributors>`_
+The framework was developed at Level 5 and the contributors with their contributions can be viewed `here <https://github.com/woven-planet/l5kit/graphs/contributors>`_
 
 .. * [Guido Zuidhof](https://www.linkedin.com/in/guido-zuidhof-377b6947/)
 .. * [Luca Bergamini](https://www.linkedin.com/in/luca-bergamini-61a510182/)

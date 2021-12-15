@@ -101,7 +101,7 @@
 
   
     <div class="nav-item">
-      <a href="https://github.com/lyft/l5kit"
+      <a href="https://github.com/woven-planet/l5kit"
         class="nav-link external">
           Github <outboundlink></outboundlink>
       </a>
@@ -182,7 +182,7 @@
 
   
     <div class="nav-item">
-      <a href="https://github.com/lyft/l5kit"
+      <a href="https://github.com/woven-planet/l5kit"
         class="nav-link external">
           Github <outboundlink></outboundlink>
       </a>
@@ -502,7 +502,7 @@ yielding the likelihood</p>
 <img alt="Equation" src="https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20L%20%3D%20-%20%5Clog%20p%28x_%7B1%2C%20%5Cldots%2C%20T%7D%2C%20y_%7B1%2C%20%5Cldots%2C%20T%7D%7Cc%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5Cbar%7Bx%7D_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%2C%20%5Cbar%7By%7D_%7B1%2C%20%5Cldots%2C%20T%7D%5E%7B1%2C%20%5Cldots%2C%20K%7D%29" />
 <img alt="Equation" src="https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20%3D%20-%20%5Clog%20%5Csum_k%20e%5E%7B%5Clog%28c%5Ek%29%20&amp;plus;%20%5Csum_t%20%5Clog%20%5Cmathcal%7BN%7D%28x_t%7C%5Cbar%7Bx%7D_t%5Ek%2C%20%5Csigma%3D1%29%20%5Cmathcal%7BN%7D%28y_t%7C%5Cbar%7By%7D_t%5Ek%2C%20%5Csigma%3D1%29%7D" />
 <img alt="Equation" src="https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20%3D%20-%20%5Clog%20%5Csum_k%20e%5E%7B%5Clog%28c%5Ek%29%20-%5Cfrac%7B1%7D%7B2%7D%20%5Csum_t%20%28%5Cbar%7Bx%7D_t%5Ek%20-%20x_t%29%5E2%20&amp;plus;%20%28%5Cbar%7By%7D_t%5Ek%20-%20y_t%29%5E2%7D" />
-<p>You can find our implementation <a class="reference external" href="https://github.com/lyft/l5kit/blob/20ab033c01610d711c3d36e1963ecec86e8b85b6/l5kit/l5kit/evaluation/metrics.py#L4">here</a>, which uses <em>error</em> as placeholder for the exponent</p>
+<p>You can find our implementation <a class="reference external" href="https://github.com/woven-planet/l5kit/blob/20ab033c01610d711c3d36e1963ecec86e8b85b6/l5kit/l5kit/evaluation/metrics.py#L4">here</a>, which uses <em>error</em> as placeholder for the exponent</p>
 <img alt="Equation" src="https://latex.codecogs.com/gif.latex?%5Cbg_white%20%5Clarge%20L%20%3D%20-%5Clog%20%5Csum_k%20e%5E%7B%5Ctexttt%7Berror%7D%7D)" />
 <p>and for numeral stability further applies the <a class="reference external" href="https://en.wikipedia.org/wiki/LogSumExp#log-sum-exp_trick_for_log-domain_calculations">log-sum-exp trick</a>:
 Assume, we need to calculate the logarithm of a sum of exponentials:</p>
@@ -516,7 +516,7 @@ Assume, we need to calculate the logarithm of a sum of exponentials:</p>
 <p>The ground truth coordinates for the competition are stored as positional displacements in the <a class="reference internal" href="coords_systems.html#world-coordinate"><span class="std std-ref">world coordinate system</span></a>.
 However, you will likely predict relative displacements for the agent of interest either in the <a class="reference internal" href="coords_systems.html#agent-coordinate"><span class="std std-ref">agent coordinate system</span></a>
 or in the <a class="reference internal" href="coords_systems.html#image-coordinate"><span class="std std-ref">image coordinate system</span></a>.
-Before using <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/evaluation/csv_utils.py">our utils</a> to write a CSV file for you predictions convert them
+Before using <a class="reference external" href="https://github.com/woven-planet/l5kit/blob/master/l5kit/l5kit/evaluation/csv_utils.py">our utils</a> to write a CSV file for you predictions convert them
 into the world coordinate system using the appropriate transformation matrix available as part of <a class="reference internal" href="data_format.html#data-abstraction"><span class="std std-ref">the input data</span></a> and subtract the centroid.</p>
 <p>Yaw is not required/used for this competition.</p>
 </section>
@@ -528,7 +528,7 @@ Examples of such other metrics, commonly used in literature, are <em>Average Dis
 <a class="reference external" href="https://arxiv.org/pdf/2006.14480.pdf">our dataset paper</a> or <a class="reference external" href="https://arxiv.org/pdf/1806.01482.pdf">SophieGAN</a>):
 ADE is the average displacement error (L2 distance between prediction and ground truth averaged over all timesteps), while FDE
 reports the final displacement error (L2 distance between prediction and ground truth, evaluated only at the last timestep).
-As we consider multiple predictions, we offer <a class="reference external" href="https://github.com/lyft/l5kit/blob/master/l5kit/l5kit/evaluation/metrics.py">implementations for both these metrics</a> either averaging over all hypotheses
+As we consider multiple predictions, we offer <a class="reference external" href="https://github.com/woven-planet/l5kit/blob/master/l5kit/l5kit/evaluation/metrics.py">implementations for both these metrics</a> either averaging over all hypotheses
 or using the best hypothesis (oracle variant) - ignoring generated confidence scores in both cases.</p>
 </section>
 </section>
