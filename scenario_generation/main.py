@@ -6,7 +6,7 @@ import pickle
 import torch
 from l5kit.configs import load_config_data
 from l5kit.data import LocalDataManager, ChunkedDataset
-from l5kit.data import get_dataset_path
+from general_util import get_dataset_path
 from l5kit.dataset import EgoDatasetVectorized
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.vectorization.vectorizer_builder import build_vectorizer
