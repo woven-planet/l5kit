@@ -40,7 +40,12 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
     data_generation_params = cfg['data_generation_params']
     other_agents_num = data_generation_params['other_agents_num']
     lane_params = data_generation_params['lane_params']
-    max_num_elem = max(lane_params['max_num_lanes'], lane_params['max_num_crosswalks'])  # max num elements per poly type
+    max_num_crosswalks = lane_params['max_num_crosswalks']
+    max_num_elem = max(lane_params['max_num_lanes'], max_num_crosswalks)  # max num elements per poly type
+    max_points_per_crosswalk = lane_params['max_points_per_crosswalk']
+    max_points_per_lane = lane_params['max_points_per_lane']
+    max_points_per_elem = max(max_points_per_lane, max_points_per_crosswalk)
+    coord_dim = 2  # we will use only X-Y coordinates
 
     map_feat = []  # agents features per scene
     agents_feat = []  # map features per scene
@@ -118,16 +123,28 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
                          'crosswalks': crosswalks,
                          })
 
+        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4
+
         polygon_types = ['lanes_mid', 'lanes_left', 'lanes_right', 'crosswalks']
         n_polygon_types = len(polygon_types)
 
+        map_points = torch.zeros(n_polygon_types, max_num_elem, max_points_per_elem, coord_dim)
+        map_points_availability = torch.zeros(n_polygon_types, max_num_elem, dtype=torch.bool)
 
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4
+        map_points[polygon_types.index('lanes_mid')] = torch.Tensor(ego_input['lanes_mid'][:, :, :coord_dim])
+        map_points[polygon_types.index('lanes_left')] = torch.Tensor(ego_input['lanes'][::2, :, :coord_dim])
+        map_points[polygon_types.index('lanes_right')] = torch.Tensor(ego_input['lanes'][1::2, :, :coord_dim])
+        map_points[polygon_types.index('crosswalks')][:max_num_crosswalks, max_points_per_crosswalk] = \
+            torch.Tensor(ego_input['crosswalks'][:, :, :coord_dim])
+        # TODO: save map_points_availability
+        # TODO: circular wrap to max_num_points for closed polygons?
+        # map_points_availability[]
 
-        map_feat = torch.zeros(n_polygon_types, max_num_elem, )
 
+        # for i_poly_type, poly_type in enumerate(polygon_types):
+        #     map_feat[i_poly_type] =
 
-        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4
+        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
 
 
