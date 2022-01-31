@@ -33,6 +33,7 @@ cfg = load_config_data(project_dir + sample_config)
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 dataset_cfg = cfg[source_name]
+
 dataset_zarr = ChunkedDataset(dm.require(dataset_cfg["key"])).open()
 n_scenes = len(dataset_zarr.scenes)
 vectorizer = build_vectorizer(cfg, dm)

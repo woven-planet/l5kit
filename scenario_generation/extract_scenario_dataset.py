@@ -36,6 +36,12 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
     Data format documentation: https://github.com/ramitnv/l5kit/blob/master/docs/data_format.rst
     """
 
+
+    data_generation_params = cfg['data_generation_params']
+    other_agents_num = data_generation_params['other_agents_num']
+    lane_params = data_generation_params['lane_params']
+    max_num_elem = max(lane_params['max_num_lanes'], lane_params['max_num_crosswalks'])  # max num elements per poly type
+
     map_feat = []  # agents features per scene
     agents_feat = []  # map features per scene
 
@@ -111,6 +117,19 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
                          'lanes_right': lanes_right,
                          'crosswalks': crosswalks,
                          })
+
+        polygon_types = ['lanes_mid', 'lanes_left', 'lanes_right', 'crosswalks']
+        n_polygon_types = len(polygon_types)
+
+
+        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4
+
+        map_feat = torch.zeros(n_polygon_types, max_num_elem, )
+
+
+        #$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4
+
+
 
         if verbose and i_scene == 0:
             if show_html_plot:
