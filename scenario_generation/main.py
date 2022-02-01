@@ -13,7 +13,7 @@ from scenario_generation.extract_scenario_dataset import process_scenes_data
 ########################################################################
 verbose = 0  # 0 | 1
 show_html_plot = False
-config_file_name = 'train'  # 'sample' | 'train' | 'train_full'
+config_file_name = 'sample'  # 'sample' | 'train' | 'train_full'
 source_name = "train_data_loader"  # "train_data_loader | "val_data_loader"
 saved_file_name = 'l5kit_' + config_file_name + '_' + source_name
 sample_config = f"/scenario_generation/configs/config_{config_file_name}.yaml"
