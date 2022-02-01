@@ -1,16 +1,14 @@
 import os
 import subprocess
-from pathlib import Path
-import numpy as np
 import pickle
 import torch
 from l5kit.configs import load_config_data
 from l5kit.data import LocalDataManager, ChunkedDataset
 from general_util import get_dataset_path
 from l5kit.dataset import EgoDatasetVectorized
-from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
+from l5kit.simulation.dataset import SimulationConfig
 from l5kit.vectorization.vectorizer_builder import build_vectorizer
-from extract_scenario_dataset import process_scenes_data
+from scenario_generation.extract_scenario_dataset import process_scenes_data
 
 ########################################################################
 verbose = 0  # 0 | 1
