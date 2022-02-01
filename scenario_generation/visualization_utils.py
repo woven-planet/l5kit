@@ -9,13 +9,18 @@ plt.rcParams['savefig.dpi'] = 300
 ######################################################################
 
 
-def plot_poly_elems(ax, elems_points, elems_valid,  facecolor='0.4', alpha=0.3, edgecolor='black', label=None, is_closed=False, linewidth=1):
+def plot_poly_elems(ax, elems_d,  facecolor='0.4', alpha=0.3, edgecolor='black', label=None, is_closed=False, linewidth=1):
+    elems_valid = elems_d['elems_valid']
+    n_points_per_elem = elems_d['n_points_per_elem']
+    elems_points = elems_d['elems_points']
+
     first_plt = True
-    for i_elem, is_valid in enumerate(elems_valid):
-        if not is_valid:
+    n_elem = elems_valid.shape[0]
+    for i_elem in range(n_elem):
+        if not elems_valid[i_elem]:
             continue
-        x = torch.unique(elems_points[i_elem, :, 0])
-        y = torch.unique(elems_points[i_elem, :, 1])
+        x = elems_points[i_elem, :n_points_per_elem[i_elem], 0]
+        y = elems_points[i_elem, :n_points_per_elem[i_elem], 1]
         if first_plt:
             first_plt = False
         else:
@@ -29,25 +34,27 @@ def plot_poly_elems(ax, elems_points, elems_valid,  facecolor='0.4', alpha=0.3, 
 ##############################################################################################
 
 
-def plot_lanes(ax, lanes_left, lanes_left_avl, lanes_right, lanes_right_avl, facecolor='0.4', alpha=0.3,
+def plot_lanes(ax, l_elems_d, r_elems_d, facecolor='0.4', alpha=0.3,
                edgecolor='black', label='', linewidth=1):
 
-    # Print road borders (left and right lanes separately)
-    plot_poly_elems(ax, lanes_left, lanes_left_avl, facecolor='0.4', alpha=0.7, edgecolor='black',
-                    is_closed=False, linewidth=1)
-    plot_poly_elems(ax, lanes_right, lanes_right_avl, facecolor='0.4', alpha=0.7, edgecolor='black',
-                    is_closed=False, linewidth=1)
+
+    l_elems_valid = l_elems_d['elems_valid']
+    l_n_points_per_elem = l_elems_d['n_points_per_elem']
+    l_elems_points = l_elems_d['elems_points']
+    r_elems_valid = r_elems_d['elems_valid']
+    r_n_points_per_elem = r_elems_d['n_points_per_elem']
+    r_elems_points = r_elems_d['elems_points']
 
     # Print road area in between lanes
     first_plt = True
-    n_elems = lanes_left.shape[0]
+    n_elems = l_elems_valid.shape[0]
     for i_elem in range(n_elems):
-        if not (lanes_left_avl[i_elem] and lanes_right_avl[i_elem]):
+        if not (l_elems_valid[i_elem] and r_elems_valid[i_elem]):
             continue
-        x_left = torch.unique(lanes_left[i_elem, :, 0])
-        y_left = torch.unique(lanes_left[i_elem, :, 1])
-        x_right = torch.unique(lanes_right[i_elem, :, 0])
-        y_right = torch.unique(lanes_right[i_elem, :, 1])
+        x_left = l_elems_points[i_elem, :l_elems_points[i_elem], 0]
+        y_left = l_elems_points[i_elem, :l_elems_points[i_elem], 1]
+        x_right = r_elems_points[i_elem, :r_elems_points[i_elem], 0]
+        y_right = r_elems_points[i_elem, :r_elems_points[i_elem], 1]
         x = torch.cat((x_left, torch.flip(x_right, dims=[0])))
         y = torch.cat((y_left, torch.flip(y_right, dims=[0])))
         if first_plt:
@@ -84,16 +91,10 @@ def plot_rectangles(ax, centroids, extents, yaws, label='car', facecolor='skyblu
 ##############################################################################################
 
 
-def visualize_scene_feat(agents_feat_s, map_points_s, map_points_availability_s, dataset_props):
+def visualize_scene_feat(agents_feat_s, map_points_s, map_elems_availability_s, map_n_points_orig_s, dataset_props):
+
     polygon_types = dataset_props['polygon_types']
-    lanes_left = map_points_s[polygon_types.index('lanes_left')]
-    lanes_left_avl = map_points_availability_s[polygon_types.index('lanes_left')]
-    lanes_right = map_points_s[polygon_types.index('lanes_right')]
-    lanes_right_avl = map_points_availability_s[polygon_types.index('lanes_right')]
-    lanes_mid = map_points_s[polygon_types.index('lanes_mid')]
-    lanes_mid_avl = map_points_availability_s[polygon_types.index('lanes_mid')]
-    crosswalks = map_points_s[polygon_types.index('crosswalks')]
-    crosswalks_avl = map_points_availability_s[polygon_types.index('crosswalks')]
+    closed_polygon_types = dataset_props['closed_polygon_types']
 
     centroids = [af['centroid'] for af in agents_feat_s]
     yaws = [af['yaw'] for af in agents_feat_s]
@@ -107,13 +108,22 @@ def visualize_scene_feat(agents_feat_s, map_points_s, map_points_availability_s,
     V = [af['speed'] * np.sin(af['yaw']) for af in agents_feat_s]
     fig, ax = plt.subplots()
 
-    plot_poly_elems(ax, crosswalks, crosswalks_avl, facecolor='orange', alpha=0.3, edgecolor='orange', label='Crosswalks',
-                    is_closed=True)
+    plot_props = {'lanes_mid': ('lime', 0.4), 'lanes_left': ('black', 0.3), 'lanes_right': ('black', 0.3),
+                  'crosswalks': ('orange', 0.4)}
+    pd = {}
+    for i_type, poly_type in enumerate(polygon_types):
+        pd[poly_type] = {}
 
-    plot_lanes(ax, lanes_left, lanes_left_avl, lanes_right, lanes_right_avl, facecolor='grey', alpha=0.3, edgecolor='black',
-               label='Lanes')
-    plot_poly_elems(ax, lanes_mid, lanes_mid_avl, facecolor='lime', alpha=0.4, edgecolor='lime', label='Lanes mid',
-                    is_closed=False, linewidth=1)
+        pd[poly_type]['elems_valid'] = map_elems_availability_s[i_type]
+        pd[poly_type]['n_points_per_elem'] = map_n_points_orig_s[i_type]
+        pd[poly_type]['elems_points'] = map_points_s[i_type]
+
+        plot_poly_elems(ax, pd[poly_type],
+                        facecolor=plot_props[poly_type][0], alpha=plot_props[poly_type][1],
+                        edgecolor=plot_props[poly_type][0], label=poly_type,
+                        is_closed=poly_type in closed_polygon_types, linewidth=1)
+
+    plot_lanes(ax, pd['lanes_left'],  pd['lanes_right'], facecolor='grey', alpha=0.3, edgecolor='black',  label='Lanes')
 
 
     extents = [af['extent'] for af in agents_feat_s]

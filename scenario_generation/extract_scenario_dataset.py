@@ -92,8 +92,8 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                      'coord_dim': coord_dim}
 
     map_points = torch.zeros(n_scenes, n_polygon_types, max_num_elem, max_points_per_elem, coord_dim)
-    map_points_availability = torch.zeros(n_scenes, n_polygon_types, max_num_elem, dtype=torch.bool)
-
+    map_elems_availability = torch.zeros(n_scenes, n_polygon_types, max_num_elem, dtype=torch.bool)
+    map_n_points_orig = torch.zeros(n_scenes, n_polygon_types, max_num_elem, dtype=torch.int)
 
     map_feat = []  # agents features per scene
     agents_feat = []  # map features per scene
@@ -166,7 +166,8 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                 n_valid_points = elem_points_valid.sum()
                 if n_valid_points == 0:
                     continue
-                map_points_availability[i_scene, i_type, ind_elem] = True
+                map_elems_availability[i_scene, i_type, ind_elem] = True
+                map_n_points_orig[i_scene, i_type, ind_elem] = n_valid_points
                 # concatenate a reflection of this sequence, to create a shift equivariant representation
                 # Note: since the new seq include the original + reflection, then we get flip invariant pipeline if we use
                 # later cyclic shift invariant model
@@ -187,10 +188,11 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                     is_flip = not is_flip
                 ind_elem += 1
 
-        if verbose and i_scene == 0:
+        if verbose and i_scene == 8:
             if show_html_plot:
                 visualize_scene(dataset_zarr, cfg, dm, scene_idx)
-            visualize_scene_feat(agents_feat[-1], map_points[i_scene], map_points_availability[i_scene], dataset_props)
+            visualize_scene_feat(agents_feat[-1], map_points[i_scene], map_elems_availability[i_scene],
+                                 map_n_points_orig[i_scene], dataset_props)
 
     print('labels_hist before filtering: ', {i: c for i, c in enumerate(labels_hist_pre_filter) if c > 0})
     print('labels_hist: ', {i: c for i, c in enumerate(labels_hist) if c > 0})
