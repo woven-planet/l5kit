@@ -21,7 +21,7 @@ def get_poly_elems(ego_input, poly_type, dataset_props):
     max_points_per_elem = dataset_props['max_points_per_elem']
     coord_dim = dataset_props['coord_dim']
     elems_points = torch.zeros(max_num_elem, max_points_per_elem, coord_dim)
-    elems_points_valid = torch.zeros(max_num_elem, max_points_per_elem, coord_dim, dtype=torch.bool)
+    elems_points_valid = torch.zeros(max_num_elem, max_points_per_elem, dtype=torch.bool)
     poly_type_valid = poly_type + '_availabilities'
 
     if poly_type == 'lanes_left':
@@ -32,10 +32,10 @@ def get_poly_elems(ego_input, poly_type, dataset_props):
         points_valid = ego_input[poly_type_valid][1::2, :, :coord_dim]
     else:
         points = ego_input[poly_type][:, :, :coord_dim]
-        points_valid = ego_input[poly_type_valid][:, :, :coord_dim]
+        points_valid = ego_input[poly_type_valid][:, :]
 
-    elems_points[:points.shape[0], :points.shape[1], :] = points
-    elems_points_valid =
+    elems_points[:points.shape[0], :points.shape[1], :] = torch.Tensor(points)
+    elems_points_valid[:points_valid.shape[0], :points_valid.shape[1]] = torch.Tensor(points_valid)
 
 
 ####################################################################################
@@ -96,11 +96,6 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
     map_points_availability = torch.zeros(n_scenes, n_polygon_types, max_num_elem, dtype=torch.bool)
 
     #####$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4
-
-
-
-
-
 
     map_feat = []  # agents features per scene
     agents_feat = []  # map features per scene
@@ -163,60 +158,31 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                 'extent': extent[:2]  # [length, width]  [m]
             })
         # Get map features:
-        lanes_mid = mat_to_list_of_tensors(ego_input['lanes_mid'], ego_input['lanes_mid_availabilities'])
-        lanes_left = mat_to_list_of_tensors(ego_input['lanes'][::2], ego_input['lanes_availabilities'][::2])
-        lanes_right = mat_to_list_of_tensors(ego_input['lanes'][1::2], ego_input['lanes_availabilities'][1::2])
-        crosswalks = mat_to_list_of_tensors(ego_input['crosswalks'], ego_input['crosswalks_availabilities'])
-
-        map_feat.append({'lanes_mid': lanes_mid,
-                         'lanes_left': lanes_left,
-                         'lanes_right': lanes_right,
-                         'crosswalks': crosswalks,
-                         })
-
-
-
-
-            map_points[i_scene, polygon_types.index('lanes_mid'), :max_num_lanes, max_points_per_lane] \
-                = torch.Tensor(ego_input['lanes_mid'][:, :, :coord_dim])
-
-
-        map_points[i_scene, polygon_types.index('lanes_left'), :max_num_lanes, max_points_per_lane]\
-            = torch.Tensor(ego_input['lanes'][::2, :, :coord_dim])
-
-        map_points[i_scene, polygon_types.index('lanes_right'), :max_num_lanes, max_points_per_lane] \
-            = torch.Tensor(ego_input['lanes'][1::2, :, :coord_dim])
-
-        map_points[i_scene, polygon_types.index('crosswalks'), :max_num_crosswalks, max_points_per_crosswalk] \
-            = torch.Tensor(ego_input['crosswalks'][:, :, :coord_dim])
+        for i_type, poly_type in enumerate(polygon_types):
+            map_points[i_scene, i_type] = get_poly_elems(ego_input, poly_type, dataset_props)
 
 
         # TODO: save map_points_availability
         # TODO: circular wrap to max_num_points for closed polygons?
         # map_points_availability[]
 
-
-        for  i_type, poly_type in enumerate(polygon_types):
-            map_points[]
-
-        # concatenate a reflection of this sequence, to create a shift equivariant representation
-        # Note: since the new seq include the original + reflection, then we get flip invariant pipeline if we use
-        # later cyclic shift invariant model
-        h = F.pad(h, (0, h.shape[2] - 1), mode='reflect').contiguous()
-
-        if not self.is_closed:
-            # concatenate a reflection of this sequence, to create a circular closed polygon.
-            # since the model is cyclic-shift invariant, we get a pipeline that is
-            # invariant to the direction of the sequence
-            h = F.pad(h, (0, h.shape[2] - 1), mode='reflect').contiguous()
-
-        # If the points sequence is too short to use the conv filter - pad in circular manner
-        while h.shape[2] < self.kernel_size:
-            pad_len = min(self.kernel_size - h.shape[2], h.shape[2])
-            h = F.pad(h, (0, pad_len), mode='circular').contiguous()
-
-        # for i_poly_type, poly_type in enumerate(polygon_types):
-        #     map_feat[i_poly_type] =
+        #
+        #
+        # # concatenate a reflection of this sequence, to create a shift equivariant representation
+        # # Note: since the new seq include the original + reflection, then we get flip invariant pipeline if we use
+        # # later cyclic shift invariant model
+        # h = F.pad(h, (0, h.shape[2] - 1), mode='reflect').contiguous()
+        #
+        # if not self.is_closed:
+        #     # concatenate a reflection of this sequence, to create a circular closed polygon.
+        #     # since the model is cyclic-shift invariant, we get a pipeline that is
+        #     # invariant to the direction of the sequence
+        #     h = F.pad(h, (0, h.shape[2] - 1), mode='reflect').contiguous()
+        #
+        # # If the points sequence is too short to use the conv filter - pad in circular manner
+        # while h.shape[2] < self.kernel_size:
+        #     pad_len = min(self.kernel_size - h.shape[2], h.shape[2])
+        #     h = F.pad(h, (0, pad_len), mode='circular').contiguous()
 
         # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
 
