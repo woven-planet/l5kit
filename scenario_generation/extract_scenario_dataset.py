@@ -173,16 +173,16 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                 # later cyclic shift invariant model
                 # we keep adding flipped sequences to fill all points
                 point_seq = elem_points[elem_points_valid]
-                point_seq_flipped = torch.flip(point_seq, dims=[0])
-                n_points_in_seq = point_seq.shape[0]
+                point_seq_flipped = torch.flip(point_seq, dims=[0])[1:-2] # no need to duplicate edge points to get circular seq
                 ind_point = 0
                 is_flip = False
                 while ind_point < max_points_per_elem:
-                    seq_len = min(n_points_in_seq, max_points_per_elem - ind_point)
                     if is_flip:
                         point_seq_cur = point_seq_flipped
+                        seq_len = min(point_seq_flipped.shape[0], max_points_per_elem - ind_point)
                     else:
                         point_seq_cur = point_seq
+                        seq_len = min(point_seq.shape[0], max_points_per_elem - ind_point)
                     map_points[i_scene, i_type, ind_elem, ind_point:(ind_point + seq_len)] = point_seq_cur[:seq_len]
                     ind_point += seq_len
                     is_flip = not is_flip
