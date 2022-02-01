@@ -15,21 +15,27 @@ from visualization_utils import visualize_scene_feat
 
 ####################################################################################
 
-def mat_to_list_of_tensors(mat, mat_valid, coord_dim=2):
-    list_tnsr = []
-    for i in range(mat.shape[0]):
-        lst = []
-        for j in range(mat.shape[1]):
-            if not mat_valid[i, j]:
-                continue
-            lst.append(mat[i, j])
-        if not lst:
-            continue
-        lst = [torch.Tensor(elem[:coord_dim]) for elem in lst]
-        tnsr = torch.stack(lst)
-        list_tnsr.append(tnsr)
 
-    return list_tnsr
+def get_poly_elems(ego_input, poly_type, dataset_props):
+    max_num_elem = dataset_props['max_num_elem']
+    max_points_per_elem = dataset_props['max_points_per_elem']
+    coord_dim = dataset_props['coord_dim']
+    elems_points = torch.zeros(max_num_elem, max_points_per_elem, coord_dim)
+    elems_points_valid = torch.zeros(max_num_elem, max_points_per_elem, coord_dim, dtype=torch.bool)
+    poly_type_valid = poly_type + '_availabilities'
+
+    if poly_type == 'lanes_left':
+        points = ego_input[poly_type][::2, :, :coord_dim]
+        points_valid = ego_input[poly_type_valid][::2, :, :coord_dim]
+    elif poly_type == 'lanes_right':
+        points = ego_input[poly_type][1::2, :, :coord_dim]
+        points_valid = ego_input[poly_type_valid][1::2, :, :coord_dim]
+    else:
+        points = ego_input[poly_type][:, :, :coord_dim]
+        points_valid = ego_input[poly_type_valid][:, :, :coord_dim]
+
+    elems_points[:points.shape[0], :points.shape[1], :] = points
+    elems_points_valid =
 
 
 ####################################################################################
@@ -80,9 +86,11 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
 
     dataset_props = {'polygon_types': polygon_types,
                      'closed_polygon_types': closed_polygon_types,
+                     'max_num_elem': max_num_elem,
                      'max_points_per_elem': max_points_per_elem,
                      'agent_feat_vec_coord_labels': agent_feat_vec_coord_labels,
-                     'agent_types_labels': agent_types_labels}
+                     'agent_types_labels': agent_types_labels,
+                     'coord_dim': coord_dim}
 
     map_points = torch.zeros(n_scenes, n_polygon_types, max_num_elem, max_points_per_elem, coord_dim)
     map_points_availability = torch.zeros(n_scenes, n_polygon_types, max_num_elem, dtype=torch.bool)
@@ -167,23 +175,6 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                          })
 
 
-        def get_poly_elems(ego_input, poly_type):
-            elems_points =  torch.zeros(max_num_elem, max_points_per_elem, coord_dim)
-            elems_points_valid = torch.zeros(max_num_elem, max_points_per_elem, coord_dim, dtype=torch.bool)
-            poly_type_valid = poly_type + '_availabilities'
-
-            if poly_type == 'lanes_left':
-                points = ego_input[poly_type][::2, :, :coord_dim]
-                points_valid = ego_input[poly_type_valid][::2, :, :coord_dim]
-            elif poly_type == 'lanes_right':
-                points = ego_input[poly_type][1::2, :, :coord_dim]
-                points_valid = ego_input[poly_type_valid][1::2, :, :coord_dim]
-            else:
-                points = ego_input[poly_type][:, :, :coord_dim]
-                points_valid = ego_input[poly_type_valid][:, :, :coord_dim]
-
-            elems_points[:points.shape[0], :points.shape[1], :] =  points
-            elems_points_valid =
 
 
             map_points[i_scene, polygon_types.index('lanes_mid'), :max_num_lanes, max_points_per_lane] \

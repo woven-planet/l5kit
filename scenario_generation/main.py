@@ -10,7 +10,7 @@ from general_util import get_dataset_path
 from l5kit.dataset import EgoDatasetVectorized
 from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
 from l5kit.vectorization.vectorizer_builder import build_vectorizer
-from extract_scenario_dataset import get_scenes_batch
+from extract_scenario_dataset import process_scenes_data
 
 ########################################################################
 verbose = 0  # 0 | 1
@@ -50,9 +50,9 @@ sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_ag
 scene_indices = list(range(n_scenes))
 # scene_indices = [39]
 
-agents_feat, map_feat, agent_types_labels, labels_hist = get_scenes_batch(scene_indices, dataset, dataset_zarr,
-                                                                          dm, sim_cfg, cfg,
-                                                                          verbose=verbose, show_html_plot=show_html_plot)
+agents_feat, map_feat, agent_types_labels, labels_hist = process_scenes_data(scene_indices, dataset, dataset_zarr,
+                                                                             dm, sim_cfg, cfg,
+                                                                             verbose=verbose, show_html_plot=show_html_plot)
 
 git_version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
 
