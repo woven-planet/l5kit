@@ -14,8 +14,8 @@ def plot_poly_elems(ax, elems_points, elems_valid,  facecolor='0.4', alpha=0.3, 
     for i_elem, is_valid in enumerate(elems_valid):
         if not is_valid:
             continue
-        x = elems_points[i_elem, :, 0]
-        y = elems_points[i_elem, :, 1]
+        x = torch.unique(elems_points[i_elem, :, 0])
+        y = torch.unique(elems_points[i_elem, :, 1])
         if first_plt:
             first_plt = False
         else:
@@ -44,10 +44,10 @@ def plot_lanes(ax, lanes_left, lanes_left_avl, lanes_right, lanes_right_avl, fac
     for i_elem in range(n_elems):
         if not (lanes_left_avl[i_elem] and lanes_right_avl[i_elem]):
             continue
-        x_left = lanes_left[i_elem, :, 0]
-        y_left = lanes_left[i_elem, :, 1]
-        x_right = lanes_right[i_elem, :, 0]
-        y_right = lanes_right[i_elem, :, 1]
+        x_left = torch.unique(lanes_left[i_elem, :, 0])
+        y_left = torch.unique(lanes_left[i_elem, :, 1])
+        x_right = torch.unique(lanes_right[i_elem, :, 0])
+        y_right = torch.unique(lanes_right[i_elem, :, 1])
         x = torch.cat((x_left, torch.flip(x_right, dims=[0])))
         y = torch.cat((y_left, torch.flip(y_right, dims=[0])))
         if first_plt:
