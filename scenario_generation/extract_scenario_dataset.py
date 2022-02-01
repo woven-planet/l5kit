@@ -94,7 +94,6 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
     map_points = torch.zeros(n_scenes, n_polygon_types, max_num_elem, max_points_per_elem, coord_dim)
     map_points_availability = torch.zeros(n_scenes, n_polygon_types, max_num_elem, dtype=torch.bool)
 
-    #####$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4
 
     map_feat = []  # agents features per scene
     agents_feat = []  # map features per scene
@@ -191,7 +190,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
         if verbose and i_scene == 0:
             if show_html_plot:
                 visualize_scene(dataset_zarr, cfg, dm, scene_idx)
-            visualize_scene_feat(agents_feat[-1], map_feat[-1])
+            visualize_scene_feat(agents_feat[-1], map_points[i_scene], map_points_availability[i_scene], dataset_props)
 
     print('labels_hist before filtering: ', {i: c for i, c in enumerate(labels_hist_pre_filter) if c > 0})
     print('labels_hist: ', {i: c for i, c in enumerate(labels_hist) if c > 0})
