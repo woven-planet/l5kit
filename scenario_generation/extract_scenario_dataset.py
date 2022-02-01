@@ -27,7 +27,7 @@ def get_poly_elems(ego_input, poly_type, dataset_props):
         points = ego_input['lanes'][::2, :, :coord_dim]
         points_valid = ego_input['lanes_availabilities'][::2, :]
     elif poly_type == 'lanes_right':
-        points = ego_input[poly_type][1::2, :, :coord_dim]
+        points = ego_input['lanes'][1::2, :, :coord_dim]
         points_valid = ego_input['lanes_availabilities'][1::2, :]
     else:
         points = ego_input[poly_type][:, :, :coord_dim]
@@ -156,35 +156,37 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                 'speed': speed,  # speed [m/s ?]
                 'extent': extent[:2]  # [length, width]  [m]
             })
+
         # Get map features:
         for i_type, poly_type in enumerate(polygon_types):
             elems_points, elems_points_valid = get_poly_elems(ego_input, poly_type, dataset_props)
-            map_points[i_scene, i_type] = elems_points
-
-
-        # TODO: save map_points_availability
-        # TODO: circular wrap to max_num_points for closed polygons?
-        # map_points_availability[]
-
-        #
-        #
-        # # concatenate a reflection of this sequence, to create a shift equivariant representation
-        # # Note: since the new seq include the original + reflection, then we get flip invariant pipeline if we use
-        # # later cyclic shift invariant model
-        # h = F.pad(h, (0, h.shape[2] - 1), mode='reflect').contiguous()
-        #
-        # if not self.is_closed:
-        #     # concatenate a reflection of this sequence, to create a circular closed polygon.
-        #     # since the model is cyclic-shift invariant, we get a pipeline that is
-        #     # invariant to the direction of the sequence
-        #     h = F.pad(h, (0, h.shape[2] - 1), mode='reflect').contiguous()
-        #
-        # # If the points sequence is too short to use the conv filter - pad in circular manner
-        # while h.shape[2] < self.kernel_size:
-        #     pad_len = min(self.kernel_size - h.shape[2], h.shape[2])
-        #     h = F.pad(h, (0, pad_len), mode='circular').contiguous()
-
-        # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$
+            ind_elem = 0
+            for i_elem in range(max_num_elem):
+                elem_points = elems_points[i_elem]
+                elem_points_valid = elems_points_valid[i_elem]
+                n_valid_points = elem_points_valid.sum()
+                if n_valid_points == 0:
+                    continue
+                map_points_availability[i_scene, i_type, ind_elem] = True
+                # concatenate a reflection of this sequence, to create a shift equivariant representation
+                # Note: since the new seq include the original + reflection, then we get flip invariant pipeline if we use
+                # later cyclic shift invariant model
+                # we keep adding flipped sequences to fill all points
+                point_seq = elem_points[elem_points_valid]
+                point_seq_flipped = torch.flip(point_seq, dims=[0])
+                n_points_in_seq = point_seq.shape[0]
+                ind_point = 0
+                is_flip = False
+                while ind_point < max_points_per_elem:
+                    seq_len = min(n_points_in_seq, max_points_per_elem - ind_point)
+                    if is_flip:
+                        point_seq_cur = point_seq_flipped
+                    else:
+                        point_seq_cur = point_seq
+                    map_points[i_scene, i_type, ind_elem, ind_point:(ind_point + seq_len)] = point_seq_cur[:seq_len]
+                    ind_point += seq_len
+                    is_flip = not is_flip
+                ind_elem += 1
 
         if verbose and i_scene == 0:
             if show_html_plot:

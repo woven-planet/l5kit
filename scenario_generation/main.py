@@ -11,7 +11,7 @@ from l5kit.vectorization.vectorizer_builder import build_vectorizer
 from scenario_generation.extract_scenario_dataset import process_scenes_data
 
 ########################################################################
-verbose = 0  # 0 | 1
+verbose = 1  # 0 | 1
 show_html_plot = False
 config_file_name = 'sample'  # 'sample' | 'train' | 'train_full'
 source_name = "train_data_loader"  # "train_data_loader | "val_data_loader"
