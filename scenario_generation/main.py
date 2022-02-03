@@ -2,12 +2,12 @@ import os
 import subprocess
 import pickle
 import numpy as np
-from l5kit.configs import load_config_data
-from l5kit.data import LocalDataManager, ChunkedDataset
-from general_util import get_dataset_path
-from l5kit.dataset import EgoDatasetVectorized
-from l5kit.simulation.dataset import SimulationConfig
-from l5kit.vectorization.vectorizer_builder import build_vectorizer
+import l5kit.configs as l5kit_configs
+import l5kit.data as l5kit_data
+import general_util as general_util
+import l5kit.dataset as l5kit_dataset
+import l5kit.simulation.dataset as simulation_dataset
+import l5kit.vectorization.vectorizer_builder as vectorizer_builder
 from scenario_generation.extract_scenario_dataset import process_scenes_data
 
 ########################################################################
@@ -40,7 +40,6 @@ else:
 map_data_file_path = os.path.join(save_dir_path, 'map_data.dat')
 info_file_path = os.path.join(save_dir_path, 'info_data.pkl')
 
-
 ######### DEBUG ###########
 
 # with open(info_file_path, 'rb') as fid:
@@ -54,36 +53,36 @@ info_file_path = os.path.join(save_dir_path, 'info_data.pkl')
 # Load data and configurations
 ########################################################################
 # set env variable for data
-os.environ["L5KIT_DATA_FOLDER"], project_dir = get_dataset_path()
-dm = LocalDataManager(None)
-cfg = load_config_data(project_dir + sample_config)
+os.environ["L5KIT_DATA_FOLDER"], project_dir = general_util.get_dataset_path()
+dm = l5kit_data.LocalDataManager(None)
+cfg = l5kit_configs.load_config_data(project_dir + sample_config)
 
 dataset_cfg = cfg[source_name]
 
-dataset_zarr = ChunkedDataset(dm.require(dataset_cfg["key"])).open()
+dataset_zarr = l5kit_data.ChunkedDataset(dm.require(dataset_cfg["key"])).open()
 n_scenes = len(dataset_zarr.scenes)
-vectorizer = build_vectorizer(cfg, dm)
-dataset = EgoDatasetVectorized(cfg, dataset_zarr, vectorizer)
+vectorizer = vectorizer_builder.build_vectorizer(cfg, dm)
+dataset = l5kit_dataset.EgoDatasetVectorized(cfg, dataset_zarr, vectorizer)
 
 print(dataset)
 print(f'Dataset source: {cfg[source_name]["key"]}, number of scenes total: {n_scenes}')
 
 num_simulation_steps = 10
-sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=True,
-                           distance_th_far=500, distance_th_close=50, num_simulation_steps=num_simulation_steps,
-                           start_frame_index=0, show_info=True)
+sim_cfg = simulation_dataset.SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=True,
+                                              distance_th_far=500, distance_th_close=50,
+                                              num_simulation_steps=num_simulation_steps,
+                                              start_frame_index=0, show_info=True)
 
 scene_indices = list(range(n_scenes))
 # scene_indices = [39]
 
 saved_mats, dataset_props, labels_hist = process_scenes_data(scene_indices, dataset,
-                                                                        dataset_zarr,
-                                                                        dm, sim_cfg, cfg, max_n_agents,
-                                                                        verbose=verbose,
-                                                                        show_html_plot=show_html_plot)
+                                                             dataset_zarr,
+                                                             dm, sim_cfg, cfg, max_n_agents,
+                                                             verbose=verbose,
+                                                             show_html_plot=show_html_plot)
 
 git_version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
-
 
 saved_mats_info = {}
 for var_name, var in saved_mats.items():
