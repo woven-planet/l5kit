@@ -50,7 +50,7 @@ def neg_multi_log_likelihood(
     https://leimao.github.io/blog/LogSumExp/
 
     For more details about used loss function and reformulation, please see
-    https://github.com/lyft/l5kit/blob/master/competition.md.
+    https://github.com/woven-planet/l5kit/blob/master/competition.md.
 
     Args:
         ground_truth (np.ndarray): array of shape (timesteps)x(2D coords)

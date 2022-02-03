@@ -1,6 +1,5 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.collections import PatchCollection
 from matplotlib.patches import Rectangle
 
 plt.rcParams['figure.dpi'] = 300
@@ -8,11 +7,18 @@ plt.rcParams['savefig.dpi'] = 300
 ######################################################################
 
 
-def plot_poly_elems(ax, poly, facecolor='0.4', alpha=0.3, edgecolor='black', label='', is_closed=False, linewidth=1):
+def plot_poly_elems(ax, elems_d,  facecolor='0.4', alpha=0.3, edgecolor='black', label=None, is_closed=False, linewidth=1):
+    elems_valid = elems_d['elems_valid']
+    n_points_per_elem = elems_d['n_points_per_elem']
+    elems_points = elems_d['elems_points']
+
     first_plt = True
-    for elem in poly:
-        x = [p[0] for p in elem]
-        y = [p[1] for p in elem]
+    n_elem = elems_valid.shape[0]
+    for i_elem in range(n_elem):
+        if not elems_valid[i_elem]:
+            continue
+        x = elems_points[i_elem, :n_points_per_elem[i_elem], 0]
+        y = elems_points[i_elem, :n_points_per_elem[i_elem], 1]
         if first_plt:
             first_plt = False
         else:
@@ -26,15 +32,27 @@ def plot_poly_elems(ax, poly, facecolor='0.4', alpha=0.3, edgecolor='black', lab
 ##############################################################################################
 
 
-def plot_lanes(ax, left_lanes, right_lanes, facecolor='0.4', alpha=0.3, edgecolor='black', label='', linewidth=1):
-    assert len(left_lanes) == len(right_lanes)
-    n_elems = len(left_lanes)
+def plot_lanes(ax, l_elems_d, r_elems_d, facecolor='0.4', alpha=0.3,
+               edgecolor='black', label='', linewidth=1):
+
+
+    l_elems_valid = l_elems_d['elems_valid']
+    l_n_points_per_elem = l_elems_d['n_points_per_elem']
+    l_elems_points = l_elems_d['elems_points']
+    r_elems_valid = r_elems_d['elems_valid']
+    r_n_points_per_elem = r_elems_d['n_points_per_elem']
+    r_elems_points = r_elems_d['elems_points']
+
+    # Print road area in between lanes
     first_plt = True
-    for i in range(n_elems):
-        x_left = [p[0] for p in left_lanes[i]]
-        y_left = [p[1] for p in left_lanes[i]]
-        x_right = [p[0] for p in right_lanes[i]]
-        y_right = [p[1] for p in right_lanes[i]]
+    n_elems = l_elems_valid.shape[0]
+    for i_elem in range(n_elems):
+        if not (l_elems_valid[i_elem] and r_elems_valid[i_elem]):
+            continue
+        x_left = l_elems_points[i_elem, :l_n_points_per_elem[i_elem], 0]
+        y_left = l_elems_points[i_elem, :l_n_points_per_elem[i_elem], 1]
+        x_right = r_elems_points[i_elem, :r_n_points_per_elem[i_elem], 0]
+        y_right = r_elems_points[i_elem, :r_n_points_per_elem[i_elem], 1]
         x = np.concatenate((x_left, x_right[::-1]))
         y = np.concatenate((y_left, y_right[::-1]))
         if first_plt:
@@ -71,27 +89,42 @@ def plot_rectangles(ax, centroids, extents, yaws, label='car', facecolor='skyblu
 ##############################################################################################
 
 
-def visualize_scene_feat(agents_feat, map_feat):
-    centroids = [af['centroid'] for af in agents_feat]
-    yaws = [af['yaw'] for af in agents_feat]
+def visualize_scene_feat(agents_feat_s, map_points_s, map_elems_availability_s, map_n_points_orig_s, dataset_props):
+
+    polygon_types = dataset_props['polygon_types']
+    closed_polygon_types = dataset_props['closed_polygon_types']
+
+    centroids = [af['centroid'] for af in agents_feat_s]
+    yaws = [af['yaw'] for af in agents_feat_s]
     print('agents centroids: ', centroids)
     print('agents yaws: ', yaws)
-    print('agents speed: ', [af['speed'] for af in agents_feat])
-    print('agents types: ', [af['agent_label_id'] for af in agents_feat])
+    print('agents speed: ', [af['speed'] for af in agents_feat_s])
+    print('agents types: ', [af['agent_label_id'] for af in agents_feat_s])
     X = [p[0] for p in centroids]
     Y = [p[1] for p in centroids]
-    U = [af['speed'] * np.cos(af['yaw']) for af in agents_feat]
-    V = [af['speed'] * np.sin(af['yaw']) for af in agents_feat]
+    U = [af['speed'] * np.cos(af['yaw']) for af in agents_feat_s]
+    V = [af['speed'] * np.sin(af['yaw']) for af in agents_feat_s]
     fig, ax = plt.subplots()
 
-    plot_lanes(ax, map_feat['lanes_left'], map_feat['lanes_right'], facecolor='grey', alpha=0.3, edgecolor='black',
-               label='Lanes')
-    plot_poly_elems(ax, map_feat['lanes_mid'], facecolor='lime', alpha=0.4, edgecolor='lime', label='Lanes mid',
-                    is_closed=False, linewidth=1)
-    plot_poly_elems(ax, map_feat['crosswalks'], facecolor='orange', alpha=0.3, edgecolor='orange', label='Crosswalks',
-                    is_closed=True)
+    plot_props = {'lanes_mid': ('lime', 0.4), 'lanes_left': ('black', 0.3), 'lanes_right': ('black', 0.3),
+                  'crosswalks': ('orange', 0.4)}
+    pd = {}
+    for i_type, poly_type in enumerate(polygon_types):
+        pd[poly_type] = {}
 
-    extents = [af['extent'] for af in agents_feat]
+        pd[poly_type]['elems_valid'] = map_elems_availability_s[i_type]
+        pd[poly_type]['n_points_per_elem'] = map_n_points_orig_s[i_type]
+        pd[poly_type]['elems_points'] = map_points_s[i_type]
+
+        plot_poly_elems(ax, pd[poly_type],
+                        facecolor=plot_props[poly_type][0], alpha=plot_props[poly_type][1],
+                        edgecolor=plot_props[poly_type][0], label=poly_type,
+                        is_closed=poly_type in closed_polygon_types, linewidth=1)
+
+    plot_lanes(ax, pd['lanes_left'],  pd['lanes_right'], facecolor='grey', alpha=0.3, edgecolor='black',  label='Lanes')
+
+
+    extents = [af['extent'] for af in agents_feat_s]
     plot_rectangles(ax, centroids[1:], extents[1:], yaws[1:])
     plot_rectangles(ax, [centroids[0]], [extents[0]], [yaws[0]], label='ego', facecolor='red', edgecolor='red')
 

@@ -1,47 +1,79 @@
-from pathlib import Path
 import numpy as np
-import torch
-from bokeh import plotting
-from bokeh.io import output_notebook, show
-import matplotlib.pyplot as plt
-from l5kit.data import MapAPI
-from l5kit.geometry.transform import transform_point
-from l5kit.simulation.dataset import SimulationDataset
-from l5kit.visualization.visualizer.visualizer import visualize
-from l5kit.visualization.visualizer.zarr_utils import zarr_to_visualizer_scene
 
+import l5kit.geometry.transform as geometry_transform
+import l5kit.simulation.dataset as simulation_dataset
+
+from scenario_generation.helper_func import visualize_scene, get_poly_elems, agent_feat_dict_to_vec
 from visualization_utils import visualize_scene_feat
-####################################################################################
-
-def mat_to_list_of_tensors(mat, mat_valid, coord_dim=2):
-    list_tnsr = []
-    for i in range(mat.shape[0]):
-        lst = []
-        for j in range(mat.shape[1]):
-            if not mat_valid[i, j]:
-                continue
-            lst.append(mat[i, j])
-        if not lst:
-            continue
-        lst = [torch.Tensor(elem[:coord_dim]) for elem in lst]
-        tnsr = torch.stack(lst)
-        list_tnsr.append(tnsr)
-
-    return list_tnsr
 
 
 ####################################################################################
-def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0, show_html_plot=False):
+def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg, max_n_agents, verbose=0, show_html_plot=False):
     """
     Data format documentation: https://github.com/ramitnv/l5kit/blob/master/docs/data_format.rst
     """
 
-    map_feat = []  # agents features per scene
-    agents_feat = []  # map features per scene
+    n_scenes = len(scene_indices_all)
+
+    data_generation_params = cfg['data_generation_params']
+
+    lane_params = data_generation_params['lane_params']
+    max_num_crosswalks = lane_params['max_num_crosswalks']
+    max_num_lanes = lane_params['max_num_lanes']
+    max_num_elem = max(max_num_lanes, max_num_crosswalks)  # max num elements per poly type
+    max_points_per_crosswalk = lane_params['max_points_per_crosswalk']
+    max_points_per_lane = lane_params['max_points_per_lane']
+    max_points_per_elem = 2 * max(max_points_per_lane, max_points_per_crosswalk)  # we multiply by two, so the seq
+    # will include its reflection fo the original seq as well
+    coord_dim = 2  # we will use only X-Y coordinates
+
+    # $$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$4
+
+    # ~~~~  Map features
+
+    # ~~~~  Agents features
+    agent_feat_vec_coord_labels = ['centroid_x',  # [0]  Real number
+                                   'centroid_y',  # [1]  Real number
+                                   'yaw_cos',  # [2]  in range [-1,1],  sin(yaw)^2 + cos(yaw)^2 = 1
+                                   'yaw_sin',  # [3]  in range [-1,1],  sin(yaw)^2 + cos(yaw)^2 = 1
+                                   'extent_length',  # [4] Real positive
+                                   'extent_width',  # [5] Real positive
+                                   'speed',  # [6] Real non-negative
+                                   'is_CAR',  # [7] 0 or 1
+                                   'is_CYCLIST',  # [8] 0 or 1
+                                   'is_PEDESTRIAN',  # [9]  0 or 1
+                                   ]
+    dim_agent_feat_vec = len(agent_feat_vec_coord_labels)
+    polygon_types = ['lanes_mid', 'lanes_left', 'lanes_right', 'crosswalks']
+    closed_polygon_types = ['crosswalks']
+    n_polygon_types = len(polygon_types)
 
     agent_types_labels = ['CAR', 'CYCLIST', 'PEDESTRIAN']
     type_id_to_label = {3: 'CAR', 12: 'CYCLIST',
                         14: 'PEDESTRIAN'}  # based on the labels ids in l5kit/build/lib/l5kit/data/labels.py
+
+    dataset_props = {'polygon_types': polygon_types,
+                     'closed_polygon_types': closed_polygon_types,
+                     'max_num_elem': max_num_elem,
+                     'max_points_per_elem': max_points_per_elem,
+                     'agent_feat_vec_coord_labels': agent_feat_vec_coord_labels,
+                     'agent_types_labels': agent_types_labels,
+                     'coord_dim': coord_dim,
+                     'max_n_agents': max_n_agents,
+                     'dim_agent_feat_vec': dim_agent_feat_vec}
+
+    map_elems_points = np.zeros((n_scenes, n_polygon_types, max_num_elem, max_points_per_elem, coord_dim),
+                                dtype=np.float32)
+    map_elems_n_points_orig = np.zeros((n_scenes, n_polygon_types, max_num_elem), dtype=np.uint16)
+    map_elems_exists = np.zeros((n_scenes, n_polygon_types, max_num_elem), dtype=np.bool_)
+    agents_data = np.zeros((n_scenes, max_n_agents, dim_agent_feat_vec), dtype=np.float32)
+    agents_num = np.zeros((n_scenes, max_n_agents), dtype=np.uint16)
+    saved_mats = {'map_elems_points': map_elems_points,
+                  'map_elems_n_points_orig': map_elems_n_points_orig,
+                  'map_elems_exists': map_elems_exists,
+                  'agents_data': agents_data,
+                  'agents_num': agents_num}
+
 
     labels_hist_pre_filter = np.zeros(17, dtype=int)
     labels_hist = np.zeros(3, dtype=int)
@@ -49,7 +81,7 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
     for i_scene, scene_idx in enumerate(scene_indices_all):
 
         print(f'Extracting scene #{i_scene + 1} out of {len(scene_indices_all)}')
-        sim_dataset = SimulationDataset.from_dataset_indices(dataset, [scene_idx], sim_cfg)
+        sim_dataset = simulation_dataset.SimulationDataset.from_dataset_indices(dataset, [scene_idx], sim_cfg)
         frame_index = 2  # we need only the initial t, but to get the speed we need to start at frame_index = 2
 
         ego_input = sim_dataset.rasterise_frame_batch(frame_index)[0]
@@ -67,9 +99,9 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
         ego_speed = ego_input['speed']
         ego_extent = ego_input['extent']
 
-        agents_feat.append([])
+        agents_feat_dicts = []  # the agents in this scene
         # add the ego car (in ego coord system):
-        agents_feat[-1].append({
+        agents_feat_dicts.append({
             'agent_label_id': agent_types_labels.index('CAR'),  # The ego car has the same label "car"
             'yaw': 0.,  # yaw angle in the agent in ego coord system [rad]
             'centroid': np.array([0, 0]),  # x,y position of the agent in ego coord system [m]
@@ -88,65 +120,69 @@ def get_scenes_batch(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg,
             else:
                 continue  # skip other agents types
             centroid_in_world = cur_agent_in['centroid']
-            centroid = transform_point(centroid_in_world, ego_from_world)  # translation and rotation to ego system
+            centroid = geometry_transform.transform_point(centroid_in_world, ego_from_world)  # translation and rotation to ego system
             yaw_in_world = cur_agent_in['yaw']  # translation and rotation to ego system
             yaw = yaw_in_world - ego_yaw
             speed = cur_agent_in['speed']
             extent = cur_agent_in['extent']
-            agents_feat[-1].append({
+            agents_feat_dicts.append({
                 'agent_label_id': agent_label_id,  # index of label in agent_types_labels
                 'yaw': yaw,  # yaw angle in the agent in ego coord system [rad]
                 'centroid': centroid,  # x,y position of the agent in ego coord system [m]
                 'speed': speed,  # speed [m/s ?]
                 'extent': extent[:2]  # [length, width]  [m]
             })
-        # Get map features:
-        lanes_mid = mat_to_list_of_tensors(ego_input['lanes_mid'], ego_input['lanes_mid_availabilities'])
-        lanes_left = mat_to_list_of_tensors(ego_input['lanes'][::2], ego_input['lanes_availabilities'][::2])
-        lanes_right = mat_to_list_of_tensors(ego_input['lanes'][1::2], ego_input['lanes_availabilities'][1::2])
-        crosswalks = mat_to_list_of_tensors(ego_input['crosswalks'], ego_input['crosswalks_availabilities'])
 
-        map_feat.append({'lanes_mid': lanes_mid,
-                         'lanes_left': lanes_left,
-                         'lanes_right': lanes_right,
-                         'crosswalks': crosswalks,
-                         })
+        # Save the agents in order by the distance to ego
+        actors_dists_to_ego = [np.linalg.norm(agent_dict['centroid'][:]) for agent_dict in agents_feat_dicts]
+        agents_dists_order = np.argsort(actors_dists_to_ego)
+        agents_dists_order = agents_dists_order[:max_n_agents] # we will use up to max_n_agents agents only from the data
+        for i_agent, i_agent_orig in enumerate(agents_dists_order):
+            agents_data[i_scene, i_agent] = agent_feat_dict_to_vec(agents_feat_dicts[i_agent_orig],
+                                                                   agent_feat_vec_coord_labels)
+        agents_num[i_scene] = len(agents_feat_dicts)
 
-        if verbose and i_scene == 0:
+
+        for i_type, poly_type in enumerate(polygon_types):
+            elems_points, elems_points_valid = get_poly_elems(ego_input, poly_type, dataset_props)
+            ind_elem = 0
+            for i_elem in range(max_num_elem):
+                elem_points = elems_points[i_elem]
+                elem_points_valid = elems_points_valid[i_elem]
+                n_valid_points = elem_points_valid.sum()
+                if n_valid_points == 0:
+                    continue
+                map_elems_exists[i_scene, i_type, ind_elem] = np.True_
+                map_elems_n_points_orig[i_scene, i_type, ind_elem] = n_valid_points
+                # concatenate a reflection of this sequence, to create a shift equivariant representation
+                # Note: since the new seq include the original + reflection, then we get flip invariant pipeline if we use
+                # later cyclic shift invariant model
+                # we keep adding flipped sequences to fill all points
+                point_seq = elem_points[elem_points_valid]
+                point_seq_flipped = point_seq[1:-2:-1]  # no need to duplicate edge points to get circular seq
+                ind_point = 0
+                is_flip = False
+                while ind_point < max_points_per_elem:
+                    if is_flip:
+                        point_seq_cur = point_seq_flipped
+                        seq_len = min(point_seq_flipped.shape[0], max_points_per_elem - ind_point)
+                    else:
+                        point_seq_cur = point_seq
+                        seq_len = min(point_seq.shape[0], max_points_per_elem - ind_point)
+                    map_elems_points[i_scene, i_type, ind_elem, ind_point:(ind_point + seq_len)] = point_seq_cur[
+                                                                                                   :seq_len]
+                    ind_point += seq_len
+                    is_flip = not is_flip
+                ind_elem += 1
+
+        if verbose and i_scene == 8:
             if show_html_plot:
                 visualize_scene(dataset_zarr, cfg, dm, scene_idx)
-            visualize_scene_feat(agents_feat[-1], map_feat[-1])
+            visualize_scene_feat(agents_feat_dicts, map_elems_points[i_scene], map_elems_exists[i_scene],
+                                 map_elems_n_points_orig[i_scene], dataset_props)
 
     print('labels_hist before filtering: ', {i: c for i, c in enumerate(labels_hist_pre_filter) if c > 0})
     print('labels_hist: ', {i: c for i, c in enumerate(labels_hist) if c > 0})
-    return agents_feat, map_feat, agent_types_labels, labels_hist
-
+    return saved_mats, dataset_props, labels_hist
 
 ####################################################################################
-
-def visualize_scene(dataset_zarr, cfg, dm, scene_idx):
-    figure_path = Path('loaded_scene' + '.html')
-    plotting.output_file(figure_path, title="Static HTML file")
-    fig = plotting.figure(sizing_mode="stretch_width", max_width=500, height=250)
-    output_notebook()
-    mapAPI = MapAPI.from_cfg(dm, cfg)
-
-    scene_dataset = dataset_zarr.get_scene_dataset(scene_idx)
-    vis_in = zarr_to_visualizer_scene(scene_dataset, mapAPI, with_trajectories=True)
-    vis_out = visualize(scene_idx, vis_in)
-    layout, fig = vis_out[0], vis_out[1]
-    show(layout)
-    plotting.save(fig)
-    print('Figure saved at ', figure_path)
-
-
-# Debug
-# plt.subplot(311)
-# plt.imshow(ego_input['lanes_availabilities'])
-# plt.subplot(312)
-# plt.imshow(ego_input['lanes'][:, :, 0] != 0.0)
-# plt.subplot(313)
-# plt.imshow(ego_input['lanes'][:, :, 1] != 0.0)
-# # plt.show()
-#
-#

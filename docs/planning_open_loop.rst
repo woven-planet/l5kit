@@ -10,7 +10,7 @@ In this series of notebooks you will train and evaluate a data-driven ML policy.
 **Before starting, please download the Lyft L5 Prediction Dataset 2020 and follow the instructions to correctly organise it.**
 
 * `Lyft L5 Prediction Dataset 2020 <https://self-driving.lyft.com/level5/prediction/>`_
-* `Instructions <https://github.com/lyft/l5kit#download-the-datasets>`_
+* `Instructions <https://github.com/woven-planet/l5kit#download-the-datasets>`_
 
 Training an effective ML policy for planning can take several hours on the best performing hardware.
 For this reason, we provide trained models you can experiment with in our evaluations notebooks,
@@ -25,7 +25,7 @@ We provide 3 notebooks for a deep dive into planning for a Self Driving Vehicle 
 Training Notebook
 ~~~~~~~~~~~~~~~~~
 
-You can train your first ML policy for planning using our `training notebook <https://github.com/lyft/l5kit/blob/master/examples/planning/train.ipynb>`_
+You can train your first ML policy for planning using our `training notebook <https://github.com/woven-planet/l5kit/blob/master/examples/planning/train.ipynb>`_
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/planning/train.ipynb
@@ -45,8 +45,8 @@ Inputs
 
 The network will get a BEV of the scene surrounding the SDV as the only input. This has been rasterised in a fixed grid image to comply with the CNN input. L5Kit is shipped with various rasterisers. Each one of them captures different aspects of the scene (e.g. lanes or satellite view).
 
-This input representation is very similar to the one used in the `prediction competition <https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview>`_. Please refer to our `competition baseline notebook <https://github.com/lyft/l5kit/blob/master/examples/agent_motion_prediction/agent_motion_prediction.ipynb>`_
-and our `data format notebook <https://github.com/lyft/l5kit/blob/master/examples/visualisation/visualise_data.ipynb>`_ if you want to learn more about it.
+This input representation is very similar to the one used in the `prediction competition <https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview>`_. Please refer to our `competition baseline notebook <https://github.com/woven-planet/l5kit/blob/master/examples/agent_motion_prediction/agent_motion_prediction.ipynb>`_
+and our `data format notebook <https://github.com/woven-planet/l5kit/blob/master/examples/visualisation/visualise_data.ipynb>`_ if you want to learn more about it.
 
 Outputs
 +++++++
@@ -66,7 +66,7 @@ Please refer to the training notebook for additional details and download links.
 Open-Loop Evaluation Notebook
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can evaluate your model in the open-loop setting using our `open-loop evaluation notebook <https://github.com/lyft/l5kit/blob/master/examples/planning/open_loop_test.ipynb>`_
+You can evaluate your model in the open-loop setting using our `open-loop evaluation notebook <https://github.com/woven-planet/l5kit/blob/master/examples/planning/open_loop_test.ipynb>`_
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/planning/open_loop_test.ipynb
@@ -89,7 +89,7 @@ In each frame, we compare the predictions of our model against the annotated gro
 Closed-Loop Evaluation Notebook
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can evaluate your model in the closed-loop setting using our `closed-loop evaluation notebook <https://github.com/lyft/l5kit/blob/master/examples/planning/closed_loop_test.ipynb>`_
+You can evaluate your model in the closed-loop setting using our `closed-loop evaluation notebook <https://github.com/woven-planet/l5kit/blob/master/examples/planning/closed_loop_test.ipynb>`_
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/planning/closed_loop_test.ipynb

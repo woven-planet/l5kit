@@ -137,4 +137,4 @@ Visualization Notebook
    :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/visualisation/visualise_data.ipynb
    :alt: Open In Colab
 
-Our `visualisation notebook <https://github.com/lyft/l5kit/blob/master/examples/visualisation/visualise_data.ipynb>`_ is the perfect place to start if you want to know more about L5Kit dataset format and coordinate systems.
+Our `visualisation notebook <https://github.com/woven-planet/l5kit/blob/master/examples/visualisation/visualise_data.ipynb>`_ is the perfect place to start if you want to know more about L5Kit dataset format and coordinate systems.

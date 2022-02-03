@@ -1,28 +1,55 @@
 import os
 import subprocess
-from pathlib import Path
-import numpy as np
 import pickle
-import torch
+import numpy as np
 from l5kit.configs import load_config_data
 from l5kit.data import LocalDataManager, ChunkedDataset
 from general_util import get_dataset_path
 from l5kit.dataset import EgoDatasetVectorized
-from l5kit.simulation.dataset import SimulationConfig, SimulationDataset
+from l5kit.simulation.dataset import SimulationConfig
 from l5kit.vectorization.vectorizer_builder import build_vectorizer
-from extract_scenario_dataset import get_scenes_batch
+from scenario_generation.extract_scenario_dataset import process_scenes_data
 
 ########################################################################
 verbose = 0  # 0 | 1
 show_html_plot = False
-config_file_name = 'train'  # 'sample' | 'train' | 'train_full'
+config_file_name = 'sample'  # 'sample' | 'train' | 'train_full'
 source_name = "train_data_loader"  # "train_data_loader | "val_data_loader"
-saved_file_name = 'l5kit_' + config_file_name + '_' + source_name
+save_dir_name = 'l5kit_data_' + config_file_name + '_' + source_name
 sample_config = f"/scenario_generation/configs/config_{config_file_name}.yaml"
+
+max_n_agents = 10  # we will use up to max_n_agents agents only from the data
+
 # Our changes:
 # max_retrieval_distance_m: 40  # maximum radius around the AoI for which we retrieve
 # max_agents_distance: 40 # maximum distance from AoI for another agent to be picked
 # train_data_loader key
+
+########################################################################
+save_folder = 'Saved_Data'
+save_dir_path = os.path.join(save_folder, save_dir_name)
+
+if not os.path.exists(save_folder):
+    os.mkdir(save_folder)
+
+if os.path.exists(save_dir_path):
+    print(f'Save path {save_dir_path} already exists, overwriting...')
+else:
+    os.mkdir(save_dir_path)
+
+map_data_file_path = os.path.join(save_dir_path, 'map_data.dat')
+info_file_path = os.path.join(save_dir_path, 'info_data.pkl')
+
+
+######### DEBUG ###########
+
+# with open(info_file_path, 'rb') as fid:
+#     info_dict = pickle.loads(fid.read())
+# m_info = info_dict['saved_mats_info']['map_elems_points']
+# # # Load the memmap data in Read-only mode:
+# ewfp = np.memmap(m_info['path'], dtype=m_info['dtype'], mode='r', shape=m_info['shape'])
+
+
 ########################################################################
 # Load data and configurations
 ########################################################################
@@ -30,9 +57,9 @@ sample_config = f"/scenario_generation/configs/config_{config_file_name}.yaml"
 os.environ["L5KIT_DATA_FOLDER"], project_dir = get_dataset_path()
 dm = LocalDataManager(None)
 cfg = load_config_data(project_dir + sample_config)
-device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
 
 dataset_cfg = cfg[source_name]
+
 dataset_zarr = ChunkedDataset(dm.require(dataset_cfg["key"])).open()
 n_scenes = len(dataset_zarr.scenes)
 vectorizer = build_vectorizer(cfg, dm)
@@ -49,14 +76,26 @@ sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_ag
 scene_indices = list(range(n_scenes))
 # scene_indices = [39]
 
-agents_feat, map_feat, agent_types_labels, labels_hist = get_scenes_batch(scene_indices, dataset, dataset_zarr,
-                                                                          dm, sim_cfg, cfg,
-                                                                          verbose=verbose, show_html_plot=show_html_plot)
+saved_mats, dataset_props, labels_hist = process_scenes_data(scene_indices, dataset,
+                                                                        dataset_zarr,
+                                                                        dm, sim_cfg, cfg, max_n_agents,
+                                                                        verbose=verbose,
+                                                                        show_html_plot=show_html_plot)
 
 git_version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
 
-save_file_path = saved_file_name + '.pkl'
-with open(save_file_path, 'wb') as fid:
-    pickle.dump({'agents_feat': agents_feat, 'map_feat': map_feat, 'agent_types_labels': agent_types_labels,
+
+saved_mats_info = {}
+for var_name, var in saved_mats.items():
+    save_file_path = os.path.join(save_dir_path, var_name)
+    # Create a memmap with dtype and shape that matches our data:
+    fp = np.memmap(save_file_path, dtype=var.dtype, mode='w+', shape=var.shape)
+    fp[:] = var[:]  # write data to memmap array
+    fp.flush()  # Flushes memory changes to disk in order to read them back
+    saved_mats_info[var_name] = {'path': save_file_path, 'dtype': var.dtype, 'shape': var.shape}
+
+with open(info_file_path, 'wb') as fid:
+    pickle.dump({'dataset_props': dataset_props, 'saved_mats_info': saved_mats_info,
                  'git_version': git_version, 'labels_hist': labels_hist}, fid)
-print(f'Saved data of {len(scene_indices)} scenes at ', save_file_path)
+
+print(f'Saved data of {len(scene_indices)} scenes at ', save_dir_path)

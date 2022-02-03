@@ -59,7 +59,7 @@ html_theme = "press"
 html_logo = "images/L5logo_small_v2.png"
 html_theme_options = {
   "external_links": [
-      ("Github", "https://github.com/lyft/l5kit"),
+      ("Github", "https://github.com/woven-planet/l5kit"),
   ]
 }
 

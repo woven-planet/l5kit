@@ -13,7 +13,7 @@ In this series of notebooks you will train and evaluate Urban Driver.
 **Before starting, please download the Lyft L5 Prediction Dataset 2020 and follow the instructions to correctly organise it.**
 
 * `Lyft L5 Prediction Dataset 2020 <https://self-driving.lyft.com/level5/prediction/>`_
-* `Instructions <https://github.com/lyft/l5kit#download-the-datasets>`_
+* `Instructions <https://github.com/woven-planet/l5kit#download-the-datasets>`_
 
 Model
 -----
@@ -41,7 +41,7 @@ We provide 2 notebooks.
 Training Notebook
 ~~~~~~~~~~~~~~~~~
 
-You can train your own Urban Driver using our `training notebook <https://github.com/lyft/l5kit/blob/master/examples/urban_driver/train.ipynb>`_.
+You can train your own Urban Driver using our `training notebook <https://github.com/woven-planet/l5kit/blob/master/examples/urban_driver/train.ipynb>`_.
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/urban_driver/train.ipynb
@@ -59,7 +59,7 @@ Scroll to the end of the training notebook to download them.
 Closed-Loop Evaluation Notebook
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-You can evaluate Urban Planner in closed-loop setting using our `closed-loop evaluation notebook <https://github.com/lyft/l5kit/blob/master/examples/urban_driver/closed_loop_test.ipynb>`_.
+You can evaluate Urban Planner in closed-loop setting using our `closed-loop evaluation notebook <https://github.com/woven-planet/l5kit/blob/master/examples/urban_driver/closed_loop_test.ipynb>`_.
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
    :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/urban_driver/closed_loop_test.ipynb
