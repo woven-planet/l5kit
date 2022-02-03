@@ -92,7 +92,7 @@ for var_name, var in saved_mats.items():
     fp = np.memmap(str(save_file_path), dtype=var.dtype, mode='w+', shape=var.shape)
     fp[:] = var[:]  # write data to memmap array
     fp.flush()  # Flushes memory changes to disk in order to read them back
-    saved_mats_info[var_name] = {'path': save_file_path, 'dtype': var.dtype, 'shape': var.shape}
+    saved_mats_info[var_name] = {'dtype': var.dtype, 'shape': var.shape}
 
 with open(info_file_path, 'wb') as fid:
     pickle.dump({'dataset_props': dataset_props, 'saved_mats_info': saved_mats_info,
