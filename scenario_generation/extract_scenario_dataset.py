@@ -52,7 +52,8 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
     type_id_to_label = {3: 'CAR', 12: 'CYCLIST',
                         14: 'PEDESTRIAN'}  # based on the labels ids in l5kit/build/lib/l5kit/data/labels.py
 
-    dataset_props = {'polygon_types': polygon_types,
+    dataset_props = {'n_scenes': n_scenes,
+                     'polygon_types': polygon_types,
                      'closed_polygon_types': closed_polygon_types,
                      'max_num_elem': max_num_elem,
                      'max_points_per_elem': max_points_per_elem,
@@ -141,7 +142,6 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
             agents_data[i_scene, i_agent] = agent_feat_dict_to_vec(agents_feat_dicts[i_agent_orig],
                                                                    agent_feat_vec_coord_labels)
         agents_num[i_scene] = len(agents_feat_dicts)
-
 
         for i_type, poly_type in enumerate(polygon_types):
             elems_points, elems_points_valid = get_poly_elems(ego_input, poly_type, dataset_props)

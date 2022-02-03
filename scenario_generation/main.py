@@ -13,7 +13,7 @@ from scenario_generation.extract_scenario_dataset import process_scenes_data
 ########################################################################
 verbose = 0  # 0 | 1
 show_html_plot = False
-config_file_name = 'sample'  # 'sample' | 'train' | 'train_full'
+config_file_name = 'train'  # 'sample' | 'train' | 'train_full'
 source_name = "train_data_loader"  # "train_data_loader | "val_data_loader"
 save_dir_name = 'l5kit_data_' + config_file_name + '_' + source_name
 sample_config = f"/scenario_generation/configs/config_{config_file_name}.yaml"
@@ -86,7 +86,7 @@ git_version = subprocess.check_output(["git", "describe", "--always"]).strip().d
 
 saved_mats_info = {}
 for var_name, var in saved_mats.items():
-    save_file_path = os.path.join(save_dir_path, var_name)
+    save_file_path = os.path.join(save_dir_path, var_name, '.dat')
     # Create a memmap with dtype and shape that matches our data:
     fp = np.memmap(save_file_path, dtype=var.dtype, mode='w+', shape=var.shape)
     fp[:] = var[:]  # write data to memmap array
