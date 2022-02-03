@@ -9,11 +9,12 @@ import l5kit.dataset as l5kit_dataset
 import l5kit.simulation.dataset as simulation_dataset
 import l5kit.vectorization.vectorizer_builder as vectorizer_builder
 from scenario_generation.extract_scenario_dataset import process_scenes_data
+from pathlib import Path
 
 ########################################################################
 verbose = 0  # 0 | 1
 show_html_plot = False
-config_file_name = 'train'  # 'sample' | 'train' | 'train_full'
+config_file_name = 'sample'  # 'sample' | 'train' | 'train_full'
 source_name = "train_data_loader"  # "train_data_loader | "val_data_loader"
 save_dir_name = 'l5kit_data_' + config_file_name + '_' + source_name
 sample_config = f"/scenario_generation/configs/config_{config_file_name}.yaml"
@@ -37,8 +38,8 @@ if os.path.exists(save_dir_path):
 else:
     os.mkdir(save_dir_path)
 
-map_data_file_path = os.path.join(save_dir_path, 'map_data.dat')
-info_file_path = os.path.join(save_dir_path, 'info_data.pkl')
+map_data_file_path = Path(save_dir_path, 'map_data').with_suffix('.dat')
+info_file_path = Path(save_dir_path, 'info_data').with_suffix('.pkl')
 
 ######### DEBUG ###########
 
@@ -86,9 +87,9 @@ git_version = subprocess.check_output(["git", "describe", "--always"]).strip().d
 
 saved_mats_info = {}
 for var_name, var in saved_mats.items():
-    save_file_path = os.path.join(save_dir_path, var_name, '.dat')
+    save_file_path = Path(save_dir_path, var_name).with_suffix('.dat')
     # Create a memmap with dtype and shape that matches our data:
-    fp = np.memmap(save_file_path, dtype=var.dtype, mode='w+', shape=var.shape)
+    fp = np.memmap(str(save_file_path), dtype=var.dtype, mode='w+', shape=var.shape)
     fp[:] = var[:]  # write data to memmap array
     fp.flush()  # Flushes memory changes to disk in order to read them back
     saved_mats_info[var_name] = {'path': save_file_path, 'dtype': var.dtype, 'shape': var.shape}
