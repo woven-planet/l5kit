@@ -11,17 +11,19 @@ from l5kit.vectorization.vectorizer_builder import build_vectorizer
 from scenario_generation.extract_scenario_dataset import process_scenes_data
 
 ########################################################################
-verbose = 1  # 0 | 1
+verbose = 0  # 0 | 1
 show_html_plot = False
 config_file_name = 'sample'  # 'sample' | 'train' | 'train_full'
 source_name = "train_data_loader"  # "train_data_loader | "val_data_loader"
 save_dir_name = 'l5kit_data_' + config_file_name + '_' + source_name
 sample_config = f"/scenario_generation/configs/config_{config_file_name}.yaml"
+
+max_n_agents = 10  # we will use up to max_n_agents agents only from the data
+
 # Our changes:
 # max_retrieval_distance_m: 40  # maximum radius around the AoI for which we retrieve
 # max_agents_distance: 40 # maximum distance from AoI for another agent to be picked
 # train_data_loader key
-
 
 ########################################################################
 save_folder = 'Saved_Data'
@@ -37,6 +39,16 @@ else:
 
 map_data_file_path = os.path.join(save_dir_path, 'map_data.dat')
 info_file_path = os.path.join(save_dir_path, 'info_data.pkl')
+
+
+######### DEBUG ###########
+
+# with open(info_file_path, 'rb') as fid:
+#     info_dict = pickle.loads(fid.read())
+# m_info = info_dict['saved_mats_info']['map_elems_points']
+# # # Load the memmap data in Read-only mode:
+# ewfp = np.memmap(m_info['path'], dtype=m_info['dtype'], mode='r', shape=m_info['shape'])
+
 
 ########################################################################
 # Load data and configurations
@@ -64,30 +76,26 @@ sim_cfg = SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_ag
 scene_indices = list(range(n_scenes))
 # scene_indices = [39]
 
-agents_feat, map_feat, agent_types_labels, labels_hist = process_scenes_data(scene_indices, dataset, dataset_zarr,
-                                                                             dm, sim_cfg, cfg,
-                                                                             verbose=verbose, show_html_plot=show_html_plot)
+saved_mats, dataset_props, labels_hist = process_scenes_data(scene_indices, dataset,
+                                                                        dataset_zarr,
+                                                                        dm, sim_cfg, cfg, max_n_agents,
+                                                                        verbose=verbose,
+                                                                        show_html_plot=show_html_plot)
 
 git_version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
 
 
-#
-# np.savez(map_data_file_path,
-#          map_elems_points=map_feat['map_elems_points'],
-#          map_elems_n_points_orig=map_feat['map_elems_n_points_orig'],
-#          map_elems_exists=map_feat['map_elems_exists'],
-#          )
-
-for var_name, var in map_feat.items():
+saved_mats_info = {}
+for var_name, var in saved_mats.items():
     save_file_path = os.path.join(save_dir_path, var_name)
     # Create a memmap with dtype and shape that matches our data:
     fp = np.memmap(save_file_path, dtype=var.dtype, mode='w+', shape=var.shape)
     fp[:] = var[:]  # write data to memmap array
     fp.flush()  # Flushes memory changes to disk in order to read them back
+    saved_mats_info[var_name] = {'path': save_file_path, 'dtype': var.dtype, 'shape': var.shape}
 
 with open(info_file_path, 'wb') as fid:
-    pickle.dump({'agents_feat': agents_feat,  'agent_types_labels': agent_types_labels,
+    pickle.dump({'dataset_props': dataset_props, 'saved_mats_info': saved_mats_info,
                  'git_version': git_version, 'labels_hist': labels_hist}, fid)
-
 
 print(f'Saved data of {len(scene_indices)} scenes at ', save_dir_path)
