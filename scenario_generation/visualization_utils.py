@@ -1,8 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from matplotlib.collections import PatchCollection
 from matplotlib.patches import Rectangle
-import torch
 
 plt.rcParams['figure.dpi'] = 300
 plt.rcParams['savefig.dpi'] = 300
@@ -55,8 +53,8 @@ def plot_lanes(ax, l_elems_d, r_elems_d, facecolor='0.4', alpha=0.3,
         y_left = l_elems_points[i_elem, :l_n_points_per_elem[i_elem], 1]
         x_right = r_elems_points[i_elem, :r_n_points_per_elem[i_elem], 0]
         y_right = r_elems_points[i_elem, :r_n_points_per_elem[i_elem], 1]
-        x = torch.cat((x_left, torch.flip(x_right, dims=[0])))
-        y = torch.cat((y_left, torch.flip(y_right, dims=[0])))
+        x = np.concatenate((x_left, x_right[::-1]))
+        y = np.concatenate((y_left, y_right[::-1]))
         if first_plt:
             first_plt = False
         else:

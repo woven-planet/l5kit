@@ -1,9 +1,8 @@
 from pathlib import Path
 import numpy as np
-import torch
+
 from bokeh import plotting
 from bokeh.io import output_notebook, show
-import matplotlib.pyplot as plt
 from l5kit.data import MapAPI
 from l5kit.geometry.transform import transform_point
 from l5kit.simulation.dataset import SimulationDataset
@@ -12,30 +11,6 @@ from l5kit.visualization.visualizer.zarr_utils import zarr_to_visualizer_scene
 
 from visualization_utils import visualize_scene_feat
 
-
-####################################################################################
-
-
-def get_poly_elems(ego_input, poly_type, dataset_props):
-    max_num_elem = dataset_props['max_num_elem']
-    max_points_per_elem = dataset_props['max_points_per_elem']
-    coord_dim = dataset_props['coord_dim']
-    elems_points = torch.zeros(max_num_elem, max_points_per_elem, coord_dim)
-    elems_points_valid = torch.zeros(max_num_elem, max_points_per_elem, dtype=torch.bool)
-
-    if poly_type == 'lanes_left':
-        points = ego_input['lanes'][::2, :, :coord_dim]
-        points_valid = ego_input['lanes_availabilities'][::2, :]
-    elif poly_type == 'lanes_right':
-        points = ego_input['lanes'][1::2, :, :coord_dim]
-        points_valid = ego_input['lanes_availabilities'][1::2, :]
-    else:
-        points = ego_input[poly_type][:, :, :coord_dim]
-        points_valid = ego_input[poly_type + '_availabilities'][:, :]
-
-    elems_points[:points.shape[0], :points.shape[1], :] = torch.Tensor(points)
-    elems_points_valid[:points_valid.shape[0], :points_valid.shape[1]] = torch.Tensor(points_valid)
-    return elems_points, elems_points_valid
 
 ####################################################################################
 def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg, verbose=0, show_html_plot=False):
@@ -91,11 +66,13 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                      'agent_types_labels': agent_types_labels,
                      'coord_dim': coord_dim}
 
-    map_points = torch.zeros(n_scenes, n_polygon_types, max_num_elem, max_points_per_elem, coord_dim)
-    map_elems_availability = torch.zeros(n_scenes, n_polygon_types, max_num_elem, dtype=torch.bool)
-    map_n_points_orig = torch.zeros(n_scenes, n_polygon_types, max_num_elem, dtype=torch.int)
 
-    map_feat = []  # agents features per scene
+    map_elems_points = np.zeros((n_scenes, n_polygon_types, max_num_elem, max_points_per_elem, coord_dim), dtype=np.float32)
+    map_elems_n_points_orig = np.zeros((n_scenes, n_polygon_types, max_num_elem), dtype=np.uint16)
+    map_elems_exists = np.zeros((n_scenes, n_polygon_types, max_num_elem), dtype=np.bool_)
+    map_feat = {'map_elems_points': map_elems_points,
+                'map_elems_n_points_orig': map_elems_n_points_orig,
+                'map_elems_exists': map_elems_exists}
     agents_feat = []  # map features per scene
 
     labels_hist_pre_filter = np.zeros(17, dtype=int)
@@ -166,14 +143,14 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                 n_valid_points = elem_points_valid.sum()
                 if n_valid_points == 0:
                     continue
-                map_elems_availability[i_scene, i_type, ind_elem] = True
-                map_n_points_orig[i_scene, i_type, ind_elem] = n_valid_points
+                map_elems_exists[i_scene, i_type, ind_elem] = np.True_
+                map_elems_n_points_orig[i_scene, i_type, ind_elem] = n_valid_points
                 # concatenate a reflection of this sequence, to create a shift equivariant representation
                 # Note: since the new seq include the original + reflection, then we get flip invariant pipeline if we use
                 # later cyclic shift invariant model
                 # we keep adding flipped sequences to fill all points
                 point_seq = elem_points[elem_points_valid]
-                point_seq_flipped = torch.flip(point_seq, dims=[0])[1:-2] # no need to duplicate edge points to get circular seq
+                point_seq_flipped = point_seq[1:-2:-1]  # no need to duplicate edge points to get circular seq
                 ind_point = 0
                 is_flip = False
                 while ind_point < max_points_per_elem:
@@ -183,7 +160,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                     else:
                         point_seq_cur = point_seq
                         seq_len = min(point_seq.shape[0], max_points_per_elem - ind_point)
-                    map_points[i_scene, i_type, ind_elem, ind_point:(ind_point + seq_len)] = point_seq_cur[:seq_len]
+                    map_elems_points[i_scene, i_type, ind_elem, ind_point:(ind_point + seq_len)] = point_seq_cur[:seq_len]
                     ind_point += seq_len
                     is_flip = not is_flip
                 ind_elem += 1
@@ -191,12 +168,38 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
         if verbose and i_scene == 8:
             if show_html_plot:
                 visualize_scene(dataset_zarr, cfg, dm, scene_idx)
-            visualize_scene_feat(agents_feat[-1], map_points[i_scene], map_elems_availability[i_scene],
-                                 map_n_points_orig[i_scene], dataset_props)
+            visualize_scene_feat(agents_feat[-1], map_elems_points[i_scene], map_elems_exists[i_scene],
+                                 map_elems_n_points_orig[i_scene], dataset_props)
 
     print('labels_hist before filtering: ', {i: c for i, c in enumerate(labels_hist_pre_filter) if c > 0})
     print('labels_hist: ', {i: c for i, c in enumerate(labels_hist) if c > 0})
     return agents_feat, map_feat, agent_types_labels, labels_hist
+
+
+####################################################################################
+
+
+def get_poly_elems(ego_input, poly_type, dataset_props):
+    max_num_elem = dataset_props['max_num_elem']
+    max_points_per_elem = dataset_props['max_points_per_elem']
+    coord_dim = dataset_props['coord_dim']
+
+    elems_points = np.zeros((max_num_elem, max_points_per_elem, coord_dim), dtype=np.float32)
+    is_points_valid = np.zeros((max_num_elem, max_points_per_elem), dtype=np.bool_)
+
+    if poly_type == 'lanes_left':
+        points = ego_input['lanes'][::2, :, :coord_dim]
+        points_valid = ego_input['lanes_availabilities'][::2, :]
+    elif poly_type == 'lanes_right':
+        points = ego_input['lanes'][1::2, :, :coord_dim]
+        points_valid = ego_input['lanes_availabilities'][1::2, :]
+    else:
+        points = ego_input[poly_type][:, :, :coord_dim]
+        points_valid = ego_input[poly_type + '_availabilities'][:, :]
+
+    elems_points[:points.shape[0], :points.shape[1], :] = points
+    is_points_valid[:points_valid.shape[0], :points_valid.shape[1]] = points_valid
+    return elems_points, is_points_valid
 
 
 ####################################################################################
