@@ -141,7 +141,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
         for i_agent, i_agent_orig in enumerate(agents_dists_order):
             agents_data[i_scene, i_agent] = agent_feat_dict_to_vec(agents_feat_dicts[i_agent_orig],
                                                                    agent_feat_vec_coord_labels)
-        agents_num[i_scene] = len(agents_feat_dicts)
+        agents_num[i_scene] = len(agents_dists_order)
 
         for i_type, poly_type in enumerate(polygon_types):
             elems_points, elems_points_valid = get_poly_elems(ego_input, poly_type, dataset_props)
