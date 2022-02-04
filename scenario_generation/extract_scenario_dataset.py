@@ -68,7 +68,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
     map_elems_n_points_orig = np.zeros((n_scenes, n_polygon_types, max_num_elem), dtype=np.int16)
     map_elems_exists = np.zeros((n_scenes, n_polygon_types, max_num_elem), dtype=np.bool_)
     agents_data = np.zeros((n_scenes, max_n_agents, dim_agent_feat_vec), dtype=np.float32)
-    agents_num = np.zeros((n_scenes, max_n_agents), dtype=np.int16)
+    agents_num = np.zeros(n_scenes, dtype=np.int16)
     saved_mats = {'map_elems_points': map_elems_points,
                   'map_elems_n_points_orig': map_elems_n_points_orig,
                   'map_elems_exists': map_elems_exists,
