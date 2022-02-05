@@ -67,12 +67,12 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                                 dtype=np.float32)
     map_elems_n_points_orig = np.zeros((n_scenes, n_polygon_types, max_num_elem), dtype=np.int16)
     map_elems_exists = np.zeros((n_scenes, n_polygon_types, max_num_elem), dtype=np.bool_)
-    agents_data = np.zeros((n_scenes, max_n_agents, dim_agent_feat_vec), dtype=np.float32)
+    agents_feat_vecs = np.zeros((n_scenes, max_n_agents, dim_agent_feat_vec), dtype=np.float32)
     agents_num = np.zeros(n_scenes, dtype=np.int16)
     saved_mats = {'map_elems_points': map_elems_points,
                   'map_elems_n_points_orig': map_elems_n_points_orig,
                   'map_elems_exists': map_elems_exists,
-                  'agents_data': agents_data,
+                  'agents_feat_vecs': agents_feat_vecs,
                   'agents_num': agents_num}
 
 
@@ -139,7 +139,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
         agents_dists_order = np.argsort(actors_dists_to_ego)
         agents_dists_order = agents_dists_order[:max_n_agents] # we will use up to max_n_agents agents only from the data
         for i_agent, i_agent_orig in enumerate(agents_dists_order):
-            agents_data[i_scene, i_agent] = agent_feat_dict_to_vec(agents_feat_dicts[i_agent_orig],
+            agents_feat_vecs[i_scene, i_agent] = agent_feat_dict_to_vec(agents_feat_dicts[i_agent_orig],
                                                                    agent_feat_vec_coord_labels)
         agents_num[i_scene] = len(agents_dists_order)
 
