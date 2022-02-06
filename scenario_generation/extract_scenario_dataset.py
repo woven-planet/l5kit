@@ -8,7 +8,8 @@ from visualization_utils import visualize_scene_feat
 
 
 ####################################################################################
-def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg, max_n_agents, verbose=0, show_html_plot=False):
+def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg, max_n_agents, verbose=0,
+                        show_html_plot=False):
     """
     Data format documentation: https://github.com/ramitnv/l5kit/blob/master/docs/data_format.rst
     """
@@ -69,12 +70,13 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
     map_elems_exists = np.zeros((n_scenes, n_polygon_types, max_num_elem), dtype=np.bool_)
     agents_feat_vecs = np.zeros((n_scenes, max_n_agents, dim_agent_feat_vec), dtype=np.float32)
     agents_num = np.zeros(n_scenes, dtype=np.int16)
+    agents_exists = np.zeros((n_scenes, max_n_agents), dtype=np.bool_)
     saved_mats = {'map_elems_points': map_elems_points,
                   'map_elems_n_points_orig': map_elems_n_points_orig,
                   'map_elems_exists': map_elems_exists,
                   'agents_feat_vecs': agents_feat_vecs,
-                  'agents_num': agents_num}
-
+                  'agents_num': agents_num,
+                  'agents_exists': agents_exists}
 
     labels_hist_pre_filter = np.zeros(17, dtype=int)
     labels_hist = np.zeros(3, dtype=int)
@@ -121,7 +123,8 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
             else:
                 continue  # skip other agents types
             centroid_in_world = cur_agent_in['centroid']
-            centroid = geometry_transform.transform_point(centroid_in_world, ego_from_world)  # translation and rotation to ego system
+            centroid = geometry_transform.transform_point(centroid_in_world,
+                                                          ego_from_world)  # translation and rotation to ego system
             yaw_in_world = cur_agent_in['yaw']  # translation and rotation to ego system
             yaw = yaw_in_world - ego_yaw
             speed = cur_agent_in['speed']
@@ -137,11 +140,14 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
         # Save the agents in order by the distance to ego
         actors_dists_to_ego = [np.linalg.norm(agent_dict['centroid'][:]) for agent_dict in agents_feat_dicts]
         agents_dists_order = np.argsort(actors_dists_to_ego)
-        agents_dists_order = agents_dists_order[:max_n_agents] # we will use up to max_n_agents agents only from the data
+        agents_dists_order = agents_dists_order[
+                             :max_n_agents]  # we will use up to max_n_agents agents only from the data
         for i_agent, i_agent_orig in enumerate(agents_dists_order):
             agents_feat_vecs[i_scene, i_agent] = agent_feat_dict_to_vec(agents_feat_dicts[i_agent_orig],
-                                                                   agent_feat_vec_coord_labels)
+                                                                        agent_feat_vec_coord_labels)
+            agents_exists[i_scene, i_agent] = np.True_
         agents_num[i_scene] = len(agents_dists_order)
+
 
         for i_type, poly_type in enumerate(polygon_types):
             elems_points, elems_points_valid = get_poly_elems(ego_input, poly_type, dataset_props)
