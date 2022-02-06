@@ -188,6 +188,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                 visualize_scene(dataset_zarr, cfg, dm, scene_idx)
             visualize_scene_feat(agents_feat_dicts, map_elems_points[ind_scene], map_elems_exists[ind_scene],
                                  map_elems_n_points_orig[ind_scene], dataset_props)
+        ind_scene += 1
 
     n_scenes = ind_scene
     saved_mats = {'map_elems_points': map_elems_points[:n_scenes],
