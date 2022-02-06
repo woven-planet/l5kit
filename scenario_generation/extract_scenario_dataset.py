@@ -15,7 +15,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
     """
 
     n_scenes_orig = len(scene_indices_all)
-    n_scenes = 0  # number of valid scenes seen so far
+
     data_generation_params = cfg['data_generation_params']
 
     lane_params = data_generation_params['lane_params']
@@ -77,7 +77,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
 
     labels_hist_pre_filter = np.zeros(17, dtype=int)
     labels_hist = np.zeros(3, dtype=int)
-
+    ind_scene = 0  # number of valid scenes seen so far
     for i_scene, scene_idx in enumerate(scene_indices_all):
 
         print(f'Extracting scene #{i_scene + 1} out of {len(scene_indices_all)}')
@@ -141,17 +141,16 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
         print(f'n_valid_agents: {n_valid_agents}')
 
         # Save the agents in order by the distance to ego
-        actors_dists_to_ego = [np.linalg.norm(agent_dict['centroid'][:]) for agent_dict in agents_feat_dicts]
-        agents_dists_order = np.argsort(actors_dists_to_ego)
+        agents_dists_to_ego = [np.linalg.norm(agent_dict['centroid'][:]) for agent_dict in agents_feat_dicts]
+        agents_dists_order = np.argsort(agents_dists_to_ego)
         agents_dists_order = agents_dists_order[
                              :max_n_agents]  # we will use up to max_n_agents agents only from the data
         for i_agent, i_agent_orig in enumerate(agents_dists_order):
             feat_vec = agent_feat_dict_to_vec(agents_feat_dicts[i_agent_orig], agent_feat_vec_coord_labels)
             assert np.sum(np.abs(feat_vec)) > 0.99
-            agents_feat_vecs[n_scenes, i_agent] = feat_vec
-            agents_exists[n_scenes, i_agent] = np.True_
-        agents_num[n_scenes] = len(agents_dists_order)
-
+            agents_feat_vecs[ind_scene, i_agent] = feat_vec
+            agents_exists[ind_scene, i_agent] = np.True_
+        agents_num[ind_scene] = len(agents_dists_order)
 
         for i_type, poly_type in enumerate(polygon_types):
             elems_points, elems_points_valid = get_poly_elems(ego_input, poly_type, dataset_props)
@@ -162,8 +161,8 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                 n_valid_points = elem_points_valid.sum()
                 if n_valid_points == 0:
                     continue
-                map_elems_exists[n_scenes, i_type, ind_elem] = np.True_
-                map_elems_n_points_orig[n_scenes, i_type, ind_elem] = n_valid_points
+                map_elems_exists[ind_scene, i_type, ind_elem] = np.True_
+                map_elems_n_points_orig[ind_scene, i_type, ind_elem] = n_valid_points
                 # concatenate a reflection of this sequence, to create a shift equivariant representation
                 # Note: since the new seq include the original + reflection, then we get flip invariant pipeline if we use
                 # later cyclic shift invariant model
@@ -179,18 +178,18 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                     else:
                         point_seq_cur = point_seq
                         seq_len = min(point_seq.shape[0], max_points_per_elem - ind_point)
-                    map_elems_points[n_scenes, i_type, ind_elem, ind_point:(ind_point + seq_len)] = point_seq_cur[
+                    map_elems_points[ind_scene, i_type, ind_elem, ind_point:(ind_point + seq_len)] = point_seq_cur[
                                                                                                    :seq_len]
                     ind_point += seq_len
                     is_flip = not is_flip
                 ind_elem += 1
-        if verbose and n_scenes == 8:
+        if verbose and ind_scene == 8:
             if show_html_plot:
                 visualize_scene(dataset_zarr, cfg, dm, scene_idx)
-            visualize_scene_feat(agents_feat_dicts, map_elems_points[n_scenes], map_elems_exists[n_scenes],
-                                 map_elems_n_points_orig[n_scenes], dataset_props)
-        n_scenes += 1
+            visualize_scene_feat(agents_feat_dicts, map_elems_points[ind_scene], map_elems_exists[ind_scene],
+                                 map_elems_n_points_orig[ind_scene], dataset_props)
 
+    n_scenes = ind_scene
     saved_mats = {'map_elems_points': map_elems_points[:n_scenes],
                   'map_elems_n_points_orig': map_elems_n_points_orig[:n_scenes],
                   'map_elems_exists': map_elems_exists[:n_scenes],
