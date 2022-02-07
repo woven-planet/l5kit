@@ -104,7 +104,7 @@ with h5py.File(save_data_file_path, 'w') as h5f:
         if var_name == 'agents_feat_vecs':
             # should be at least 0.99 since, we have sin(yaw) and cos(yaw) as features
             assert np.all(
-                np.sum(np.abs(var.data), dim=1)) > 0.99
+                np.sum(np.abs(var.data), axis=1)) > 0.99
         # ---------------------------------
 with open(save_info_file_path, 'wb') as fid:
     pickle.dump({'dataset_props': dataset_props, 'saved_mats_info': saved_mats_info,
