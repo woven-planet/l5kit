@@ -1,5 +1,3 @@
-
-
 from pathlib import Path
 import numpy as np
 from bokeh import plotting
@@ -9,12 +7,27 @@ import l5kit.visualization.visualizer.visualizer as visualizer
 import l5kit.visualization.visualizer.zarr_utils as zarr_utils
 
 
+####################################################################################
+def is_valid_agent(speed, extent, min_extent_length, min_extent_width):
+    if speed < 0:
+        return False
+    length, width = extent
+    return length >= min_extent_length and width >= min_extent_width
+    # if length >= min_extent_length and width >= min_extent_width:
+    #     print(f'Good: {length} x {width}')
+    #     return True
+    # else:
+    #     print(f'Bad: {length} x {width}')
+    #     return False
+
+
+
+####################################################################################
 def agent_feat_dict_to_vec(agent_dict, agent_feat_vec_coord_labels):
     dim_agent_feat_vec = len(agent_feat_vec_coord_labels)
     assert agent_feat_vec_coord_labels == ['centroid_x', 'centroid_y', 'yaw_cos', 'yaw_sin',
-                                               'extent_length', 'extent_width', 'speed',
-                                               'is_CAR', 'is_CYCLIST', 'is_PEDESTRIAN']
-
+                                           'extent_length', 'extent_width', 'speed',
+                                           'is_CAR', 'is_CYCLIST', 'is_PEDESTRIAN']
     agent_feat_vec = np.zeros(dim_agent_feat_vec, dtype=np.float32)
     agent_feat_vec[0] = agent_dict['centroid'][0]
     agent_feat_vec[1] = agent_dict['centroid'][1]
@@ -29,8 +42,8 @@ def agent_feat_dict_to_vec(agent_dict, agent_feat_vec_coord_labels):
     agent_feat_vec[9] = agent_dict['agent_label_id'] == 2
     assert agent_feat_vec[7:].sum() == 1
 
-
     return agent_feat_vec
+
 
 ####################################################################################
 
@@ -48,6 +61,7 @@ def visualize_scene(dataset_zarr, cfg, dm, scene_idx):
     show(layout)
     plotting.save(fig)
     print('Figure saved at ', figure_path)
+
 
 ####################################################################################
 
@@ -73,7 +87,6 @@ def get_poly_elems(ego_input, poly_type, dataset_props):
     elems_points[:points.shape[0], :points.shape[1], :] = points
     is_points_valid[:points_valid.shape[0], :points_valid.shape[1]] = points_valid
     return elems_points, is_points_valid
-
 
 ####################################################################################
 

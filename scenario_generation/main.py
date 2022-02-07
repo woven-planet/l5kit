@@ -19,8 +19,10 @@ source_name = "train_data_loader"  # "train_data_loader | "val_data_loader"
 save_dir_name = 'l5kit_data_' + config_file_name + '_' + source_name
 sample_config = f"/scenario_generation/configs/config_{config_file_name}.yaml"
 
-max_n_agents = 10  # we will use up to max_n_agents agents only from the data
-
+max_n_agents = 8  # we will use up to max_n_agents agents only from the data
+min_n_agents = 2  # we will discard scenes with less valid agents
+min_extent_length = 3.7  # [m] - discard shorter agents
+min_extent_width = 1.2  # [m] - discard narrower agents
 # Our changes:
 # max_retrieval_distance_m: 40  # maximum radius around the AoI for which we retrieve
 # max_agents_distance: 40 # maximum distance from AoI for another agent to be picked
@@ -77,12 +79,11 @@ sim_cfg = simulation_dataset.SimulationConfig(use_ego_gt=False, use_agents_gt=Fa
 scene_indices = list(range(n_scenes))
 # scene_indices = [39]
 
-saved_mats, dataset_props, labels_hist = process_scenes_data(scene_indices, dataset,
-                                                             dataset_zarr,
-                                                             dm, sim_cfg, cfg, max_n_agents,
+saved_mats, dataset_props, labels_hist = process_scenes_data(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg,
+                                                             min_n_agents, max_n_agents, min_extent_length, min_extent_width,
                                                              verbose=verbose,
                                                              show_html_plot=show_html_plot)
-
+n_scenes = dataset_props['n_scenes']
 git_version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
 
 # ************************************************************
@@ -123,4 +124,4 @@ with open(info_file_path, 'wb') as fid:
     pickle.dump({'dataset_props': dataset_props, 'saved_mats_info': saved_mats_info,
                  'git_version': git_version, 'labels_hist': labels_hist}, fid)
 
-print(f'Saved data of {len(scene_indices)} scenes at ', save_dir_path)
+print(f'Saved data of {n_scenes} valid scenes our of {len(scene_indices)} scenes at ', save_dir_path)
