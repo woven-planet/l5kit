@@ -1,7 +1,6 @@
 import os
 import subprocess
 import pickle
-import numpy as np
 import l5kit.configs as l5kit_configs
 import l5kit.data as l5kit_data
 import general_util as general_util
@@ -10,6 +9,7 @@ import l5kit.simulation.dataset as simulation_dataset
 import l5kit.vectorization.vectorizer_builder as vectorizer_builder
 from scenario_generation.extract_scenario_dataset import process_scenes_data
 from pathlib import Path
+import h5py
 
 ########################################################################
 verbose = 0  # 0 | 1
@@ -36,12 +36,13 @@ if not os.path.exists(save_folder):
     os.mkdir(save_folder)
 
 if os.path.exists(save_dir_path):
-    print(f'Save path {save_dir_path} already exists, overwriting...')
+    print(f'Save path {save_dir_path} already exists, will be override...')
 else:
     os.mkdir(save_dir_path)
 
 map_data_file_path = Path(save_dir_path, 'map_data').with_suffix('.dat')
-info_file_path = Path(save_dir_path, 'info_data').with_suffix('.pkl')
+save_info_file_path = Path(save_dir_path, 'info').with_suffix('.pkl')
+save_data_file_path = Path(save_dir_path, 'data').with_suffix('.h5')
 
 ######### DEBUG ###########
 
@@ -87,11 +88,8 @@ n_scenes = dataset_props['n_scenes']
 git_version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
 
 # ************************************************************
-import h5py
-
 saved_mats_info = {}
-save_file_path = Path(save_dir_path, 'mats').with_suffix('.h5')
-with h5py.File('temp.h5', 'w') as h5f:
+with h5py.File(save_data_file_path, 'w') as h5f:
     for var_name, var in saved_mats.items():
         my_ds = h5f.create_dataset(var_name, data=var.data)
         if 'agents' in var_name:
@@ -101,26 +99,8 @@ with h5py.File('temp.h5', 'w') as h5f:
         saved_mats_info[var_name] = {'dtype': var.dtype,
                                      'shape': var.shape,
                                      'entity': entity}
-# *****************************************************************
-# saved_mats_info = {}
-# for var_name, var in saved_mats.items():
-#     save_file_path = Path(save_dir_path, var_name).with_suffix('.dat')
-#     # Create a memmap with dtype and shape that matches our data:
-#     fp = np.memmap(str(save_file_path),
-#                    dtype=var.dtype,
-#                    mode='w+',
-#                    shape=var.shape)
-#     fp[:] = var[:]  # write data to memmap array
-#     fp.flush()  # Flushes memory changes to disk in order to read them back
-#     if 'agents' in var_name:
-#         entity = 'agents'
-#     else:
-#         entity = 'map'
-#     saved_mats_info[var_name] = {'dtype': var.dtype,
-#                                  'shape': var.shape,
-#                                  'entity': entity}
 
-with open(info_file_path, 'wb') as fid:
+with open(save_info_file_path, 'wb') as fid:
     pickle.dump({'dataset_props': dataset_props, 'saved_mats_info': saved_mats_info,
                  'git_version': git_version, 'labels_hist': labels_hist}, fid)
 
