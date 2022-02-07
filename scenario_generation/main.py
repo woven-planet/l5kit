@@ -85,20 +85,39 @@ saved_mats, dataset_props, labels_hist = process_scenes_data(scene_indices, data
 
 git_version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
 
+# ************************************************************
+import h5py
+
 saved_mats_info = {}
-for var_name, var in saved_mats.items():
-    save_file_path = Path(save_dir_path, var_name).with_suffix('.dat')
-    # Create a memmap with dtype and shape that matches our data:
-    fp = np.memmap(str(save_file_path), dtype=var.dtype, mode='w+', shape=var.shape)
-    fp[:] = var[:]  # write data to memmap array
-    fp.flush()  # Flushes memory changes to disk in order to read them back
-    if 'agents' in var_name:
-        entity = 'agents'
-    else:
-        entity = 'map'
-    saved_mats_info[var_name] = {'dtype': var.dtype,
-                                 'shape': var.shape,
-                                 'entity': entity}
+save_file_path = Path(save_dir_path, 'mats').with_suffix('.h5')
+with h5py.File('temp.h5', 'w') as h5f:
+    for var_name, var in saved_mats.items():
+        my_ds = h5f.create_dataset(var_name, data=var.data)
+        if 'agents' in var_name:
+            entity = 'agents'
+        else:
+            entity = 'map'
+        saved_mats_info[var_name] = {'dtype': var.dtype,
+                                     'shape': var.shape,
+                                     'entity': entity}
+# *****************************************************************
+# saved_mats_info = {}
+# for var_name, var in saved_mats.items():
+#     save_file_path = Path(save_dir_path, var_name).with_suffix('.dat')
+#     # Create a memmap with dtype and shape that matches our data:
+#     fp = np.memmap(str(save_file_path),
+#                    dtype=var.dtype,
+#                    mode='w+',
+#                    shape=var.shape)
+#     fp[:] = var[:]  # write data to memmap array
+#     fp.flush()  # Flushes memory changes to disk in order to read them back
+#     if 'agents' in var_name:
+#         entity = 'agents'
+#     else:
+#         entity = 'map'
+#     saved_mats_info[var_name] = {'dtype': var.dtype,
+#                                  'shape': var.shape,
+#                                  'entity': entity}
 
 with open(info_file_path, 'wb') as fid:
     pickle.dump({'dataset_props': dataset_props, 'saved_mats_info': saved_mats_info,
