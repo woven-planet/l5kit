@@ -1,6 +1,7 @@
 import os
 import subprocess
 import pickle
+import numpy as np
 import l5kit.configs as l5kit_configs
 import l5kit.data as l5kit_data
 import general_util as general_util
@@ -99,7 +100,12 @@ with h5py.File(save_data_file_path, 'w') as h5f:
         saved_mats_info[var_name] = {'dtype': var.dtype,
                                      'shape': var.shape,
                                      'entity': entity}
-
+        # ---------  Sanity check -----------
+        if var_name == 'agents_feat_vecs':
+            # should be at least 0.99 since, we have sin(yaw) and cos(yaw) as features
+            assert np.all(
+                np.sum(np.abs(var.data), dim=1)) > 0.99
+        # ---------------------------------
 with open(save_info_file_path, 'wb') as fid:
     pickle.dump({'dataset_props': dataset_props, 'saved_mats_info': saved_mats_info,
                  'git_version': git_version, 'labels_hist': labels_hist}, fid)
