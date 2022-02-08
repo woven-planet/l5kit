@@ -147,7 +147,6 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                              :max_n_agents]  # we will use up to max_n_agents agents only from the data
         for i_agent, i_agent_orig in enumerate(agents_dists_order):
             feat_vec = agent_feat_dict_to_vec(agents_feat_dicts[i_agent_orig], agent_feat_vec_coord_labels)
-            assert np.sum(np.abs(feat_vec)) > 0.99
             agents_feat_vecs[ind_scene, i_agent] = feat_vec
             agents_exists[ind_scene, i_agent] = np.True_
         agents_num[ind_scene] = len(agents_dists_order)
