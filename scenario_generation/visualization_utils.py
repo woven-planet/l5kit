@@ -55,8 +55,8 @@ def plot_lanes(ax, l_elems_d, r_elems_d, facecolor='0.4', alpha=0.3,
         y_left = l_elems_points[i_elem, :n_left_points, 1]
         x_right = r_elems_points[i_elem, :n_right_points, 0]
         y_right = r_elems_points[i_elem, :n_right_points, 1]
-        x = np.concatenate((x_left, x_right))
-        y = np.concatenate((y_left, y_right))
+        x = np.concatenate((x_left, x_right[::-1]))
+        y = np.concatenate((y_left, y_right[::-1]))
         if first_plt:
             first_plt = False
         else:
