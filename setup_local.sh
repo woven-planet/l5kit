@@ -8,7 +8,7 @@ pip install --progress-bar off --quiet -U l5kit pyyaml
 
 # Set dataset dir path
 DATASET_DIR=${HOME}"/l5kit_data"
-echo "${DATASET_DIR}" > "dataset_dir.txt"
+echo -n "${DATASET_DIR}" > "dataset_dir.txt"
 
 #######################################################################################################################
 
