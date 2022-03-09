@@ -6,13 +6,34 @@ import l5kit.data as l5kit_data
 import l5kit.visualization.visualizer.visualizer as visualizer
 import l5kit.visualization.visualizer.zarr_utils as zarr_utils
 
+####################################################################################
+
+
+# def is_agent_on_road():
+#
+#     i_elem, i_point, mid_pos = find_closest_mid_lane()
+#     right_lane_pos =
+#     left_lane_pos =
+#     tol = 1.1
+#     allowed_deviate =  dist(lef_lane_pos, right_lane_pos) * 0.5 * tol + agent_length
+#     agent_deviate = dist(mid_pos, agent_pos)
+#     return  agent_deviate <= allowed_deviate
+
+
+####################################################################################
+def find_closest_mid_lane():
+    return True
+
+
+
+
 
 ####################################################################################
 def is_valid_agent(speed, extent, min_extent_length, min_extent_width):
     if speed < 0:
         return False
     length, width = extent
-    return length >= min_extent_length and width >= min_extent_width
+    return length >= min_extent_length and width >= min_extent_width and find_closest_mid_lane()
     # if length >= min_extent_length and width >= min_extent_width:
     #     print(f'Good: {length} x {width}')
     #     return True
