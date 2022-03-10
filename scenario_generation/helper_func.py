@@ -6,6 +6,7 @@ import l5kit.data as l5kit_data
 import l5kit.visualization.visualizer.visualizer as visualizer
 import l5kit.visualization.visualizer.zarr_utils as zarr_utils
 
+
 ####################################################################################
 
 
@@ -25,22 +26,44 @@ def find_closest_mid_lane():
     return True
 
 
-
-
-
 ####################################################################################
-def is_valid_agent(speed, extent, min_extent_length, min_extent_width):
+
+def is_agent_valid(centroid, speed, extent, dataset_props, map_elems_exists, map_elems_points):
     if speed < 0:
         return False
+    min_extent_length = dataset_props['min_extent_length']
+    min_extent_width = dataset_props['min_extent_width']
     length, width = extent
-    return length >= min_extent_length and width >= min_extent_width and find_closest_mid_lane()
-    # if length >= min_extent_length and width >= min_extent_width:
-    #     print(f'Good: {length} x {width}')
-    #     return True
-    # else:
-    #     print(f'Bad: {length} x {width}')
-    #     return False
+    if length < min_extent_length or width < min_extent_width:
+        return False
+    polygon_types = dataset_props['polygon_types']
 
+    lanes_mid_exists = map_elems_exists[polygon_types.index('lanes_mid')]
+    lanes_left_exists = map_elems_exists[polygon_types.index('lanes_left')]
+    lanes_right_exists = map_elems_exists[polygon_types.index('lanes_right')]
+
+    lanes_mid_points = map_elems_points[polygon_types.index('lanes_mid')]
+    lanes_mid_points = lanes_mid_points[lanes_mid_exists].reshape((-1, 2))
+    lanes_left_points = map_elems_points[polygon_types.index('lanes_left')]
+    lanes_left_points = lanes_left_points[lanes_left_exists].reshape((-1, 2))
+    lanes_right_points = map_elems_points[polygon_types.index('lanes_right')]
+    lanes_right_points = lanes_right_points[lanes_right_exists].reshape((-1, 2))
+
+    # find the closest mid-lane point to the agent centroid
+    dists_to_mid_points = np.linalg.norm(centroid - lanes_mid_points, axis=1)
+    i_min_dist_to_mid = dists_to_mid_points.argmin()
+    mid_point = lanes_mid_points[i_min_dist_to_mid]
+
+    # disqualify the point if there is any left-lane or right-lane point closer to mid_point than the centroid
+    min_dist_to_left = np.min(np.linalg.norm(mid_point - lanes_left_points, axis=1))
+    min_dist_to_right = np.min(np.linalg.norm(mid_point - lanes_right_points, axis=1))
+
+    dist_to_centroid = np.linalg.norm(mid_point - centroid)
+
+    if dist_to_centroid > min_dist_to_left or dist_to_centroid > min_dist_to_right:
+        return False
+
+    return True
 
 
 ####################################################################################

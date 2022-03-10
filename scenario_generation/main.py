@@ -13,8 +13,8 @@ from pathlib import Path
 import h5py
 
 ########################################################################
-verbose = 0  # 0 | 1
-show_html_plot = False
+verbose = 1  # 0 | 1
+show_html_plot = True
 config_file_name = 'sample'  # 'sample' | 'train' | 'train_full'
 source_name = "train_data_loader"  # "train_data_loader | "val_data_loader"
 save_dir_name = 'l5kit_data_' + config_file_name + '_' + source_name
