@@ -75,7 +75,7 @@ save_data_file_path = Path(save_dir_path, 'data').with_suffix('.h5')
 # Load data and configurations
 ########################################################################
 # set env variable for data
-os.environ["L5KIT_DATA_FOLDER"], project_dir = general_util.get_dataset_path()
+os.environ["L5KIT_DATA_FOLDER"], project_dir = get_dataset_path()
 dm = l5kit_data.LocalDataManager(None)
 cfg = l5kit_configs.load_config_data(project_dir + sample_config)
 
