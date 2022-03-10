@@ -11,13 +11,24 @@ import l5kit.vectorization.vectorizer_builder as vectorizer_builder
 from scenario_generation.extract_scenario_dataset import process_scenes_data
 from pathlib import Path
 import h5py
+import argparse
 
 ########################################################################
-verbose = 0  # 0 | 1
-config_file_name = 'sample'  # 'sample' | 'train' | 'train_full'
-source_name = "train_data_loader"  # "train_data_loader | "val_data_loader"
-save_dir_name = 'l5kit_data_' + config_file_name + '_' + source_name
-sample_config = f"/scenario_generation/configs/config_{config_file_name}.yaml"
+parser = argparse.ArgumentParser()
+parser.add_argument('--config_file_name', type=str,
+                    default='sample',
+                    help=" 'sample' | 'train' | 'train_full' ")
+parser.add_argument('--train_data_loader', type=str,
+                    default='train_data_loader',
+                    help=' "train_data_loader | "val_data_loader" ')
+parser.add_argument('--verbose', type=int,
+                    default=0,
+                    help=" 0 | 1 ")
+args = parser.parse_args()
+
+
+save_dir_name = 'l5kit_data_' + args.config_file_name + '_' + args.source_name
+sample_config = f"/scenario_generation/configs/config_{args.config_file_name}.yaml"
 
 max_n_agents = 8  # we will use up to max_n_agents agents only from the data
 min_n_agents = 2  # we will discard scenes with less valid agents
@@ -82,7 +93,7 @@ scene_indices = list(range(n_scenes))
 
 saved_mats, dataset_props, labels_hist = process_scenes_data(
     scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, min_n_agents, max_n_agents, min_extent_length,
-    min_extent_width, verbose=verbose)
+    min_extent_width, verbose=args.verbose)
 
 n_scenes = dataset_props['n_scenes']
 git_version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
