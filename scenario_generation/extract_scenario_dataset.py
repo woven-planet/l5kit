@@ -162,7 +162,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
         n_valid_agents = len(agents_feat_dicts)
         if n_valid_agents < min_n_agents:
             continue  # discard this scene
-        print(f'n_valid_agents: {n_valid_agents}')
+
         # Save the agents in order by the distance to ego
         agents_dists_to_ego = [np.linalg.norm(agent_dict['centroid'][:]) for agent_dict in agents_feat_dicts]
         agents_dists_order = np.argsort(agents_dists_to_ego)
@@ -176,6 +176,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
 
         # ------ debug display -----------#
         if verbose and ind_scene == 8:
+            print(f'n_valid_agents: {n_valid_agents}')
             visualize_scene_feat(agents_feat_dicts, map_elems_points[ind_scene], map_elems_exists[ind_scene],
                                  map_elems_n_points_orig[ind_scene], dataset_props)
         ind_scene += 1
