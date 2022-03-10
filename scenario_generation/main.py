@@ -11,6 +11,7 @@ from pathlib import Path
 import h5py
 import argparse
 
+
 ########################################################################
 def get_dataset_path():
     cur_path = Path.cwd()
@@ -19,6 +20,7 @@ def get_dataset_path():
     dataset_path = open(cur_path / "dataset_dir.txt", "r").read().strip()
     project_path = str(cur_path.resolve())
     return dataset_path, project_path
+
 
 ########################################################################
 parser = argparse.ArgumentParser()
@@ -32,7 +34,6 @@ parser.add_argument('--verbose', type=int,
                     default=0,
                     help=" 0 | 1 ")
 args = parser.parse_args()
-
 
 save_dir_name = 'l5kit_data_' + args.config_file_name + '_' + args.source_name
 sample_config = f"/scenario_generation/configs/config_{args.config_file_name}.yaml"
