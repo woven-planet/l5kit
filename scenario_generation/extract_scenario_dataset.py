@@ -3,7 +3,7 @@ import numpy as np
 import l5kit.geometry.transform as geometry_transform
 import l5kit.simulation.dataset as simulation_dataset
 
-from scenario_generation.helper_func import visualize_scene, get_poly_elems, agent_feat_dict_to_vec, is_agent_valid
+from helper_func import visualize_scene, get_poly_elems, agent_feat_dict_to_vec, is_agent_valid
 from visualization_utils import visualize_scene_feat
 
 
