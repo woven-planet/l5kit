@@ -1,10 +1,9 @@
 import os
 import subprocess
 import pickle
-import numpy as np
 import l5kit.configs as l5kit_configs
 import l5kit.data as l5kit_data
-import general_util as general_util
+from scenario_generation import general_util as general_util
 import l5kit.dataset as l5kit_dataset
 import l5kit.simulation.dataset as simulation_dataset
 import l5kit.vectorization.vectorizer_builder as vectorizer_builder
@@ -72,7 +71,7 @@ os.environ["L5KIT_DATA_FOLDER"], project_dir = general_util.get_dataset_path()
 dm = l5kit_data.LocalDataManager(None)
 cfg = l5kit_configs.load_config_data(project_dir + sample_config)
 
-dataset_cfg = cfg[source_name]
+dataset_cfg = cfg[args.source_name]
 
 dataset_zarr = l5kit_data.ChunkedDataset(dm.require(dataset_cfg["key"])).open()
 n_scenes = len(dataset_zarr.scenes)
@@ -80,7 +79,7 @@ vectorizer = vectorizer_builder.build_vectorizer(cfg, dm)
 dataset = l5kit_dataset.EgoDatasetVectorized(cfg, dataset_zarr, vectorizer)
 
 print(dataset)
-print(f'Dataset source: {cfg[source_name]["key"]}, number of scenes total: {n_scenes}')
+print(f'Dataset source: {cfg[args.source_name]["key"]}, number of scenes total: {n_scenes}')
 
 num_simulation_steps = 10
 sim_cfg = simulation_dataset.SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=True,
