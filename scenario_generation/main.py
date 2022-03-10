@@ -3,7 +3,6 @@ import subprocess
 import pickle
 import l5kit.configs as l5kit_configs
 import l5kit.data as l5kit_data
-from scenario_generation import general_util as general_util
 import l5kit.dataset as l5kit_dataset
 import l5kit.simulation.dataset as simulation_dataset
 import l5kit.vectorization.vectorizer_builder as vectorizer_builder
@@ -11,6 +10,15 @@ from scenario_generation.extract_scenario_dataset import process_scenes_data
 from pathlib import Path
 import h5py
 import argparse
+
+########################################################################
+def get_dataset_path():
+    cur_path = Path.cwd()
+    while not (cur_path / "dataset_dir.txt").is_file():
+        cur_path = cur_path.parent
+    dataset_path = open(cur_path / "dataset_dir.txt", "r").read().strip()
+    project_path = str(cur_path.resolve())
+    return dataset_path, project_path
 
 ########################################################################
 parser = argparse.ArgumentParser()
