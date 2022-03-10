@@ -13,7 +13,7 @@ from pathlib import Path
 import h5py
 
 ########################################################################
-verbose = 1  # 0 | 1
+verbose = 0  # 0 | 1
 config_file_name = 'sample'  # 'sample' | 'train' | 'train_full'
 source_name = "train_data_loader"  # "train_data_loader | "val_data_loader"
 save_dir_name = 'l5kit_data_' + config_file_name + '_' + source_name
@@ -80,9 +80,10 @@ sim_cfg = simulation_dataset.SimulationConfig(use_ego_gt=False, use_agents_gt=Fa
 scene_indices = list(range(n_scenes))
 # scene_indices = [39]
 
-saved_mats, dataset_props, labels_hist = process_scenes_data(scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg,
-                                                             min_n_agents, max_n_agents, min_extent_length, min_extent_width,
-                                                             verbose=verbose)
+saved_mats, dataset_props, labels_hist = process_scenes_data(
+    scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, min_n_agents, max_n_agents, min_extent_length,
+    min_extent_width, verbose=verbose)
+
 n_scenes = dataset_props['n_scenes']
 git_version = subprocess.check_output(["git", "describe", "--always"]).strip().decode()
 
