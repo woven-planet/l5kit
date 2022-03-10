@@ -9,8 +9,7 @@ from visualization_utils import visualize_scene_feat
 
 ####################################################################################
 def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, cfg, min_n_agents, max_n_agents,
-                        min_extent_length,
-                        min_extent_width, verbose=0, show_html_plot=False):
+                        min_extent_length,  min_extent_width, verbose=0):
     """
     Data format documentation: https://github.com/ramitnv/l5kit/blob/master/docs/data_format.rst
     """
@@ -72,7 +71,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
     for i_scene, scene_idx in enumerate(scene_indices_all):
 
         # ------ debug display -----------#
-        if verbose and i_scene == 1:
+        if verbose and i_scene == 2:
             visualize_scene(dataset_zarr, cfg, dm, scene_idx)
 
         print(f'Extracting scene #{i_scene + 1} out of {len(scene_indices_all)}')
@@ -125,7 +124,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
         agents_feat_dicts = []  # the agents in this scene
         # add the ego car (in ego coord system):
         if is_agent_valid(ego_centroid, ego_speed, ego_extent, dataset_props,
-                          map_elems_exists[ind_scene], map_elems_points[ind_scene]):
+                          map_elems_exists, map_elems_points, ind_scene):
             agents_feat_dicts.append({
                 'agent_label_id': agent_types_labels.index('CAR'),  # The ego car has the same label "car"
                 'yaw': 0.,  # yaw angle in the agent in ego coord system [rad]
@@ -152,7 +151,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
             speed = cur_agent_in['speed']
             extent = cur_agent_in['extent'][:2]
             if is_agent_valid(centroid, speed, extent, dataset_props,
-                              map_elems_exists[ind_scene], map_elems_points[ind_scene]):
+                              map_elems_exists, map_elems_points, ind_scene):
                 agents_feat_dicts.append({
                     'agent_label_id': agent_label_id,  # index of label in agent_types_labels
                     'yaw': yaw,  # yaw angle in the agent in ego coord system [rad]
@@ -177,8 +176,6 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
 
         # ------ debug display -----------#
         if verbose and ind_scene == 8:
-            if show_html_plot:
-                visualize_scene(dataset_zarr, cfg, dm, scene_idx)
             visualize_scene_feat(agents_feat_dicts, map_elems_points[ind_scene], map_elems_exists[ind_scene],
                                  map_elems_n_points_orig[ind_scene], dataset_props)
         ind_scene += 1

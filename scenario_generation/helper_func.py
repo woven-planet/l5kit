@@ -28,7 +28,7 @@ def find_closest_mid_lane():
 
 ####################################################################################
 
-def is_agent_valid(centroid, speed, extent, dataset_props, map_elems_exists, map_elems_points):
+def is_agent_valid(centroid, speed, extent, dataset_props, map_elems_exists, map_elems_points, ind_scene):
     if speed < 0:
         return False
     min_extent_length = dataset_props['min_extent_length']
@@ -38,15 +38,15 @@ def is_agent_valid(centroid, speed, extent, dataset_props, map_elems_exists, map
         return False
     polygon_types = dataset_props['polygon_types']
 
-    lanes_mid_exists = map_elems_exists[polygon_types.index('lanes_mid')]
-    lanes_left_exists = map_elems_exists[polygon_types.index('lanes_left')]
-    lanes_right_exists = map_elems_exists[polygon_types.index('lanes_right')]
+    lanes_mid_exists = map_elems_exists[ind_scene, polygon_types.index('lanes_mid')]
+    lanes_left_exists = map_elems_exists[ind_scene, polygon_types.index('lanes_left')]
+    lanes_right_exists = map_elems_exists[ind_scene, polygon_types.index('lanes_right')]
 
-    lanes_mid_points = map_elems_points[polygon_types.index('lanes_mid')]
+    lanes_mid_points = map_elems_points[ind_scene, polygon_types.index('lanes_mid')]
     lanes_mid_points = lanes_mid_points[lanes_mid_exists].reshape((-1, 2))
-    lanes_left_points = map_elems_points[polygon_types.index('lanes_left')]
+    lanes_left_points = map_elems_points[ind_scene, polygon_types.index('lanes_left')]
     lanes_left_points = lanes_left_points[lanes_left_exists].reshape((-1, 2))
-    lanes_right_points = map_elems_points[polygon_types.index('lanes_right')]
+    lanes_right_points = map_elems_points[ind_scene, polygon_types.index('lanes_right')]
     lanes_right_points = lanes_right_points[lanes_right_exists].reshape((-1, 2))
 
     # find the closest mid-lane point to the agent centroid
@@ -92,7 +92,7 @@ def agent_feat_dict_to_vec(agent_dict, agent_feat_vec_coord_labels):
 ####################################################################################
 
 def visualize_scene(dataset_zarr, cfg, dm, scene_idx):
-    figure_path = Path('loaded_scene' + '.html')
+    figure_path = Path(f'loaded_scene_idx_{scene_idx}' + '.html')
     plotting.output_file(figure_path, title="Static HTML file")
     fig = plotting.figure(sizing_mode="stretch_width", max_width=500, height=250)
     output_notebook()
@@ -105,7 +105,6 @@ def visualize_scene(dataset_zarr, cfg, dm, scene_idx):
     show(layout)
     plotting.save(fig)
     print('Figure saved at ', figure_path)
-
 
 ####################################################################################
 
