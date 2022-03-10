@@ -6,7 +6,7 @@ import l5kit.data as l5kit_data
 import l5kit.dataset as l5kit_dataset
 import l5kit.simulation.dataset as simulation_dataset
 import l5kit.vectorization.vectorizer_builder as vectorizer_builder
-from scenario_generation.extract_scenario_dataset import process_scenes_data
+from extract_scenario_dataset import process_scenes_data
 from pathlib import Path
 import h5py
 import argparse
