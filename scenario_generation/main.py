@@ -36,7 +36,7 @@ parser.add_argument('--verbose', type=int,
 args = parser.parse_args()
 
 save_dir_name = 'l5kit_data_' + args.config_file_name + '_' + args.source_name
-sample_config = f"/scenario_generation/configs/config_{args.config_file_name}.yaml"
+config_file = f"/scenario_generation/configs/config_{args.config_file_name}.yaml"
 
 max_n_agents = 8  # we will use up to max_n_agents agents only from the data
 min_n_agents = 2  # we will discard scenes with less valid agents
@@ -59,10 +59,8 @@ if os.path.exists(save_dir_path):
 else:
     os.mkdir(save_dir_path)
 
-map_data_file_path = Path(save_dir_path, 'map_data').with_suffix('.dat')
 save_info_file_path = Path(save_dir_path, 'info').with_suffix('.pkl')
 save_data_file_path = Path(save_dir_path, 'data').with_suffix('.h5')
-
 
 ########################################################################
 # Load data and configurations
@@ -70,7 +68,7 @@ save_data_file_path = Path(save_dir_path, 'data').with_suffix('.h5')
 # set env variable for data
 os.environ["L5KIT_DATA_FOLDER"], project_dir = get_dataset_path()
 dm = l5kit_data.LocalDataManager(None)
-cfg = l5kit_configs.load_config_data(project_dir + sample_config)
+cfg = l5kit_configs.load_config_data(project_dir + config_file)
 
 dataset_cfg = cfg[args.source_name]
 
