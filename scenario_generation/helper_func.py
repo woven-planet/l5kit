@@ -9,15 +9,17 @@ import l5kit.visualization.visualizer.zarr_utils as zarr_utils
 
 ####################################################################################
 
-def is_agent_valid(centroid, speed, extent, dataset_props, map_elems_exists, map_elems_points, ind_scene, verbose):
+def is_agent_valid(centroid, speed, extent, dataset_props, map_elems_exists, map_elems_points, ind_scene, agent_name, verbose):
     if speed < 0:
+        if verbose:
+            print(f'Agent {agent_name} discarded - negative speed {speed}')
         return False
     min_extent_length = dataset_props['min_extent_length']
     min_extent_width = dataset_props['min_extent_width']
     length, width = extent
     if length < min_extent_length or width < min_extent_width:
         if verbose:
-            print(f'Agent discarded, length: {length},'
+            print(f'Agent {agent_name} discarded, length: {length},'
                   f' width: {width}, min_extent_length: {min_extent_length}, min_extent_width: {min_extent_width}')
         return False
     polygon_types = dataset_props['polygon_types']
@@ -46,10 +48,11 @@ def is_agent_valid(centroid, speed, extent, dataset_props, map_elems_exists, map
 
     if dist_to_centroid > min_dist_to_left or dist_to_centroid > min_dist_to_right:
         if verbose:
-            print(f'Agent discarded, dist_to_centroid: {dist_to_centroid},'
+            print(f'Agent {agent_name} discarded, dist_to_centroid: {dist_to_centroid},'
                   f' min_dist_to_left: {min_dist_to_left}, min_dist_to_right: {min_dist_to_right}')
         return False
-
+    if verbose:
+        print(f'Agent {agent_name} is OK')
     return True
 
 

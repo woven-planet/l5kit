@@ -28,14 +28,16 @@ args = parser.parse_args()
 save_dir_name = 'l5kit_data_' + args.config_file_name + '_' + args.source_name
 config_file = str(Path.cwd() / "configs" / args.config_file_name) + ".yaml"
 dataset_path = open(Path.cwd().parent / "dataset_dir.txt", "r").read().strip()
+start_frame_index = 2  # the time frame to use from the simulator, 1 good
 
 max_n_agents = 8  # we will use up to max_n_agents agents only from the data
 min_n_agents = 2  # we will discard scenes with less valid agents
-min_extent_length = 3.7  # [m] - discard shorter agents
-min_extent_width = 1.2  # [m] - discard narrower agents
+min_extent_length = 3  # [m] - discard shorter agents
+min_extent_width = 1  # [m] - discard narrower agents
 # Our changes to config file:
 # max_retrieval_distance_m: 40  # maximum radius around the AoI for which we retrieve
 # max_agents_distance: 40 # maximum distance from AoI for another agent to be picked
+# filter_agents_threshold: 0.0
 # train_data_loader key
 
 ########################################################################
@@ -59,7 +61,7 @@ save_data_file_path = Path(save_dir_path, 'data').with_suffix('.h5')
 # set env variable for data
 os.environ["L5KIT_DATA_FOLDER"] = dataset_path
 dm = l5kit_data.LocalDataManager(None)
-cfg = l5kit_configs.load_config_data( config_file)
+cfg = l5kit_configs.load_config_data(config_file)
 
 dataset_cfg = cfg[args.source_name]
 
@@ -75,7 +77,7 @@ num_simulation_steps = 10
 sim_cfg = simulation_dataset.SimulationConfig(use_ego_gt=False, use_agents_gt=False, disable_new_agents=True,
                                               distance_th_far=500, distance_th_close=50,
                                               num_simulation_steps=num_simulation_steps,
-                                              start_frame_index=0, show_info=True)
+                                              start_frame_index=start_frame_index, show_info=True)
 
 scene_indices = list(range(n_scenes))
 # scene_indices = [39]

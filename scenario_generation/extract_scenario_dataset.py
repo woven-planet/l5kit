@@ -69,7 +69,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
     for i_scene, scene_idx in enumerate(scene_indices_all):
 
         # ------ debug display -----------#
-        if verbose and i_scene == 0:
+        if verbose and i_scene == 9:
             visualize_scene(dataset_zarr, cfg, dm, scene_idx)
 
         print(f'Processing scene {scene_idx}  ({i_scene + 1}/{len(scene_indices_all)})')
@@ -119,10 +119,11 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
         ego_speed = ego_input['speed']
         ego_extent = ego_input['extent'][:2]
         ego_centroid = np.array([0, 0])
+        agent_name = 'ego'
         agents_feat_dicts = []  # the agents in this scene
         # add the ego car (in ego coord system):
         if is_agent_valid(ego_centroid, ego_speed, ego_extent, dataset_props,
-                          map_elems_exists, map_elems_points, ind_scene, verbose):
+                          map_elems_exists, map_elems_points, ind_scene, agent_name, verbose):
             agents_feat_dicts.append({
                 'agent_label_id': agent_types_labels.index('CAR'),  # The ego car has the same label "car"
                 'yaw': 0.,  # yaw angle in the agent in ego coord system [rad]
@@ -133,6 +134,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
         for (scene_id, agent_id) in agents_input.keys():  # if there are other agents besides the ego
             assert scene_id == scene_idx
             cur_agent_in = agents_input[(scene_id, agent_id)]
+            agent_name = f'TrackID_{agent_id}'
             agents_input_lst.append(cur_agent_in)
             agent_type = int(cur_agent_in['type'])
             if agent_type in type_id_to_label.keys():
@@ -148,7 +150,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
             speed = cur_agent_in['speed']
             extent = cur_agent_in['extent'][:2]
             if is_agent_valid(centroid, speed, extent, dataset_props,
-                              map_elems_exists, map_elems_points, ind_scene, verbose):
+                              map_elems_exists, map_elems_points, ind_scene, agent_name, verbose):
                 agents_feat_dicts.append({
                     'agent_label_id': agent_label_id,  # index of label in agent_types_labels
                     'yaw': yaw,  # yaw angle in the agent in ego coord system [rad]
