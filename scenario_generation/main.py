@@ -16,7 +16,7 @@ import argparse
 parser = argparse.ArgumentParser()
 parser.add_argument('--config_file_name', type=str,
                     default='config_sample',
-                    help=" 'sample' | 'train' | 'train_full' ")
+                    help=" 'config_sample' | 'config_full' ")
 parser.add_argument('--source_name', type=str,
                     default='train_data_loader',
                     help=' "train_data_loader | "val_data_loader" ')
