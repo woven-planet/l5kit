@@ -64,8 +64,6 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
     agents_num = np.zeros(n_scenes_orig, dtype=np.int16)
     agents_exists = np.zeros((n_scenes_orig, max_n_agents), dtype=np.bool_)
 
-    labels_hist_pre_filter = np.zeros(17, dtype=int)
-    labels_hist = np.zeros(3, dtype=int)
     ind_scene = 0  # number of valid scenes seen so far
 
     for i_scene, scene_idx in enumerate(scene_indices_all):
@@ -137,7 +135,6 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
             cur_agent_in = agents_input[(scene_id, agent_id)]
             agents_input_lst.append(cur_agent_in)
             agent_type = int(cur_agent_in['type'])
-            labels_hist_pre_filter[agent_type] += 1
             if agent_type in type_id_to_label.keys():
                 agent_label = type_id_to_label[agent_type]
                 agent_label_id = agent_types_labels.index(agent_label)
@@ -190,8 +187,6 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                   'agents_exists': agents_exists[:n_scenes]}
 
     dataset_props['n_scenes'] = n_scenes
-    print('labels_hist before filtering: ', {i: c for i, c in enumerate(labels_hist_pre_filter) if c > 0})
-    print('labels_hist: ', {i: c for i, c in enumerate(labels_hist) if c > 0})
-    return saved_mats, dataset_props, labels_hist
+    return saved_mats, dataset_props
 
 ####################################################################################

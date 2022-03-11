@@ -42,13 +42,13 @@ max_n_agents = 8  # we will use up to max_n_agents agents only from the data
 min_n_agents = 2  # we will discard scenes with less valid agents
 min_extent_length = 3.7  # [m] - discard shorter agents
 min_extent_width = 1.2  # [m] - discard narrower agents
-# Our changes:
+# Our changes to config file:
 # max_retrieval_distance_m: 40  # maximum radius around the AoI for which we retrieve
 # max_agents_distance: 40 # maximum distance from AoI for another agent to be picked
 # train_data_loader key
 
 ########################################################################
-save_folder = 'Saved_Data'
+save_folder = 'AVSG_Data'
 save_dir_path = os.path.join(save_folder, save_dir_name)
 
 if not os.path.exists(save_folder):
@@ -62,14 +62,6 @@ else:
 map_data_file_path = Path(save_dir_path, 'map_data').with_suffix('.dat')
 save_info_file_path = Path(save_dir_path, 'info').with_suffix('.pkl')
 save_data_file_path = Path(save_dir_path, 'data').with_suffix('.h5')
-
-######### DEBUG ###########
-
-# with open(info_file_path, 'rb') as fid:
-#     info_dict = pickle.loads(fid.read())
-# m_info = info_dict['saved_mats_info']['map_elems_points']
-# # # Load the memmap data in Read-only mode:
-# ewfp = np.memmap(m_info['path'], dtype=m_info['dtype'], mode='r', shape=m_info['shape'])
 
 
 ########################################################################
@@ -99,7 +91,7 @@ sim_cfg = simulation_dataset.SimulationConfig(use_ego_gt=False, use_agents_gt=Fa
 scene_indices = list(range(n_scenes))
 # scene_indices = [39]
 
-saved_mats, dataset_props, labels_hist = process_scenes_data(
+saved_mats, dataset_props = process_scenes_data(
     scene_indices, dataset, dataset_zarr, dm, sim_cfg, cfg, min_n_agents, max_n_agents, min_extent_length,
     min_extent_width, verbose=args.verbose)
 
@@ -120,6 +112,6 @@ with h5py.File(save_data_file_path, 'w') as h5f:
 
 with open(save_info_file_path, 'wb') as fid:
     pickle.dump({'dataset_props': dataset_props, 'saved_mats_info': saved_mats_info,
-                 'git_version': git_version, 'labels_hist': labels_hist}, fid)
+                 'git_version': git_version}, fid)
 
 print(f'Saved data of {n_scenes} valid scenes our of {len(scene_indices)} scenes at ', save_dir_path)
