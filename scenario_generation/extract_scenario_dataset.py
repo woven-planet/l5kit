@@ -69,7 +69,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
     for i_scene, scene_idx in enumerate(scene_indices_all):
 
         # ------ debug display -----------#
-        if verbose and i_scene == 9:
+        if verbose and i_scene == 1:
             visualize_scene(dataset_zarr, cfg, dm, scene_idx)
 
         print(f'Processing scene {scene_idx}  ({i_scene + 1}/{len(scene_indices_all)})')
@@ -176,11 +176,12 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
         agents_num[ind_scene] = len(agents_dists_order)
 
         # ------ debug display -----------#
-        if verbose and ind_scene == 8:
-            print(f'n_valid_agents: {n_valid_agents}')
+        if verbose and ind_scene == 1:
             visualize_scene_feat(agents_feat_dicts, map_elems_points[ind_scene], map_elems_exists[ind_scene],
-                                 map_elems_n_points_orig[ind_scene], dataset_props)
+                                 map_elems_n_points_orig[ind_scene], dataset_props, i_scene)
         ind_scene += 1
+        print(f'Finished processing scene {scene_idx} ({i_scene + 1}/{len(scene_indices_all)}), '
+              f'n_valid_agents: {n_valid_agents}')
 
     n_scenes = ind_scene
     saved_mats = {'map_elems_points': map_elems_points[:n_scenes],

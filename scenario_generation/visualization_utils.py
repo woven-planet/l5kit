@@ -91,7 +91,8 @@ def plot_rectangles(ax, centroids, extents, yaws, label='car', facecolor='skyblu
 ##############################################################################################
 
 
-def visualize_scene_feat(agents_feat_s, map_points_s, map_elems_availability_s, map_n_points_orig_s, dataset_props):
+def visualize_scene_feat(agents_feat_s, map_points_s, map_elems_availability_s, map_n_points_orig_s, dataset_props,
+                         i_scene, show_fig=False):
 
     polygon_types = dataset_props['polygon_types']
     closed_polygon_types = dataset_props['closed_polygon_types']
@@ -127,13 +128,16 @@ def visualize_scene_feat(agents_feat_s, map_points_s, map_elems_availability_s, 
 
 
     extents = [af['extent'] for af in agents_feat_s]
-    plot_rectangles(ax, centroids[1:], extents[1:], yaws[1:])
-    plot_rectangles(ax, [centroids[0]], [extents[0]], [yaws[0]], label='ego', facecolor='red', edgecolor='red')
-
-    ax.quiver(X[1:], Y[1:], U[1:], V[1:], units='xy', color='b', label='Non-ego', width=0.5)
-    ax.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r', label='Ego', width=0.5)
+    if centroids:
+        plot_rectangles(ax, centroids[1:], extents[1:], yaws[1:])
+        plot_rectangles(ax, [centroids[0]], [extents[0]], [yaws[0]], label='ego', facecolor='red', edgecolor='red')
+        ax.quiver(X[1:], Y[1:], U[1:], V[1:], units='xy', color='b', label='Non-ego', width=0.5)
+        ax.quiver(X[0], Y[0], U[0], V[0], units='xy', color='r', label='Ego', width=0.5)
 
     ax.grid()
     plt.legend()
-    plt.show()
+    if show_fig:
+        plt.show()
+    plt.savefig(f"saved_scene_idx_{i_scene}", dpi=150)
+
 ##############################################################################################

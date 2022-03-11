@@ -57,7 +57,7 @@ data_generation_params:
   # maximum number of other agents to take (if less will be padded)
   other_agents_num: 30
   # maximum distance from AoI for another agent to be picked
-  max_agents_distance: 40
+  max_agents_distance: 80
   # Parameters defining which and how many lanes to be retrieved
   lane_params:
     # maximum number of lanes to take into account

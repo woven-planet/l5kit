@@ -38,6 +38,7 @@ min_extent_width = 1  # [m] - discard narrower agents
 # max_retrieval_distance_m: 40  # maximum radius around the AoI for which we retrieve
 # max_agents_distance: 40 # maximum distance from AoI for another agent to be picked
 # filter_agents_threshold: 0.0
+# max_agents_distance: 80
 # train_data_loader key
 
 ########################################################################
