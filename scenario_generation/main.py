@@ -13,30 +13,21 @@ import argparse
 
 
 ########################################################################
-def get_dataset_path():
-    cur_path = Path.cwd()
-    while not (cur_path / "dataset_dir.txt").is_file():
-        cur_path = cur_path.parent
-    dataset_path = open(cur_path / "dataset_dir.txt", "r").read().strip()
-    project_path = str(cur_path.resolve())
-    return dataset_path, project_path
-
-
-########################################################################
 parser = argparse.ArgumentParser()
 parser.add_argument('--config_file_name', type=str,
-                    default='sample',
+                    default='config_sample',
                     help=" 'sample' | 'train' | 'train_full' ")
 parser.add_argument('--source_name', type=str,
                     default='train_data_loader',
                     help=' "train_data_loader | "val_data_loader" ')
 parser.add_argument('--verbose', type=int,
-                    default=0,
+                    default=1,
                     help=" 0 | 1 ")
 args = parser.parse_args()
 
 save_dir_name = 'l5kit_data_' + args.config_file_name + '_' + args.source_name
-config_file = f"/scenario_generation/configs/config_{args.config_file_name}.yaml"
+config_file = str(Path.cwd() / "configs" / args.config_file_name) + ".yaml"
+dataset_path = open(Path.cwd().parent / "dataset_dir.txt", "r").read().strip()
 
 max_n_agents = 8  # we will use up to max_n_agents agents only from the data
 min_n_agents = 2  # we will discard scenes with less valid agents
@@ -66,9 +57,9 @@ save_data_file_path = Path(save_dir_path, 'data').with_suffix('.h5')
 # Load data and configurations
 ########################################################################
 # set env variable for data
-os.environ["L5KIT_DATA_FOLDER"], project_dir = get_dataset_path()
+os.environ["L5KIT_DATA_FOLDER"] = dataset_path
 dm = l5kit_data.LocalDataManager(None)
-cfg = l5kit_configs.load_config_data(project_dir + config_file)
+cfg = l5kit_configs.load_config_data( config_file)
 
 dataset_cfg = cfg[args.source_name]
 

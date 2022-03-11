@@ -9,32 +9,16 @@ import l5kit.visualization.visualizer.zarr_utils as zarr_utils
 
 ####################################################################################
 
-
-# def is_agent_on_road():
-#
-#     i_elem, i_point, mid_pos = find_closest_mid_lane()
-#     right_lane_pos =
-#     left_lane_pos =
-#     tol = 1.1
-#     allowed_deviate =  dist(lef_lane_pos, right_lane_pos) * 0.5 * tol + agent_length
-#     agent_deviate = dist(mid_pos, agent_pos)
-#     return  agent_deviate <= allowed_deviate
-
-
-####################################################################################
-def find_closest_mid_lane():
-    return True
-
-
-####################################################################################
-
-def is_agent_valid(centroid, speed, extent, dataset_props, map_elems_exists, map_elems_points, ind_scene):
+def is_agent_valid(centroid, speed, extent, dataset_props, map_elems_exists, map_elems_points, ind_scene, verbose):
     if speed < 0:
         return False
     min_extent_length = dataset_props['min_extent_length']
     min_extent_width = dataset_props['min_extent_width']
     length, width = extent
     if length < min_extent_length or width < min_extent_width:
+        if verbose:
+            print(f'Agent discarded, length: {length},'
+                  f' width: {width}, min_extent_length: {min_extent_length}, min_extent_width: {min_extent_width}')
         return False
     polygon_types = dataset_props['polygon_types']
 
@@ -61,6 +45,9 @@ def is_agent_valid(centroid, speed, extent, dataset_props, map_elems_exists, map
     dist_to_centroid = np.linalg.norm(mid_point - centroid)
 
     if dist_to_centroid > min_dist_to_left or dist_to_centroid > min_dist_to_right:
+        if verbose:
+            print(f'Agent discarded, dist_to_centroid: {dist_to_centroid},'
+                  f' min_dist_to_left: {min_dist_to_left}, min_dist_to_right: {min_dist_to_right}')
         return False
 
     return True

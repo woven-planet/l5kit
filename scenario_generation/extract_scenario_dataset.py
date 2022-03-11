@@ -69,10 +69,10 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
     for i_scene, scene_idx in enumerate(scene_indices_all):
 
         # ------ debug display -----------#
-        if verbose and i_scene == 2:
+        if verbose and i_scene == 0:
             visualize_scene(dataset_zarr, cfg, dm, scene_idx)
 
-        print(f'Extracting scene #{i_scene + 1} out of {len(scene_indices_all)}')
+        print(f'Processing scene {scene_idx}  ({i_scene + 1}/{len(scene_indices_all)})')
         sim_dataset = simulation_dataset.SimulationDataset.from_dataset_indices(dataset, [scene_idx], sim_cfg)
         frame_index = 2  # we need only the initial t, but to get the speed we need to start at frame_index = 2
 
@@ -122,7 +122,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
         agents_feat_dicts = []  # the agents in this scene
         # add the ego car (in ego coord system):
         if is_agent_valid(ego_centroid, ego_speed, ego_extent, dataset_props,
-                          map_elems_exists, map_elems_points, ind_scene):
+                          map_elems_exists, map_elems_points, ind_scene, verbose):
             agents_feat_dicts.append({
                 'agent_label_id': agent_types_labels.index('CAR'),  # The ego car has the same label "car"
                 'yaw': 0.,  # yaw angle in the agent in ego coord system [rad]
@@ -148,7 +148,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
             speed = cur_agent_in['speed']
             extent = cur_agent_in['extent'][:2]
             if is_agent_valid(centroid, speed, extent, dataset_props,
-                              map_elems_exists, map_elems_points, ind_scene):
+                              map_elems_exists, map_elems_points, ind_scene, verbose):
                 agents_feat_dicts.append({
                     'agent_label_id': agent_label_id,  # index of label in agent_types_labels
                     'yaw': yaw,  # yaw angle in the agent in ego coord system [rad]
@@ -158,6 +158,8 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
                 })
         n_valid_agents = len(agents_feat_dicts)
         if n_valid_agents < min_n_agents:
+            if verbose:
+                print(f'Scened discarded - only {n_valid_agents} valid agents')
             continue  # discard this scene
 
         # Save the agents in order by the distance to ego
