@@ -11,7 +11,7 @@ from pathlib import Path
 import h5py
 import argparse
 
-
+# use: $ python -m main --config_file_name sample --source_name train_data_loader
 ########################################################################
 parser = argparse.ArgumentParser()
 parser.add_argument('--config_file_name', type=str,
