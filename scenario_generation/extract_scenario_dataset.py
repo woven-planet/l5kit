@@ -161,7 +161,7 @@ def process_scenes_data(scene_indices_all, dataset, dataset_zarr, dm, sim_cfg, c
         n_valid_agents = len(agents_feat_dicts)
         if n_valid_agents < min_n_agents:
             if verbose:
-                print(f'Scened discarded - only {n_valid_agents} valid agents')
+                print(f'Scene discarded - only {n_valid_agents} valid agents')
             continue  # discard this scene
 
         # Save the agents in order by the distance to ego
