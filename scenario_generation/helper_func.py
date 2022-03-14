@@ -23,16 +23,19 @@ def is_agent_valid(centroid, speed, extent, dataset_props, map_elems_exists, map
                   f' width: {width}, min_extent_length: {min_extent_length}, min_extent_width: {min_extent_width}')
         return False
     polygon_types = dataset_props['polygon_types']
+    i_lanes_mid = polygon_types.index('lanes_mid')
+    i_lanes_left = polygon_types.index('lanes_left')
+    i_lanes_right = polygon_types.index('lanes_right')
 
-    lanes_mid_exists = map_elems_exists[ind_scene, polygon_types.index('lanes_mid')]
-    lanes_left_exists = map_elems_exists[ind_scene, polygon_types.index('lanes_left')]
-    lanes_right_exists = map_elems_exists[ind_scene, polygon_types.index('lanes_right')]
+    lanes_mid_exists = map_elems_exists[ind_scene, i_lanes_mid]
+    lanes_left_exists = map_elems_exists[ind_scene, i_lanes_left]
+    lanes_right_exists = map_elems_exists[ind_scene, i_lanes_right]
 
-    lanes_mid_points = map_elems_points[ind_scene, polygon_types.index('lanes_mid')]
+    lanes_mid_points = map_elems_points[ind_scene, i_lanes_mid]
     lanes_mid_points = lanes_mid_points[lanes_mid_exists].reshape((-1, 2))
-    lanes_left_points = map_elems_points[ind_scene, polygon_types.index('lanes_left')]
+    lanes_left_points = map_elems_points[ind_scene, i_lanes_left]
     lanes_left_points = lanes_left_points[lanes_left_exists].reshape((-1, 2))
-    lanes_right_points = map_elems_points[ind_scene, polygon_types.index('lanes_right')]
+    lanes_right_points = map_elems_points[ind_scene, i_lanes_right]
     lanes_right_points = lanes_right_points[lanes_right_exists].reshape((-1, 2))
 
     # find the closest mid-lane point to the agent centroid
