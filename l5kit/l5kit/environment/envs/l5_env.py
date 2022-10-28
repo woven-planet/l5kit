@@ -222,7 +222,7 @@ class L5Env(gym.Env):
         self.ego_ins_outs: DefaultDict[int, List[UnrollInputOutput]] = defaultdict(list)
 
         # Select Scene ID
-        self.scene_index = self.np_random.randint(0, self.max_scene_id)
+        self.scene_index = self.np_random.integers(0, self.max_scene_id)
         if self.reset_scene_id is not None:
             self.scene_index = min(self.reset_scene_id, self.max_scene_id - 1)
             self.reset_scene_id += 1
