@@ -7,9 +7,9 @@ Planning is an essential piece of the Autonomous Vehicles (AV) stack.
 
 In this series of notebooks you will train and evaluate a data-driven ML policy.
 
-**Before starting, please download the Lyft L5 Prediction Dataset 2020 and follow the instructions to correctly organise it.**
+**Before starting, please download the Woven Planet Prediction Dataset 2020 and follow the instructions to correctly organise it.**
 
-* `Lyft L5 Prediction Dataset 2020 <https://self-driving.lyft.com/level5/prediction/>`_
+* `Woven Planet Prediction Dataset 2020 <https://self-driving.lyft.com/level5/prediction/>`_
 * `Instructions <https://github.com/woven-planet/l5kit#download-the-datasets>`_
 
 Training an effective ML policy for planning can take several hours on the best performing hardware.
@@ -31,7 +31,7 @@ You can train your first ML policy for planning using our `training notebook <ht
    :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/planning/train.ipynb
    :alt: Open In Colab
 
-In this notebook you are going to train your own ML policy to fully control a Self Driving Vehicle (SDV). You will train your model using the Lyft Prediction Dataset and L5Kit.
+In this notebook you are going to train your own ML policy to fully control a Self Driving Vehicle (SDV). You will train your model using the Woven Planet Prediction Dataset and L5Kit.
 
 The policy will be a deep neural network (DNN) which will be invoked by the SDV to obtain the next command to execute.
 

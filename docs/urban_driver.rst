@@ -10,9 +10,9 @@ We also have a `dedicated webpage <https://www.self-driving-cars.org/papers/corl
 
 In this series of notebooks you will train and evaluate Urban Driver.
 
-**Before starting, please download the Lyft L5 Prediction Dataset 2020 and follow the instructions to correctly organise it.**
+**Before starting, please download the Woven Planet Prediction Dataset 2020 and follow the instructions to correctly organise it.**
 
-* `Lyft L5 Prediction Dataset 2020 <https://self-driving.lyft.com/level5/prediction/>`_
+* `Woven Planet Prediction Dataset 2020 <https://self-driving.lyft.com/level5/prediction/>`_
 * `Instructions <https://github.com/woven-planet/l5kit#download-the-datasets>`_
 
 Model
