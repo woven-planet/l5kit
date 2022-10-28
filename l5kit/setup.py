@@ -33,7 +33,8 @@ setup(
         "shapely",
         "typing_extensions",
         "bokeh",
-        "gym==0.19.0"
+        "importlib-metadata>=4.10.0,<5.0.0",
+        "gym==0.22.0"
     ],
     extras_require={
         "dev": ["pytest", "mypy", "types-PyYAML", "setuptools", "twine", "wheel", "pytest-cov",
