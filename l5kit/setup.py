@@ -33,6 +33,7 @@ setup(
         "shapely",
         "typing_extensions",
         "bokeh",
+        "importlib-metadata>=4.10.0,<5.0.0",
         "gym==0.22.0"
     ],
     extras_require={

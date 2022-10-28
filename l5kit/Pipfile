@@ -12,7 +12,7 @@ isort = "*"
 sphinx = "*"
 recommonmark = "*"
 pre-commit = "*"
-importlib-metadata = "*"  # required for python 3.8
+importlib-metadata = ">=4.10.0,<5.0.0"  # required for python 3.8
 typing-extensions = "*"
 types-pyyaml = "*"
 
