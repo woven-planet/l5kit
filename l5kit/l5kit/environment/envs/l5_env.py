@@ -232,7 +232,7 @@ class L5Env(gym.Env):
             scene_length = len(self.dataset.get_scene_indices(self.scene_index))
             self.eps_length = self.sim_cfg.num_simulation_steps or scene_length
             end_frame = scene_length - self.eps_length
-            self.sim_cfg.start_frame_index = self.np_random.randint(0, end_frame + 1)
+            self.sim_cfg.start_frame_index = self.np_random.integers(0, end_frame + 1)
 
         # Prepare episode scene
         self.sim_dataset = SimulationDataset.from_dataset_indices(self.dataset, [self.scene_index], self.sim_cfg)
