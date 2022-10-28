@@ -21,7 +21,7 @@ You can use this framework to build systems which:
 * Study the improvement in performance of these systems as the amount of data increases.
 
 
-This software is developed by Lyft Level 5 self-driving division and is :ref:`open to external contributors <contribute>`.
+This software is developed by Woven Planet self-driving division and is :ref:`open to external contributors <contribute>`.
 
 
 Video Tutorial

@@ -865,9 +865,9 @@ message AnnotatedShape {
         int32 above_ground_floors = 3;
     }
 
-    // An area of focus or interest for map updates and metrics. e.g. Lyft service regions.
+    // An area of focus or interest for map updates and metrics. e.g. Woven Planet service regions.
     message Region {
-        // Describes the use and purpose of a region. e.g. Lyft service regions.
+        // Describes the use and purpose of a region. e.g. Woven Planet service regions.
         string source = 1;
     }
 

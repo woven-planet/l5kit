@@ -8,9 +8,9 @@ has been accepted at `ML4AD Workshop, NeurIPS 2021 <https://ml4ad.github.io/>`_.
 
 In this series of notebooks you will train and evaluate reinforcement learning policies in DriverGym.
 
-**Before starting, please download the Lyft L5 Prediction Dataset 2020 and follow the instructions to correctly organise it.**
+**Before starting, please download the Woven Planet Prediction Dataset 2020 and follow the instructions to correctly organise it.**
 
-* `Lyft L5 Prediction Dataset 2020 <https://self-driving.lyft.com/level5/prediction/>`_
+* `Woven Planet Prediction Dataset 2020 <https://self-driving.lyft.com/level5/prediction/>`_
 * `Instructions <https://github.com/woven-planet/l5kit#download-the-datasets>`_
 
 DriverGym Environment

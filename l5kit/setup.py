@@ -7,9 +7,9 @@ from l5kit import __version__
 setup(
     name="l5kit",
     version=__version__,
-    description="Level-5 Autonomous Vehicle Research library",
-    author="Level 5",
-    author_email="l5kit@lyft.com",
+    description="Woven Planet Autonomous Vehicle Research library",
+    author="Woven Planet",
+    author_email="christian.perone@woven-planet.global",
     url="https://github.com/woven-planet/l5kit",
     license="apache2",
     install_requires=[
