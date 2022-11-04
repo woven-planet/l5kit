@@ -384,10 +384,10 @@
         },
         "gym": {
             "hashes": [
-                "sha256:940069b983806e1ccc400fa6d47b4e34e462accf6a4fb0acb0a5e509ad0f502d"
+                "sha256:339144c89951758187c378111919bc0e2f1695f9e9d9699e3f19279a6398148d"
             ],
             "markers": "python_version >= '3.6'",
-            "version": "==0.19.0"
+            "version": "==0.22.0"
         },
         "idna": {
             "hashes": [

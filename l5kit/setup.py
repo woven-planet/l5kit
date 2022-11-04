@@ -7,9 +7,9 @@ from l5kit import __version__
 setup(
     name="l5kit",
     version=__version__,
-    description="Level-5 Autonomous Vehicle Research library",
-    author="Level 5",
-    author_email="l5kit@lyft.com",
+    description="Woven Planet Autonomous Vehicle Research library",
+    author="Woven Planet",
+    author_email="l5kit@woven-planet.global",
     url="https://github.com/woven-planet/l5kit",
     license="apache2",
     install_requires=[
@@ -17,7 +17,7 @@ setup(
         "matplotlib",
         "numpy~=1.19.0",
         "opencv-contrib-python-headless",
-        "protobuf>=3.12.2",
+        "protobuf>=3.12.2,<=3.20",
         "pymap3d",
         "scipy",
         "setuptools",
@@ -32,8 +32,9 @@ setup(
         "ipywidgets",
         "shapely",
         "typing_extensions",
-        "bokeh",
-        "gym"
+        "bokeh<3.0.0",
+        "importlib-metadata>=4.10.0,<5.0.0",
+        "gym==0.22.0"
     ],
     extras_require={
         "dev": ["pytest", "mypy", "types-PyYAML", "setuptools", "twine", "wheel", "pytest-cov",
