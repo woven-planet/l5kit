@@ -32,7 +32,7 @@ setup(
         "ipywidgets",
         "shapely",
         "typing_extensions",
-        "bokeh",
+        "bokeh<3.0.0",
         "importlib-metadata>=4.10.0,<5.0.0",
         "gym==0.22.0"
     ],
