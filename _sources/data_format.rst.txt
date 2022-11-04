@@ -89,10 +89,10 @@ Some other zarr benefits are:
 * Other libraries such as xarray, Dask and TensorStore have good interoperability with Zarr.
 * The metadata (e.g. dtype, chunk size, compression type) is stored inside the zarr dataset too. If one day you decide to change your chunk size, you can still read the older datasets without changing any code.
 
-2020 Lyft Competition Dataset format
+2020 Woven Planet Competition Dataset format
 ------------------------------------
 
-The 2020 Lyft competition dataset is stored in four structured arrays: :code:`scenes`, :code:`frames`, :code:`agents` and :code:`tl_faces`.
+The 2020 Woven Planet competition dataset is stored in four structured arrays: :code:`scenes`, :code:`frames`, :code:`agents` and :code:`tl_faces`.
 
 Note: in the following all :code:`_interval` fields assume that information is stored consecutively in the arrays.
 This means that if :code:`frame_index_interval` for :code:`scene_0` is :code:`(0, 100)`, frames from :code:`scene_1` will start from index 100 in the frames array.
