@@ -9,7 +9,7 @@ setup(
     version=__version__,
     description="Woven Planet Autonomous Vehicle Research library",
     author="Woven Planet",
-    author_email="christian.perone@woven-planet.global",
+    author_email="l5kit@woven-planet.global",
     url="https://github.com/woven-planet/l5kit",
     license="apache2",
     install_requires=[

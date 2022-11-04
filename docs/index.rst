@@ -16,10 +16,10 @@ News
 * **08-20-2021**: We've just released a new notebook tutorial describing our :ref:`L5Kit gym-compatible environment <reinforcement>`!
 * **04-16-2021**: We've just released a new notebook tutorial for the :ref:`ML simulation task <simulation>`!
 * **12-03-2020**: We've just released a series of notebooks to train and evaluate an :ref:`ML planning model <planning>`. We've also included pre-trained models!
-* **11-26-2020**: `2020 Kaggle Woven Planet Motion Prediction for Autonomous Vehicles Competition <https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview>`_ ended. We had more than 900 teams taking part in it!
+* **11-26-2020**: `2020 Kaggle Lyft Motion Prediction for Autonomous Vehicles Competition <https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview>`_ ended. We had more than 900 teams taking part in it!
 * **11-16-2020**: `Dataset paper <https://arxiv.org/abs/2006.14480>`_ presented at CoRL 2020
 * **09-29-2020**: L5Kit v1.0.1 released
-* **08-25-2020**: `2020 Kaggle Woven Planet Motion Prediction for Autonomous Vehicles Competition <https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview>`_ started
+* **08-25-2020**: `2020 Kaggle Lyft Motion Prediction for Autonomous Vehicles Competition <https://www.kaggle.com/c/lyft-motion-prediction-autonomous-vehicles/overview>`_ started
 * **08-24-2020**: L5Kit v1.0.6 and Dataset v1.1 (includes traffic light support) released!
 
 
