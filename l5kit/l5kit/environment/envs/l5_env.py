@@ -194,7 +194,7 @@ class L5Env(gym.Env):
 
         self.seed()
 
-    def seed(self, seed: int = None) -> List[int]:
+    def seed(self, seed: Optional[int] = None) -> List[int]:
         """Generate the random seed.
 
         :param seed: the seed integer
@@ -204,7 +204,7 @@ class L5Env(gym.Env):
         # TODO : add a torch seed for future
         return [seed]
 
-    def set_reset_id(self, reset_id: int = None) -> None:
+    def set_reset_id(self, reset_id: Optional[int] = None) -> None:
         """Set the reset_id to unroll from specific scene_id.
         Useful during deterministic evaluation.
 
