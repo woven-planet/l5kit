@@ -1,4 +1,5 @@
 [flake8]
 max-line-length = 120
-ignore = RST201, RST203, RST301, W503 # White space before colon, line break before binary op
+ignore = RST201, RST203, RST301, W503
+    # White space before colon, line break before binary op
 exclude = l5kit/data/proto/*

@@ -44,7 +44,7 @@ Training Notebook
 You can train your own Urban Driver using our `training notebook <https://github.com/woven-planet/l5kit/blob/master/examples/urban_driver/train.ipynb>`_.
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/urban_driver/train.ipynb
+   :target: https://colab.research.google.com/github/woven-planet/l5kit/blob/master/examples/urban_driver/train.ipynb
    :alt: Open In Colab
 
 Pre-Trained Models
@@ -62,7 +62,7 @@ Closed-Loop Evaluation Notebook
 You can evaluate Urban Planner in closed-loop setting using our `closed-loop evaluation notebook <https://github.com/woven-planet/l5kit/blob/master/examples/urban_driver/closed_loop_test.ipynb>`_.
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/urban_driver/closed_loop_test.ipynb
+   :target: https://colab.research.google.com/github/woven-planet/l5kit/blob/master/examples/urban_driver/closed_loop_test.ipynb
    :alt: Open In Colab
 
 
