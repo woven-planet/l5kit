@@ -39,12 +39,12 @@ We provide two notebooks introducing our DriverGym environment.
 You can test your RL policy in DriverGym using our `gym notebook <https://github.com/woven-planet/l5kit/blob/master/examples/RL/notebooks/gym_environment.ipynb>`_ \
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/RL/notebooks/gym_environment.ipynb
+   :target: https://colab.research.google.com/github/woven-planet/l5kit/blob/master/examples/RL/notebooks/gym_environment.ipynb
    :alt: Open In Colab
 
 
 You can also train and test a PPO policy in DriverGym using our `PPO notebook <https://github.com/woven-planet/l5kit/blob/master/examples/RL/notebooks/ppo_policy_training.ipynb>`_ \
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/RL/notebooks/ppo_policy_training.ipynb
+   :target: https://colab.research.google.com/github/woven-planet/l5kit/blob/master/examples/RL/notebooks/ppo_policy_training.ipynb
    :alt: Open In Colab

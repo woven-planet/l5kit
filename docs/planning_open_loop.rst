@@ -28,7 +28,7 @@ Training Notebook
 You can train your first ML policy for planning using our `training notebook <https://github.com/woven-planet/l5kit/blob/master/examples/planning/train.ipynb>`_
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/planning/train.ipynb
+   :target: https://colab.research.google.com/github/woven-planet/l5kit/blob/master/examples/planning/train.ipynb
    :alt: Open In Colab
 
 In this notebook you are going to train your own ML policy to fully control a Self Driving Vehicle (SDV). You will train your model using the Woven Planet Prediction Dataset and L5Kit.
@@ -69,7 +69,7 @@ Open-Loop Evaluation Notebook
 You can evaluate your model in the open-loop setting using our `open-loop evaluation notebook <https://github.com/woven-planet/l5kit/blob/master/examples/planning/open_loop_test.ipynb>`_
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/planning/open_loop_test.ipynb
+   :target: https://colab.research.google.com/github/woven-planet/l5kit/blob/master/examples/planning/open_loop_test.ipynb
    :alt: Open In Colab
 
 
@@ -92,7 +92,7 @@ Closed-Loop Evaluation Notebook
 You can evaluate your model in the closed-loop setting using our `closed-loop evaluation notebook <https://github.com/woven-planet/l5kit/blob/master/examples/planning/closed_loop_test.ipynb>`_
 
 .. image:: https://colab.research.google.com/assets/colab-badge.svg
-   :target: https://colab.research.google.com/github/lyft/l5kit/blob/master/examples/planning/closed_loop_test.ipynb
+   :target: https://colab.research.google.com/github/woven-planet/l5kit/blob/master/examples/planning/closed_loop_test.ipynb
    :alt: Open In Colab
 
 In this notebook you are going to evaluate a CNN-based policy to control the SDV with a protocol named *closed-loop* evaluation.
