@@ -3,6 +3,7 @@ from itertools import chain
 from typing import Iterator, List, Optional
 
 import numpy as np
+from tqdm import tqdm
 
 
 MAX_MODES = 3
@@ -55,14 +56,17 @@ def _generate_avails_keys(future_len: int) -> List[str]:
     return [f"avail_{i}" for i in range(future_len)]
 
 
-def _generate_confs_keys() -> List[str]:
+def _generate_confs_keys(max_modes: int = MAX_MODES) -> List[str]:
     """
     Generate modes keys (one per mode)
+
+    Args:
+        max_modes (int): maximum number of predicted modes
 
     Returns:
         List[str]: a list of keys
     """
-    return [f"conf_{i}" for i in range(MAX_MODES)]
+    return [f"conf_{i}" for i in range(max_modes)]
 
 
 def write_gt_csv(
@@ -144,10 +148,11 @@ def write_pred_csv(
         track_ids: np.ndarray,
         coords: np.ndarray,
         confs: Optional[np.ndarray] = None,
+        max_modes: int = MAX_MODES,
 ) -> None:
     """
     Encode the predictions into a csv file. Coords can have an additional axis for multi-mode.
-    We handle up to MAX_MODES modes.
+    We handle up to max_modes modes.
     For the uni-modal case (i.e. all predictions have just a single mode), coords should not have the additional axis
     and confs should be set to None. In this case, a single mode with confidence 1 will be written.
 
@@ -158,6 +163,7 @@ def write_pred_csv(
         coords (np.ndarray): (num_example x (modes) x future_len x num_coords) meters displacements
         confs (Optional[np.ndarray]): (num_example x modes) confidence of each modes in each example.
         Rows should sum to 1
+        max_modes (int): maximum number of predicted modes
 
     Returns:
 
@@ -174,16 +180,16 @@ def write_pred_csv(
     assert timestamps.shape == track_ids.shape == (num_example,)
     assert confs is not None and confs.shape == (num_example, num_modes)
     assert np.allclose(np.sum(confs, axis=-1), 1.0)
-    assert num_modes <= MAX_MODES
+    assert num_modes <= max_modes
 
-    # generate always a fixed size json for MAX_MODES by padding the arrays with zeros
-    coords_padded = np.zeros((num_example, MAX_MODES, future_len, num_coords), dtype=coords.dtype)
+    # generate always a fixed size json for max_modes by padding the arrays with zeros
+    coords_padded = np.zeros((num_example, max_modes, future_len, num_coords), dtype=coords.dtype)
     coords_padded[:, :num_modes] = coords
-    confs_padded = np.zeros((num_example, MAX_MODES), dtype=confs.dtype)
+    confs_padded = np.zeros((num_example, max_modes), dtype=confs.dtype)
     confs_padded[:, :num_modes] = confs
 
-    coords_keys_list = [_generate_coords_keys(future_len, mode_index=idx) for idx in range(MAX_MODES)]
-    confs_keys = _generate_confs_keys()
+    coords_keys_list = [_generate_coords_keys(future_len, mode_index=idx) for idx in range(max_modes)]
+    confs_keys = _generate_confs_keys(max_modes=max_modes)
 
     # create and write HEADER
     # order is (timestamp,track_id,confidences,coords)
@@ -194,22 +200,24 @@ def write_pred_csv(
     writer = csv.DictWriter(open(csv_path, "w"), fieldnames)
     writer.writeheader()
 
-    for timestamp, track_id, coord, conf in zip(timestamps, track_ids, coords_padded, confs_padded):
+    for timestamp, track_id, coord, conf in tqdm(zip(timestamps, track_ids, coords_padded, confs_padded),
+                                                 total=len(timestamps)):
         line = {"timestamp": timestamp, "track_id": track_id}
         line.update({key: con for key, con in zip(confs_keys, conf)})
 
-        for idx in range(MAX_MODES):
+        for idx in range(max_modes):
             line.update({key: f"{cor:.5f}" for key, cor in zip(coords_keys_list[idx], coord[idx].reshape(-1))})
 
         writer.writerow(line)
 
 
-def read_pred_csv(csv_path: str) -> Iterator[dict]:
+def read_pred_csv(csv_path: str, max_modes: int = MAX_MODES) -> Iterator[dict]:
     """
     Generator function that returns a line at the time from the csv file as a dict
 
     Args:
         csv_path (str): path of the csv to read
+        max_modes (int): maximum number of predicted modes
 
     Returns:
         Iterator[dict]: dict keys are the csv header fieldnames
@@ -219,13 +227,13 @@ def read_pred_csv(csv_path: str) -> Iterator[dict]:
     fieldnames = reader.fieldnames
     assert fieldnames is not None, "error reading fieldnames"
 
-    # exclude timestamp, track_id and MAX_MODES confs, the rest should be (x, y) * len * 3 = 6*len
-    future_len = (len(fieldnames) - (2 + MAX_MODES)) / 6
+    # exclude timestamp, track_id and max_modes confs, the rest should be (x, y) * len * max_modes = 2*max_modes*len
+    future_len = (len(fieldnames) - (2 + max_modes)) / (2 * max_modes)
     assert future_len == int(future_len), "error estimating len"
     future_len = int(future_len)
 
-    coords_labels_list = [_generate_coords_keys(future_len, mode_index=idx) for idx in range(MAX_MODES)]
-    confs_labels = _generate_confs_keys()
+    coords_labels_list = [_generate_coords_keys(future_len, mode_index=idx) for idx in range(max_modes)]
+    confs_labels = _generate_confs_keys(max_modes=max_modes)
 
     for row in reader:
         track_id = row["track_id"]
@@ -234,7 +242,7 @@ def read_pred_csv(csv_path: str) -> Iterator[dict]:
         conf = np.asarray([np.float64(row[conf_label]) for conf_label in confs_labels])
 
         coords = []
-        for idx in range(MAX_MODES):
+        for idx in range(max_modes):
             coord = np.asarray([np.float64(row[coord_label]) for coord_label in coords_labels_list[idx]])
             coords.append(coord.reshape((future_len, 2)))
 

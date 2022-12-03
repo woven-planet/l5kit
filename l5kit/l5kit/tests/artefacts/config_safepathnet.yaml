@@ -1,0 +1,41 @@
+# Config format schema number
+format_version: 7
+
+###################
+## Model options
+model_params:
+  history_num_frames_ego: 19
+  history_num_frames_agents: 19
+  future_num_frames: 25
+  step_time: 0.1
+  agent_num_trajectories: 20
+  disable_other_agents: False
+  disable_map: False
+  disable_lane_boundaries: False
+  use_perturbation: False
+  perturbation_probability: 1.0
+  use_gaussian_perturbation: False
+  perturbation_min_displacement_m: 1.2
+  cost_prob_coeff: 0.1
+  render_ego_history: False
+
+###################
+## Vectorizer Params
+data_generation_params:
+  # maximum number of other agents to take (if less will be padded)
+  other_agents_num: 30
+  # maximum distance from AoI for another agent to be picked
+  max_agents_distance: 50
+  # Parameters defining which and how many lanes to be retrieved
+  lane_params:
+    # maximum number of lanes to take into account
+    # if less they will be padded; if more the closest to AoI are picked
+    max_num_lanes: 30
+    # max number of points per lane
+    max_points_per_lane: 20
+    # max number of points per crosswalk
+    max_points_per_crosswalk: 20
+    # maximum radius around the AoI for which we retrieve
+    max_retrieval_distance_m: 50
+    # max number of crosswalks
+    max_num_crosswalks: 20

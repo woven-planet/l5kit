@@ -2,8 +2,9 @@ from collections import defaultdict, OrderedDict
 from typing import List
 
 import numpy as np
+from tqdm import tqdm
 
-from .csv_utils import read_gt_csv, read_pred_csv
+from .csv_utils import MAX_MODES, read_gt_csv, read_pred_csv
 from .metrics import metric_signature
 
 
@@ -45,7 +46,8 @@ def validate_dicts(ground_truth: dict, predicted: dict) -> bool:
     return valid
 
 
-def compute_metrics_csv(ground_truth_path: str, inference_output_path: str, metrics: List[metric_signature]) -> dict:
+def compute_metrics_csv(ground_truth_path: str, inference_output_path: str, metrics: List[metric_signature],
+                        max_modes: int = MAX_MODES) -> dict:
     """
     Compute a set of metrics between ground truth and prediction csv files
 
@@ -54,6 +56,7 @@ def compute_metrics_csv(ground_truth_path: str, inference_output_path: str, metr
         inference_output_path (str): Path to the csv file containing network output.
         metrics (List[Callable]): a list of callable to be applied to the elements retrieved from the 2
         csv files
+        max_modes (int): maximum number of predicted modes
 
     Returns:
         dict: keys are metrics name, values is the average metric computed over the elements
@@ -66,7 +69,7 @@ def compute_metrics_csv(ground_truth_path: str, inference_output_path: str, metr
 
     for el in read_gt_csv(ground_truth_path):
         ground_truth[el["track_id"] + el["timestamp"]] = el
-    for el in read_pred_csv(inference_output_path):
+    for el in read_pred_csv(inference_output_path, max_modes=max_modes):
         inference[el["track_id"] + el["timestamp"]] = el
 
     if not validate_dicts(ground_truth, inference):
@@ -74,7 +77,7 @@ def compute_metrics_csv(ground_truth_path: str, inference_output_path: str, metr
 
     metrics_dict = defaultdict(list)
 
-    for key, ground_truth_value in ground_truth.items():
+    for key, ground_truth_value in tqdm(ground_truth.items()):
         gt_coord = ground_truth_value["coord"]
         avail = ground_truth_value["avail"]
 

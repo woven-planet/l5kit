@@ -4,6 +4,11 @@ import numpy as np
 import torch
 
 
+# WARNING: changing these values impact the number of instances selected for both train and inference!
+AGENT_MIN_FRAME_HISTORY = 10  # minimum number of frames an agents must have in the past to be picked
+AGENT_MIN_FRAME_FUTURE = 1  # minimum number of frames an agents must have in the future to be picked
+
+
 kMaxStrLength = 70  # Max string length for fixed length byte encoding.
 
 
