@@ -8,6 +8,7 @@ import numpy as np
 from torch.utils.data import Dataset
 from zarr import convenience
 
+import l5kit.dataset.select_agents as sa
 from l5kit.data import ChunkedDataset, get_agents_slice_from_frames, get_frames_slice_from_scenes
 from l5kit.data.labels import PERCEPTION_LABEL_TO_INDEX
 from l5kit.dataset.utils import convert_str_to_fixed_length_tensor
@@ -17,7 +18,6 @@ from l5kit.sampling.agent_sampling import generate_agent_sample
 from l5kit.sampling.agent_sampling_vectorized import generate_agent_sample_vectorized
 from l5kit.vectorization.vectorizer import Vectorizer
 
-from .select_agents import select_agents, TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE
 from .utils import AGENT_MIN_FRAME_FUTURE, AGENT_MIN_FRAME_HISTORY
 
 
@@ -256,6 +256,19 @@ class EgoDatasetVectorized(BaseEgoDataset):
 
 
 class EgoAgentDatasetVectorized(EgoDatasetVectorized):
+    """
+    Get a PyTorch dataset object that can be used to train DNNs with vectorized input.
+    Ego features are added to the agent features to treat ego as an agent.
+
+    Args:
+        cfg (dict): configuration file
+        zarr_dataset (ChunkedDataset): the raw zarr dataset
+        vectorizer (Vectorizer): a object that supports vectorization around an AV
+        perturbation (Optional[Perturbation]): an object that takes care of applying trajectory perturbations.
+            None if not desired
+        agents_mask (Optional[np.ndarray]): custom boolean mask of the agent availability.
+        eval_mode (bool): enable eval mode (iterates over agent, similarly to AgentDataset).
+    """
     def __init__(
         self,
         cfg: dict,
@@ -265,19 +278,6 @@ class EgoAgentDatasetVectorized(EgoDatasetVectorized):
         agents_mask: Optional[np.ndarray] = None,
         eval_mode: bool = False
     ):
-        """
-        Get a PyTorch dataset object that can be used to train DNNs with vectorized input.
-        Ego features are added to the agent features to treat ego as an agent.
-
-        Args:
-            cfg (dict): configuration file
-            zarr_dataset (ChunkedDataset): the raw zarr dataset
-            vectorizer (Vectorizer): a object that supports vectorization around an AV
-            perturbation (Optional[Perturbation]): an object that takes care of applying trajectory perturbations.
-                None if not desired
-            agents_mask (Optional[np.ndarray]): custom boolean mask of the agent availability.
-            eval_mode (bool): enable eval mode (iterates over agent, similarly to AgentDataset).
-        """
         super().__init__(cfg, zarr_dataset, vectorizer, perturbation)
 
         self.eval_mode = eval_mode
@@ -308,7 +308,7 @@ class EgoAgentDatasetVectorized(EgoDatasetVectorized):
         self.agents_indices = np.nonzero(agents_mask)[0]
 
         # store an array where valid indices have increasing numbers and the rest is -1 (N_total_agents,)
-        self.mask_indices = agents_mask.copy().astype(np.int)
+        self.mask_indices = agents_mask.astype(np.int, copy=True)
         self.mask_indices[self.mask_indices == 0] = -1
         self.mask_indices[self.mask_indices == 1] = np.arange(0, np.sum(agents_mask))
 
@@ -333,7 +333,7 @@ class EgoAgentDatasetVectorized(EgoDatasetVectorized):
         """
         agent_prob = self.cfg["raster_params"]["filter_agents_threshold"]
 
-        agents_mask_path = Path(self.dataset.path) / f"agents_mask/{agent_prob}"
+        agents_mask_path = Path(self.dataset.path) / "agents_mask" / str(agent_prob)
         if not agents_mask_path.exists():  # don't check in root but check for the path
             warnings.warn(
                 f"cannot find the right config in {self.dataset.path},\n"
@@ -344,12 +344,12 @@ class EgoAgentDatasetVectorized(EgoDatasetVectorized):
                 stacklevel=2,
             )
 
-            select_agents(
+            sa.select_agents(
                 self.dataset,
                 agent_prob,
-                th_yaw_degree=TH_YAW_DEGREE,
-                th_extent_ratio=TH_EXTENT_RATIO,
-                th_distance_av=TH_DISTANCE_AV,
+                th_yaw_degree=sa.TH_YAW_DEGREE,
+                th_extent_ratio=sa.TH_EXTENT_RATIO,
+                th_distance_av=sa.TH_DISTANCE_AV,
             )
 
         agents_mask = convenience.load(str(agents_mask_path))  # note (lberg): this doesn't update root
