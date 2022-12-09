@@ -1,6 +1,4 @@
-.. _safepathnet:
-
-Multi-modal simultaneous prediction with SafePathNet
+Multimodal prediction
 ====================
 
 Our paper `Safe Real-World Autonomous Driving by Learning to Predict and Plan with a Mixture of Experts <https://arxiv.org/abs/2211.02131>`_
@@ -15,8 +13,8 @@ In this notebook you will train and evaluate the prediction part of SafePathNet.
 * `Woven Planet Prediction Dataset 2020 <https://level-5.global/data/prediction/>`_
 * `Instructions <https://github.com/woven-planet/l5kit#download-the-datasets>`_
 
-Model
------
+SafePathNet Model
+-----------------
 
 From the paper:
 ```

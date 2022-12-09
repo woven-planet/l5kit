@@ -7,3 +7,4 @@ Training Models
     prediction.rst
     simulation.rst
     planning.rst
+    safepathnet.rst
