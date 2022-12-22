@@ -30,7 +30,7 @@ setup(
         "notebook",
         "ptable",
         "ipywidgets",
-        "shapely",
+        "shapely<2.0.0",
         "typing_extensions",
         "bokeh<3.0.0",
         "importlib-metadata>=4.10.0,<5.0.0",
