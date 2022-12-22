@@ -1,4 +1,4 @@
-from typing import Optional
+from typing import Optional, Tuple
 
 import numpy as np
 import torch
@@ -38,6 +38,37 @@ def pad_avail(avails: torch.Tensor, pad_to: int) -> torch.Tensor:
     pad_len = pad_to - num_points
     pad = torch.zeros(batch, num_els, pad_len, dtype=avails.dtype, device=avails.device)
     return torch.cat([avails, pad], dim=-1)
+
+
+def build_matrix(translation: torch.Tensor, angle: torch.Tensor) -> Tuple[torch.Tensor, torch.Tensor]:
+    """Build transform matrix from translation and angle."""
+    assert translation.shape[:-1] == angle.shape
+
+    c = torch.cos(angle)
+    s = torch.sin(angle)
+    rotation = torch.zeros(list(angle.shape) + [2, 2], device=translation.device)
+    rotation[..., 0, 0] = c
+    rotation[..., 0, 1] = -s
+    rotation[..., 1, 0] = s
+    rotation[..., 1, 1] = c
+    linear_t = torch.transpose(rotation, -1, -2)
+
+    # Construct 3x3 matrix
+    matrix = torch.zeros(list(angle.shape) + [3, 3], device=translation.device)
+    matrix[..., 0:2, 0:2] = rotation
+    matrix[..., 0:2, 2] = translation
+    matrix[..., 2, 2] = 1.0
+
+    # Construct 3x3 inverse matrix
+    inverse_matrix = torch.zeros_like(matrix)
+    inverse_matrix[..., 0:2, 0:2] = linear_t
+    inverse_matrix[..., 0:2, 2] = -(torch.matmul(linear_t, translation.unsqueeze(-1))).squeeze(-1)
+    inverse_matrix[..., 2, 2] = 1.0
+
+    assert matrix is not None
+    assert inverse_matrix is not None
+
+    return matrix, inverse_matrix
 
 
 def transform_points(

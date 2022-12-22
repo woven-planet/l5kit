@@ -118,6 +118,7 @@ class Vectorizer:
         all_other_agents_history_availability = np.zeros(
             (self.other_agents_num, self.history_num_frames_max + 1), dtype=np.float32)
         all_other_agents_types = np.zeros((self.other_agents_num,), dtype=np.int64)
+        all_other_agents_track_ids = np.zeros((self.other_agents_num,), dtype=np.int64)
 
         all_other_agents_future_positions = np.zeros(
             (self.other_agents_num, self.future_num_frames, 2), dtype=np.float32)
@@ -143,6 +144,7 @@ class Vectorizer:
             # We look from history backward and choose the most recent time the track_id was available.
             current_other_actor = filter_agents_by_track_id(history_agents_flat, track_id)[0]
             all_other_agents_types[idx] = np.argmax(current_other_actor["label_probabilities"])
+            all_other_agents_track_ids[idx] = track_id
 
             (
                 agent_future_coords_offset,
@@ -183,6 +185,7 @@ class Vectorizer:
             "all_other_agents_future_extents": all_other_agents_future_extents,
             "all_other_agents_future_availability": all_other_agents_future_availability.astype(np.bool),
             "all_other_agents_types": all_other_agents_types,
+            "all_other_agents_track_ids": all_other_agents_track_ids,
             "agent_trajectory_polyline": agent_trajectory_polyline,
             "agent_polyline_availability": agent_polyline_availability.astype(np.bool),
             "other_agents_polyline": other_agents_polyline,

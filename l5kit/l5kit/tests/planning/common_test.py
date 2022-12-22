@@ -35,7 +35,7 @@ def mock_vectorizer_data(batch_size: int, num_steps: int, num_history: int, num_
         "other_agents_polyline": torch.rand(batch_size, num_agents, num_history + 1, 3),
         "other_agents_polyline_availability": torch.rand(batch_size, num_agents, num_history + 1) > 0.5,
         "lanes": torch.rand(batch_size, num_lanes, num_points_per_element, 3),
-        "lanes_availability": torch.rand(batch_size, num_lanes, num_points_per_element) > 0.5,
+        "lanes_availabilities": torch.rand(batch_size, num_lanes, num_points_per_element) > 0.5,
         "lanes_mid": torch.rand(batch_size, num_lanes, num_points_per_element, 3),
         "lanes_mid_availabilities": torch.rand(batch_size, num_lanes, num_points_per_element) > 0.5,
         "crosswalks": torch.rand(batch_size, num_crosswalks, num_points_per_element, 3),

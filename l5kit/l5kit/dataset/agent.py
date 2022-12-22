@@ -11,11 +11,7 @@ from ..kinematic import Perturbation
 from ..rasterization import Rasterizer
 from .ego import EgoDataset
 from .select_agents import select_agents, TH_DISTANCE_AV, TH_EXTENT_RATIO, TH_YAW_DEGREE
-
-
-# WARNING: changing these values impact the number of instances selected for both train and inference!
-MIN_FRAME_HISTORY = 10  # minimum number of frames an agents must have in the past to be picked
-MIN_FRAME_FUTURE = 1  # minimum number of frames an agents must have in the future to be picked
+from .utils import AGENT_MIN_FRAME_FUTURE, AGENT_MIN_FRAME_HISTORY
 
 
 class AgentDataset(EgoDataset):
@@ -26,8 +22,8 @@ class AgentDataset(EgoDataset):
             rasterizer: Rasterizer,
             perturbation: Optional[Perturbation] = None,
             agents_mask: Optional[np.ndarray] = None,
-            min_frame_history: int = MIN_FRAME_HISTORY,
-            min_frame_future: int = MIN_FRAME_FUTURE,
+            min_frame_history: int = AGENT_MIN_FRAME_HISTORY,
+            min_frame_future: int = AGENT_MIN_FRAME_FUTURE,
     ):
         assert perturbation is None, "AgentDataset does not support perturbation (yet)"
 
@@ -38,13 +34,13 @@ class AgentDataset(EgoDataset):
             future_mask = agents_mask[:, 1] >= min_frame_future
             agents_mask = past_mask * future_mask
 
-            if min_frame_history != MIN_FRAME_HISTORY:
+            if min_frame_history != AGENT_MIN_FRAME_HISTORY:
                 warnings.warn(
                     f"you're running with custom min_frame_history of {min_frame_history}",
                     RuntimeWarning,
                     stacklevel=2,
                 )
-            if min_frame_future != MIN_FRAME_FUTURE:
+            if min_frame_future != AGENT_MIN_FRAME_FUTURE:
                 warnings.warn(
                     f"you're running with custom min_frame_future of {min_frame_future}", RuntimeWarning, stacklevel=2
                 )
