@@ -1,0 +1,658 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+      <title>l5kit.prediction.vectorized.safepathnet module</title>
+    
+          <link rel="stylesheet" href="../_static/pygments.css" type="text/css" />
+          <link rel="stylesheet" href="../_static/theme.css " type="text/css" />
+          <link rel="stylesheet" href="../_static/custom.css" type="text/css" />
+      
+      <!-- sphinx script_files -->
+        <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js"></script>
+        <script src="../_static/jquery.js"></script>
+        <script src="../_static/underscore.js"></script>
+        <script src="../_static/doctools.js"></script>
+
+      
+      <!-- bundled in js (rollup iife) -->
+      <!-- <script src="../_static/theme-vendors.js"></script> -->
+      <script src="../_static/theme.js" defer></script>
+    
+  <link rel="index" title="Index" href="../genindex.html" />
+  <link rel="search" title="Search" href="../search.html" /> 
+  </head>
+
+  <body>
+    <div id="app">
+    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
+  <router-link to="../index.html" class="home-link">
+    
+      <img class="logo" src="../_static/L5logo_small_v2.png" alt="logo"/>
+    
+  </router-link>
+
+  <div class="links">
+    <navlinks class="can-hide">
+
+  
+    <div class="nav-item">
+      <a href="../gettingstarted.html#getting-started"
+         class="nav-link ">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../tutorials.html#training-models"
+         class="nav-link ">
+         training models
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../additional_resources_index.html#additional-resources"
+         class="nav-link ">
+         additional resources
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../api_reference.html#api-reference"
+         class="nav-link ">
+         api reference
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../how_to_contribute.html#how-to-contribute"
+         class="nav-link ">
+         how to contribute
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../license.html#license"
+         class="nav-link ">
+         license
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../credits.html#credits"
+         class="nav-link ">
+         credits
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../changelog.html#changelog"
+         class="nav-link ">
+         changelog
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/woven-planet/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+    </navlinks>
+  </div>
+</navbar>
+
+      
+      <div class="sidebar-mask" @click="toggleSidebar(false)">
+      </div>
+        <sidebar @toggle-sidebar="toggleSidebar">
+          
+          <navlinks>
+            
+
+  
+    <div class="nav-item">
+      <a href="../gettingstarted.html#getting-started"
+         class="nav-link ">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../tutorials.html#training-models"
+         class="nav-link ">
+         training models
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../additional_resources_index.html#additional-resources"
+         class="nav-link ">
+         additional resources
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../api_reference.html#api-reference"
+         class="nav-link ">
+         api reference
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../how_to_contribute.html#how-to-contribute"
+         class="nav-link ">
+         how to contribute
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../license.html#license"
+         class="nav-link ">
+         license
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../credits.html#credits"
+         class="nav-link ">
+         credits
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="../changelog.html#changelog"
+         class="nav-link ">
+         changelog
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/woven-planet/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+            
+          </navlinks><div id="searchbox" class="searchbox" role="search">
+  <div class="caption"><span class="caption-text">Quick search</span>
+    <div class="searchformwrapper">
+      <form class="search" action="../search.html" method="get">
+        <input type="text" name="q" />
+        <input type="submit" value="Search" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../gettingstarted.html#getting-started">getting started</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../introduction.html" class="reference internal ">Introduction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../installation.html" class="reference internal ">Installing L5Kit</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../dataset.html" class="reference internal ">Downloading the Datasets</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../tutorials.html#training-models">training models</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../prediction.html" class="reference internal ">Prediction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../simulation.html" class="reference internal ">Simulation</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../planning.html" class="reference internal ">Planning</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../safepathnet.html" class="reference internal ">Multimodal prediction</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../additional_resources_index.html#additional-resources">additional resources</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../data_format.html" class="reference internal ">Dataset Formats in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="../prediction_competition.html" class="reference internal ">Prediction Competition</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../api_reference.html#api-reference">api reference</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="l5kit.cle.html" class="reference internal ">l5kit.cle package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="l5kit.data.html" class="reference internal ">l5kit.data package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="l5kit.dataset.html" class="reference internal ">l5kit.dataset package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="l5kit.environment.html" class="reference internal ">l5kit.environment package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="l5kit.evaluation.html" class="reference internal ">l5kit.evaluation package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="l5kit.geometry.html" class="reference internal ">l5kit.geometry package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="l5kit.kinematic.html" class="reference internal ">l5kit.kinematic package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="l5kit.random.html" class="reference internal ">l5kit.random package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="l5kit.sampling.html" class="reference internal ">l5kit.sampling package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="l5kit.visualization.html" class="reference internal ">l5kit.visualization package</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../how_to_contribute.html#how-to-contribute">how to contribute</a></span>
+      </p>
+      <ul class="">
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../license.html#license">license</a></span>
+      </p>
+      <ul class="">
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../credits.html#credits">credits</a></span>
+      </p>
+      <ul class="">
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="../changelog.html#changelog">changelog</a></span>
+      </p>
+      <ul class="">
+        
+      </ul>
+    </div>
+  
+</div>
+        </sidebar>
+
+      <page>
+          <div class="body-header" role="navigation" aria-label="navigation">
+  
+  <ul class="breadcrumbs">
+    <li><a href="../index.html">Docs</a> &raquo;</li>
+    
+    <li>l5kit.prediction.vectorized.safepathnet module</li>
+  </ul>
+  
+
+  <ul class="page-nav">
+</ul>
+  
+</div>
+<hr>
+          <div class="content" role="main" v-pre>
+            
+  <section id="module-l5kit.prediction.vectorized.safepathnet">
+<span id="l5kit-prediction-vectorized-safepathnet-module"></span><h1>l5kit.prediction.vectorized.safepathnet module<a class="headerlink" href="#module-l5kit.prediction.vectorized.safepathnet" title="Permalink to this headline">¶</a></h1>
+<dl class="py class">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.MultimodalDecoder">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.prediction.vectorized.safepathnet.</span></span><span class="sig-name descname"><span class="pre">MultimodalDecoder</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dim_in</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_dim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nhead</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_feedforward</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_decode_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">future_num_frames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">45</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_future_num_frames</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">30</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_outputs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_mlp_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_trajectories</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_num_trajectories</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">5</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_num_agents</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">30</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.MultimodalDecoder" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>The multimodal global graph model, based on the transformer encoder-decoder model.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.MultimodalDecoder.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polys_embed</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invalid_mask</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Tuple</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">,</span> </span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.MultimodalDecoder.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Forward of the model. Returns:
+- the agent predictions, shape:</p>
+<blockquote>
+<div><p>[batch_size, num_agents, agent_num_trajectories, agent_num_timesteps, num_outputs]</p>
+</div></blockquote>
+<ul class="simple">
+<li><dl class="simple">
+<dt>the associated trajectory probabilities, shape:</dt><dd><p>[batch_size, num_agents, agent_num_trajectories]</p>
+</dd>
+</dl>
+</li>
+</ul>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>polys_embed</strong> – input tensor representing the polylines embeddings
+shape: [batch_size, num_polylines, dim_in] (float)</p></li>
+<li><p><strong>types</strong> – float tensor representing the polylines type embedding
+shape: [batch_size, num_polylines, dim_in] (float)</p></li>
+<li><p><strong>invalid_mask</strong> – bool tensor representing the mask of polylines with no valid information
+shape: [batch_size, num_polylines] (bool)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.MultimodalDecoder.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.MultimodalDecoder.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.prediction.vectorized.safepathnet.</span></span><span class="sig-name descname"><span class="pre">MultimodalTransformerGlobalGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">transformer_global_graph</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="#l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph" title="l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph"><span class="pre">l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_trajectories</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agent_num_trajectories</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_num_agents</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>This class extends the transformer global graph to the multimodal case (prediction of multiple trajectories).
+Each agent embedding is repeated <cite>(agent_)num_trajectories</cite> times and a set of <cite>(agent_)num_trajectories</cite> learned
+embeddings is added to the cloned ego features to obtain diverse queries.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polys_embed</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invalid_mask</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Clones the agent features (self.num_trajectories - 1) times before calling the parent forward method.</p>
+<p>The model returns agent embeddings with shape [batch_size, num_agents, dim_in]</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>polys_embed</strong> – input tensor representing the polylines embeddings
+shape: [batch_size, num_polylines, dim_in] (float)</p></li>
+<li><p><strong>invalid_mask</strong> – bool tensor representing the mask of polylines with no valid information
+shape: [batch_size, num_polylines] (bool)</p></li>
+<li><p><strong>types</strong> – float tensor representing the polylines type embedding
+shape: [batch_size, num_polylines, dim_in] (float)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.repeat_agent_features">
+<span class="sig-name descname"><span class="pre">repeat_agent_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.repeat_agent_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Repeat agents features self.num_trajectories times</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.repeat_ego_features">
+<span class="sig-name descname"><span class="pre">repeat_ego_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.repeat_ego_features" title="Permalink to this definition">¶</a></dt>
+<dd><p>Repeat ego features self.num_trajectories times</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.repeat_features">
+<span class="sig-name descname"><span class="pre">repeat_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">features</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_repeats</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.repeat_features" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Repeat input features num_repeats times on dimension 1 in a deterministic way</dt><dd><p>(avoiding the usage of repeat_interleave).</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>features</strong> – Input features to be repeated</p></li>
+<li><p><strong>num_repeats</strong> – Number of times features will be repeated on dimension 1</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.TrajectoryMatcher">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.prediction.vectorized.safepathnet.</span></span><span class="sig-name descname"><span class="pre">TrajectoryMatcher</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cost_prob_coeff</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.TrajectoryMatcher" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>Picks the closest trajectory based on provided costs per trajectory and trajectory logits.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.TrajectoryMatcher.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">trajectory_costs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">trajectory_logits</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.TrajectoryMatcher.forward" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns the indices corresponding to the lowest-cost trajectories</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>trajectory_costs</strong> – cost of each trajectory (e.g. loss per traj.). Shape [batch_size, num_trajectories]</p></li>
+<li><p><strong>trajectory_logits</strong> – logits of the trajectory distribution. Shape [batch_size, num_trajectories]</p></li>
+</ul>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>indices of the trajectories with the lowest cost. Shape [batch_size]</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.TrajectoryMatcher.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.TrajectoryMatcher.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.prediction.vectorized.safepathnet.</span></span><span class="sig-name descname"><span class="pre">TransformerGlobalGraph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">dim_in</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">128</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">projection_dim</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">256</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">nhead</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">8</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dim_feedforward</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">1024</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_decode_layers</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dropout</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">float</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">0.1</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">torch.nn.modules.module.Module</span></code></p>
+<p>This transformer encoder-decoder module implements self attention across polyline embeddings.
+This represents a global graph that generates attention between each polyline towards other polyline.
+Then, the decoder queries the global graph features with the given queries.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">polys_embed</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">polys_embed_decoder</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">invalid_mask</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">tgt_invalid_mask</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">torch.Tensor</span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">types</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">torch.Tensor</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">torch.Tensor</span></span></span><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph.forward" title="Permalink to this definition">¶</a></dt>
+<dd><dl class="simple">
+<dt>Forward pass for the transformer model based on polyline and type embeddings, the polyline invalid</dt><dd><p>mask, the polyline decoder queries. The attention keys are the sum of polyline and type embedding.</p>
+</dd>
+</dl>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>polys_embed</strong> – input tensor representing the polylines embeddings
+shape: [batch_size, num_polylines, dim_in] (float)</p></li>
+<li><p><strong>polys_embed_decoder</strong> – input tensor representing the transformer decoder queries
+shape: [batch_size, num_polylines, dim_in] (float)</p></li>
+<li><p><strong>invalid_mask</strong> – bool tensor representing the mask of polylines with no valid information
+shape: [batch_size, num_polylines] (bool)</p></li>
+<li><p><strong>tgt_invalid_mask</strong> – bool tensor representing the mask of decoded polylines with no valid information
+shape: [batch_size, num_output_polylines] (bool)</p></li>
+<li><p><strong>types</strong> – float tensor representing the polyline type embeddings
+shape: [batch_size, num_polylines] (float)</p></li>
+</ul>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py attribute">
+<dt class="sig sig-object py" id="l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph.training">
+<span class="sig-name descname"><span class="pre">training</span></span><em class="property"><span class="pre">:</span> <span class="pre">bool</span></em><a class="headerlink" href="#l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph.training" title="Permalink to this definition">¶</a></dt>
+<dd></dd></dl>
+
+</dd></dl>
+
+</section>
+
+
+          </div>
+          <div class="page-nav">
+            <div class="inner"><ul class="page-nav">
+</ul><div class="footer" role="contentinfo">
+      &#169; Copyright 2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car).
+    <br>
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
+</div>
+            </div>
+          </div>
+      </page>
+    </div></div>
+    
+    
+  </body>
+</html>

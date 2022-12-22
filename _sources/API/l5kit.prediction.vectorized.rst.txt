@@ -1,0 +1,17 @@
+l5kit.prediction.vectorized package
+===================================
+
+.. automodule:: l5kit.prediction.vectorized
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Submodules
+----------
+
+.. toctree::
+   :maxdepth: 4
+
+   l5kit.prediction.vectorized.safepathnet
+   l5kit.prediction.vectorized.safepathnet_model
+   l5kit.prediction.vectorized.transformer

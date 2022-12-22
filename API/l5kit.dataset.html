@@ -272,6 +272,15 @@
           </li>
 
         
+          <li class="toctree-l1 ">
+            
+              <a href="../safepathnet.html" class="reference internal ">Multimodal prediction</a>
+            
+
+            
+          </li>
+
+        
       </ul>
     </div>
   
@@ -605,6 +614,85 @@ of finding the scene boundaries.
 <dd class="field-even"><p>np.ndarray</p>
 </dd>
 </dl>
+</dd></dl>
+
+</dd></dl>
+
+<dl class="py class">
+<dt class="sig sig-object py" id="l5kit.dataset.EgoAgentDatasetVectorized">
+<em class="property"><span class="pre">class</span> </em><span class="sig-prename descclassname"><span class="pre">l5kit.dataset.</span></span><span class="sig-name descname"><span class="pre">EgoAgentDatasetVectorized</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">cfg</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">dict</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">zarr_dataset</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.data.zarr_dataset.html#l5kit.data.zarr_dataset.ChunkedDataset" title="l5kit.data.zarr_dataset.ChunkedDataset"><span class="pre">l5kit.data.zarr_dataset.ChunkedDataset</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">vectorizer</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><a class="reference internal" href="l5kit.vectorization.vectorizer.html#l5kit.vectorization.vectorizer.Vectorizer" title="l5kit.vectorization.vectorizer.Vectorizer"><span class="pre">l5kit.vectorization.vectorizer.Vectorizer</span></a></span></em>, <em class="sig-param"><span class="n"><span class="pre">perturbation</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><a class="reference internal" href="l5kit.kinematic.perturbation.html#l5kit.kinematic.perturbation.Perturbation" title="l5kit.kinematic.perturbation.Perturbation"><span class="pre">l5kit.kinematic.perturbation.Perturbation</span></a><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">agents_mask</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">eval_mode</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">bool</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="headerlink" href="#l5kit.dataset.EgoAgentDatasetVectorized" title="Permalink to this definition">¶</a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Generic</span></code>[<code class="xref py py-obj docutils literal notranslate"><span class="pre">torch.utils.data.dataset.T_co</span></code>]</p>
+<p>Get a PyTorch dataset object that can be used to train DNNs with vectorized input.
+Ego features are added to the agent features to treat ego as an agent.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>cfg</strong> (<em>dict</em>) – configuration file</p></li>
+<li><p><strong>zarr_dataset</strong> (<a class="reference internal" href="l5kit.data.html#l5kit.data.ChunkedDataset" title="l5kit.data.ChunkedDataset"><em>ChunkedDataset</em></a>) – the raw zarr dataset</p></li>
+<li><p><strong>vectorizer</strong> (<a class="reference internal" href="l5kit.vectorization.vectorizer.html#l5kit.vectorization.vectorizer.Vectorizer" title="l5kit.vectorization.vectorizer.Vectorizer"><em>Vectorizer</em></a>) – a object that supports vectorization around an AV</p></li>
+<li><p><strong>perturbation</strong> (<em>Optional</em><em>[</em><a class="reference internal" href="l5kit.kinematic.html#l5kit.kinematic.Perturbation" title="l5kit.kinematic.Perturbation"><em>Perturbation</em></a><em>]</em>) – an object that takes care of applying trajectory perturbations.
+None if not desired</p></li>
+<li><p><strong>agents_mask</strong> (<em>Optional</em><em>[</em><em>np.ndarray</em><em>]</em>) – custom boolean mask of the agent availability.</p></li>
+<li><p><strong>eval_mode</strong> (<em>bool</em>) – enable eval mode (iterates over agent, similarly to AgentDataset).</p></li>
+</ul>
+</dd>
+</dl>
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.dataset.EgoAgentDatasetVectorized.get_frame_indices">
+<span class="sig-name descname"><span class="pre">get_frame_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">frame_idx</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.dataset.EgoAgentDatasetVectorized.get_frame_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get indices for the given frame. EgoDataset iterates over frames, so this will be a single element
+:param frame_idx: index of the scene
+:type frame_idx: int</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>indices that can be used for indexing with __getitem__</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.dataset.EgoAgentDatasetVectorized.get_scene_dataset">
+<span class="sig-name descname"><span class="pre">get_scene_dataset</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_index</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><a class="reference internal" href="l5kit.dataset.ego.html#l5kit.dataset.ego.EgoAgentDatasetVectorized" title="l5kit.dataset.ego.EgoAgentDatasetVectorized"><span class="pre">l5kit.dataset.ego.EgoAgentDatasetVectorized</span></a></span></span><a class="headerlink" href="#l5kit.dataset.EgoAgentDatasetVectorized.get_scene_dataset" title="Permalink to this definition">¶</a></dt>
+<dd><p>Returns another EgoAgentDatasetVectorized dataset where the underlying data can be modified.
+This is possible because, even if it supports the same interface, this dataset is np.ndarray based.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Parameters</dt>
+<dd class="field-odd"><p><strong>scene_index</strong> (<em>int</em>) – the scene index of the new dataset</p>
+</dd>
+<dt class="field-even">Returns</dt>
+<dd class="field-even"><p>A valid EgoAgentDatasetVectorized dataset with a copy of the data</p>
+</dd>
+<dt class="field-odd">Return type</dt>
+<dd class="field-odd"><p><a class="reference internal" href="#l5kit.dataset.EgoAgentDatasetVectorized" title="l5kit.dataset.EgoAgentDatasetVectorized">EgoAgentDatasetVectorized</a></p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.dataset.EgoAgentDatasetVectorized.get_scene_indices">
+<span class="sig-name descname"><span class="pre">get_scene_indices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">scene_idx</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.dataset.EgoAgentDatasetVectorized.get_scene_indices" title="Permalink to this definition">¶</a></dt>
+<dd><p>Get indices for the given scene. EgoDataset iterates over frames, so this is just a matter
+of finding the scene boundaries.
+:param scene_idx: index of the scene
+:type scene_idx: int</p>
+<dl class="field-list simple">
+<dt class="field-odd">Returns</dt>
+<dd class="field-odd"><p>indices that can be used for indexing with __getitem__</p>
+</dd>
+<dt class="field-even">Return type</dt>
+<dd class="field-even"><p>np.ndarray</p>
+</dd>
+</dl>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="l5kit.dataset.EgoAgentDatasetVectorized.load_agents_mask">
+<span class="sig-name descname"><span class="pre">load_agents_mask</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">numpy.ndarray</span></span></span><a class="headerlink" href="#l5kit.dataset.EgoAgentDatasetVectorized.load_agents_mask" title="Permalink to this definition">¶</a></dt>
+<dd><p>Loads a boolean mask of the agent availability stored into the zarr. Performs some sanity check against cfg.
+Returns: a boolean mask of the same length of the dataset agents</p>
 </dd></dl>
 
 </dd></dl>

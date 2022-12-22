@@ -270,6 +270,15 @@
           </li>
 
         
+          <li class="toctree-l1 ">
+            
+              <a href="safepathnet.html" class="reference internal ">Multimodal prediction</a>
+            
+
+            
+          </li>
+
+        
       </ul>
     </div>
   
@@ -577,6 +586,8 @@
         <li><a href="API/l5kit.environment.gym_metric_set.html#l5kit.environment.gym_metric_set.CLEMetricSet.build_composite_metrics">(l5kit.environment.gym_metric_set.CLEMetricSet method)</a>
 </li>
       </ul></li>
+      <li><a href="API/l5kit.planning.vectorized.common.html#l5kit.planning.vectorized.common.build_matrix">build_matrix() (in module l5kit.planning.vectorized.common)</a>
+</li>
       <li><a href="API/l5kit.cle.metric_set.html#l5kit.cle.metric_set.L5MetricSet.build_metrics">build_metrics() (l5kit.cle.metric_set.L5MetricSet method)</a>
 
       <ul>
@@ -829,6 +840,12 @@
       </ul></li>
       <li><a href="API/l5kit.visualization.visualizer.common.html#l5kit.visualization.visualizer.common.FrameVisualization.ego">ego (l5kit.visualization.visualizer.common.FrameVisualization attribute)</a>
 </li>
+      <li><a href="API/l5kit.dataset.html#l5kit.dataset.EgoAgentDatasetVectorized">EgoAgentDatasetVectorized (class in l5kit.dataset)</a>
+
+      <ul>
+        <li><a href="API/l5kit.dataset.ego.html#l5kit.dataset.ego.EgoAgentDatasetVectorized">(class in l5kit.dataset.ego)</a>
+</li>
+      </ul></li>
       <li><a href="API/l5kit.dataset.html#l5kit.dataset.EgoDataset">EgoDataset (class in l5kit.dataset)</a>
 
       <ul>
@@ -844,9 +861,15 @@
       <li><a href="API/l5kit.visualization.visualizer.common.html#l5kit.visualization.visualizer.common.EgoVisualization">EgoVisualization (class in l5kit.visualization.visualizer.common)</a>
 </li>
       <li><a href="API/l5kit.planning.vectorized.open_loop_model.html#l5kit.planning.vectorized.open_loop_model.VectorizedModel.embed_polyline">embed_polyline() (l5kit.planning.vectorized.open_loop_model.VectorizedModel method)</a>
+
+      <ul>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet_model.html#l5kit.prediction.vectorized.safepathnet_model.SafePathNetModel.embed_polyline">(l5kit.prediction.vectorized.safepathnet_model.SafePathNetModel method)</a>
 </li>
+      </ul></li>
       <li><a href="API/l5kit.visualization.visualizer.zarr_utils.html#l5kit.visualization.visualizer.zarr_utils.episode_out_to_visualizer_scene_gym_cle">episode_out_to_visualizer_scene_gym_cle() (in module l5kit.visualization.visualizer.zarr_utils)</a>
 </li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.environment.envs.l5_env.html#l5kit.environment.envs.l5_env.EpisodeOutputGym">EpisodeOutputGym (class in l5kit.environment.envs.l5_env)</a>
 </li>
       <li><a href="API/l5kit.cle.closed_loop_evaluator.html#l5kit.cle.closed_loop_evaluator.ClosedLoopEvaluator.evaluate">evaluate() (l5kit.cle.closed_loop_evaluator.ClosedLoopEvaluator method)</a>
@@ -859,8 +882,6 @@
         <li><a href="API/l5kit.cle.metric_set.html#l5kit.cle.metric_set.L5MetricSet.evaluate">(l5kit.cle.metric_set.L5MetricSet method)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.cle.closed_loop_evaluator.html#l5kit.cle.closed_loop_evaluator.EvaluationPlan.evaluate_composite">evaluate_composite() (l5kit.cle.closed_loop_evaluator.EvaluationPlan method)</a>
 </li>
       <li><a href="API/l5kit.environment.callbacks.html#l5kit.environment.callbacks.L5KitEvalCallback.evaluate_scenes">evaluate_scenes() (l5kit.environment.callbacks.L5KitEvalCallback method)</a>
@@ -945,8 +966,6 @@
         <li><a href="API/l5kit.kinematic.ackerman_steering_model.html#l5kit.kinematic.ackerman_steering_model.fit_ackerman_model_exact">(in module l5kit.kinematic.ackerman_steering_model)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.environment.feature_extractor.html#l5kit.environment.feature_extractor.CustomFeatureExtractor.forward">forward() (l5kit.environment.feature_extractor.CustomFeatureExtractor method)</a>
 
       <ul>
@@ -971,6 +990,38 @@
         <li><a href="API/l5kit.planning.vectorized.local_graph.html#l5kit.planning.vectorized.local_graph.SinusoidalPositionalEmbedding.forward">(l5kit.planning.vectorized.local_graph.SinusoidalPositionalEmbedding method)</a>
 </li>
         <li><a href="API/l5kit.planning.vectorized.open_loop_model.html#l5kit.planning.vectorized.open_loop_model.VectorizedModel.forward">(l5kit.planning.vectorized.open_loop_model.VectorizedModel method)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.MultimodalDecoder.forward">(l5kit.prediction.vectorized.safepathnet.MultimodalDecoder method)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.forward">(l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph method)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.TrajectoryMatcher.forward">(l5kit.prediction.vectorized.safepathnet.TrajectoryMatcher method)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph.forward">(l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph method)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet_model.html#l5kit.prediction.vectorized.safepathnet_model.SafePathNetModel.forward">(l5kit.prediction.vectorized.safepathnet_model.SafePathNetModel method)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerDecoder.forward">(l5kit.prediction.vectorized.transformer.TransformerDecoder method)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerDecoderLayer.forward">(l5kit.prediction.vectorized.transformer.TransformerDecoderLayer method)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerEncoder.forward">(l5kit.prediction.vectorized.transformer.TransformerEncoder method)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerEncoderLayer.forward">(l5kit.prediction.vectorized.transformer.TransformerEncoderLayer method)</a>
+</li>
+      </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerDecoderLayer.forward_post">forward_post() (l5kit.prediction.vectorized.transformer.TransformerDecoderLayer method)</a>
+
+      <ul>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerEncoderLayer.forward_post">(l5kit.prediction.vectorized.transformer.TransformerEncoderLayer method)</a>
+</li>
+      </ul></li>
+      <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerDecoderLayer.forward_pre">forward_pre() (l5kit.prediction.vectorized.transformer.TransformerDecoderLayer method)</a>
+
+      <ul>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerEncoderLayer.forward_pre">(l5kit.prediction.vectorized.transformer.TransformerEncoderLayer method)</a>
 </li>
       </ul></li>
       <li><a href="API/l5kit.cle.validators.html#l5kit.cle.validators.FailedFrame.frame_index">frame_index (l5kit.cle.validators.FailedFrame attribute)</a>
@@ -1070,6 +1121,10 @@
 </li>
         <li><a href="API/l5kit.dataset.ego.html#l5kit.dataset.ego.BaseEgoDataset.get_frame_indices">(l5kit.dataset.ego.BaseEgoDataset method)</a>
 </li>
+        <li><a href="API/l5kit.dataset.ego.html#l5kit.dataset.ego.EgoAgentDatasetVectorized.get_frame_indices">(l5kit.dataset.ego.EgoAgentDatasetVectorized method)</a>
+</li>
+        <li><a href="API/l5kit.dataset.html#l5kit.dataset.EgoAgentDatasetVectorized.get_frame_indices">(l5kit.dataset.EgoAgentDatasetVectorized method)</a>
+</li>
       </ul></li>
       <li><a href="API/l5kit.data.html#l5kit.data.get_frames_slice_from_scenes">get_frames_slice_from_scenes() (in module l5kit.data)</a>
 
@@ -1152,9 +1207,13 @@
 </li>
         <li><a href="API/l5kit.dataset.ego.html#l5kit.dataset.ego.BaseEgoDataset.get_scene_dataset">(l5kit.dataset.ego.BaseEgoDataset method)</a>
 </li>
+        <li><a href="API/l5kit.dataset.ego.html#l5kit.dataset.ego.EgoAgentDatasetVectorized.get_scene_dataset">(l5kit.dataset.ego.EgoAgentDatasetVectorized method)</a>
+</li>
         <li><a href="API/l5kit.dataset.ego.html#l5kit.dataset.ego.EgoDataset.get_scene_dataset">(l5kit.dataset.ego.EgoDataset method)</a>
 </li>
         <li><a href="API/l5kit.dataset.ego.html#l5kit.dataset.ego.EgoDatasetVectorized.get_scene_dataset">(l5kit.dataset.ego.EgoDatasetVectorized method)</a>
+</li>
+        <li><a href="API/l5kit.dataset.html#l5kit.dataset.EgoAgentDatasetVectorized.get_scene_dataset">(l5kit.dataset.EgoAgentDatasetVectorized method)</a>
 </li>
         <li><a href="API/l5kit.dataset.html#l5kit.dataset.EgoDataset.get_scene_dataset">(l5kit.dataset.EgoDataset method)</a>
 </li>
@@ -1171,6 +1230,10 @@
         <li><a href="API/l5kit.dataset.html#l5kit.dataset.BaseEgoDataset.get_scene_indices">(l5kit.dataset.BaseEgoDataset method)</a>
 </li>
         <li><a href="API/l5kit.dataset.ego.html#l5kit.dataset.ego.BaseEgoDataset.get_scene_indices">(l5kit.dataset.ego.BaseEgoDataset method)</a>
+</li>
+        <li><a href="API/l5kit.dataset.ego.html#l5kit.dataset.ego.EgoAgentDatasetVectorized.get_scene_indices">(l5kit.dataset.ego.EgoAgentDatasetVectorized method)</a>
+</li>
+        <li><a href="API/l5kit.dataset.html#l5kit.dataset.EgoAgentDatasetVectorized.get_scene_indices">(l5kit.dataset.EgoAgentDatasetVectorized method)</a>
 </li>
       </ul></li>
       <li><a href="API/l5kit.environment.callbacks.html#l5kit.environment.callbacks.L5KitEvalCallback.get_scene_types">get_scene_types() (l5kit.environment.callbacks.L5KitEvalCallback static method)</a>
@@ -1659,8 +1722,6 @@
         <li><a href="API/l5kit.kinematic.ackerman_steering_model.html#module-l5kit.kinematic.ackerman_steering_model">module</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     l5kit.kinematic.perturbation
 
@@ -1682,6 +1743,8 @@
         <li><a href="API/l5kit.planning.rasterized.html#module-l5kit.planning.rasterized">module</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li>
     l5kit.planning.rasterized.model
 
@@ -1743,6 +1806,41 @@
 
       <ul>
         <li><a href="API/l5kit.planning.vectorized.open_loop_model.html#module-l5kit.planning.vectorized.open_loop_model">module</a>
+</li>
+      </ul></li>
+      <li>
+    l5kit.prediction
+
+      <ul>
+        <li><a href="API/l5kit.prediction.html#module-l5kit.prediction">module</a>
+</li>
+      </ul></li>
+      <li>
+    l5kit.prediction.vectorized
+
+      <ul>
+        <li><a href="API/l5kit.prediction.vectorized.html#module-l5kit.prediction.vectorized">module</a>
+</li>
+      </ul></li>
+      <li>
+    l5kit.prediction.vectorized.safepathnet
+
+      <ul>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#module-l5kit.prediction.vectorized.safepathnet">module</a>
+</li>
+      </ul></li>
+      <li>
+    l5kit.prediction.vectorized.safepathnet_model
+
+      <ul>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet_model.html#module-l5kit.prediction.vectorized.safepathnet_model">module</a>
+</li>
+      </ul></li>
+      <li>
+    l5kit.prediction.vectorized.transformer
+
+      <ul>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#module-l5kit.prediction.vectorized.transformer">module</a>
 </li>
       </ul></li>
       <li>
@@ -1992,6 +2090,10 @@
       <ul>
         <li><a href="API/l5kit.dataset.html#l5kit.dataset.AgentDataset.load_agents_mask">(l5kit.dataset.AgentDataset method)</a>
 </li>
+        <li><a href="API/l5kit.dataset.ego.html#l5kit.dataset.ego.EgoAgentDatasetVectorized.load_agents_mask">(l5kit.dataset.ego.EgoAgentDatasetVectorized method)</a>
+</li>
+        <li><a href="API/l5kit.dataset.html#l5kit.dataset.EgoAgentDatasetVectorized.load_agents_mask">(l5kit.dataset.EgoAgentDatasetVectorized method)</a>
+</li>
       </ul></li>
       <li><a href="API/l5kit.configs.html#l5kit.configs.load_config_data">load_config_data() (in module l5kit.configs)</a>
 
@@ -2080,7 +2182,11 @@
       <li><a href="API/l5kit.planning.vectorized.global_graph.html#l5kit.planning.vectorized.global_graph.MLP">MLP (class in l5kit.planning.vectorized.global_graph)</a>
 </li>
       <li><a href="API/l5kit.planning.vectorized.open_loop_model.html#l5kit.planning.vectorized.open_loop_model.VectorizedModel.model_call">model_call() (l5kit.planning.vectorized.open_loop_model.VectorizedModel method)</a>
+
+      <ul>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet_model.html#l5kit.prediction.vectorized.safepathnet_model.SafePathNetModel.model_call">(l5kit.prediction.vectorized.safepathnet_model.SafePathNetModel method)</a>
 </li>
+      </ul></li>
       <li><a href="API/l5kit.environment.kinematic_model.html#l5kit.environment.kinematic_model.KinematicModel.model_prefix">model_prefix (l5kit.environment.kinematic_model.KinematicModel attribute)</a>
 
       <ul>
@@ -2215,6 +2321,16 @@
 </li>
         <li><a href="API/l5kit.planning.vectorized.open_loop_model.html#module-l5kit.planning.vectorized.open_loop_model">l5kit.planning.vectorized.open_loop_model</a>
 </li>
+        <li><a href="API/l5kit.prediction.html#module-l5kit.prediction">l5kit.prediction</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.html#module-l5kit.prediction.vectorized">l5kit.prediction.vectorized</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#module-l5kit.prediction.vectorized.safepathnet">l5kit.prediction.vectorized.safepathnet</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet_model.html#module-l5kit.prediction.vectorized.safepathnet_model">l5kit.prediction.vectorized.safepathnet_model</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#module-l5kit.prediction.vectorized.transformer">l5kit.prediction.vectorized.transformer</a>
+</li>
         <li><a href="API/l5kit.random.html#module-l5kit.random">l5kit.random</a>
 </li>
         <li><a href="API/l5kit.random.random_generator.html#module-l5kit.random.random_generator">l5kit.random.random_generator</a>
@@ -2287,6 +2403,10 @@
       <li><a href="API/l5kit.dataset.utils.html#l5kit.dataset.utils.move_to_numpy">move_to_numpy() (in module l5kit.dataset.utils)</a>
 </li>
       <li><a href="API/l5kit.planning.vectorized.global_graph.html#l5kit.planning.vectorized.global_graph.MultiheadAttentionGlobalHead">MultiheadAttentionGlobalHead (class in l5kit.planning.vectorized.global_graph)</a>
+</li>
+      <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.MultimodalDecoder">MultimodalDecoder (class in l5kit.prediction.vectorized.safepathnet)</a>
+</li>
+      <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph">MultimodalTransformerGlobalGraph (class in l5kit.prediction.vectorized.safepathnet)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -2490,8 +2610,6 @@
 </li>
       <li><a href="API/l5kit.environment.envs.l5_env.html#l5kit.environment.envs.l5_env.L5Env.render">render() (l5kit.environment.envs.l5_env.L5Env method)</a>
 </li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.rasterization.semantic_rasterizer.html#l5kit.rasterization.semantic_rasterizer.SemanticRasterizer.render_semantic_map">render_semantic_map() (l5kit.rasterization.semantic_rasterizer.SemanticRasterizer method)</a>
 
       <ul>
@@ -2504,6 +2622,14 @@
         <li><a href="API/l5kit.rasterization.render_context.html#l5kit.rasterization.render_context.RenderContext">(class in l5kit.rasterization.render_context)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.repeat_agent_features">repeat_agent_features() (l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph method)</a>
+</li>
+      <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.repeat_ego_features">repeat_ego_features() (l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph method)</a>
+</li>
+      <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.repeat_features">repeat_features() (l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph method)</a>
+</li>
       <li><a href="API/l5kit.cle.metrics.html#l5kit.cle.metrics.ReplayDrivenMilesMetric">ReplayDrivenMilesMetric (class in l5kit.cle.metrics)</a>
 </li>
       <li><a href="API/l5kit.random.html#l5kit.random.ReplayRandomGenerator">ReplayRandomGenerator (class in l5kit.random)</a>
@@ -2559,7 +2685,13 @@
 </li>
       </ul></li>
       <li><a href="API/l5kit.planning.vectorized.global_graph.html#l5kit.planning.vectorized.global_graph.MLP.reset_parameters">reset_parameters() (l5kit.planning.vectorized.global_graph.MLP method)</a>
+
+      <ul>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerDecoder.reset_parameters">(l5kit.prediction.vectorized.transformer.TransformerDecoder method)</a>
 </li>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerEncoder.reset_parameters">(l5kit.prediction.vectorized.transformer.TransformerEncoder method)</a>
+</li>
+      </ul></li>
       <li><a href="API/l5kit.environment.reward.html#l5kit.environment.reward.Reward">Reward (class in l5kit.environment.reward)</a>
 </li>
       <li><a href="API/l5kit.environment.envs.l5_env.html#l5kit.environment.envs.l5_env.GymStepOutput.reward">reward (l5kit.environment.envs.l5_env.GymStepOutput attribute)</a>
@@ -2586,6 +2718,8 @@
 <h2 id="S">S</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.prediction.vectorized.safepathnet_model.html#l5kit.prediction.vectorized.safepathnet_model.SafePathNetModel">SafePathNetModel (class in l5kit.prediction.vectorized.safepathnet_model)</a>
+</li>
       <li><a href="API/l5kit.rasterization.html#l5kit.rasterization.SatBoxRasterizer">SatBoxRasterizer (class in l5kit.rasterization)</a>
 
       <ul>
@@ -2752,8 +2886,6 @@
         <li><a href="API/l5kit.visualization.visualizer.common.html#l5kit.visualization.visualizer.common.TrajectoryVisualization.track_id">(l5kit.visualization.visualizer.common.TrajectoryVisualization attribute)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.environment.feature_extractor.html#l5kit.environment.feature_extractor.CustomFeatureExtractor.training">training (l5kit.environment.feature_extractor.CustomFeatureExtractor attribute)</a>
 
       <ul>
@@ -2779,8 +2911,30 @@
 </li>
         <li><a href="API/l5kit.planning.vectorized.open_loop_model.html#l5kit.planning.vectorized.open_loop_model.VectorizedModel.training">(l5kit.planning.vectorized.open_loop_model.VectorizedModel attribute)</a>
 </li>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.MultimodalDecoder.training">(l5kit.prediction.vectorized.safepathnet.MultimodalDecoder attribute)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph.training">(l5kit.prediction.vectorized.safepathnet.MultimodalTransformerGlobalGraph attribute)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.TrajectoryMatcher.training">(l5kit.prediction.vectorized.safepathnet.TrajectoryMatcher attribute)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph.training">(l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph attribute)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.safepathnet_model.html#l5kit.prediction.vectorized.safepathnet_model.SafePathNetModel.training">(l5kit.prediction.vectorized.safepathnet_model.SafePathNetModel attribute)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerDecoder.training">(l5kit.prediction.vectorized.transformer.TransformerDecoder attribute)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerDecoderLayer.training">(l5kit.prediction.vectorized.transformer.TransformerDecoderLayer attribute)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerEncoder.training">(l5kit.prediction.vectorized.transformer.TransformerEncoder attribute)</a>
+</li>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerEncoderLayer.training">(l5kit.prediction.vectorized.transformer.TransformerEncoderLayer attribute)</a>
+</li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.visualization.visualizer.common.html#l5kit.visualization.visualizer.common.FrameVisualization.trajectories">trajectories (l5kit.visualization.visualizer.common.FrameVisualization attribute)</a>
+</li>
+      <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.TrajectoryMatcher">TrajectoryMatcher (class in l5kit.prediction.vectorized.safepathnet)</a>
 </li>
       <li><a href="API/l5kit.simulation.unroll.html#l5kit.simulation.unroll.TrajectoryStateIndices">TrajectoryStateIndices (class in l5kit.simulation.unroll)</a>
 </li>
@@ -2800,6 +2954,16 @@
         <li><a href="API/l5kit.planning.vectorized.common.html#l5kit.planning.vectorized.common.transform_points">(in module l5kit.planning.vectorized.common)</a>
 </li>
       </ul></li>
+      <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerDecoder">TransformerDecoder (class in l5kit.prediction.vectorized.transformer)</a>
+</li>
+      <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerDecoderLayer">TransformerDecoderLayer (class in l5kit.prediction.vectorized.transformer)</a>
+</li>
+      <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerEncoder">TransformerEncoder (class in l5kit.prediction.vectorized.transformer)</a>
+</li>
+      <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerEncoderLayer">TransformerEncoderLayer (class in l5kit.prediction.vectorized.transformer)</a>
+</li>
+      <li><a href="API/l5kit.prediction.vectorized.safepathnet.html#l5kit.prediction.vectorized.safepathnet.TransformerGlobalGraph">TransformerGlobalGraph (class in l5kit.prediction.vectorized.safepathnet)</a>
+</li>
   </ul></td>
 </tr></table>
 
@@ -2916,6 +3080,12 @@
 <h2 id="W">W</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerDecoderLayer.with_pos_embed">with_pos_embed() (l5kit.prediction.vectorized.transformer.TransformerDecoderLayer method)</a>
+
+      <ul>
+        <li><a href="API/l5kit.prediction.vectorized.transformer.html#l5kit.prediction.vectorized.transformer.TransformerEncoderLayer.with_pos_embed">(l5kit.prediction.vectorized.transformer.TransformerEncoderLayer method)</a>
+</li>
+      </ul></li>
       <li><a href="API/l5kit.planning.utils.html#l5kit.planning.utils.within_range">within_range() (in module l5kit.planning.utils)</a>
 </li>
       <li><a href="API/l5kit.visualization.html#l5kit.visualization.write_gif">write_gif() (in module l5kit.visualization)</a>
@@ -2924,14 +3094,14 @@
         <li><a href="API/l5kit.visualization.gif.html#l5kit.visualization.gif.write_gif">(in module l5kit.visualization.gif)</a>
 </li>
       </ul></li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.evaluation.html#l5kit.evaluation.write_gt_csv">write_gt_csv() (in module l5kit.evaluation)</a>
 
       <ul>
         <li><a href="API/l5kit.evaluation.csv_utils.html#l5kit.evaluation.csv_utils.write_gt_csv">(in module l5kit.evaluation.csv_utils)</a>
 </li>
       </ul></li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="API/l5kit.evaluation.html#l5kit.evaluation.write_pred_csv">write_pred_csv() (in module l5kit.evaluation)</a>
 
       <ul>

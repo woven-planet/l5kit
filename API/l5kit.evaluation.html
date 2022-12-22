@@ -272,6 +272,15 @@
           </li>
 
         
+          <li class="toctree-l1 ">
+            
+              <a href="../safepathnet.html" class="reference internal ">Multimodal prediction</a>
+            
+
+            
+          </li>
+
+        
       </ul>
     </div>
   
@@ -477,7 +486,7 @@
 <span id="l5kit-evaluation-package"></span><h1>l5kit.evaluation package<a class="headerlink" href="#module-l5kit.evaluation" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="l5kit.evaluation.compute_metrics_csv">
-<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.</span></span><span class="sig-name descname"><span class="pre">compute_metrics_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inference_output_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#l5kit.evaluation.compute_metrics_csv" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.</span></span><span class="sig-name descname"><span class="pre">compute_metrics_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inference_output_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_modes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#l5kit.evaluation.compute_metrics_csv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute a set of metrics between ground truth and prediction csv files</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -486,6 +495,7 @@
 <li><p><strong>inference_output_path</strong> (<em>str</em>) – Path to the csv file containing network output.</p></li>
 <li><p><strong>metrics</strong> (<em>List</em><em>[</em><em>Callable</em><em>]</em>) – a list of callable to be applied to the elements retrieved from the 2</p></li>
 <li><p><strong>files</strong> (<em>csv</em>) – </p></li>
+<li><p><strong>max_modes</strong> (<em>int</em>) – maximum number of predicted modes</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>
@@ -567,11 +577,14 @@ This function was used to generate the test set for the competition so that the 
 
 <dl class="py function">
 <dt class="sig sig-object py" id="l5kit.evaluation.read_pred_csv">
-<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.</span></span><span class="sig-name descname"><span class="pre">read_pred_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.evaluation.read_pred_csv" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.</span></span><span class="sig-name descname"><span class="pre">read_pred_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_modes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">Iterator</span><span class="p"><span class="pre">[</span></span><span class="pre">dict</span><span class="p"><span class="pre">]</span></span></span></span><a class="headerlink" href="#l5kit.evaluation.read_pred_csv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Generator function that returns a line at the time from the csv file as a dict</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
-<dd class="field-odd"><p><strong>csv_path</strong> (<em>str</em>) – path of the csv to read</p>
+<dd class="field-odd"><ul class="simple">
+<li><p><strong>csv_path</strong> (<em>str</em>) – path of the csv to read</p></li>
+<li><p><strong>max_modes</strong> (<em>int</em>) – maximum number of predicted modes</p></li>
+</ul>
 </dd>
 <dt class="field-even">Returns</dt>
 <dd class="field-even"><p>dict keys are the csv header fieldnames</p>
@@ -602,9 +615,9 @@ This function was used to generate the test set for the competition so that the 
 
 <dl class="py function">
 <dt class="sig sig-object py" id="l5kit.evaluation.write_pred_csv">
-<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.</span></span><span class="sig-name descname"><span class="pre">write_pred_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamps</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_ids</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#l5kit.evaluation.write_pred_csv" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.</span></span><span class="sig-name descname"><span class="pre">write_pred_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">csv_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">timestamps</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">track_ids</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">coords</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">numpy.ndarray</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confs</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">Optional</span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_modes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">None</span></span></span><a class="headerlink" href="#l5kit.evaluation.write_pred_csv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Encode the predictions into a csv file. Coords can have an additional axis for multi-mode.
-We handle up to MAX_MODES modes.
+We handle up to max_modes modes.
 For the uni-modal case (i.e. all predictions have just a single mode), coords should not have the additional axis
 and confs should be set to None. In this case, a single mode with confidence 1 will be written.</p>
 <dl class="field-list simple">
@@ -616,6 +629,7 @@ and confs should be set to None. In this case, a single mode with confidence 1 w
 <li><p><strong>coords</strong> (<em>np.ndarray</em>) – (num_example x (modes) x future_len x num_coords) meters displacements</p></li>
 <li><p><strong>confs</strong> (<em>Optional</em><em>[</em><em>np.ndarray</em><em>]</em>) – (num_example x modes) confidence of each modes in each example.</p></li>
 <li><p><strong>1</strong> (<em>Rows should sum to</em>) – </p></li>
+<li><p><strong>max_modes</strong> (<em>int</em>) – maximum number of predicted modes</p></li>
 </ul>
 </dd>
 </dl>

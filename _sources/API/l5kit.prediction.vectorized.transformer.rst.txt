@@ -1,0 +1,7 @@
+l5kit.prediction.vectorized.transformer module
+==============================================
+
+.. automodule:: l5kit.prediction.vectorized.transformer
+   :members:
+   :undoc-members:
+   :show-inheritance:

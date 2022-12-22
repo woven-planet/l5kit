@@ -1,0 +1,7 @@
+l5kit.prediction.vectorized.safepathnet module
+==============================================
+
+.. automodule:: l5kit.prediction.vectorized.safepathnet
+   :members:
+   :undoc-members:
+   :show-inheritance:

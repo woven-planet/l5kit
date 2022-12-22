@@ -272,6 +272,15 @@
           </li>
 
         
+          <li class="toctree-l1 ">
+            
+              <a href="../safepathnet.html" class="reference internal ">Multimodal prediction</a>
+            
+
+            
+          </li>
+
+        
       </ul>
     </div>
   
@@ -473,7 +482,7 @@
 <span id="l5kit-evaluation-extract-metrics-module"></span><h1>l5kit.evaluation.extract_metrics module<a class="headerlink" href="#module-l5kit.evaluation.extract_metrics" title="Permalink to this headline">¶</a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="l5kit.evaluation.extract_metrics.compute_metrics_csv">
-<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.extract_metrics.</span></span><span class="sig-name descname"><span class="pre">compute_metrics_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inference_output_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#l5kit.evaluation.extract_metrics.compute_metrics_csv" title="Permalink to this definition">¶</a></dt>
+<span class="sig-prename descclassname"><span class="pre">l5kit.evaluation.extract_metrics.</span></span><span class="sig-name descname"><span class="pre">compute_metrics_csv</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ground_truth_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">inference_output_path</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">str</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metrics</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">Callable</span><span class="p"><span class="pre">[</span></span><span class="p"><span class="pre">[</span></span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">,</span> </span><span class="pre">numpy.ndarray</span><span class="p"><span class="pre">]</span></span><span class="p"><span class="pre">]</span></span></span></em>, <em class="sig-param"><span class="n"><span class="pre">max_modes</span></span><span class="p"><span class="pre">:</span></span> <span class="n"><span class="pre">int</span></span> <span class="o"><span class="pre">=</span></span> <span class="default_value"><span class="pre">3</span></span></em><span class="sig-paren">)</span> <span class="sig-return"><span class="sig-return-icon">&#x2192;</span> <span class="sig-return-typehint"><span class="pre">dict</span></span></span><a class="headerlink" href="#l5kit.evaluation.extract_metrics.compute_metrics_csv" title="Permalink to this definition">¶</a></dt>
 <dd><p>Compute a set of metrics between ground truth and prediction csv files</p>
 <dl class="field-list simple">
 <dt class="field-odd">Parameters</dt>
@@ -482,6 +491,7 @@
 <li><p><strong>inference_output_path</strong> (<em>str</em>) – Path to the csv file containing network output.</p></li>
 <li><p><strong>metrics</strong> (<em>List</em><em>[</em><em>Callable</em><em>]</em>) – a list of callable to be applied to the elements retrieved from the 2</p></li>
 <li><p><strong>files</strong> (<em>csv</em>) – </p></li>
+<li><p><strong>max_modes</strong> (<em>int</em>) – maximum number of predicted modes</p></li>
 </ul>
 </dd>
 <dt class="field-even">Returns</dt>

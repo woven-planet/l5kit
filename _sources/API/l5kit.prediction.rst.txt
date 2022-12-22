@@ -1,0 +1,15 @@
+l5kit.prediction package
+========================
+
+.. automodule:: l5kit.prediction
+   :members:
+   :undoc-members:
+   :show-inheritance:
+
+Subpackages
+-----------
+
+.. toctree::
+   :maxdepth: 4
+
+   l5kit.prediction.vectorized

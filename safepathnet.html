@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html >
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1"><meta name="generator" content="Docutils 0.17.1: http://docutils.sourceforge.net/" />
+
+      <title>Multimodal prediction</title>
+    
+          <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+          <link rel="stylesheet" href="_static/theme.css " type="text/css" />
+          <link rel="stylesheet" href="_static/custom.css" type="text/css" />
+      
+      <!-- sphinx script_files -->
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/jquery.js"></script>
+        <script src="_static/underscore.js"></script>
+        <script src="_static/doctools.js"></script>
+
+      
+      <!-- bundled in js (rollup iife) -->
+      <!-- <script src="_static/theme-vendors.js"></script> -->
+      <script src="_static/theme.js" defer></script>
+    
+  <link rel="index" title="Index" href="genindex.html" />
+  <link rel="search" title="Search" href="search.html" />
+  <link rel="next" title="Additional Resources" href="additional_resources_index.html" />
+  <link rel="prev" title="Closed-loop Planning" href="urban_driver.html" /> 
+  </head>
+
+  <body>
+    <div id="app">
+    <div class="theme-container" :class="pageClasses"><navbar @toggle-sidebar="toggleSidebar">
+  <router-link to="index.html" class="home-link">
+    
+      <img class="logo" src="_static/L5logo_small_v2.png" alt="logo"/>
+    
+  </router-link>
+
+  <div class="links">
+    <navlinks class="can-hide">
+
+  
+    <div class="nav-item">
+      <a href="gettingstarted.html#getting-started"
+         class="nav-link ">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="tutorials.html#training-models"
+         class="nav-link  router-link-active">
+         training models
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="additional_resources_index.html#additional-resources"
+         class="nav-link ">
+         additional resources
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="api_reference.html#api-reference"
+         class="nav-link ">
+         api reference
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="how_to_contribute.html#how-to-contribute"
+         class="nav-link ">
+         how to contribute
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="license.html#license"
+         class="nav-link ">
+         license
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="credits.html#credits"
+         class="nav-link ">
+         credits
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="changelog.html#changelog"
+         class="nav-link ">
+         changelog
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/woven-planet/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+    </navlinks>
+  </div>
+</navbar>
+
+      
+      <div class="sidebar-mask" @click="toggleSidebar(false)">
+      </div>
+        <sidebar @toggle-sidebar="toggleSidebar">
+          
+          <navlinks>
+            
+
+  
+    <div class="nav-item">
+      <a href="gettingstarted.html#getting-started"
+         class="nav-link ">
+         getting started
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="tutorials.html#training-models"
+         class="nav-link  router-link-active">
+         training models
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="additional_resources_index.html#additional-resources"
+         class="nav-link ">
+         additional resources
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="api_reference.html#api-reference"
+         class="nav-link ">
+         api reference
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="how_to_contribute.html#how-to-contribute"
+         class="nav-link ">
+         how to contribute
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="license.html#license"
+         class="nav-link ">
+         license
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="credits.html#credits"
+         class="nav-link ">
+         credits
+      </a>
+    </div>
+  
+    <div class="nav-item">
+      <a href="changelog.html#changelog"
+         class="nav-link ">
+         changelog
+      </a>
+    </div>
+  
+
+
+
+  
+    <div class="nav-item">
+      <a href="https://github.com/woven-planet/l5kit"
+        class="nav-link external">
+          Github <outboundlink></outboundlink>
+      </a>
+    </div>
+  
+
+            
+          </navlinks><div id="searchbox" class="searchbox" role="search">
+  <div class="caption"><span class="caption-text">Quick search</span>
+    <div class="searchformwrapper">
+      <form class="search" action="search.html" method="get">
+        <input type="text" name="q" />
+        <input type="submit" value="Search" />
+        <input type="hidden" name="check_keywords" value="yes" />
+        <input type="hidden" name="area" value="default" />
+      </form>
+    </div>
+  </div>
+</div><div class="sidebar-links" role="navigation" aria-label="main navigation">
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="gettingstarted.html#getting-started">getting started</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="introduction.html" class="reference internal ">Introduction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="installation.html" class="reference internal ">Installing L5Kit</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="dataset.html" class="reference internal ">Downloading the Datasets</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="tutorials.html#training-models">training models</a></span>
+      </p>
+      <ul class="current">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="prediction.html" class="reference internal ">Prediction</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="simulation.html" class="reference internal ">Simulation</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="planning.html" class="reference internal ">Planning</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 current">
+            
+              <a href="#" class="reference internal current">Multimodal prediction</a>
+            
+
+            
+              <ul>
+                
+                  <li class="toctree-l2"><a href="#safepathnet-model" class="reference internal">SafePathNet Model</a></li>
+                
+                  <li class="toctree-l2"><a href="#notebook-tutorial" class="reference internal">Notebook Tutorial</a></li>
+                
+              </ul>
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="additional_resources_index.html#additional-resources">additional resources</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="data_format.html" class="reference internal ">Dataset Formats in L5Kit</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="prediction_competition.html" class="reference internal ">Prediction Competition</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="api_reference.html#api-reference">api reference</a></span>
+      </p>
+      <ul class="">
+        
+          <li class="toctree-l1 ">
+            
+              <a href="API/l5kit.cle.html" class="reference internal ">l5kit.cle package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="API/l5kit.data.html" class="reference internal ">l5kit.data package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="API/l5kit.dataset.html" class="reference internal ">l5kit.dataset package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="API/l5kit.environment.html" class="reference internal ">l5kit.environment package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="API/l5kit.evaluation.html" class="reference internal ">l5kit.evaluation package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="API/l5kit.geometry.html" class="reference internal ">l5kit.geometry package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="API/l5kit.kinematic.html" class="reference internal ">l5kit.kinematic package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="API/l5kit.random.html" class="reference internal ">l5kit.random package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="API/l5kit.sampling.html" class="reference internal ">l5kit.sampling package</a>
+            
+
+            
+          </li>
+
+        
+          <li class="toctree-l1 ">
+            
+              <a href="API/l5kit.visualization.html" class="reference internal ">l5kit.visualization package</a>
+            
+
+            
+          </li>
+
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="how_to_contribute.html#how-to-contribute">how to contribute</a></span>
+      </p>
+      <ul class="">
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="license.html#license">license</a></span>
+      </p>
+      <ul class="">
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="credits.html#credits">credits</a></span>
+      </p>
+      <ul class="">
+        
+      </ul>
+    </div>
+  
+    <div class="sidebar-group">
+      <p class="caption">
+        <span class="caption-text"><a href="changelog.html#changelog">changelog</a></span>
+      </p>
+      <ul class="">
+        
+      </ul>
+    </div>
+  
+</div>
+        </sidebar>
+
+      <page>
+          <div class="body-header" role="navigation" aria-label="navigation">
+  
+  <ul class="breadcrumbs">
+    <li><a href="index.html">Docs</a> &raquo;</li>
+    
+      <li><a href="tutorials.html">Training Models</a> &raquo;</li>
+    
+    <li>Multimodal prediction</li>
+  </ul>
+  
+
+  <ul class="page-nav">
+  <li class="prev">
+    <a href="urban_driver.html"
+       title="previous chapter">← Closed-loop Planning</a>
+  </li>
+  <li class="next">
+    <a href="additional_resources_index.html"
+       title="next chapter">Additional Resources →</a>
+  </li>
+</ul>
+  
+</div>
+<hr>
+          <div class="content" role="main" v-pre>
+            
+  <section id="multimodal-prediction">
+<h1>Multimodal prediction<a class="headerlink" href="#multimodal-prediction" title="Permalink to this headline">¶</a></h1>
+<p>Our paper <a class="reference external" href="https://arxiv.org/abs/2211.02131">Safe Real-World Autonomous Driving by Learning to Predict and Plan with a Mixture of Experts</a>
+has been accepted at the <a class="reference external" href="https://ml4ad.github.io/">NeurIPS 2022 workshop on Machine Learning for Autonomous Driving (ML4AD)</a>.</p>
+<p>We also have a <a class="reference external" href="https://wp-research-uk.github.io/safepathnet/">dedicated webpage</a> , check that out for the on-road test video.</p>
+<p>In this notebook you will train and evaluate the prediction part of SafePathNet.</p>
+<p><strong>Before starting, please download the Woven Planet Prediction Dataset 2020 and follow the instructions to correctly organise it.</strong></p>
+<ul class="simple">
+<li><p><a class="reference external" href="https://level-5.global/data/prediction/">Woven Planet Prediction Dataset 2020</a></p></li>
+<li><p><a class="reference external" href="https://github.com/woven-planet/l5kit#download-the-datasets">Instructions</a></p></li>
+</ul>
+<section id="safepathnet-model">
+<h2>SafePathNet Model<a class="headerlink" href="#safepathnet-model" title="Permalink to this headline">¶</a></h2>
+<p>From the paper:
+<code class="docutils literal notranslate"><span class="pre">`</span>
+<span class="pre">The</span> <span class="pre">architecture</span> <span class="pre">of</span> <span class="pre">SafePathNet</span> <span class="pre">is</span> <span class="pre">similar</span> <span class="pre">to</span> <span class="pre">those</span> <span class="pre">of</span> <span class="pre">VectorNet</span> <span class="pre">[11]</span> <span class="pre">and</span> <span class="pre">DETR</span> <span class="pre">[7],</span> <span class="pre">combining</span> <span class="pre">an</span> <span class="pre">element-wise</span> <span class="pre">point</span> <span class="pre">encoder</span> <span class="pre">[23]</span> <span class="pre">and</span> <span class="pre">a</span> <span class="pre">Transformer</span> <span class="pre">[31].</span> <span class="pre">The</span> <span class="pre">element-wise</span> <span class="pre">point</span> <span class="pre">encoder</span> <span class="pre">consists</span> <span class="pre">of</span> <span class="pre">two</span> <span class="pre">PointNet-like</span> <span class="pre">modules</span> <span class="pre">that</span> <span class="pre">are</span> <span class="pre">used</span> <span class="pre">to</span> <span class="pre">compress</span> <span class="pre">each</span> <span class="pre">input</span> <span class="pre">element</span> <span class="pre">from</span> <span class="pre">a</span> <span class="pre">set</span> <span class="pre">of</span> <span class="pre">points</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">single</span> <span class="pre">feature</span> <span class="pre">vector</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">same</span> <span class="pre">size.</span> <span class="pre">A</span> <span class="pre">series</span> <span class="pre">of</span> <span class="pre">Transformer</span> <span class="pre">Encoder</span> <span class="pre">layers</span> <span class="pre">are</span> <span class="pre">used</span> <span class="pre">to</span> <span class="pre">model</span> <span class="pre">the</span> <span class="pre">relationships</span> <span class="pre">between</span> <span class="pre">all</span> <span class="pre">input</span> <span class="pre">elements</span> <span class="pre">(SDV,</span> <span class="pre">road</span> <span class="pre">agents,</span> <span class="pre">static</span> <span class="pre">and</span> <span class="pre">dynamic</span> <span class="pre">map,</span> <span class="pre">route),</span> <span class="pre">encoded</span> <span class="pre">by</span> <span class="pre">the</span> <span class="pre">point</span> <span class="pre">encoder.</span> <span class="pre">Then,</span> <span class="pre">a</span> <span class="pre">series</span> <span class="pre">of</span> <span class="pre">Transformer</span> <span class="pre">Decoders</span> <span class="pre">are</span> <span class="pre">used</span> <span class="pre">to</span> <span class="pre">query</span> <span class="pre">agents</span> <span class="pre">features.</span> <span class="pre">We</span> <span class="pre">make</span> <span class="pre">use</span> <span class="pre">of</span> <span class="pre">a</span> <span class="pre">set</span> <span class="pre">of</span> <span class="pre">learnable</span> <span class="pre">embeddings</span> <span class="pre">to</span> <span class="pre">construct</span> <span class="pre">the</span> <span class="pre">queries</span> <span class="pre">of</span> <span class="pre">the</span> <span class="pre">Transformer</span> <span class="pre">Decoders.</span> <span class="pre">M</span> <span class="pre">learnable</span> <span class="pre">query</span> <span class="pre">embeddings</span> <span class="pre">are</span> <span class="pre">used</span> <span class="pre">to</span> <span class="pre">obtain</span> <span class="pre">a</span> <span class="pre">variable</span> <span class="pre">number</span> <span class="pre">of</span> <span class="pre">M</span> <span class="pre">different</span> <span class="pre">queries</span> <span class="pre">for</span> <span class="pre">each</span> <span class="pre">road</span> <span class="pre">agent.</span> <span class="pre">An</span> <span class="pre">agent-specific</span> <span class="pre">MLP</span> <span class="pre">decoder</span> <span class="pre">converts</span> <span class="pre">each</span> <span class="pre">agent</span> <span class="pre">feature</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">future</span> <span class="pre">trajectory.</span> <span class="pre">In</span> <span class="pre">addition</span> <span class="pre">to</span> <span class="pre">trajectories,</span> <span class="pre">the</span> <span class="pre">decoder</span> <span class="pre">predicts</span> <span class="pre">a</span> <span class="pre">logit</span> <span class="pre">for</span> <span class="pre">each</span> <span class="pre">agent</span> <span class="pre">trajectory.</span> <span class="pre">For</span> <span class="pre">each</span> <span class="pre">element,</span> <span class="pre">the</span> <span class="pre">corresponding</span> <span class="pre">logits</span> <span class="pre">are</span> <span class="pre">converted</span> <span class="pre">to</span> <span class="pre">a</span> <span class="pre">probability</span> <span class="pre">distribution</span> <span class="pre">over</span> <span class="pre">the</span> <span class="pre">future</span> <span class="pre">trajectories</span> <span class="pre">by</span> <span class="pre">applying</span> <span class="pre">a</span> <span class="pre">softmax</span> <span class="pre">function.</span> <span class="pre">All</span> <span class="pre">road</span> <span class="pre">agents</span> <span class="pre">are</span> <span class="pre">modeled</span> <span class="pre">independently,</span> <span class="pre">but</span> <span class="pre">predicted</span> <span class="pre">jointly</span> <span class="pre">in</span> <span class="pre">parallel.</span>
+<span class="pre">`</span></code>
+This is a diagram of the full model:</p>
+<img alt="model" src="_images/model1.svg" /><p>Please note that the experiments reported in the paper were run with a slightly different point encoder in a distributed system using multiple GPUs.
+Therefore, we do not guarantee that this model obtains the same performance.</p>
+</section>
+<section id="notebook-tutorial">
+<h2>Notebook Tutorial<a class="headerlink" href="#notebook-tutorial" title="Permalink to this headline">¶</a></h2>
+<p>We provide one notebook to train and evaluate the prediction part of SafePathNet: <a class="reference external" href="https://github.com/woven-planet/l5kit/blob/master/examples/safepathnet/agent_prediction.ipynb">train and evaluation notebook</a>.</p>
+<a class="reference external image-reference" href="https://colab.research.google.com/github/woven-planet/l5kit/blob/master/examples/safepathnet/agent_prediction.ipynb"><img alt="Open In Colab" src="https://colab.research.google.com/assets/colab-badge.svg" /></a>
+</section>
+</section>
+
+
+          </div>
+          <div class="page-nav">
+            <div class="inner"><ul class="page-nav">
+  <li class="prev">
+    <a href="urban_driver.html"
+       title="previous chapter">← Closed-loop Planning</a>
+  </li>
+  <li class="next">
+    <a href="additional_resources_index.html"
+       title="next chapter">Additional Resources →</a>
+  </li>
+</ul><div class="footer" role="contentinfo">
+      &#169; Copyright 2021, Level 5. Car Vectors by Vecteezy (https://www.vecteezy.com/free-vector/car).
+    <br>
+    Created using <a href="http://sphinx-doc.org/">Sphinx</a> 4.1.2 with <a href="https://github.com/schettino72/sphinx_press_theme">Press Theme</a> 0.8.0.
+</div>
+            </div>
+          </div>
+      </page>
+    </div></div>
+    
+    
+  </body>
+</html>
