@@ -37,5 +37,6 @@ torchvision = ">=0.6.0,<=0.8.2"
 shapely = "<2.0.0"
 bokeh = "<3.0.0"
 sphinx-press-theme = "*"
+typed-ast = "==1.5.4"
 types-pyyaml = "*"
 stable-baselines3 = {extras = ["extra"], version = "*"}
