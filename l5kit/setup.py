@@ -7,8 +7,8 @@ from l5kit import __version__
 setup(
     name="l5kit",
     version=__version__,
-    description="Woven Planet Autonomous Vehicle Research library",
-    author="Woven Planet",
+    description="Woven by Toyota Autonomous Vehicle Research library",
+    author="Woven by Toyota",
     author_email="l5kit@woven-planet.global",
     url="https://github.com/woven-planet/l5kit",
     license="apache2",
@@ -34,7 +34,8 @@ setup(
         "typing_extensions",
         "bokeh<3.0.0",
         "importlib-metadata>=4.10.0,<5.0.0",
-        "gym==0.22.0"
+        "gym==0.22.0",
+        "typed-ast==1.5.4"
     ],
     extras_require={
         "dev": ["pytest", "mypy", "types-PyYAML", "setuptools", "twine", "wheel", "pytest-cov",
