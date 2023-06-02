@@ -302,7 +302,7 @@
                 
                   <li class="toctree-l2"><a href="#short-introduction-to-zarr" class="reference internal">Short introduction to zarr</a></li>
                 
-                  <li class="toctree-l2"><a href="#woven-planet-competition-dataset-format" class="reference internal">2020 Woven Planet Competition Dataset format</a></li>
+                  <li class="toctree-l2"><a href="#woven-by-toyota-competition-dataset-format" class="reference internal">2020 Woven by Toyota Competition Dataset format</a></li>
                 
                   <li class="toctree-l2"><a href="#working-with-the-zarr-format" class="reference internal">Working with the zarr format</a></li>
                 
@@ -571,9 +571,9 @@
 <li><p>The metadata (e.g. dtype, chunk size, compression type) is stored inside the zarr dataset too. If one day you decide to change your chunk size, you can still read the older datasets without changing any code.</p></li>
 </ul>
 </section>
-<section id="woven-planet-competition-dataset-format">
-<h2>2020 Woven Planet Competition Dataset format<a class="headerlink" href="#woven-planet-competition-dataset-format" title="Permalink to this headline">¶</a></h2>
-<p>The 2020 Woven Planet competition dataset is stored in four structured arrays: <code class="code docutils literal notranslate"><span class="pre">scenes</span></code>, <code class="code docutils literal notranslate"><span class="pre">frames</span></code>, <code class="code docutils literal notranslate"><span class="pre">agents</span></code> and <code class="code docutils literal notranslate"><span class="pre">tl_faces</span></code>.</p>
+<section id="woven-by-toyota-competition-dataset-format">
+<h2>2020 Woven by Toyota Competition Dataset format<a class="headerlink" href="#woven-by-toyota-competition-dataset-format" title="Permalink to this headline">¶</a></h2>
+<p>The 2020 Woven by Toyota competition dataset is stored in four structured arrays: <code class="code docutils literal notranslate"><span class="pre">scenes</span></code>, <code class="code docutils literal notranslate"><span class="pre">frames</span></code>, <code class="code docutils literal notranslate"><span class="pre">agents</span></code> and <code class="code docutils literal notranslate"><span class="pre">tl_faces</span></code>.</p>
 <p>Note: in the following all <code class="code docutils literal notranslate"><span class="pre">_interval</span></code> fields assume that information is stored consecutively in the arrays.
 This means that if <code class="code docutils literal notranslate"><span class="pre">frame_index_interval</span></code> for <code class="code docutils literal notranslate"><span class="pre">scene_0</span></code> is <code class="code docutils literal notranslate"><span class="pre">(0,</span> <span class="pre">100)</span></code>, frames from <code class="code docutils literal notranslate"><span class="pre">scene_1</span></code> will start from index 100 in the frames array.</p>
 <section id="scenes">
