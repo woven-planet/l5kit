@@ -15,7 +15,7 @@ setup(
     install_requires=[
         "imageio",
         "matplotlib",
-        "numpy~=1.19.0",
+        "numpy>=1.19.0",
         "opencv-contrib-python-headless",
         "protobuf>=3.12.2,<=3.20",
         "pymap3d",
