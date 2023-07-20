@@ -20,7 +20,7 @@ types-pyyaml = "*"
 l5kit = {editable = true, path = "."}
 zarr = "*"
 numpy = "*"
-opencv-contrib-python-headless = "*"
+opencv-contrib-python-headless = "<=4.5.3.56"
 pymap3d = "*"
 scipy = "*"
 tqdm = "*"
