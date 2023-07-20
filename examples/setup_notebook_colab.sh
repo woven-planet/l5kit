@@ -7,7 +7,7 @@ TEMP_DATASET_DIR=$(mktemp -d)
 # Download sample zarr
 echo "Downloading sample zarr dataset..."
 wget https://d20lyvjneielsk.cloudfront.net/prediction-sample.tar \
-    -q --show-progress -P $TEMP_DOWNLOAD_DIR -O sample.tar
+    -q --show-progress -P $TEMP_DOWNLOAD_DIR -O $TEMP_DOWNLOAD_DIR/sample.tar
 
 mkdir -p $TEMP_DATASET_DIR/scenes
 tar xf $TEMP_DOWNLOAD_DIR/sample.tar -C $TEMP_DATASET_DIR/scenes
@@ -15,7 +15,7 @@ tar xf $TEMP_DOWNLOAD_DIR/sample.tar -C $TEMP_DATASET_DIR/scenes
 # Download semantic map
 echo "Downloading semantic map..."
 wget https://d20lyvjneielsk.cloudfront.net/prediction-semantic_map.tar \
-    -q --show-progress -P $TEMP_DOWNLOAD_DIR -O semantic_map.tar
+    -q --show-progress -P $TEMP_DOWNLOAD_DIR -O $TEMP_DOWNLOAD_DIR/semantic_map.tar
 mkdir -p $TEMP_DATASET_DIR/semantic_map
 tar xf $TEMP_DOWNLOAD_DIR/semantic_map.tar -C $TEMP_DATASET_DIR/semantic_map
 cp $TEMP_DATASET_DIR/semantic_map/meta.json $TEMP_DATASET_DIR/meta.json
@@ -23,7 +23,7 @@ cp $TEMP_DATASET_DIR/semantic_map/meta.json $TEMP_DATASET_DIR/meta.json
 # Download aerial maps
 echo "Downloading aerial maps (this can take a while)..."
 wget https://d20lyvjneielsk.cloudfront.net/prediction-aerial_map.tar \
-    -q --show-progress -P $TEMP_DOWNLOAD_DIR -O aerial_map.tar
+    -q --show-progress -P $TEMP_DOWNLOAD_DIR -O $TEMP_DOWNLOAD_DIR/aerial_map.tar
 tar xf $TEMP_DOWNLOAD_DIR/aerial_map.tar -C $TEMP_DATASET_DIR
 
 # Dowload sample configuration
