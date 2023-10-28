@@ -10,9 +10,9 @@ We also have a `dedicated webpage <https://wp-research-uk.github.io/safepathnet/
 
 In this notebook you will train and evaluate the prediction part of SafePathNet.
 
-**Before starting, please download the Woven Planet Prediction Dataset 2020 and follow the instructions to correctly organise it.**
+**Before starting, please download the Woven by Toyota Prediction Dataset 2020 and follow the instructions to correctly organise it.**
 
-* `Woven Planet Prediction Dataset 2020 <https://level-5.global/data/prediction/>`_
+* `Woven by Toyota Prediction Dataset 2020 <https://woven.toyota/en/prediction-dataset>`_
 * `Instructions <https://github.com/woven-planet/l5kit#download-the-datasets>`_
 
 SafePathNet Model
